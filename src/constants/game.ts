@@ -16,35 +16,35 @@ export const GAME_CONFIG = {
       name: 'Quantum Core',
       basePrice: 1000,
       baseIncome: 10,
-      description: 'Р‘Р°Р·РѕРІС‹Р№ РіРµРЅРµСЂР°С‚РѕСЂ РєРІР°РЅС‚СѓРјРЅРѕР№ СЌРЅРµСЂРіРёРё'
+      description: "Базовый генератор квантумной энергии"
     },
     {
       id: 'crypto',
       name: 'Crypto Miner',
       basePrice: 5000,
       baseIncome: 50,
-      description: 'РњР°Р№РЅРёРЅРі РєСЂРёРїС‚РѕРІР°Р»СЋС‚С‹'
+      description: "Майнинг криптовалюты"
     },
     {
       id: 'stocks',
       name: 'Stock Portfolio',
       basePrice: 25000,
       baseIncome: 250,
-      description: 'РРЅРІРµСЃС‚РёС†РёРё РІ Р°РєС†РёРё'
+      description: "Инвестиции в акции"
     },
     {
       id: 'realestate',
       name: 'Real Estate',
       basePrice: 100000,
       baseIncome: 1000,
-      description: 'РќРµРґРІРёР¶РёРјРѕСЃС‚СЊ'
+      description: "Недвижимость"
     },
     {
       id: 'tech',
       name: 'AI Company',
       basePrice: 500000,
       baseIncome: 5000,
-      description: 'РСЃРєСѓСЃСЃС‚РІРµРЅРЅС‹Р№ РёРЅС‚РµР»Р»РµРєС‚'
+      description: "Искусственный интеллект"
     }
   ],
   
@@ -61,7 +61,7 @@ export const GAME_CONFIG = {
   SHOP_ITEMS: [
     {
       id: 'tap_multiplier_1h',
-      name: 'РњРЅРѕР¶РёС‚РµР»СЊ С‚Р°РїР°РЅРёСЏ (1С‡)',
+      name: "Множитель тапания (1ч)",
       price: 10,
       type: 'tap_multiplier',
       duration: 60 * 60 * 1000, // 1 hour
@@ -69,7 +69,7 @@ export const GAME_CONFIG = {
     },
     {
       id: 'tap_multiplier_24h',
-      name: 'РњРЅРѕР¶РёС‚РµР»СЊ С‚Р°РїР°РЅРёСЏ (24С‡)',
+      name: "Множитель тапания (24ч)",
       price: 200,
       type: 'tap_multiplier',
       duration: 24 * 60 * 60 * 1000, // 24 hours
@@ -77,7 +77,7 @@ export const GAME_CONFIG = {
     },
     {
       id: 'auto_clicker_basic',
-      name: 'РђРІС‚Рѕ-РєР»РёРєРµСЂ (Р±Р°Р·РѕРІС‹Р№)',
+      name: "Авто-кликер (базовый)",
       price: 50,
       type: 'auto_clicker',
       duration: 60 * 60 * 1000, // 1 hour
@@ -85,7 +85,7 @@ export const GAME_CONFIG = {
     },
     {
       id: 'auto_clicker_advanced',
-      name: 'РђРІС‚Рѕ-РєР»РёРєРµСЂ (РїСЂРѕРґРІРёРЅСѓС‚С‹Р№)',
+      name: "Авто-кликер (продвинутый)",
       price: 500,
       type: 'auto_clicker',
       duration: 24 * 60 * 60 * 1000, // 24 hours
@@ -93,7 +93,7 @@ export const GAME_CONFIG = {
     },
     {
       id: 'offline_multiplier',
-      name: 'РћС„С„Р»Р°Р№РЅ РјРЅРѕР¶РёС‚РµР»СЊ',
+      name: "Оффлайн множитель",
       price: 100,
       type: 'offline_multiplier',
       duration: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -101,7 +101,7 @@ export const GAME_CONFIG = {
     },
     {
       id: 'offline_duration',
-      name: 'РЈРІРµР»РёС‡РµРЅРёРµ РѕС„С„Р»Р°Р№РЅ РІСЂРµРјРµРЅРё',
+      name: "Увеличение оффлайн времени",
       price: 200,
       type: 'offline_duration',
       duration: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -125,43 +125,43 @@ export const GAME_CONFIG = {
   ACHIEVEMENTS: [
     {
       id: 'first_tap',
-      name: 'РџРµСЂРІС‹Р№ С‚Р°Рї',
-      description: 'РЎРґРµР»Р°Р№С‚Рµ РїРµСЂРІС‹Р№ С‚Р°Рї',
+      name: "Первый тап",
+      description: "Сделайте первый тап",
       condition: { taps: 1 },
       reward: { exp: 100, coins: 1000 }
     },
     {
       id: 'tap_master',
-      name: 'РњР°СЃС‚РµСЂ С‚Р°РїР°РЅРёСЏ',
-      description: 'РЎРґРµР»Р°Р№С‚Рµ 10,000 С‚Р°РїРѕРІ',
+      name: "Мастер тапания",
+      description: "Сделайте 10,000 тапов",
       condition: { taps: 10000 },
       reward: { exp: 1000, coins: 10000 }
     },
     {
       id: 'quantum_investor',
-      name: 'РљРІР°РЅС‚СѓРјРЅС‹Р№ РёРЅРІРµСЃС‚РѕСЂ',
-      description: 'РљСѓРїРёС‚Рµ 5 РёРЅРІРµСЃС‚РёС†РёР№',
+      name: "Квантумный инвестор",
+      description: "Купите 5 инвестиций",
       condition: { investments: 5 },
       reward: { exp: 2000, coins: 20000 }
     },
     {
       id: 'referral_champion',
-      name: 'Р§РµРјРїРёРѕРЅ СЂРµС„РµСЂР°Р»РѕРІ',
-      description: 'РџСЂРёРіР»Р°СЃРёС‚Рµ 10 РґСЂСѓР·РµР№',
+      name: "Чемпион рефералов",
+      description: "Пригласите 10 друзей",
       condition: { referrals: 10 },
       reward: { exp: 5000, coins: 50000 }
     },
     {
       id: 'exp_collector',
-      name: 'РљРѕР»Р»РµРєС†РёРѕРЅРµСЂ EXP',
-      description: 'Р—Р°СЂР°Р±РѕС‚Р°Р№С‚Рµ 1,000,000 EXP',
+      name: "Коллекционер EXP",
+      description: "Заработайте 1,000,000 EXP",
       condition: { exp: 1000000 },
       reward: { exp: 10000, coins: 100000 }
     },
     {
       id: 'level_master',
-      name: 'РњР°СЃС‚РµСЂ СѓСЂРѕРІРЅРµР№',
-      description: 'Р”РѕСЃС‚РёРіРЅРёС‚Рµ 100 СѓСЂРѕРІРЅСЏ',
+      name: "Мастер уровней",
+      description: "Достигните 100 уровня",
       condition: { level: 100 },
       reward: { exp: 5000, coins: 50000 }
     }
@@ -171,22 +171,22 @@ export const GAME_CONFIG = {
   DAILY_QUESTS: [
     {
       id: 'quantum_tapper',
-      name: 'РљРІР°РЅС‚СѓРјРЅС‹Р№ С‚Р°РїРµСЂ',
-      description: 'РўР°РїРЅРёС‚Рµ 1000 СЂР°Р·',
+      name: "Квантумный тапер",
+      description: "Тапните 1000 раз",
       condition: { taps: 1000 },
       reward: { exp: 500, coins: 5000 }
     },
     {
       id: 'exp_collector',
-      name: 'РљРѕР»Р»РµРєС†РёРѕРЅРµСЂ EXP',
-      description: 'Р—Р°СЂР°Р±РѕС‚Р°Р№С‚Рµ 1000 EXP',
+      name: "Коллекционер EXP",
+      description: "Заработайте 1000 EXP",
       condition: { exp: 1000 },
       reward: { exp: 200, coins: 2000 }
     },
     {
       id: 'quantum_investor',
-      name: 'РљРІР°РЅС‚СѓРјРЅС‹Р№ РёРЅРІРµСЃС‚РѕСЂ',
-      description: 'РџРѕС‚СЂР°С‚СЊС‚Рµ 5000 РєРІР°РЅС‚СѓРј РјРѕРЅРµС‚ РЅР° РёРЅРІРµСЃС‚РёС†РёРё',
+      name: "Квантумный инвестор",
+      description: "Потратьте 5000 квантум монет на инвестиции",
       condition: { coinsSpent: 5000 },
       reward: { exp: 300, coins: 3000 }
     }
@@ -195,5 +195,5 @@ export const GAME_CONFIG = {
 
 export const TELEGRAM_CONFIG = {
   BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
-  WEBAPP_URL: 'https://your-domain.com'
+  WEBAPP_URL: 'https://unlock-rent.online'
 }
