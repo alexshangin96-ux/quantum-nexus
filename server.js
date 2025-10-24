@@ -126,3 +126,5 @@ app.listen(PORT, () => {
     console.log('Game available at: http://localhost:' + PORT);
     console.log('Test endpoint: http://localhost:' + PORT + '/test');
 });
+
+
