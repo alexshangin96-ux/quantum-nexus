@@ -1,4 +1,4 @@
-// Game constants
+﻿// Game constants
 export const GAME_CONFIG = {
   // Currency rates
   EXP_TO_USD_RATE: 100000, // 100,000 EXP = 1 USD
@@ -195,5 +195,5 @@ export const GAME_CONFIG = {
 
 export const TELEGRAM_CONFIG = {
   BOT_TOKEN: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
-  WEBAPP_URL: 'http://unlock-rent.online/'
+  WEBAPP_URL: 'https://your-domain.com'
 }
