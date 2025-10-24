@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -201,6 +200,12 @@
         .notification.show {
             transform: translateX(0);
         }
+
+        .loading {
+            color: #4ecdc4;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -281,7 +286,7 @@
         }
 
         // Вход в игру
-        function login() {
+        async function login() {
             const username = document.getElementById('usernameInput').value.trim();
             if (!username) {
                 showNotification('Введите имя пользователя!');
@@ -292,7 +297,7 @@
             isLoggedIn = true;
             localStorage.setItem('quantum_nexus_user', username);
             showGameContent();
-            loadGameData();
+            await loadGameData();
         }
 
         // Выход из игры
@@ -318,22 +323,40 @@
 
         // Загрузить данные игры
         async function loadGameData() {
+            if (!currentUser) return;
+            
             try {
+                console.log('Загружаем данные для пользователя:', currentUser);
                 const response = await fetch(`/api/game/${currentUser}/load`);
+                console.log('Ответ сервера:', response.status);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('Данные с сервера:', data);
+                    
                     if (data.success && data.gameData) {
                         gameData = data.gameData;
+                        console.log('Загружены данные:', gameData);
+                        updateUI();
+                        showNotification('Данные загружены!');
+                    } else {
+                        console.log('Нет данных на сервере, используем значения по умолчанию');
                         updateUI();
                     }
+                } else {
+                    console.log('Ошибка загрузки данных, используем значения по умолчанию');
+                    updateUI();
                 }
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
+                updateUI();
             }
         }
 
         // Сохранить данные игры
         async function saveGameData() {
+            if (!currentUser) return;
+            
             try {
                 const response = await fetch(`/api/game/${currentUser}/save`, {
                     method: 'POST',
@@ -345,6 +368,8 @@
                 
                 if (!response.ok) {
                     console.error('Ошибка сохранения данных');
+                } else {
+                    console.log('Данные сохранены для пользователя:', currentUser);
                 }
             } catch (error) {
                 console.error('Ошибка сохранения данных:', error);
