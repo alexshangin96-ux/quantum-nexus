@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus - Ультимативная Тапалка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A2E 50%, #16213E 100%);
+            color: #FFFFFF;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .game-container {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .game-title {
+            font-size: 2em;
+            color: #00FFFF;
+            margin-bottom: 20px;
+        }
+        .quantum-core {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00FFFF, #0080FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFFFFF;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+        }
+        .quantum-core:hover {
+            transform: scale(1.05);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00FFFF;
+        }
+        .powerups {
+            margin: 20px 0;
+        }
+        .powerup-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px;
+            color: #FFFFFF;
+            cursor: pointer;
+        }
+        .powerup-btn:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">🚀 Quantum Nexus</h1>
+        
+        <div class="quantum-core" id="quantumCore">
+            ТАП
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTaps">0</div>
+                <div>Всего Тапов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="coins">0</div>
+                <div>Монеты</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="level">1</div>
+                <div>Уровень</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bitcoin">0.000</div>
+                <div>Bitcoin</div>
+            </div>
+        </div>
+        
+        <div class="powerups">
+            <h3>Power-ups за звезды ⭐</h3>
+            <button class="powerup-btn" onclick="buyEnergyBoost()">⚡ Буст Энергии - 10 ⭐</button>
+            <button class="powerup-btn" onclick="buyCoinMultiplier()">💰 Множитель - 25 ⭐</button>
+            <button class="powerup-btn" onclick="buyAutoTap()">🤖 Авто Тап - 50 ⭐</button>
+        </div>
+    </div>
+    
+    <script>
+        let gameData = {
+            totalTaps: 0,
+            coins: 0,
+            level: 1,
+            bitcoin: 0,
+            multiplier: 1,
+            energy: 100,
+            maxEnergy: 100
+        };
+        
+        function updateUI() {
+            document.getElementById('totalTaps').textContent = gameData.totalTaps;
+            document.getElementById('coins').textContent = gameData.coins;
+            document.getElementById('level').textContent = gameData.level;
+            document.getElementById('bitcoin').textContent = gameData.bitcoin.toFixed(6);
+        }
+        
+        function handleTap() {
+            if (gameData.energy <= 0) {
+                alert('Недостаточно энергии!');
+                return;
+            }
+            
+            gameData.energy -= 1;
+            gameData.totalTaps += 1;
+            gameData.coins += gameData.multiplier;
+            
+            if (gameData.totalTaps % 100 === 0) {
+                gameData.level += 1;
+                gameData.multiplier += 0.1;
+                gameData.maxEnergy += 10;
+                gameData.energy = gameData.maxEnergy;
+                alert('🎉 Повышение уровня!');
+            }
+            
+            if (Math.random() < 0.01) {
+                gameData.bitcoin += 0.000001;
+                alert('₿ Получено Bitcoin!');
+            }
+            
+            updateUI();
+        }
+        
+        function buyEnergyBoost() {
+            if (confirm('Купить Буст Энергии за 10 ⭐?')) {
+                gameData.energy += 100;
+                if (gameData.energy > gameData.maxEnergy) {
+                    gameData.energy = gameData.maxEnergy;
+                }
+                updateUI();
+                alert('⚡ Буст энергии активирован!');
+            }
+        }
+        
+        function buyCoinMultiplier() {
+            if (confirm('Купить Множитель Монет за 25 ⭐?')) {
+                gameData.multiplier += 0.5;
+                updateUI();
+                alert('💰 Множитель увеличен!');
+            }
+        }
+        
+        function buyAutoTap() {
+            if (confirm('Купить Авто Тап за 50 ⭐?')) {
+                let count = 0;
+                const interval = setInterval(() => {
+                    if (count < 30 && gameData.energy > 0) {
+                        handleTap();
+                        count++;
+                    } else {
+                        clearInterval(interval);
+                        alert('🤖 Авто тап завершен');
+                    }
+                }, 1000);
+                alert('🤖 Авто тап активирован!');
+            }
+        }
+        
+        setInterval(() => {
+            if (gameData.energy < gameData.maxEnergy) {
+                gameData.energy += 1;
+                updateUI();
+            }
+        }, 1000);
+        
+        document.getElementById('quantumCore').addEventListener('click', handleTap);
+        updateUI();
+        
+        alert('🎮 Добро пожаловать в Quantum Nexus!');
+    </script>
+</body>
+</html>
