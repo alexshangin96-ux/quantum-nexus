@@ -1,14 +1,13 @@
-
 // config/telegram.js
-export const telegramConfig = {
+module.exports = {
   // Bot Token
   botToken: '8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog',
   
   // WebApp URL
-  webAppUrl: process.env.WEBAPP_URL || 'https://your-domain.com/quantum-nexus.html',
+  webAppUrl: process.env.WEBAPP_URL || 'https://79.141.79.38',
   
   // Webhook URL
-  webhookUrl: process.env.WEBHOOK_URL || 'https://your-domain.com/webhook',
+  webhookUrl: process.env.WEBHOOK_URL || 'https://79.141.79.38/webhook',
   
   // Bot команды на русском
   botCommands: [
@@ -42,7 +41,7 @@ export const telegramConfig = {
   webAppSettings: {
     title: 'Quantum Nexus',
     description: 'Ультимативная Тапалка Революция',
-    photo: 'https://your-domain.com/quantum-nexus-preview.jpg',
+    photo: 'https://79.141.79.38/quantum-nexus-preview.jpg',
     text: '🎮 Играть в Quantum Nexus',
     buttonText: '🚀 Начать игру'
   },
@@ -86,8 +85,8 @@ export const telegramConfig = {
       purchases: 10, // Максимум покупок в минуту
       messages: 5 // Максимум сообщений в минуту
     }
-  }
-}
-
-// Экспорт для использования в других модулях
-export default telegramConfig
+  },
+  
+  // Временно отключаем проверку токена для тестирования
+  validateToken: false
+};
