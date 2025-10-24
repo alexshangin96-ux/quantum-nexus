@@ -106,7 +106,12 @@ app.post('/api/game/:userId/save', (req, res) => {
     }
 });
 
-// Тестовый endpoint
+// Главная страница
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Тестовая страница
 app.get('/test', (req, res) => {
     res.json({
         status: 'OK',
