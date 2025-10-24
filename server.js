@@ -1,90 +1,123 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Static files
 app.use(express.static('public'));
 
-// Game data storage
-const gameDataFile = 'gameData.json';
-let gameData = {};
+// Путь к файлу данных
+const gameDataPath = path.join(__dirname, 'gameData.json');
 
-// Load game data
-try {
-  if (fs.existsSync(gameDataFile)) {
-    const data = fs.readFileSync(gameDataFile, 'utf8');
-    gameData = JSON.parse(data);
-    console.log('Loaded game data:', gameData);
-  } else {
-    console.log('No game data file found, starting fresh');
-  }
-} catch (error) {
-  console.log('Error loading game data:', error);
-  gameData = {};
+// Функция для загрузки данных игры
+function loadGameData() {
+    try {
+        if (fs.existsSync(gameDataPath)) {
+            const data = fs.readFileSync(gameDataPath, 'utf8');
+            return JSON.parse(data);
+        }
+        return {};
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        return {};
+    }
 }
 
-// Save game data
-function saveGameData() {
-  try {
-    fs.writeFileSync(gameDataFile, JSON.stringify(gameData, null, 2));
-    console.log('Saved game data:', gameData);
-  } catch (error) {
-    console.log('Error saving game data:', error);
-  }
+// Функция для сохранения данных игры
+function saveGameData(data) {
+    try {
+        fs.writeFileSync(gameDataPath, JSON.stringify(data, null, 2));
+        console.log('Данные сохранены:', data);
+        return true;
+    } catch (error) {
+        console.error('Ошибка сохранения данных:', error);
+        return false;
+    }
 }
 
-// API для игры
-app.get('/api/game/:userId', (req, res) => {
-  const userId = req.params.userId;
-  if (!gameData[userId]) {
-    gameData[userId] = {
-      totalTaps: 0,
-      energy: 100,
-      coins: 0,
-      level: 1,
-      bitcoin: 0,
-      multiplier: 1,
-      maxEnergy: 100
-    };
-  }
-  console.log('Getting game data for user:', userId, gameData[userId]);
-  res.json({
-    success: true,
-    data: gameData[userId]
-  });
+// API для загрузки данных игры
+app.get('/api/game/:userId/load', (req, res) => {
+    const userId = req.params.userId;
+    console.log('Запрос на загрузку данных для пользователя:', userId);
+    
+    try {
+        const gameData = loadGameData();
+        const userData = gameData[userId];
+        
+        if (userData) {
+            console.log('Найдены данные для пользователя:', userId, userData);
+            res.json({
+                success: true,
+                gameData: userData
+            });
+        } else {
+            console.log('Данные не найдены для пользователя:', userId);
+            res.json({
+                success: true,
+                gameData: {
+                    totalTaps: 0,
+                    coins: 0,
+                    level: 1,
+                    bitcoin: 0,
+                    multiplier: 1,
+                    energy: 100,
+                    maxEnergy: 100
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка загрузки данных'
+        });
+    }
 });
 
-app.post('/api/game/:userId/save', express.json(), (req, res) => {
-  const userId = req.params.userId;
-  gameData[userId] = req.body;
-  console.log('Saving game data for user:', userId, req.body);
-  saveGameData();
-  res.json({ success: true });
+// API для сохранения данных игры
+app.post('/api/game/:userId/save', (req, res) => {
+    const userId = req.params.userId;
+    const userData = req.body;
+    
+    console.log('Запрос на сохранение данных для пользователя:', userId, userData);
+    
+    try {
+        const gameData = loadGameData();
+        gameData[userId] = userData;
+        
+        if (saveGameData(gameData)) {
+            console.log('Данные успешно сохранены для пользователя:', userId);
+            res.json({ success: true });
+        } else {
+            console.error('Ошибка сохранения данных для пользователя:', userId);
+            res.status(500).json({ success: false, error: 'Ошибка сохранения' });
+        }
+    } catch (error) {
+        console.error('Ошибка сохранения данных:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Ошибка сохранения данных'
+        });
+    }
 });
 
-// Главная страница
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Тестовая страница
+// Тестовый endpoint
 app.get('/test', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Quantum Nexus Server is running!',
-    timestamp: new Date().toISOString()
-  });
+    res.json({
+        status: 'OK',
+        message: 'Quantum Nexus Server is running!',
+        timestamp: new Date().toISOString()
+    });
 });
 
+// Запуск сервера
 app.listen(PORT, () => {
-  console.log('Quantum Nexus server running on port', PORT);
-  console.log('Game available at: http://localhost:' + PORT);
-  console.log('Test endpoint: http://localhost:' + PORT + '/test');
+    console.log('Quantum Nexus server running on port', PORT);
+    console.log('Game available at: http://localhost:' + PORT);
+    console.log('Test endpoint: http://localhost:' + PORT + '/test');
 });
