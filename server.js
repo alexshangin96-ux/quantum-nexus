@@ -19,16 +19,22 @@ let gameData = {};
 // Load game data
 try {
   if (fs.existsSync(gameDataFile)) {
-    gameData = JSON.parse(fs.readFileSync(gameDataFile, 'utf8'));
+    const data = fs.readFileSync(gameDataFile, 'utf8');
+    gameData = JSON.parse(data);
+    console.log('Loaded game data:', gameData);
+  } else {
+    console.log('No game data file found, starting fresh');
   }
 } catch (error) {
   console.log('Error loading game data:', error);
+  gameData = {};
 }
 
 // Save game data
 function saveGameData() {
   try {
     fs.writeFileSync(gameDataFile, JSON.stringify(gameData, null, 2));
+    console.log('Saved game data:', gameData);
   } catch (error) {
     console.log('Error saving game data:', error);
   }
@@ -48,6 +54,7 @@ app.get('/api/game/:userId', (req, res) => {
       maxEnergy: 100
     };
   }
+  console.log('Getting game data for user:', userId, gameData[userId]);
   res.json({
     success: true,
     data: gameData[userId]
@@ -57,8 +64,8 @@ app.get('/api/game/:userId', (req, res) => {
 app.post('/api/game/:userId/save', express.json(), (req, res) => {
   const userId = req.params.userId;
   gameData[userId] = req.body;
+  console.log('Saving game data for user:', userId, req.body);
   saveGameData();
-  console.log('Сохранение данных игрока:', userId);
   res.json({ success: true });
 });
 
