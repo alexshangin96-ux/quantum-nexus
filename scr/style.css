@@ -1,0 +1,286 @@
+/* Quantum Nexus Global Styles */
+:root {
+  --quantum-primary: #00ffff;
+  --quantum-secondary: #ff00ff;
+  --quantum-accent: #ffff00;
+  --quantum-dark: #0a0a0a;
+  --quantum-darker: #050505;
+  --quantum-blue: #1a1a2e;
+  --quantum-purple: #16213e;
+  --quantum-glow: rgba(0, 255, 255, 0.3);
+  --quantum-text: #ffffff;
+  --quantum-text-dim: #cccccc;
+  --quantum-success: #00ff88;
+  --quantum-warning: #ffaa00;
+  --quantum-error: #ff4444;
+  
+  /* Telegram theme colors */
+  --tg-theme-bg-color: #0a0a0a;
+  --tg-theme-text-color: #ffffff;
+  --tg-theme-hint-color: #cccccc;
+  --tg-theme-link-color: #00ffff;
+  --tg-theme-button-color: #00ffff;
+  --tg-theme-button-text-color: #000000;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, var(--quantum-dark) 0%, var(--quantum-blue) 50%, var(--quantum-purple) 100%);
+  color: var(--quantum-text);
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Quantum Effects */
+.quantum-glow {
+  box-shadow: 0 0 20px var(--quantum-glow);
+}
+
+.quantum-border {
+  border: 2px solid var(--quantum-primary);
+  border-radius: 12px;
+}
+
+.quantum-gradient {
+  background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary), var(--quantum-accent));
+  background-size: 200% 200%;
+  animation: quantum-shift 3s ease-in-out infinite;
+}
+
+@keyframes quantum-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Particle Effects */
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--quantum-primary);
+  border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+  50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+}
+
+/* Quantum Button Styles */
+.quantum-btn {
+  background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary));
+  border: none;
+  border-radius: 12px;
+  color: var(--quantum-dark);
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.quantum-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--quantum-glow);
+}
+
+.quantum-btn:active {
+  transform: translateY(0);
+}
+
+.quantum-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.quantum-btn:hover::before {
+  left: 100%;
+}
+
+/* Quantum Card Styles */
+.quantum-card {
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 10px;
+  transition: all 0.3s ease;
+}
+
+.quantum-card:hover {
+  border-color: var(--quantum-primary);
+  box-shadow: 0 0 20px var(--quantum-glow);
+}
+
+/* Quantum Text Styles */
+.quantum-text {
+  color: var(--quantum-primary);
+  font-weight: 600;
+}
+
+.quantum-text-glow {
+  color: var(--quantum-primary);
+  text-shadow: 0 0 10px var(--quantum-glow);
+}
+
+.quantum-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, var(--quantum-primary), var(--quantum-secondary), var(--quantum-accent));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Quantum Animations */
+@keyframes quantum-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes quantum-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes quantum-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+.quantum-rotate {
+  animation: quantum-rotate 3s linear infinite;
+}
+
+.quantum-bounce {
+  animation: quantum-bounce 1s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .quantum-title {
+    font-size: 1.5rem;
+  }
+  
+  .quantum-btn {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+  
+  .quantum-card {
+    padding: 15px;
+    margin: 5px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--quantum-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--quantum-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--quantum-secondary);
+}
+
+/* Loading Animation */
+.quantum-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 255, 255, 0.3);
+  border-top: 3px solid var(--quantum-primary);
+  border-radius: 50%;
+  animation: quantum-rotate 1s linear infinite;
+}
+
+/* Success/Error States */
+.success {
+  color: var(--quantum-success);
+}
+
+.warning {
+  color: var(--quantum-warning);
+}
+
+.error {
+  color: var(--quantum-error);
+}
+
+/* Quantum Grid */
+.quantum-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Quantum Flex */
+.quantum-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.quantum-flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Quantum Spacing */
+.quantum-mb { margin-bottom: 20px; }
+.quantum-mt { margin-top: 20px; }
+.quantum-p { padding: 20px; }
+.quantum-p-sm { padding: 10px; }
