@@ -121,6 +121,37 @@
             maxEnergy: 100
         };
         
+        const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+        
+        // Load game data from server
+        async function loadGameData() {
+            try {
+                const response = await fetch(`/api/game/${userId}`);
+                const result = await response.json();
+                if (result.success) {
+                    gameData = result.data;
+                    updateUI();
+                }
+            } catch (error) {
+                console.log('Error loading game data:', error);
+            }
+        }
+        
+        // Save game data to server
+        async function saveGameData() {
+            try {
+                await fetch(`/api/game/${userId}/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(gameData)
+                });
+            } catch (error) {
+                console.log('Error saving game data:', error);
+            }
+        }
+        
         function updateUI() {
             document.getElementById('totalTaps').textContent = gameData.totalTaps;
             document.getElementById('coins').textContent = gameData.coins;
@@ -152,6 +183,7 @@
             }
             
             updateUI();
+            saveGameData();
         }
         
         function buyEnergyBoost() {
@@ -161,6 +193,7 @@
                     gameData.energy = gameData.maxEnergy;
                 }
                 updateUI();
+                saveGameData();
                 alert('⚡ Буст энергии активирован!');
             }
         }
@@ -169,6 +202,7 @@
             if (confirm('Купить Множитель Монет за 25 ⭐?')) {
                 gameData.multiplier += 0.5;
                 updateUI();
+                saveGameData();
                 alert('💰 Множитель увеличен!');
             }
         }
@@ -193,13 +227,17 @@
             if (gameData.energy < gameData.maxEnergy) {
                 gameData.energy += 1;
                 updateUI();
+                saveGameData();
             }
         }, 1000);
         
         document.getElementById('quantumCore').addEventListener('click', handleTap);
-        updateUI();
+        
+        // Load game data on page load
+        loadGameData();
         
         alert('🎮 Добро пожаловать в Quantum Nexus!');
     </script>
 </body>
 </html>
+
