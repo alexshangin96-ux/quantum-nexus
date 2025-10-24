@@ -1,0 +1,37 @@
+{
+  "name": "quantum-nexus",
+  "version": "1.0.0",
+  "description": "The most advanced Telegram tap game with quantum mechanics, investments, and real money withdrawal",
+  "keywords": [
+    "telegram",
+    "tap-game",
+    "vue3",
+    "typescript",
+    "quantum",
+    "investment",
+    "cryptocurrency",
+    "webapp",
+    "game",
+    "mobile"
+  ],
+  "author": "Quantum Nexus Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/quantum-nexus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/quantum-nexus/issues"
+  },
+  "homepage": "https://your-domain.com",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

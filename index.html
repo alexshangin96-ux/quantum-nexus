@@ -1,447 +1,83 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Nexus - Квантовая Игра</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/quantum-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantum Nexus - Advanced Tap Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-
-        .game-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .login-form {
-            display: block;
-        }
-
-        .game-content {
-            display: none;
-        }
-
-        .login-form h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .login-form input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 16px;
-            backdrop-filter: blur(5px);
-        }
-
-        .login-form input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .login-form button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .login-form button:hover {
-            transform: scale(1.05);
-        }
-
-        .game-title {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .user-info {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .user-info h3 {
-            color: #4ecdc4;
-            margin-bottom: 10px;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            backdrop-filter: blur(5px);
-        }
-
-        .stat-item h3 {
-            color: #ff6b6b;
-            margin-bottom: 5px;
-        }
-
-        .stat-item .value {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .tap-button {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 20px 0;
-            transition: all 0.2s;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .tap-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .tap-button:active {
-            transform: scale(0.95);
-        }
-
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            color: white;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .energy-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .energy-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
-            transition: width 0.3s;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .loading {
-            color: #4ecdc4;
-            font-size: 14px;
-            margin-top: 10px;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        overflow-x: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+      
+      #app {
+        min-height: 100vh;
+        position: relative;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        color: #00ffff;
+      }
+      
+      .quantum-loader {
+        width: 80px;
+        height: 80px;
+        border: 3px solid rgba(0, 255, 255, 0.3);
+        border-top: 3px solid #00ffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+      }
     </style>
-</head>
-<body>
-    <div class="game-container">
-        <!-- Форма входа -->
-        <div class="login-form" id="loginForm">
-            <h1>🚀 Quantum Nexus</h1>
-            <p>Введите ваше имя для входа в игру:</p>
-            <input type="text" id="usernameInput" placeholder="Ваше имя" maxlength="20">
-            <button onclick="login()">Войти в игру</button>
-        </div>
-
-        <!-- Игровой контент -->
-        <div class="game-content" id="gameContent">
-            <h1 class="game-title">🚀 Quantum Nexus</h1>
-            
-            <div class="user-info">
-                <h3>👤 Игрок: <span id="currentUser"></span></h3>
-            </div>
-
-            <div class="stats">
-                <div class="stat-item">
-                    <h3>💰 Монеты</h3>
-                    <div class="value" id="coins">0</div>
-                </div>
-                <div class="stat-item">
-                    <h3>📈 Уровень</h3>
-                    <div class="value" id="level">1</div>
-                </div>
-                <div class="stat-item">
-                    <h3>₿ Bitcoin</h3>
-                    <div class="value" id="bitcoin">0</div>
-                </div>
-                <div class="stat-item">
-                    <h3>⚡ Множитель</h3>
-                    <div class="value" id="multiplier">1x</div>
-                </div>
-            </div>
-
-            <div class="energy-bar">
-                <div class="energy-fill" id="energyFill"></div>
-            </div>
-            <p>⚡ Энергия: <span id="energy">100</span>/<span id="maxEnergy">100</span></p>
-
-            <button class="tap-button" id="tapButton" onclick="tap()">
-                🎯 ТАП
-            </button>
-
-            <button class="logout-btn" onclick="logout()">Выйти</button>
-        </div>
+  </head>
+  <body>
+    <div id="app">
+      <div class="loading-screen">
+        <div class="quantum-loader"></div>
+        <div class="loading-text">Initializing Quantum Nexus...</div>
+      </div>
     </div>
-
-    <div class="notification" id="notification"></div>
-
-    <script>
-        let gameData = {
-            totalTaps: 0,
-            coins: 0,
-            level: 1,
-            bitcoin: 0,
-            multiplier: 1,
-            energy: 100,
-            maxEnergy: 100
-        };
-
-        let currentUser = null;
-        let isLoggedIn = false;
-
-        // Проверяем, есть ли сохраненный пользователь
-        function checkSavedUser() {
-            const savedUser = localStorage.getItem('quantum_nexus_user');
-            if (savedUser) {
-                currentUser = savedUser;
-                isLoggedIn = true;
-                showGameContent();
-                loadGameData();
-            }
-        }
-
-        // Вход в игру
-        async function login() {
-            const username = document.getElementById('usernameInput').value.trim();
-            if (!username) {
-                showNotification('Введите имя пользователя!');
-                return;
-            }
-            
-            currentUser = username;
-            isLoggedIn = true;
-            localStorage.setItem('quantum_nexus_user', username);
-            showGameContent();
-            await loadGameData();
-        }
-
-        // Выход из игры
-        function logout() {
-            currentUser = null;
-            isLoggedIn = false;
-            localStorage.removeItem('quantum_nexus_user');
-            showLoginForm();
-        }
-
-        // Показать форму входа
-        function showLoginForm() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('gameContent').style.display = 'none';
-        }
-
-        // Показать игровой контент
-        function showGameContent() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('gameContent').style.display = 'block';
-            document.getElementById('currentUser').textContent = currentUser;
-        }
-
-        // Загрузить данные игры
-        async function loadGameData() {
-            if (!currentUser) return;
-            
-            try {
-                console.log('Загружаем данные для пользователя:', currentUser);
-                const response = await fetch(`/api/game/${currentUser}/load`);
-                console.log('Ответ сервера:', response.status);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Данные с сервера:', data);
-                    
-                    if (data.success && data.gameData) {
-                        gameData = data.gameData;
-                        console.log('Загружены данные:', gameData);
-                        updateUI();
-                        showNotification('Данные загружены!');
-                    } else {
-                        console.log('Нет данных на сервере, используем значения по умолчанию');
-                        updateUI();
-                    }
-                } else {
-                    console.log('Ошибка загрузки данных, используем значения по умолчанию');
-                    updateUI();
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки данных:', error);
-                updateUI();
-            }
-        }
-
-        // Сохранить данные игры
-        async function saveGameData() {
-            if (!currentUser) return;
-            
-            try {
-                const response = await fetch(`/api/game/${currentUser}/save`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(gameData)
-                });
-                
-                if (!response.ok) {
-                    console.error('Ошибка сохранения данных');
-                } else {
-                    console.log('Данные сохранены для пользователя:', currentUser);
-                }
-            } catch (error) {
-                console.error('Ошибка сохранения данных:', error);
-            }
-        }
-
-        // Тап по кнопке
-        function tap() {
-            if (gameData.energy <= 0) {
-                showNotification('Недостаточно энергии!');
-                return;
-            }
-
-            gameData.totalTaps++;
-            gameData.coins += gameData.multiplier;
-            gameData.energy--;
-
-            // Проверка уровня
-            const newLevel = Math.floor(gameData.totalTaps / 100) + 1;
-            if (newLevel > gameData.level) {
-                gameData.level = newLevel;
-                gameData.multiplier += 0.1;
-                gameData.maxEnergy += 10;
-                gameData.energy = gameData.maxEnergy;
-                showNotification(`🎉 Новый уровень ${gameData.level}!`);
-            }
-
-            // Проверка Bitcoin
-            if (gameData.totalTaps % 1000 === 0) {
-                gameData.bitcoin += 0.001;
-                showNotification('₿ Получен Bitcoin!');
-            }
-
-            updateUI();
-            saveGameData();
-        }
-
-        // Обновить интерфейс
-        function updateUI() {
-            document.getElementById('coins').textContent = Math.floor(gameData.coins);
-            document.getElementById('level').textContent = gameData.level;
-            document.getElementById('bitcoin').textContent = gameData.bitcoin.toFixed(3);
-            document.getElementById('multiplier').textContent = gameData.multiplier.toFixed(1) + 'x';
-            document.getElementById('energy').textContent = gameData.energy;
-            document.getElementById('maxEnergy').textContent = gameData.maxEnergy;
-            
-            const energyPercent = (gameData.energy / gameData.maxEnergy) * 100;
-            document.getElementById('energyFill').style.width = energyPercent + '%';
-        }
-
-        // Показать уведомление
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // Восстановление энергии
-        setInterval(() => {
-            if (gameData.energy < gameData.maxEnergy) {
-                gameData.energy++;
-                updateUI();
-                saveGameData();
-            }
-        }, 5000);
-
-        // Инициализация
-        checkSavedUser();
-    </script>
-</body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
