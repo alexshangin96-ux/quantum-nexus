@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -11,32 +12,62 @@ app.use(express.json());
 // Static files
 app.use(express.static('public'));
 
-// Game API
+// Game data storage
+const gameDataFile = 'gameData.json';
+let gameData = {};
+
+// Load game data
+try {
+  if (fs.existsSync(gameDataFile)) {
+    gameData = JSON.parse(fs.readFileSync(gameDataFile, 'utf8'));
+  }
+} catch (error) {
+  console.log('Error loading game data:', error);
+}
+
+// Save game data
+function saveGameData() {
+  try {
+    fs.writeFileSync(gameDataFile, JSON.stringify(gameData, null, 2));
+  } catch (error) {
+    console.log('Error saving game data:', error);
+  }
+}
+
+// API для игры
 app.get('/api/game/:userId', (req, res) => {
-  res.json({
-    success: true,
-    data: {
+  const userId = req.params.userId;
+  if (!gameData[userId]) {
+    gameData[userId] = {
       totalTaps: 0,
       energy: 100,
       coins: 0,
       level: 1,
       bitcoin: 0,
-      multiplier: 1
-    }
+      multiplier: 1,
+      maxEnergy: 100
+    };
+  }
+  res.json({
+    success: true,
+    data: gameData[userId]
   });
 });
 
 app.post('/api/game/:userId/save', express.json(), (req, res) => {
-  console.log('Saving player data:', req.params.userId);
+  const userId = req.params.userId;
+  gameData[userId] = req.body;
+  saveGameData();
+  console.log('Сохранение данных игрока:', userId);
   res.json({ success: true });
 });
 
-// Main page
+// Главная страница
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Test page
+// Тестовая страница
 app.get('/test', (req, res) => {
   res.json({ 
     status: 'OK', 
