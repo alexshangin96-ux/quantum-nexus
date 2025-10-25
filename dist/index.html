@@ -1,0 +1,144 @@
+# Создать папку dist
+mkdir -p dist
+
+# Создать index.html с CDN
+cat > dist/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+    <script src="https://unpkg.com/pinia@2/dist/pinia.iife.js"></script>
+    <script src="https://unpkg.com/dayjs@1/dist/dayjs.min.js"></script>
+    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #00ffff;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+        .quantum-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ffff, #0080ff, #8000ff);
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+            text-shadow: 0 0 10px #00ffff;
+            box-shadow: 0 0 30px #00ffff;
+            transition: all 0.3s ease;
+        }
+        .quantum-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px #00ffff;
+        }
+        .quantum-button:active {
+            transform: scale(0.95);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .stat {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1 style="text-align: center; margin: 20px 0;">⚛️ Quantum Nexus</h1>
+        
+        <div class="stats">
+            <div class="stat">💰 Квантум Монеты: {{ quantumCoins }}</div>
+            <div class="stat">⭐ EXP: {{ exp }}</div>
+            <div class="stat">📈 Уровень: {{ level }}</div>
+        </div>
+        
+        <div style="text-align: center; margin: 40px 0;">
+            <button class="quantum-button" @click="tap">
+                🎮 ТАП!
+            </button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">💎 Тапов: {{ taps }}</div>
+            <div class="stat">⚡ Монет за тап: {{ coinsPerTap }}</div>
+            <div class="stat">🔄 EXP за тап: {{ expPerTap }}</div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <button @click="buyUpgrade" :disabled="quantumCoins < upgradeCost" 
+                    style="padding: 10px 20px; margin: 5px; background: #00ffff; color: black; border: none; border-radius: 5px; cursor: pointer;">
+                🚀 Улучшить (+1 монета за тап) - {{ upgradeCost }} монет
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+        const { createPinia } = Pinia;
+        
+        const app = createApp({
+            setup() {
+                const quantumCoins = ref(0);
+                const exp = ref(0);
+                const level = ref(1);
+                const taps = ref(0);
+                const coinsPerTap = ref(1);
+                const expPerTap = ref(1);
+                const upgradeCost = ref(10);
+                
+                const tap = () => {
+                    quantumCoins.value += coinsPerTap.value;
+                    exp.value += expPerTap.value;
+                    taps.value++;
+                    
+                    // Анимация кнопки
+                    const button = document.querySelector('.quantum-button');
+                    button.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        button.style.transform = 'scale(1)';
+                    }, 100);
+                };
+                
+                const buyUpgrade = () => {
+                    if (quantumCoins.value >= upgradeCost.value) {
+                        quantumCoins.value -= upgradeCost.value;
+                        coinsPerTap.value++;
+                        upgradeCost.value = Math.floor(upgradeCost.value * 1.5);
+                    }
+                };
+                
+                return {
+                    quantumCoins,
+                    exp,
+                    level,
+                    taps,
+                    coinsPerTap,
+                    expPerTap,
+                    upgradeCost,
+                    tap,
+                    buyUpgrade
+                };
+            }
+        });
+        
+        app.use(createPinia());
+        app.mount('#app');
+    </script>
+</body>
+</html>
+EOF
