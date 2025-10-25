@@ -41,12 +41,12 @@ const telegramStore = useTelegramStore()
 const user = computed(() => telegramStore.user)
 
 const navItems = [
-  { name: 'game', path: '/', icon: '🎮', label: 'Game' },
-  { name: 'investment', path: '/investment', icon: '🏢', label: 'Invest' },
-  { name: 'shop', path: '/shop', icon: '🛒', label: 'Shop' },
-  { name: 'daily', path: '/daily', icon: '📅', label: 'Daily' },
-  { name: 'ranking', path: '/ranking', icon: '🏆', label: 'Rank' },
-  { name: 'profile', path: '/profile', icon: '👤', label: 'Profile' }
+  { name: 'game', path: '/', icon: '🎮', label: 'Игра' },
+  { name: 'investment', path: '/investment', icon: '🏢', label: 'Инвестиции' },
+  { name: 'shop', path: '/shop', icon: '🛒', label: 'Магазин' },
+  { name: 'daily', path: '/daily', icon: '📅', label: 'Ежедневно' },
+  { name: 'ranking', path: '/ranking', icon: '🏆', label: 'Рейтинг' },
+  { name: 'profile', path: '/profile', icon: '👤', label: 'Профиль' }
 ]
 </script>
 
