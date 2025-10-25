@@ -10,80 +10,227 @@
     <script src="https://unpkg.com/dayjs@1/dist/dayjs.min.js"></script>
     <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
             color: #00ffff;
             font-family: 'Arial', sans-serif;
+            min-height: 100vh;
             overflow-x: hidden;
         }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #80ffff;
+            margin-top: 5px;
+        }
+        
+        .tap-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
         .quantum-button {
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #00ffff, #0080ff, #8000ff);
+            background: linear-gradient(45deg, #00ffff, #0080ff, #8000ff, #ff0080);
+            background-size: 400% 400%;
             border: none;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 28px;
             color: white;
-            text-shadow: 0 0 10px #00ffff;
-            box-shadow: 0 0 30px #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+            box-shadow: 0 0 40px #00ffff;
             transition: all 0.3s ease;
+            animation: gradientShift 3s ease infinite;
+            position: relative;
+            overflow: hidden;
         }
+        
         .quantum-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px #00ffff;
+            transform: scale(1.05);
+            box-shadow: 0 0 60px #00ffff;
         }
+        
         .quantum-button:active {
             transform: scale(0.95);
         }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            font-size: 18px;
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .stat {
-            background: rgba(0, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid #00ffff;
+        
+        .upgrade-section {
+            margin-top: 30px;
+        }
+        
+        .upgrade-button {
+            padding: 15px 30px;
+            margin: 10px;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .upgrade-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+        }
+        
+        .upgrade-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <h1 style="text-align: center; margin: 20px 0;">⚛️ Quantum Nexus</h1>
-        
-        <div class="stats">
-            <div class="stat">💰 Квантум Монеты: {{ quantumCoins }}</div>
-            <div class="stat">⭐ EXP: {{ exp }}</div>
-            <div class="stat">📈 Уровень: {{ level }}</div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>⚛️ Quantum Nexus</h1>
+            <p>Самая продвинутая квантумная тапалка!</p>
         </div>
         
-        <div style="text-align: center; margin: 40px 0;">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ quantumCoins }}</div>
+                <div class="stat-label">💰 Квантум Монеты</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ exp }}</div>
+                <div class="stat-label">⭐ EXP</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ level }}</div>
+                <div class="stat-label">📈 Уровень</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ taps }}</div>
+                <div class="stat-label">💎 Тапов</div>
+            </div>
+        </div>
+        
+        <div class="tap-section">
             <button class="quantum-button" @click="tap">
                 🎮 ТАП!
             </button>
+            <div style="margin-top: 20px;">
+                <div class="stat-card" style="display: inline-block; margin: 10px;">
+                    <div class="stat-value">{{ coinsPerTap }}</div>
+                    <div class="stat-label">⚡ Монет за тап</div>
+                </div>
+                <div class="stat-card" style="display: inline-block; margin: 10px;">
+                    <div class="stat-value">{{ expPerTap }}</div>
+                    <div class="stat-label">🔄 EXP за тап</div>
+                </div>
+            </div>
         </div>
         
-        <div class="stats">
-            <div class="stat">💎 Тапов: {{ taps }}</div>
-            <div class="stat">⚡ Монет за тап: {{ coinsPerTap }}</div>
-            <div class="stat">🔄 EXP за тап: {{ expPerTap }}</div>
-        </div>
-        
-        <div style="text-align: center; margin: 20px 0;">
-            <button @click="buyUpgrade" :disabled="quantumCoins < upgradeCost" 
-                    style="padding: 10px 20px; margin: 5px; background: #00ffff; color: black; border: none; border-radius: 5px; cursor: pointer;">
+        <div class="upgrade-section">
+            <button class="upgrade-button" @click="buyUpgrade" :disabled="quantumCoins < upgradeCost">
                 🚀 Улучшить (+1 монета за тап) - {{ upgradeCost }} монет
+            </button>
+            <button class="upgrade-button" @click="buyExpUpgrade" :disabled="quantumCoins < expUpgradeCost">
+                ⭐ Улучшить EXP (+1 за тап) - {{ expUpgradeCost }} монет
             </button>
         </div>
     </div>
 
     <script>
-        const { createApp, ref, computed } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
         const { createPinia } = Pinia;
         
         const app = createApp({
@@ -95,6 +242,7 @@
                 const coinsPerTap = ref(1);
                 const expPerTap = ref(1);
                 const upgradeCost = ref(10);
+                const expUpgradeCost = ref(50);
                 
                 const tap = () => {
                     quantumCoins.value += coinsPerTap.value;
@@ -107,6 +255,9 @@
                     setTimeout(() => {
                         button.style.transform = 'scale(1)';
                     }, 100);
+                    
+                    // Создать частицы
+                    createParticles();
                 };
                 
                 const buyUpgrade = () => {
@@ -117,6 +268,36 @@
                     }
                 };
                 
+                const buyExpUpgrade = () => {
+                    if (quantumCoins.value >= expUpgradeCost.value) {
+                        quantumCoins.value -= expUpgradeCost.value;
+                        expPerTap.value++;
+                        expUpgradeCost.value = Math.floor(expUpgradeCost.value * 1.5);
+                    }
+                };
+                
+                const createParticles = () => {
+                    const particlesContainer = document.getElementById('particles');
+                    for (let i = 0; i < 5; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = Math.random() * 100 + '%';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+                        particlesContainer.appendChild(particle);
+                        
+                        setTimeout(() => {
+                            particle.remove();
+                        }, 6000);
+                    }
+                };
+                
+                onMounted(() => {
+                    // Создать фоновые частицы
+                    setInterval(() => {
+                        createParticles();
+                    }, 2000);
+                });
+                
                 return {
                     quantumCoins,
                     exp,
@@ -125,8 +306,10 @@
                     coinsPerTap,
                     expPerTap,
                     upgradeCost,
+                    expUpgradeCost,
                     tap,
-                    buyUpgrade
+                    buyUpgrade,
+                    buyExpUpgrade
                 };
             }
         });
