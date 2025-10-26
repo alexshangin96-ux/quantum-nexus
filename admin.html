@@ -7,171 +7,255 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #667eea; --secondary: #764ba2; --accent: #f093fb;
-            --danger: #ef4444; --success: #4ade80; --warning: #fbbf24;
-            --dark: #0f172a; --darker: #0a0e27;
-            --card: rgba(15, 23, 42, 0.95); --border: rgba(102, 126, 234, 0.3);
+            --primary: #6366f1; --secondary: #8b5cf6; --accent: #a78bfa;
+            --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+            --dark: #1e293b; --darker: #0f172a;
+            --card: rgba(30, 41, 59, 0.6); --border: rgba(99, 102, 241, 0.2);
+            --glass: rgba(255, 255, 255, 0.05);
         }
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: #fff; min-height: 100vh; padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0; min-height: 100vh; padding: 20px;
+            overflow-x: hidden;
         }
-        .particles {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; opacity: 0.3;
+        @keyframes particle {
+            0%,100% { transform: translate(0,0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translate(30px,-40px) rotate(180deg); opacity: 0.8; }
         }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.4; }
         .particle {
-            position: absolute; width: 3px; height: 3px;
-            background: var(--primary); border-radius: 50%; animation: float 15s infinite;
+            position: absolute; width: 2px; height: 2px; background: var(--primary);
+            border-radius: 50%; animation: particle 12s infinite;
+            box-shadow: 0 0 6px var(--primary);
         }
-        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; } }
-        .container { max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
+        .container { max-width: 1700px; margin: 0 auto; position: relative; z-index: 1; }
+        
         .login-container {
-            max-width: 400px; margin: 60px auto; background: var(--card);
-            border: 1px solid var(--border); border-radius: 16px; padding: 30px;
-            animation: slideIn 0.3s;
+            max-width: 420px; margin: 100px auto; background: var(--card);
+            backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 24px; padding: 50px 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s;
         }
-        .login-title { font-size: 32px; text-align: center; margin-bottom: 25px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .login-title {
+            font-size: 32px; text-align: center; margin-bottom: 30px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; opacity: 0.8; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1; }
         .form-group input {
-            width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.08);
-            border: 1px solid var(--border); border-radius: 10px; color: white;
-            font-size: 14px; transition: all 0.2s;
+            width: 100%; padding: 14px 18px; background: var(--glass);
+            border: 1px solid var(--border); border-radius: 14px; color: #fff;
+            font-size: 15px; transition: all 0.3s;
         }
-        .form-group input:focus { outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        .form-group input:focus {
+            outline: none; border-color: var(--primary); background: rgba(99,102,241,0.1);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
         }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px;
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            color: white; font-weight: 600; cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(99,102,241,0.4); }
+        
         .header {
-            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-            padding: 20px 25px; margin-bottom: 15px; display: flex;
-            justify-content: space-between; align-items: center;
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 20px; padding: 24px 32px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            animation: slideUp 0.3s;
         }
-        .header h1 { font-size: 24px; margin: 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .header h1 { font-size: 28px; margin: 0;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 700;
         }
-        .header-right { display: flex; gap: 10px; }
-        .header-btn { padding: 8px 16px; background: rgba(255,255,255,0.08);
-            border: 1px solid var(--border); border-radius: 8px; color: white;
-            cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s;
+        .header-right { display: flex; gap: 12px; }
+        .header-btn {
+            padding: 10px 20px; background: var(--glass); border: 1px solid var(--border);
+            border-radius: 12px; color: #cbd5e1; cursor: pointer; font-size: 14px;
+            font-weight: 600; transition: all 0.3s;
         }
-        .header-btn:hover { background: rgba(102,126,234,0.2); }
+        .header-btn:hover {
+            background: rgba(99,102,241,0.15); border-color: var(--primary); color: #fff;
+            transform: translateY(-2px);
+        }
+        
         .stats-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px; margin-bottom: 15px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px; margin-bottom: 20px;
         }
         .stat-card {
-            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-            padding: 16px; text-align: center; transition: all 0.2s;
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px; text-align: center; transition: all 0.3s;
+            cursor: pointer;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary); }
-        .stat-icon { font-size: 28px; margin-bottom: 8px; }
-        .stat-label { font-size: 11px; opacity: 0.7; margin-bottom: 6px; text-transform: uppercase; }
-        .stat-value { font-size: 24px; font-weight: bold;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .stat-card:hover {
+            transform: translateY(-4px); border-color: var(--primary);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.2);
+            background: rgba(99,102,241,0.1);
+        }
+        .stat-icon { font-size: 32px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(99,102,241,0.5)); }
+        .stat-label { font-size: 11px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase;
+            letter-spacing: 0.5px; font-weight: 600;
+        }
+        .stat-value {
+            font-size: 28px; font-weight: 800;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        
         .tabs-container {
-            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-            padding: 6px; margin-bottom: 15px; display: flex; gap: 6px; flex-wrap: wrap;
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 16px; padding: 8px; margin-bottom: 20px;
+            display: flex; gap: 8px; flex-wrap: wrap;
         }
         .tab-btn {
-            padding: 8px 16px; background: transparent; border: 1px solid transparent;
-            border-radius: 8px; color: white; cursor: pointer; font-size: 13px;
-            font-weight: 600; transition: all 0.2s;
+            padding: 12px 24px; background: transparent; border: none; border-radius: 12px;
+            color: #cbd5e1; cursor: pointer; font-size: 14px; font-weight: 600;
+            transition: all 0.3s;
         }
-        .tab-btn:hover { background: rgba(102,126,234,0.1); }
-        .tab-btn.active { background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: transparent;
+        .tab-btn:hover { background: rgba(99,102,241,0.1); color: #fff; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff; box-shadow: 0 4px 15px rgba(99,102,241,0.3);
         }
+        
         .content-area {
-            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-            padding: 20px; min-height: 500px;
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 20px; padding: 28px; min-height: 650px;
+            animation: slideUp 0.3s;
         }
-        .search-container { margin-bottom: 15px; position: relative; }
+        
+        .search-container { margin-bottom: 20px; position: relative; }
         .search-input {
-            width: 100%; padding: 10px 40px 10px 14px; background: rgba(255,255,255,0.06);
-            border: 1px solid var(--border); border-radius: 10px; color: white;
-            font-size: 14px; transition: all 0.2s;
+            width: 100%; padding: 14px 45px 14px 18px; background: var(--glass);
+            border: 1px solid var(--border); border-radius: 14px; color: white;
+            font-size: 15px; transition: all 0.3s;
         }
-        .search-input:focus { outline: none; border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        .search-input:focus {
+            outline: none; border-color: var(--primary); background: rgba(99,102,241,0.1);
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
         }
-        .users-grid { display: grid; gap: 12px; }
+        
+        .users-grid { display: grid; gap: 16px; }
         .user-card {
-            background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08));
-            border: 1px solid var(--border); border-radius: 12px; padding: 14px;
-            transition: all 0.2s;
+            background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08));
+            backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px; transition: all 0.3s; position: relative; overflow: hidden;
         }
-        .user-card:hover { transform: translateX(4px); border-color: var(--primary); }
+        .user-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.1), transparent);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .user-card:hover::before { opacity: 1; }
+        .user-card:hover {
+            transform: translateX(5px); border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(99,102,241,0.2);
+        }
         .user-header {
             display: flex; justify-content: space-between; align-items: flex-start;
-            margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+            margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+            position: relative; z-index: 1;
         }
-        .user-info h3 { font-size: 16px; margin-bottom: 4px; }
-        .user-id { font-size: 11px; opacity: 0.6; }
-        .user-badges { display: flex; gap: 6px; }
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; }
-        .badge-banned { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid #ef4444; }
-        .badge-frozen { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid #fbbf24; }
+        .user-info h3 { font-size: 18px; margin-bottom: 6px; color: #fff; font-weight: 700; }
+        .user-id { font-size: 12px; color: #94a3b8; }
+        .user-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px; border-radius: 16px; font-size: 11px; font-weight: 600;
+            border: 1px solid;
+        }
+        .badge-banned { background: rgba(239,68,68,0.15); color: #ef4444; border-color: #ef4444; }
+        .badge-frozen { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: #f59e0b; }
+        
         .stats-grid-mini {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;
+            position: relative; z-index: 1;
         }
         .stat-item {
-            background: rgba(102,126,234,0.1); padding: 10px; border-radius: 8px;
-            border: 1px solid rgba(102,126,234,0.2);
+            background: rgba(99,102,241,0.08); backdrop-filter: blur(10px);
+            padding: 14px; border-radius: 12px; border: 1px solid rgba(99,102,241,0.2);
+            transition: all 0.3s;
         }
-        .stat-label-small { font-size: 9px; opacity: 0.7; margin-bottom: 4px; text-transform: uppercase; }
-        .stat-value-small { font-size: 16px; font-weight: bold; color: var(--accent); }
-        .actions-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .stat-item:hover { background: rgba(99,102,241,0.15); transform: translateY(-2px); }
+        .stat-label-small { font-size: 10px; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase;
+            letter-spacing: 0.5px; font-weight: 600;
+        }
+        .stat-value-small { font-size: 20px; font-weight: 800; color: #a78bfa; }
+        
+        .actions-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+            position: relative; z-index: 1;
+        }
         .action-btn {
-            padding: 8px; border-radius: 8px; border: none; cursor: pointer;
-            font-weight: bold; transition: all 0.2s; color: white; font-size: 11px;
+            padding: 10px 8px; border-radius: 10px; border: none; cursor: pointer;
+            font-weight: 700; transition: all 0.3s; color: white; font-size: 12px;
+            position: relative; overflow: hidden;
         }
-        .action-btn:hover { transform: translateY(-2px); }
-        .btn-add { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-        .btn-remove { background: linear-gradient(135deg, rgba(239,68,68,0.8), rgba(220,38,38,0.8)); }
-        .btn-status { background: linear-gradient(135deg, rgba(251,191,36,0.8), rgba(234,179,8,0.8)); }
-        .btn-success { background: linear-gradient(135deg, rgba(76,222,128,0.8), rgba(34,197,94,0.8)); }
-        .btn-reset { background: linear-gradient(135deg, rgba(239,68,68,0.7), rgba(220,38,38,0.7));
-            width: 100%; margin-top: 8px;
+        .action-btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+            border-radius: 50%; background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s;
         }
+        .action-btn:hover::before { width: 200px; height: 200px; }
+        .action-btn:hover { transform: translateY(-3px); }
+        .btn-add { background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+        }
+        .btn-remove { background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 15px rgba(239,68,68,0.3);
+        }
+        .btn-status { background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+        }
+        .btn-success { background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+        }
+        .btn-reset {
+            background: linear-gradient(135deg, rgba(239,68,68,0.7), rgba(220,38,38,0.7));
+            width: 100%; margin-top: 12px; grid-column: 1/-1;
+        }
+        
         .notification {
-            position: fixed; top: 20px; right: 20px; background: var(--card);
-            border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideIn 0.3s;
-            z-index: 99999; max-width: 350px; font-size: 13px;
+            position: fixed; top: 24px; right: 24px; background: var(--card);
+            backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 16px;
+            padding: 16px 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            animation: slideUp 0.3s; z-index: 99999; max-width: 350px; font-size: 14px;
+            font-weight: 600;
         }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center;
+        .notification.success { border-left: 4px solid var(--success); }
+        .notification.error { border-left: 4px solid var(--danger); }
+        .notification.info { border-left: 4px solid var(--primary); }
+        
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 100000;
+            align-items: center; justify-content: center;
         }
-        .modal.active { display: flex; animation: slideIn 0.2s; }
+        .modal.active { display: flex; animation: slideUp 0.2s; }
         .modal-content {
-            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-            padding: 24px; max-width: 500px; width: 90%;
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 20px; padding: 28px; max-width: 450px; width: 90%;
         }
-        .modal-title { font-size: 18px; margin-bottom: 16px; font-weight: bold; }
+        .modal-title { font-size: 20px; margin-bottom: 20px; font-weight: 700; }
         .modal-input {
-            width: 100%; padding: 10px; background: rgba(255,255,255,0.08);
-            border: 1px solid var(--border); border-radius: 8px; color: white; margin-bottom: 12px;
+            width: 100%; padding: 14px; background: var(--glass); border: 1px solid var(--border);
+            border-radius: 12px; color: white; font-size: 15px; margin-bottom: 16px;
         }
-        .modal-actions { display: flex; gap: 10px; }
-        .btn-modal { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; }
+        .modal-actions { display: flex; gap: 12px; }
+        .btn-modal { flex: 1; padding: 12px; border: none; border-radius: 12px; cursor: pointer; }
         .hidden { display: none !important; }
-        .notification.success { border-left: 3px solid var(--success); }
-        .notification.error { border-left: 3px solid var(--danger); }
-        .notification.info { border-left: 3px solid var(--primary); }
     </style>
 </head>
 <body>
@@ -179,10 +263,10 @@
     <div id="notification" class="notification hidden"><div id="notification-text"></div></div>
     <div class="modal" id="quickEditModal">
         <div class="modal-content">
-            <h2 class="modal-title" id="modalTitle">Быстрое редактирование</h2>
+            <h2 class="modal-title" id="modalTitle">Редактирование</h2>
             <input type="number" class="modal-input" id="modalInput" placeholder="Введите значение">
             <div class="modal-actions">
-                <button class="btn-modal" style="background: rgba(255,255,255,0.1); color: white;" onclick="closeModal()">Отмена</button>
+                <button class="btn-modal" style="background: var(--glass); color: #cbd5e1;" onclick="closeModal()">Отмена</button>
                 <button class="btn-modal btn" onclick="confirmQuickEdit()">Применить</button>
             </div>
         </div>
@@ -190,7 +274,7 @@
 
     <div class="container">
         <div id="loginForm" class="login-container">
-            <h2 class="login-title">⚛️ Admin</h2>
+            <h2 class="login-title">⚛️ Admin Panel</h2>
             <div class="form-group"><label>Логин</label><input type="text" id="login" placeholder="smartfixnsk"></div>
             <div class="form-group"><label>Пароль</label><input type="password" id="password" placeholder="••••••••"></div>
             <button class="btn" onclick="login()">Войти</button>
@@ -198,7 +282,7 @@
 
         <div id="adminPanel" class="admin-panel hidden container">
             <div class="header">
-                <div class="header-left"><h1>⚛️ Quantum Nexus</h1></div>
+                <div class="header-left"><h1>⚛️ Quantum Nexus Admin</h1></div>
                 <div class="header-right">
                     <button class="header-btn" onclick="refreshAll()">🔄 Обновить</button>
                     <button class="header-btn" onclick="logout()">🚪 Выйти</button>
@@ -206,251 +290,75 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-label">Пользователи</div><div class="stat-value" id="totalUsers">0</div></div>
-                <div class="stat-card"><span class="stat-icon">💰</span><div class="stat-label">Доход</div><div class="stat-value" id="totalRevenue">0</div></div>
-                <div class="stat-card"><span class="stat-icon">⚡</span><div class="stat-label">Активность</div><div class="stat-value" id="totalActivity">0</div></div>
-                <div class="stat-card"><span class="stat-icon">💸</span><div class="stat-label">Заявки</div><div class="stat-value" id="totalWithdrawals">0</div></div>
-                <div class="stat-card"><span class="stat-icon">👆</span><div class="stat-label">Тапы</div><div class="stat-value" id="totalTaps">0</div></div>
-                <div class="stat-card"><span class="stat-icon">🔗</span><div class="stat-label">Рефералы</div><div class="stat-value" id="totalReferrals">0</div></div>
+                <div class="stat-card" onclick="switchTab('users')">
+                    <span class="stat-icon">👥</span><div class="stat-label">Пользователи</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('revenue')">
+                    <span class="stat-icon">💰</span><div class="stat-label">Доход</div>
+                    <div class="stat-value" id="totalRevenue">0</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('activity')">
+                    <span class="stat-icon">⚡</span><div class="stat-label">Активность</div>
+                    <div class="stat-value" id="totalActivity">0</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('withdrawals')">
+                    <span class="stat-icon">💸</span><div class="stat-label">Заявки</div>
+                    <div class="stat-value" id="totalWithdrawals">0</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('taps')">
+                    <span class="stat-icon">👆</span><div class="stat-label">Тапы</div>
+                    <div class="stat-value" id="totalTaps">0</div>
+                </div>
+                <div class="stat-card" onclick="switchTab('referrals')">
+                    <span class="stat-icon">🔗</span><div class="stat-label">Рефералы</div>
+                    <div class="stat-value" id="totalReferrals">0</div>
+                </div>
             </div>
 
             <div class="tabs-container">
                 <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
                 <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы</button>
-                <button class="tab-btn" onclick="switchTab('stats')">📊 Аналитика</button>
+                <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
+                <button class="tab-btn" onclick="switchTab('logs')">📝 Логи</button>
                 <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
             </div>
 
-            <div class="content-area" id="content"><div style="text-align: center; padding: 40px;">Загрузка...</div></div>
+            <div class="content-area" id="content"><div style="text-align: center; padding: 40px; color: #94a3b8;">Загрузка...</div></div>
         </div>
     </div>
 
     <script>
-        const ADMIN_LOGIN = 'smartfixnsk', ADMIN_PASSWORD = 'Maga1996';
-        let quickEditData = null;
-        
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 30; i++) {
-                const p = document.createElement('div'); p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                container.appendChild(p);
-            }
-        }
-        
-        function showNotification(message, type = 'info') {
-            const n = document.getElementById('notification');
-            n.classList.remove('hidden', 'success', 'error', 'info');
-            n.classList.add(type);
-            document.getElementById('notification-text').textContent = message;
-            setTimeout(() => n.classList.add('hidden'), 3000);
-        }
-
-        function openQuickEdit(userId, field, title) {
-            quickEditData = { userId, field };
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalInput').value = '';
-            document.getElementById('quickEditModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('quickEditModal').classList.remove('active');
-            quickEditData = null;
-        }
-
-        function confirmQuickEdit() {
-            if (!quickEditData) return;
-            const value = parseFloat(document.getElementById('modalInput').value);
-            if (isNaN(value)) { showNotification('❌ Введите корректное значение', 'error'); return; }
-            modifyUser(quickEditData.userId, `set_${quickEditData.field}`, value);
-            closeModal();
-        }
-
-        window.addEventListener('load', () => {
-            createParticles();
-            if (localStorage.getItem('admin_logged_in') === 'true') initPanel();
-        });
-
-        function login() {
-            const l = document.getElementById('login').value;
-            const p = document.getElementById('password').value;
-            if (l === ADMIN_LOGIN && p === ADMIN_PASSWORD) {
-                localStorage.setItem('admin_logged_in', 'true');
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                initPanel();
-                showNotification('✅ Авторизация успешна', 'success');
-            } else { showNotification('❌ Неверный логин или пароль', 'error'); }
-        }
-
-        function logout() {
-            localStorage.removeItem('admin_logged_in');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-        }
-
-        function initPanel() {
-            loadDashboard(); loadUsers();
-        }
-
-        function loadDashboard() {
-            fetch('/api/admin/stats').then(res => res.json()).then(data => {
-                document.getElementById('totalUsers').textContent = formatNumber(data.total_users || 0);
-                document.getElementById('totalRevenue').textContent = formatNumber(data.total_revenue || 0);
-                document.getElementById('totalActivity').textContent = formatNumber(data.active_users || 0);
-                document.getElementById('totalWithdrawals').textContent = formatNumber(data.pending_withdrawals || 0);
-                document.getElementById('totalTaps').textContent = formatNumber(data.total_taps || 0);
-                document.getElementById('totalReferrals').textContent = formatNumber(data.total_referrals || 0);
-            });
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            loadTab(tabName);
-        }
-
-        function loadTab(tabName) {
-            const c = document.getElementById('content');
-            if (tabName === 'users') loadUsers();
-            else if (tabName === 'withdrawals') loadWithdrawals();
-            else if (tabName === 'stats') loadStats();
-            else if (tabName === 'settings') loadSettings();
-        }
-
-        function loadUsers() {
-            const c = document.getElementById('content');
-            c.innerHTML = '<div style="text-align: center; padding: 20px;">Загрузка...</div>';
-            
-            fetch('/api/admin/users').then(res => res.json()).then(data => {
-                if (data.users && data.users.length > 0) {
-                    window.allUsers = data.users;
-                    renderUsers(data.users);
-                } else { c.innerHTML = '<div style="text-align: center; padding: 40px;">Нет пользователей</div>'; }
-            }).catch(err => { c.innerHTML = '<div style="color: #ef4444; text-align: center;">Ошибка загрузки</div>'; });
-        }
-
-        function renderUsers(users) {
-            const c = document.getElementById('content');
-            c.innerHTML = `
-                <div class="search-container">
-                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск..." onkeyup="filterUsers()">
-                </div>
-                <div class="users-grid" id="usersList">
-                    ${users.map(u => createUserCard(u)).join('')}
-                </div>
-            `;
-        }
-
-        function createUserCard(user) {
-            return `
-                <div class="user-card">
-                    <div class="user-header">
-                        <div class="user-info">
-                            <h3>${user.username || 'Unknown'}</h3>
-                            <div class="user-id">ID: ${user.telegram_id}</div>
-                        </div>
-                        <div class="user-badges">
-                            ${user.is_banned ? '<span class="badge badge-banned">🔒</span>' : ''}
-                            ${user.is_frozen ? '<span class="badge badge-frozen">❄️</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="stats-grid-mini">
-                        <div class="stat-item"><div class="stat-label-small">💰 Коины</div><div class="stat-value-small">${formatNumber(user.coins)}</div></div>
-                        <div class="stat-item"><div class="stat-label-small">💎 Hash</div><div class="stat-value-small">${formatNumber(user.quanhash)}</div></div>
-                        <div class="stat-item"><div class="stat-label-small">⚡ Энергия</div><div class="stat-value-small">${user.energy}/${user.max_energy}</div></div>
-                    </div>
-                    <div class="actions-grid">
-                        <button class="action-btn btn-add" onclick="quickEdit(${user.telegram_id}, 'coins', '💰 Коины')" title="Изменить коины">💰</button>
-                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_coins', 10000)">+10k</button>
-                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_quanhash', 10000)">+10k💎</button>
-                        <button class="action-btn btn-status" onclick="setEnergy(${user.telegram_id}, ${user.max_energy})">⚡</button>
-                        ${user.is_banned ? '<button class="action-btn btn-success" onclick="modifyUser(' + user.telegram_id + ', \'unban\', \'\')">🔓</button>' : '<button class="action-btn btn-status" onclick="modifyUser(' + user.telegram_id + ', \'ban\', \'Admin ban\')">🔒</button>'}
-                    </div>
-                    <button class="action-btn btn-reset" onclick="modifyUser(${user.telegram_id}, 'reset', 0)">⚠️ Сбросить</button>
-                </div>
-            `;
-        }
-
-        function quickEdit(userId, field, title) { openQuickEdit(userId, field, title); }
-        
-        function filterUsers() {
-            const s = document.getElementById('searchInput').value.toLowerCase();
-            const f = window.allUsers.filter(u => 
-                (u.username && u.username.toLowerCase().includes(s)) ||
-                u.telegram_id.toString().includes(s)
-            );
-            document.getElementById('usersList').innerHTML = f.map(u => createUserCard(u)).join('');
-        }
-
-        function modifyUser(userId, action, value) {
-            fetch('/api/admin/modify_user', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: userId, action: action, value: value})
-            }).then(() => { showNotification('✅ Изменения применены', 'success'); loadUsers(); });
-        }
-
-        function setEnergy(userId, maxEnergy) {
-            fetch('/api/admin/set_energy', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: userId, energy: maxEnergy})
-            }).then(() => { showNotification('⚡ Энергия восстановлена', 'success'); loadUsers(); });
-        }
-
-        function loadWithdrawals() {
-            const c = document.getElementById('content');
-            c.innerHTML = '<div style="text-align: center; padding: 20px;">Загрузка...</div>';
-            fetch('/api/admin/withdrawals').then(res => res.json()).then(data => {
-                if (data.requests && data.requests.length > 0) {
-                    c.innerHTML = data.requests.map(r => `
-                        <div class="user-card" style="margin-bottom: 12px;">
-                            <h3 style="font-size: 14px; margin-bottom: 10px;">Заявка #${r.id}</h3>
-                            <div style="font-size: 12px; margin-bottom: 8px;">
-                                <div>User: ${r.user_id}</div>
-                                <div>QuanHash: ${formatNumber(r.amount)}</div>
-                                <div>USDT: $${r.usdt_amount}</div>
-                                <div style="font-family: monospace; font-size: 10px; word-break: break-all; margin-top: 6px;">${r.address}</div>
-                            </div>
-                            ${r.status === 'pending' ? `
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="action-btn btn-success" style="flex: 1;" onclick="processWithdrawal(${r.id}, 'completed')">✅</button>
-                                    <button class="action-btn btn-remove" style="flex: 1;" onclick="processWithdrawal(${r.id}, 'rejected')">❌</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `).join('');
-                } else { c.innerHTML = '<div style="text-align: center; padding: 40px;">Нет заявок</div>'; }
-            });
-        }
-
-        function processWithdrawal(rid, status) {
-            fetch('/api/admin/process_withdrawal', {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({request_id: rid, status: status})
-            }).then(() => { showNotification(status === 'completed' ? '✅ Одобрено' : '❌ Отклонено', status === 'completed' ? 'success' : 'error'); loadWithdrawals(); });
-        }
-
-        function loadStats() {
-            const c = document.getElementById('content');
-            fetch('/api/admin/stats').then(res => res.json()).then(data => {
-                c.innerHTML = `
-                    <div style="display: grid; gap: 12px;">
-                        <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-label">Пользователей</div><div class="stat-value">${formatNumber(data.total_users || 0)}</div></div>
-                        <div class="stat-card"><span class="stat-icon">👆</span><div class="stat-label">Всего тапов</div><div class="stat-value">${formatNumber(data.total_taps || 0)}</div></div>
-                    </div>
-                `;
-            });
-        }
-
-        function loadSettings() {
-            document.getElementById('content').innerHTML = '<div style="text-align: center; padding: 40px;">Настройки в разработке</div>';
-        }
-
-        function refreshAll() { loadDashboard(); loadUsers(); showNotification('🔄 Обновлено', 'success'); }
-        function formatNumber(num) { return Math.floor(num || 0).toLocaleString('ru'); }
-        document.getElementById('password')?.addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        const ADMIN_LOGIN='smartfixnsk',ADMIN_PASSWORD='Maga1996';
+        let quickEditData=null,logs=[];
+        function createParticles(){const c=document.getElementById('particles');for(let i=0;i<40;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*12+'s';c.appendChild(p);}}
+        function showNotification(m,t='info'){const n=document.getElementById('notification');n.classList.remove('hidden','success','error','info');n.classList.add(t);document.getElementById('notification-text').textContent=m;setTimeout(()=>n.classList.add('hidden'),3500);}
+        function addLog(m,t='info'){logs.unshift({message:`[${new Date().toLocaleString()}] ${m}`,type:t});if(logs.length>200)logs.pop();}
+        function displayLogs(){const c=document.getElementById('content');if(logs.length===0){c.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8;">Нет логов</div>';return;}c.innerHTML=`<h2 style="font-size:22px;margin-bottom:20px;color:#fff;font-weight:700;">📝 Системные логи</h2><div style="max-height:600px;overflow-y:auto;">${logs.map(l=>`<div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px;font-family:monospace;border-left:4px solid ${l.type==='success'?'#10b981':l.type==='error'?'#ef4444':'#6366f1'}">${l.message}</div>`).join('')}</div>`;}
+        function openQuickEdit(uid,field,title){quickEditData={userId:uid,field};document.getElementById('modalTitle').textContent=title;document.getElementById('modalInput').value='';document.getElementById('quickEditModal').classList.add('active');}
+        function closeModal(){document.getElementById('quickEditModal').classList.remove('active');quickEditData=null;}
+        function confirmQuickEdit(){if(!quickEditData)return;const v=parseFloat(document.getElementById('modalInput').value);if(isNaN(v)){showNotification('❌ Введите значение','error');return;}modifyUser(quickEditData.userId,`set_${quickEditData.field}`,v);closeModal();}
+        window.addEventListener('load',()=>{createParticles();addLog('Система загружена','success');if(localStorage.getItem('admin_logged_in')==='true')initPanel();});
+        function login(){const l=document.getElementById('login').value,p=document.getElementById('password').value;if(l===ADMIN_LOGIN&&p===ADMIN_PASSWORD){localStorage.setItem('admin_logged_in','true');document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();addLog('Вход выполнен','success');}else{showNotification('❌ Неверно','error');addLog('Ошибка входа','error');}}
+        function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');showNotification('👋 Выход','info');addLog('Выход','info');}
+        function initPanel(){loadDashboard();loadUsers();}
+        function loadDashboard(){fetch('/api/admin/stats').then(r=>r.json()).then(d=>{document.getElementById('totalUsers').textContent=formatNumber(d.total_users||0);document.getElementById('totalRevenue').textContent=formatNumber(d.total_revenue||0);document.getElementById('totalActivity').textContent=formatNumber(d.active_users||0);document.getElementById('totalWithdrawals').textContent=formatNumber(d.pending_withdrawals||0);document.getElementById('totalTaps').textContent=formatNumber(d.total_taps||0);document.getElementById('totalReferrals').textContent=formatNumber(d.total_referrals||0);});}
+        function switchTab(t){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
+        function loadTab(t){const c=document.getElementById('content');if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='stats')loadStats();else if(t==='logs')displayLogs();else if(t==='settings')loadSettings();addLog(`Переключение: ${t}`,'info');}
+        function loadUsers(){const c=document.getElementById('content');c.innerHTML='<div style="text-align:center;padding:20px;color:#94a3b8;">Загрузка...</div>';fetch('/api/admin/users').then(r=>r.json()).then(d=>{if(d.users&&d.users.length>0){window.allUsers=d.users;renderUsers(d.users);addLog(`Загружено ${d.users.length} пользователей`,'success');}else{c.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8;">Нет пользователей</div>';}}).catch(e=>{c.innerHTML='<div style="color:#ef4444;text-align:center;">Ошибка</div>';addLog(`Ошибка: ${e.message}`,'error');});}
+        function renderUsers(u){const c=document.getElementById('content');c.innerHTML=`<div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск..." onkeyup="filterUsers()"></div><div class="users-grid" id="usersList">${u.map(us=>createUserCard(us)).join('')}</div>`;}
+        function createUserCard(u){return `<div class="user-card"><div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div><div class="user-badges">${u.is_banned?'<span class="badge badge-banned">🔒 Бан</span>':''}${u.is_frozen?'<span class="badge badge-frozen">❄️ Заморожен</span>':''}</div></div><div class="stats-grid-mini"><div class="stat-item"><div class="stat-label-small">💰 Коины</div><div class="stat-value-small">${formatNumber(u.coins)}</div></div><div class="stat-item"><div class="stat-label-small">💎 Hash</div><div class="stat-value-small">${formatNumber(u.quanhash)}</div></div><div class="stat-item"><div class="stat-label-small">⚡ Энергия</div><div class="stat-value-small">${u.energy}/${u.max_energy}</div></div></div><div class="actions-grid"><button class="action-btn btn-add" onclick="quickEdit(${u.telegram_id},'coins','💰 Коины')" title="💰">💰</button><button class="action-btn btn-add" onclick="quickEdit(${u.telegram_id},'quanhash','💎 QuanHash')" title="💎">💎</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_coins',10000)">+10k</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_coins',100000)">+100k</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_quanhash',10000)">+10k💎</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_quanhash',100000)">+100k💎</button></div><div class="actions-grid"><button class="action-btn btn-remove" onclick="modifyUser(${u.telegram_id},'remove_coins',5000)">-5k</button><button class="action-btn btn-remove" onclick="modifyUser(${u.telegram_id},'remove_quanhash',5000)">-5k💎</button><button class="action-btn btn-status" onclick="setEnergy(${u.telegram_id},${u.max_energy})">⚡ MAX</button>${u.is_banned?'<button class="action-btn btn-success" onclick="modifyUser('+u.telegram_id+',\'unban\',\'\')">🔓</button>':'<button class="action-btn btn-status" onclick="modifyUser('+u.telegram_id+',\'ban\',\'Admin\')">🔒</button>'}${u.is_frozen?'<button class="action-btn btn-success" onclick="modifyUser('+u.telegram_id+',\'unfreeze\',\'\')">🔥</button>':'<button class="action-btn btn-status" onclick="modifyUser('+u.telegram_id+',\'freeze\',\'\')">❄️</button>'}${u.is_banned?'':'<button class="action-btn btn-status" onclick="modifyUser('+u.telegram_id+',\'add_coins\',1000000)">💎 Млн</button>'}</div><button class="action-btn btn-reset" onclick="modifyUser(${u.telegram_id},'reset',0)">⚠️ Полный сброс</button></div>`;}
+        function quickEdit(uid,field,title){openQuickEdit(uid,field,title);}
+        function filterUsers(){const s=document.getElementById('searchInput').value.toLowerCase();const f=window.allUsers.filter(u=>(u.username&&u.username.toLowerCase().includes(s))||u.telegram_id.toString().includes(s));document.getElementById('usersList').innerHTML=f.map(u=>createUserCard(u)).join('');}
+        function modifyUser(uid,a,v){fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:a,value:v})}).then(()=>{showNotification('✅ Применено','success');addLog(`Изменение: ${a}=${v}`,'success');loadUsers();});}
+        function setEnergy(uid,m){fetch('/api/admin/set_energy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,energy:m})}).then(()=>{showNotification('⚡ Восстановлено','success');loadUsers();});}
+        function loadWithdrawals(){const c=document.getElementById('content');c.innerHTML='<div style="text-align:center;padding:20px;color:#94a3b8;">Загрузка...</div>';fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{if(d.requests&&d.requests.length>0){c.innerHTML=`<h2 style="font-size:20px;margin-bottom:16px;color:#fff;font-weight:700;">💸 Заявки на вывод</h2>${d.requests.map(r=>`<div class="user-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div><strong>Заявка #${r.id}</strong><div style="font-size:12px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div><span class="badge ${r.status==='pending'?'badge-frozen':'badge-success'}">${r.status==='pending'?'⏳ Ожидает':'✅ Выполнено'}</span></div><div style="font-size:13px;color:#cbd5e1;"><div>User ID: ${r.user_id}</div><div>QuanHash: ${formatNumber(r.amount)}</div><div>USDT: $${r.usdt_amount}</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:8px;padding:8px;background:var(--glass);border-radius:8px;">${r.address}</div></div>${r.status==='pending'?`<div style="display:flex;gap:8px;margin-top:12px;"><button class="action-btn btn-success" style="flex:1;" onclick="processWithdrawal(${r.id},'completed')">✅ Одобрить</button><button class="action-btn btn-remove" style="flex:1;" onclick="processWithdrawal(${r.id},'rejected')">❌ Отклонить</button></div>`:''}</div>`).join('');}else{c.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8;">Нет заявок</div>';}});}
+        function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено',status==='completed'?'success':'error');addLog(`Заявка #${rid}: ${status}`,'success');loadWithdrawals();});}
+        function loadStats(){const c=document.getElementById('content');fetch('/api/admin/stats').then(r=>r.json()).then(d=>{c.innerHTML=`<h2 style="font-size:24px;margin-bottom:20px;color:#fff;font-weight:700;">📊 Детальная статистика</h2><div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">${['users','taps','withdrawals'].map(s=>`<div class="stat-card"><span class="stat-icon">${s==='users'?'👥':s==='taps'?'👆':'💸'}</span><div class="stat-label">${s==='users'?'Пользователей':s==='taps'?'Всего тапов':'Заявок'}</div><div class="stat-value">${formatNumber(d[s=='users'?'total_users':s=='taps'?'total_taps':'pending_withdrawals']||0)}</div></div>`).join('')}</div>`);});}
+        function loadSettings(){document.getElementById('content').innerHTML=`<h2 style="font-size:24px;margin-bottom:20px;color:#fff;font-weight:700;">⚙️ Настройки</h2><div style="text-align:center;padding:40px;color:#94a3b8;">Панель настроек в разработке</div>`;}
+        function refreshAll(){loadDashboard();loadUsers();showNotification('🔄 Обновлено','success');}
+        function formatNumber(n){return Math.floor(n||0).toLocaleString('ru');}
+        document.getElementById('password')?.addEventListener('keypress',e=>{if(e.key==='Enter')login();});
     </script>
 </body>
 </html>
