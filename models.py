@@ -36,6 +36,11 @@ class User(Base):
     active_multiplier = Column(Float, default=1.0)
     multiplier_expires_at = Column(DateTime, nullable=True)
     
+    # Status
+    is_banned = Column(Boolean, default=False)
+    is_frozen = Column(Boolean, default=False)
+    ban_reason = Column(String(255), nullable=True)
+    
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
     

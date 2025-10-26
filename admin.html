@@ -408,6 +408,8 @@
                         <div>
                             <strong>${user.username || 'Unknown'}</strong>
                             <div class="user-id">ID: ${user.telegram_id}</div>
+                            ${user.is_banned ? '<span style="color: #ef4444; font-size: 12px;">🔒 Заблокирован</span>' : ''}
+                            ${user.is_frozen ? '<span style="color: #f59e0b; font-size: 12px;">❄️ Заморожен</span>' : ''}
                         </div>
                     </div>
                     <div class="stat-line">
@@ -431,9 +433,27 @@
                         <span class="stat-value">${user.referrals_count}</span>
                     </div>
                     <div class="actions">
-                        <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 10000)">+10k 🪙</button>
-                        <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 50000)">+50k 🪙</button>
-                        <button class="action-btn set-energy-btn" onclick="setEnergy(${user.telegram_id}, 1000)">⚡ MAX</button>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_coins', 10000)">+10k 🪙</button>
+                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_coins', 100000)">+100k 🪙</button>
+                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_quanhash', 10000)">+10k 💎</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+                            <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(${user.telegram_id}, 'remove_coins', 5000)">-5k 🪙</button>
+                            <button class="action-btn" style="background: rgba(102, 126, 234, 0.3);" onclick="setEnergy(${user.telegram_id}, ${user.max_energy})">⚡ MAX</button>
+                            <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(${user.telegram_id}, 'remove_quanhash', 5000)">-5k 💎</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                            ${user.is_banned ? 
+                                '<button class="action-btn" style="background: rgba(76, 222, 128, 0.3); border: 1px solid #4ade80;" onclick="modifyUser(' + user.telegram_id + ', \'unban\', \'\')">🔓 Разблокировать</button>' :
+                                '<button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(' + user.telegram_id + ', \'ban\', \'Admin ban\')">🔒 Заблокировать</button>'
+                            }
+                            ${user.is_frozen ? 
+                                '<button class="action-btn" style="background: rgba(76, 222, 128, 0.3); border: 1px solid #4ade80;" onclick="modifyUser(' + user.telegram_id + ', \'unfreeze\', \'\')">🔥 Разморозить</button>' :
+                                '<button class="action-btn" style="background: rgba(251, 191, 36, 0.3); border: 1px solid #fbbf24;" onclick="modifyUser(' + user.telegram_id + ', \'freeze\', \'\')">❄️ Заморозить</button>'
+                            }
+                        </div>
+                        <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444; width: 100%; margin-top: 8px;" onclick="modifyUser(${user.telegram_id}, 'reset', 0)">⚠️ Сбросить все</button>
                     </div>
                 </div>
             `).join('');
@@ -463,6 +483,17 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({user_id: userId, energy: energy})
+            })
+            .then(() => loadUsers());
+        }
+
+        function modifyUser(userId, action, value) {
+            if (!confirm(`Вы уверены? Действие: ${action}, Значение: ${value}`)) return;
+            
+            fetch('/api/admin/modify_user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: userId, action: action, value: value})
             })
             .then(() => loadUsers());
         }

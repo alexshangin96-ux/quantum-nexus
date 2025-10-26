@@ -120,6 +120,20 @@ def get_user_data():
             # Return default values if user not found
             return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
         
+        # Check if user is banned or frozen
+        if user.is_banned:
+            return jsonify({
+                'error': 'Вы заблокированы',
+                'is_banned': True,
+                'ban_reason': user.ban_reason
+            }), 403
+        
+        if user.is_frozen:
+            return jsonify({
+                'error': 'Ваш аккаунт заморожен',
+                'is_frozen': True
+            }), 403
+        
         # Calculate passive income
         passive_coins_per_hour = 0
         passive_hash_per_hour = 0
@@ -470,6 +484,62 @@ def process_withdrawal():
         
         withdrawal.status = status
         withdrawal.processed_at = datetime.utcnow()
+        
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/admin/modify_user', methods=['POST'])
+def modify_user():
+    """Modify user (add/remove coins/quanhash, ban, freeze, etc.)"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        action = data.get('action')
+        value = data.get('value')
+        
+        if not user_id or not action:
+            return jsonify({'error': 'Missing parameters'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        if action == 'add_coins':
+            user.coins += value
+        elif action == 'remove_coins':
+            user.coins = max(0, user.coins - value)
+        elif action == 'add_quanhash':
+            user.quanhash += value
+        elif action == 'remove_quanhash':
+            user.quanhash = max(0, user.quanhash - value)
+        elif action == 'set_energy':
+            user.energy = min(value, user.max_energy)
+        elif action == 'set_max_energy':
+            user.max_energy = value
+            user.energy = min(user.energy, value)
+        elif action == 'ban':
+            user.is_banned = True
+            user.ban_reason = value if value else 'Нарушение правил'
+        elif action == 'unban':
+            user.is_banned = False
+            user.ban_reason = None
+        elif action == 'freeze':
+            user.is_frozen = True
+        elif action == 'unfreeze':
+            user.is_frozen = False
+        elif action == 'reset':
+            user.coins = 0
+            user.quanhash = 0
+            user.energy = user.max_energy
+            user.total_taps = 0
+            user.total_earned = 0
+            user.total_mined = 0
         
         db.commit()
         

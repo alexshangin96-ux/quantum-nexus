@@ -273,11 +273,17 @@
         }
 
         .tap-button.active {
-            transform: scale(0.95);
+            animation: tapScale 0.15s ease;
+        }
+        
+        @keyframes tapScale {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
         }
         
         .tap-button:active {
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
 
         /* Offline Income Notice */
@@ -1149,6 +1155,7 @@
                     tg.showAlert('✅ Покупка успешна!');
                     loadData();
                     renderShop();
+                    startEnergyRegen(); // Restart energy regen
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
                 }
@@ -1170,6 +1177,7 @@
                     tg.showAlert('✅ Энергия куплена!');
                     loadData();
                     renderShop();
+                    startEnergyRegen(); // Restart energy regen
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
                 }
@@ -1295,22 +1303,22 @@
                 if (quanhash < 500000) {
                     document.getElementById('withdrawContent').innerHTML = `
                         <div style="text-align: center; padding: 40px;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">💸</div>
+                            <div style="font-size: 48px; margin-bottom: 15px;">💎</div>
                             <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Недостаточно QuanHash</div>
-                            <div style="opacity: 0.7;">Нужно минимум 500,000 ⚡</div>
-                            <div style="margin-top: 20px; font-size: 24px; color: #f093fb;">У вас: ${quanhash.toLocaleString()} ⚡</div>
+                            <div style="opacity: 0.7;">Нужно минимум 500,000 💎</div>
+                            <div style="margin-top: 20px; font-size: 24px; color: #f093fb;">У вас: ${quanhash.toLocaleString()} 💎</div>
                         </div>
                     `;
                 } else {
                     document.getElementById('withdrawContent').innerHTML = `
                         <div style="padding: 20px;">
                             <div style="text-align: center; margin-bottom: 20px;">
-                                <div style="font-size: 48px; margin-bottom: 10px;">💸</div>
+                                <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
                                 <div style="font-size: 18px; font-weight: bold;">Вывод средств</div>
                             </div>
                             <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                                 <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Обмен</div>
-                                <div style="font-size: 18px; font-weight: bold;">500,000 ⚡ = $1 USDT</div>
+                                <div style="font-size: 18px; font-weight: bold;">500,000 💎 = $1 USDT</div>
                             </div>
                             <div style="margin-bottom: 15px;">
                                 <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
@@ -1354,6 +1362,11 @@
         loadData();
         checkOfflineIncome();
         startEnergyRegen();
+        
+        // Auto-update data every 5 seconds
+        setInterval(() => {
+            loadData();
+        }, 5000);
     </script>
 </body>
 </html>
