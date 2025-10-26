@@ -476,7 +476,45 @@
         function loadTab(t){const c=document.getElementById('content');c.className='content-area';c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='stats')loadStats();else if(t==='analytics')loadAnalytics();else if(t==='logs')displayLogs();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();addLog(`Вкладка: ${t}`,'info');}
         function loadUsers(){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';fetch('/api/admin/users').then(r=>r.json()).then(d=>{if(d.users&&d.users.length>0){window.allUsers=d.users;localStorage.setItem('cached_users',JSON.stringify(d.users));renderUsers(d.users);addLog(`Загружено ${d.users.length} пользователей`,'success');}else{c.innerHTML='<div class="loading">Нет пользователей</div>';}}).catch(e=>{const cached=localStorage.getItem('cached_users');if(cached&&JSON.parse(cached).length>0){window.allUsers=JSON.parse(cached);renderUsers(JSON.parse(cached));addLog('Кэш загружен','info');}else{c.innerHTML='<div style="color:#ef4444;text-align:center;">Ошибка</div>';addLog(`Ошибка: ${e.message}`,'error');}});}
         function renderUsers(u){const c=document.getElementById('content');const searchValue=localStorage.getItem('search_value')||'';c.innerHTML=`<div class="search-container"><input type="text" class="search-input" id="searchInput" value="${searchValue}" placeholder="🔍 Поиск..." onkeyup="filterUsers()"></div><div class="users-grid" id="usersList">${u.map(us=>createUserCard(us)).join('')}</div>`;if(searchValue)filterUsers();}
-        function createUserCard(u){const actions30=['💰','💎','+10k🪙','+100k🪙','+10k💎','+100k💎','⚡MAX','🔒/🔓','❄️/🔥','💎Млн','-5k🪙','-5k💎','📊','🔔','🏆','⭐','🎁','🌐','📱','🔧','⚙️','📈','📉','🗑️','🔍','💾','📤','🎯','📌','🆔'];return `<div class="user-card" onclick="selectUser(${u.telegram_id})"><div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div><div class="user-badges">${u.is_banned?'<span class="badge badge-banned">🔒</span>':''}${u.is_frozen?'<span class="badge badge-frozen">❄️</span>':''}<span class="badge badge-vip">⭐</span></div></div><div class="stats-grid-mini"><div class="stat-item"><div class="stat-label-small">💰</div><div class="stat-value-small">${formatNumber(u.coins)}</div></div><div class="stat-item"><div class="stat-label-small">💎</div><div class="stat-value-small">${formatNumber(u.quanhash)}</div></div><div class="stat-item"><div class="stat-label-small">⚡</div><div class="stat-value-small">${u.energy}/${u.max_energy}</div></div></div><div class="actions-grid"><button class="action-btn btn-add" onclick="quickEdit(${u.telegram_id},'coins','💰 Коины')">💰</button><button class="action-btn btn-add" onclick="quickEdit(${u.telegram_id},'quanhash','💎 QuanHash')">💎</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_coins',10000)">+10k</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_coins',100000)">+100k</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_quanhash',10000)">+10k💎</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_quanhash',100000)">+100k💎</button><button class="action-btn btn-add" onclick="modifyUser(${u.telegram_id},'add_coins',1000000)">💎 Млн</button><button class="action-btn btn-info" onclick="viewUserDetails(${u.telegram_id})">📊</button></div><div class="actions-grid"><button class="action-btn btn-status" onclick="setEnergy(${u.telegram_id},${u.max_energy})">⚡</button><button class="action-btn btn-remove" onclick="modifyUser(${u.telegram_id},'remove_coins',5000)">-5k</button><button class="action-btn btn-remove" onclick="modifyUser(${u.telegram_id},'remove_quanhash',5000)">-5k💎</button><button class="action-btn btn-status" onclick="modifyUser(${u.telegram_id},'reset',0)">⚠️</button>${u.is_banned?'<button class="action-btn btn-success" onclick="modifyUser('+u.telegram_id+',\'unban\',\'\')">🔓</button>':'<button class="action-btn btn-status" onclick="modifyUser('+u.telegram_id+',\'ban\',\'Admin\')">🔒</button>'}${u.is_frozen?'<button class="action-btn btn-success" onclick="modifyUser('+u.telegram_id+',\'unfreeze\',\'\')">🔥</button>':'<button class="action-btn btn-status" onclick="modifyUser('+u.telegram_id+',\'freeze\',\'\')">❄️</button>'}${u.is_banned?'':'<button class="action-btn btn-info" onclick="viewUserDetails('+u.telegram_id+')">📋</button>'}</div></div>`;}
+        function createUserCard(u){
+            const uid=u.telegram_id;
+            const username=u.username||'Unknown';
+            const badges=(u.is_banned?'<span class="badge badge-banned">🔒</span>':'')+(u.is_frozen?'<span class="badge badge-frozen">❄️</span>':'')+'<span class="badge badge-vip">⭐</span>';
+            const banBtn=u.is_banned?'<button class="action-btn btn-success" onclick="modifyUser('+uid+',\'unban\',\'\')">🔓</button>':'<button class="action-btn btn-status" onclick="modifyUser('+uid+',\'ban\',\'Admin\')">🔒</button>';
+            const freezeBtn=u.is_frozen?'<button class="action-btn btn-success" onclick="modifyUser('+uid+',\'unfreeze\',\'\')">🔥</button>':'<button class="action-btn btn-status" onclick="modifyUser('+uid+',\'freeze\',\'\')">❄️</button>';
+            const extraBtn=u.is_banned?'':'<button class="action-btn btn-info" onclick="viewUserDetails('+uid+')">📋</button>';
+            return `
+<div class="user-card" onclick="selectUser(${uid})">
+<div class="user-header">
+<div class="user-info"><h3>${username}</h3><div class="user-id">ID: ${uid}</div></div>
+<div class="user-badges">${badges}</div>
+</div>
+<div class="stats-grid-mini">
+<div class="stat-item"><div class="stat-label-small">💰</div><div class="stat-value-small">${formatNumber(u.coins)}</div></div>
+<div class="stat-item"><div class="stat-label-small">💎</div><div class="stat-value-small">${formatNumber(u.quanhash)}</div></div>
+<div class="stat-item"><div class="stat-label-small">⚡</div><div class="stat-value-small">${u.energy}/${u.max_energy}</div></div>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-add" onclick="quickEdit(${uid},'coins','💰 Коины')">💰</button>
+<button class="action-btn btn-add" onclick="quickEdit(${uid},'quanhash','💎 QuanHash')">💎</button>
+<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',10000)">+10k</button>
+<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',100000)">+100k</button>
+<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_quanhash',10000)">+10k💎</button>
+<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_quanhash',100000)">+100k💎</button>
+<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',1000000)">💎 Млн</button>
+<button class="action-btn btn-info" onclick="viewUserDetails(${uid})">📊</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-status" onclick="setEnergy(${uid},${u.max_energy})">⚡</button>
+<button class="action-btn btn-remove" onclick="modifyUser(${uid},'remove_coins',5000)">-5k</button>
+<button class="action-btn btn-remove" onclick="modifyUser(${uid},'remove_quanhash',5000)">-5k💎</button>
+<button class="action-btn btn-status" onclick="modifyUser(${uid},'reset',0)">⚠️</button>
+${banBtn}
+${freezeBtn}
+${extraBtn}
+</div>
+</div>`;
+        }
         function selectUser(uid){currentUser=uid;showNotification(`Пользователь #${uid} выбран`,'info');}
         function viewUserDetails(uid){const u=window.allUsers.find(us=>us.telegram_id===uid);if(!u){showNotification('Пользователь не найден','error');return;}alert(`Детали:\nКоины: ${u.coins}\nQuanHash: ${u.quanhash}\nТапы: ${u.total_taps}\nРефералы: ${u.referrals_count}\nЗаработано: ${u.total_earned}`);}
         function filterUsers(){const s=document.getElementById('searchInput').value.toLowerCase();localStorage.setItem('search_value',s);const f=window.allUsers.filter(u=>(u.username&&u.username.toLowerCase().includes(s))||u.telegram_id.toString().includes(s));document.getElementById('usersList').innerHTML=f.map(u=>createUserCard(u)).join('');}
