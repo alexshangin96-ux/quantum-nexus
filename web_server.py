@@ -120,13 +120,27 @@ def get_user_data():
             # Return default values if user not found
             return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
         
+        # Calculate passive income
+        passive_coins_per_hour = 0
+        passive_hash_per_hour = 0
+        
+        for card in user.cards:
+            if card.is_active:
+                passive_coins_per_hour += card.income_per_minute * 60
+        
+        for machine in user.machines:
+            if machine.is_active:
+                passive_hash_per_hour += machine.hash_rate * 3600
+        
         return jsonify({
             'coins': user.coins,
             'quanhash': user.quanhash,
             'energy': user.energy,
             'max_energy': user.max_energy,
             'total_taps': user.total_taps,
-            'total_earned': user.total_earned
+            'total_earned': user.total_earned,
+            'passive_coins_per_hour': passive_coins_per_hour,
+            'passive_hash_per_hour': passive_hash_per_hour
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -501,6 +515,21 @@ def buy_item():
             user.max_energy = 2000
         elif item_type == 'regen_boost':
             # TODO: Add regen boost
+            pass
+        elif item_type == 'common':
+            card = UserCard(user_id=user.id, card_type='common', income_per_minute=0.5, is_active=True)
+            db.add(card)
+        elif item_type == 'rare':
+            card = UserCard(user_id=user.id, card_type='rare', income_per_minute=2.0, is_active=True)
+            db.add(card)
+        elif item_type == 'epic':
+            card = UserCard(user_id=user.id, card_type='epic', income_per_minute=10.0, is_active=True)
+            db.add(card)
+        elif item_type == 'legendary':
+            card = UserCard(user_id=user.id, card_type='legendary', income_per_minute=50.0, is_active=True)
+            db.add(card)
+        elif item_type == 'auto_bot':
+            # TODO: Add auto bot
             pass
         
         db.commit()

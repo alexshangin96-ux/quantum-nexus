@@ -272,6 +272,10 @@
             }
         }
 
+        .tap-button.active {
+            transform: scale(0.95);
+        }
+        
         .tap-button:active {
             transform: scale(0.95);
         }
@@ -779,16 +783,6 @@
             ⚛️
         </div>
 
-        <div class="withdraw-section hidden" id="withdrawSection">
-            <div class="withdraw-title">💰 Вывод средств</div>
-            <div class="withdraw-info">
-                Продайте 500,000 ⚡ QuanHash за $1 USDT
-            </div>
-            <div class="input-group">
-                <input type="text" id="usdtAddress" placeholder="0x0000...0000 (BEP20)" maxlength="42">
-            </div>
-            <button class="action-btn" onclick="withdraw()">💸 Вывести</button>
-        </div>
 
         <div class="buttons">
             <a href="#" class="btn" onclick="openShop(event)">
@@ -811,7 +805,7 @@
                 <div class="btn-emoji">👥</div>
                 <div>Рефералы</div>
             </a>
-            <a href="#" class="btn" onclick="toggleWithdraw()">
+            <a href="#" class="btn" onclick="openWithdrawModal(event)">
                 <div class="btn-emoji">💸</div>
                 <div>Вывод</div>
             </a>
@@ -875,6 +869,17 @@
                 <button class="close-btn" onclick="closeModal('cardsModal')">✕</button>
             </div>
             <div id="myCardsList"></div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">💸 Вывод средств</div>
+                <button class="close-btn" onclick="closeModal('withdrawModal')">✕</button>
+            </div>
+            <div id="withdrawContent"></div>
         </div>
     </div>
 
@@ -954,20 +959,21 @@
             .then(data => {
                 const coins = Math.floor(data.coins || 0);
                 const quanhash = Math.floor(data.quanhash || 0);
-                const energy = Math.floor(data.energy || 0);
-                const maxEnergy = data.max_energy || 1000;
+                const energy = parseInt(data.energy || 0);
+                const maxEnergy = parseInt(data.max_energy || 1000);
+                const passiveCoins = Math.floor(data.passive_coins_per_hour || 0);
+                const passiveHash = Math.floor(data.passive_hash_per_hour || 0);
                 
                 document.getElementById('coins').textContent = coins;
                 document.getElementById('quanhash').textContent = quanhash;
                 document.getElementById('energy-text').textContent = `${energy}/${maxEnergy}`;
+                document.getElementById('passiveCoins').textContent = `${passiveCoins}/ч`;
+                document.getElementById('passiveHash').textContent = `${passiveHash}/ч`;
                 
-                const energyPercent = (energy / maxEnergy) * 100;
+                const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
                 document.getElementById('energy-bar').style.width = energyPercent + '%';
 
                 // Show withdraw button if user has 500k+ quanhash
-                if (quanhash >= 500000) {
-                    document.getElementById('withdrawSection').classList.remove('hidden');
-                }
             })
             .catch(err => console.error('Error:', err));
         }
@@ -983,10 +989,30 @@
                 if (data.offline_time > 0 && data.offline_income > 0) {
                     const hours = Math.floor(data.offline_time / 3600);
                     const minutes = Math.floor((data.offline_time % 3600) / 60);
-                    const notice = document.getElementById('offlineNotice');
-                    notice.textContent = `⏰ Оффлайн ${hours}ч ${minutes}м | 💰 +${Math.floor(data.offline_income)} 🪙`;
-                    notice.classList.remove('hidden');
-                    loadData();
+                    
+                    const offlineContent = `
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
+                            <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px; background: linear-gradient(45deg, #4ade80, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Оффлайн доход!</div>
+                            <div style="font-size: 16px; opacity: 0.8; margin-bottom: 20px;">Вы были оффлайн ${hours}ч ${minutes}м</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #4ade80;">+${Math.floor(data.offline_income)} 🪙</div>
+                            <div style="font-size: 14px; opacity: 0.7; margin-top: 10px;">Получено автоматически</div>
+                        </div>
+                    `;
+                    document.getElementById('offlineContent').innerHTML = offlineContent;
+                    document.getElementById('offlinePopup').classList.add('active');
+                    
+                    // Update user data
+                    fetch('/api/user_data', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({user_id: user?.id})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const coins = Math.floor(data.coins || 0);
+                        document.getElementById('coins').textContent = coins;
+                    });
                 }
             });
         }
@@ -995,13 +1021,13 @@
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             
             energyRegenInterval = setInterval(() => {
-                const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
-                const maxEnergy = 1000;
+                const energyText = document.getElementById('energy-text').textContent;
+                const [energy, maxEnergy] = energyText.split('/').map(e => parseInt(e));
                 
                 if (energy < maxEnergy) {
                     const newEnergy = Math.min(energy + 1, maxEnergy);
                     document.getElementById('energy-text').textContent = `${newEnergy}/${maxEnergy}`;
-                    const energyPercent = (newEnergy / maxEnergy) * 100;
+                    const energyPercent = Math.min(100, Math.max(0, (newEnergy / maxEnergy) * 100));
                     document.getElementById('energy-bar').style.width = energyPercent + '%';
                     
                     fetch('/api/update_energy', {
@@ -1017,8 +1043,8 @@
             tg.HapticFeedback.impactOccurred('light');
             
             const button = document.querySelector('.tap-button');
-            button.style.transform = 'scale(0.95)';
-            setTimeout(() => { button.style.transform = ''; }, 100);
+            button.classList.add('active');
+            setTimeout(() => { button.classList.remove('active'); }, 150);
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
@@ -1253,9 +1279,48 @@
             tg.showAlert('✅ Ссылка скопирована!');
         }
 
-        function toggleWithdraw() {
-            const section = document.getElementById('withdrawSection');
-            section.classList.toggle('hidden');
+        function openWithdrawModal(e) {
+            e.preventDefault();
+            document.getElementById('withdrawModal').classList.add('active');
+            
+            // Check if user has enough QuanHash
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const quanhash = Math.floor(data.quanhash || 0);
+                if (quanhash < 500000) {
+                    document.getElementById('withdrawContent').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">💸</div>
+                            <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Недостаточно QuanHash</div>
+                            <div style="opacity: 0.7;">Нужно минимум 500,000 ⚡</div>
+                            <div style="margin-top: 20px; font-size: 24px; color: #f093fb;">У вас: ${quanhash.toLocaleString()} ⚡</div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('withdrawContent').innerHTML = `
+                        <div style="padding: 20px;">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">💸</div>
+                                <div style="font-size: 18px; font-weight: bold;">Вывод средств</div>
+                            </div>
+                            <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Обмен</div>
+                                <div style="font-size: 18px; font-weight: bold;">500,000 ⚡ = $1 USDT</div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
+                                <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
+                            </div>
+                            <button class="action-btn" onclick="withdraw()" style="width: 100%;">💸 Вывести</button>
+                        </div>
+                    `;
+                }
+            });
         }
 
         function withdraw() {
@@ -1274,6 +1339,7 @@
             .then(data => {
                 if (data.success) {
                     tg.showAlert('✅ Запрос на вывод отправлен!');
+                    closeModal('withdrawModal');
                     loadData();
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
