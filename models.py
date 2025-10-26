@@ -43,6 +43,8 @@ class User(Base):
     
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
+    last_passive_update = Column(DateTime, default=datetime.utcnow)
+    last_hash_update = Column(DateTime, default=datetime.utcnow)
     
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)

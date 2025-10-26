@@ -150,6 +150,31 @@ def get_user_data():
                 if machine.is_active:
                     passive_hash_per_hour += machine.hash_rate * 3600
             
+            # Calculate time since last update
+            current_time = datetime.utcnow()
+            
+            # Update passive coins if user has cards
+            if passive_coins_per_hour > 0 and user.last_passive_update:
+                time_diff = (current_time - user.last_passive_update).total_seconds()
+                if time_diff > 0:
+                    coins_to_add = (passive_coins_per_hour / 3600) * time_diff
+                    user.coins += coins_to_add
+                    user.last_passive_update = current_time
+            
+            # Update passive hash if user has machines
+            if passive_hash_per_hour > 0 and user.last_hash_update:
+                time_diff = (current_time - user.last_hash_update).total_seconds()
+                if time_diff > 0:
+                    hash_to_add = (passive_hash_per_hour / 3600) * time_diff
+                    user.quanhash += hash_to_add
+                    user.last_hash_update = current_time
+            
+            # Initialize last_passive_update if not set
+            if not user.last_passive_update:
+                user.last_passive_update = current_time
+            if not user.last_hash_update:
+                user.last_hash_update = current_time
+            
             return jsonify({
                 'coins': user.coins,
                 'quanhash': user.quanhash,
