@@ -246,6 +246,10 @@
             margin: 30px auto;
             background-image: url('http://unlock-rent.ru/tap.png');
             background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 50px;
+            position: relative;
             background-position: center;
             background-repeat: no-repeat;
             background-color: transparent;
@@ -274,18 +278,31 @@
             }
         }
 
-        .tap-button.active {
-            animation: tapScale 0.15s ease;
+        .tap-button::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50px;
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6));
+            filter: blur(20px);
+            opacity: 0;
+            animation: neonPulse 2s ease-in-out infinite;
         }
         
-        @keyframes tapScale {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.95); }
-            100% { transform: scale(1); }
+        .tap-button::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            filter: blur(15px);
+            opacity: 0;
+            animation: neonPulse 2s ease-in-out infinite 0.3s;
         }
         
-        .tap-button:active {
-            transform: scale(0.98);
+        @keyframes neonPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
         }
 
         /* Offline Income Notice */
@@ -743,7 +760,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚛️ Quantum Nexus ⚛️</h1>
+            <h1>Quantum Nexus</h1>
             <p>Привет, <span id="username">Майнер</span>!</p>
         </div>
 
@@ -1049,8 +1066,10 @@
             tg.HapticFeedback.impactOccurred('light');
             
             const button = document.querySelector('.tap-button');
-            button.classList.add('active');
-            setTimeout(() => { button.classList.remove('active'); }, 150);
+            if(button){
+                button.style.transform='scale(0.95)';
+                setTimeout(()=>{if(button)button.style.transform='scale(1)';},100);
+            }
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
