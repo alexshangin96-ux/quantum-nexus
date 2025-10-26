@@ -279,8 +279,8 @@
         }
 
         .tap-button {
-            width: 220px;
-            height: 220px;
+            width: 260px;
+            height: 260px;
             margin: 30px auto;
             background-image: url('http://unlock-rent.ru/tap.png');
             background-size: contain;
@@ -288,17 +288,14 @@
             background-position: center;
             border-radius: 50px;
             position: relative;
-            background-position: center;
-            background-repeat: no-repeat;
             background-color: transparent;
             border: none;
             cursor: pointer;
             box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
-            transition: transform 0.2s ease;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
-            position: relative;
             animation: pulse 2s ease-in-out infinite;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -335,6 +332,8 @@
         
         .tap-button.tap-pressed {
             animation: tapPress 0.4s ease;
+            transform: scale(0.92) !important;
+            filter: brightness(1.1);
         }
 
         .tap-button::before {
