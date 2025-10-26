@@ -230,21 +230,30 @@
         let quickEditData=null, logs=[], currentUser=null;
         
         function login(){
-            const loginInput=document.getElementById('login'); const passInput=document.getElementById('password');
-            if(!loginInput||!passInput){alert('Ошибка загрузки'); return false;}
-            const l=loginInput.value.trim(); const p=passInput.value.trim();
-            if(!l){alert('❌ Введите логин'); loginInput.focus(); return false;}
-            if(!p){alert('❌ Введите пароль'); passInput.focus(); return false;}
-            if(l!==ADMIN_LOGIN||p!==ADMIN_PASSWORD){alert('❌ Неверный логин или пароль'); return false;}
+            const loginInput=document.getElementById('login'); 
+            const passInput=document.getElementById('password');
+            if(!loginInput||!passInput){alert('Ошибка загрузки элементов');return false;}
+            const l=loginInput.value.trim(); 
+            const p=passInput.value.trim();
+            if(!l){alert('❌ Введите логин');loginInput.focus();return false;}
+            if(!p){alert('❌ Введите пароль');passInput.focus();return false;}
+            if(l!==ADMIN_LOGIN||p!==ADMIN_PASSWORD){alert('❌ Неверный логин или пароль');return false;}
             localStorage.setItem('admin_logged_in','true');
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
-            initPanel(); return true;
+            initPanel();
+            return true;
         }
         
-        function setupLogin(){const btn=document.getElementById('loginBtn');if(btn)btn.addEventListener('click',login);}
-        if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setupLogin);}else{setupLogin();}
-        window.addEventListener('load',setupLogin);
+        const loginBtn=document.getElementById('loginBtn');
+        if(loginBtn){
+            loginBtn.addEventListener('click',function(){login();});
+            console.log('Login button handler attached');
+        }
+        
+        document.getElementById('password').addEventListener('keypress',function(e){
+            if(e.key==='Enter')login();
+        });
         
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');}
         function refreshAll(){loadUsers();showNotification('🔄 Обновлено');}
