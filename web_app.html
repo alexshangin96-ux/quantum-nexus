@@ -838,7 +838,9 @@
             </div>
         </div>
 
-        <div class="tap-button" onclick="tap()"></div>
+        <div class="tap-button" onclick="tap()">
+            <img src="http://unlock-rent.ru/tap.png" alt="Tap" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
+        </div>
 
 
         <div class="buttons">
@@ -1625,28 +1627,72 @@
             modal.className = 'modal active';
             modal.id = 'supportModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 380px;">
-                    <h2 style="font-size: 20px; margin-bottom: 20px; color: #fff;">💬 Поддержка</h2>
-                    <select id="supportTopic" class="modal-input" style="margin-bottom: 15px;">
-                        <option value="Общие вопросы">Общие вопросы</option>
-                        <option value="Проблемы с балансом">Проблемы с балансом</option>
-                        <option value="Вывод средств">Вывод средств</option>
-                        <option value="Майнинг">Майнинг</option>
-                        <option value="Карточки">Карточки</option>
-                        <option value="Реферальная программа">Реферальная программа</option>
-                        <option value="Технические проблемы">Технические проблемы</option>
-                        <option value="Предложения">Предложения</option>
-                        <option value="Жалобы">Жалобы</option>
-                        <option value="Другое">Другое</option>
-                    </select>
-                    <textarea id="supportMessage" class="modal-input" placeholder="Опишите ваш вопрос..." rows="4" style="resize: vertical;"></textarea>
-                    <div style="display:flex;gap:10px;margin-top:15px;">
-                        <button onclick="sendSupport()" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:600;">📤 Отправить</button>
-                        <button onclick="document.getElementById('supportModal').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;">Отмена</button>
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="position:relative;text-align:center;margin-bottom:30px;">
+                        <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(102,126,234,0.8));">💬</div>
+                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:120px;opacity:0.1;font-weight:900;">SUPPORT</div>
+                        <h2 style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:2px;">Поддержка</h2>
+                        <p style="font-size:12px;opacity:0.6;margin-top:8px;">Мы всегда готовы помочь вам</p>
+                    </div>
+                    
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#94a3b8;">Тема обращения</label>
+                        <select id="supportTopic" style="width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;">
+                            <option value="Общие вопросы">❓ Общие вопросы</option>
+                            <option value="Проблемы с балансом">💳 Проблемы с балансом</option>
+                            <option value="Вывод средств">💸 Вывод средств</option>
+                            <option value="Майнинг">⚡ Майнинг</option>
+                            <option value="Карточки">💳 Карточки</option>
+                            <option value="Реферальная программа">👥 Реферальная программа</option>
+                            <option value="Технические проблемы">🔧 Технические проблемы</option>
+                            <option value="Предложения">💡 Предложения</option>
+                            <option value="Жалобы">⚠️ Жалобы</option>
+                            <option value="Другое">📝 Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#94a3b8;">Сообщение</label>
+                        <textarea id="supportMessage" placeholder="Опишите подробно ваш вопрос или проблему..." rows="5" style="width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;resize:vertical;font-family:inherit;"></textarea>
+                    </div>
+                    
+                    <div style="display:flex;gap:12px;">
+                        <button onclick="sendSupport()" style="flex:1;padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:14px;cursor:pointer;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(102,126,234,0.4);transition:all 0.3s;">📤 Отправить</button>
+                        <button onclick="document.getElementById('supportModal').remove()" style="flex:1;padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:14px;cursor:pointer;font-weight:600;font-size:15px;transition:all 0.3s;">Отмена</button>
+                    </div>
+                    
+                    <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);">
+                        <p style="font-size:11px;opacity:0.5;">⏱️ Среднее время ответа: 24 часа</p>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
+            
+            // Add focus effects
+            const topicSelect = document.getElementById('supportTopic');
+            const messageText = document.getElementById('supportMessage');
+            
+            if(topicSelect) {
+                topicSelect.addEventListener('focus', () => {
+                    topicSelect.style.borderColor = 'rgba(102,126,234,0.8)';
+                    topicSelect.style.boxShadow = '0 0 20px rgba(102,126,234,0.3)';
+                });
+                topicSelect.addEventListener('blur', () => {
+                    topicSelect.style.borderColor = 'rgba(102,126,234,0.3)';
+                    topicSelect.style.boxShadow = 'none';
+                });
+            }
+            
+            if(messageText) {
+                messageText.addEventListener('focus', () => {
+                    messageText.style.borderColor = 'rgba(102,126,234,0.8)';
+                    messageText.style.boxShadow = '0 0 20px rgba(102,126,234,0.3)';
+                });
+                messageText.addEventListener('blur', () => {
+                    messageText.style.borderColor = 'rgba(102,126,234,0.3)';
+                    messageText.style.boxShadow = 'none';
+                });
+            }
         }
         
         function sendSupport() {
