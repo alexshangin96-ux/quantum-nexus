@@ -276,14 +276,14 @@ def get_shop():
                 user_boosts = db.query(UserCard).filter_by(user_id=user.id, card_type='boosts').count() if hasattr(UserCard, 'card_type') else 0
                 items = []
                 for i in range(20):
-                    level = (user_boosts % 10) + 1  # Level 1-10 cycling
+                    level = 1  # Static level for now
                     base_price = 1000 * (i+1)
-                    current_price = int(base_price * (1.02 ** (level - 1)))  # 2% increase per level
+                    mult_value = 2 if i==0 else (5 if i==1 else 10)
                     items.append({
                         'id': f'boost_{i}',
-                        'name': f'Множитель тапов x{2 if i==0 else (5 if i==1 else 10)}',
-                        'description': f'Увеличивает доход от тапов на {2 if i==0 else (5 if i==1 else 10)}х на 24 часа',
-                        'price': current_price,
+                        'name': f'⚡ Множитель x{mult_value}',
+                        'description': f'🔮 Увеличивает доход от тапов на {mult_value}х на 24 часа',
+                        'price': base_price,
                         'level': level,
                         'item_type': 'multiplier_2x' if i==0 else ('multiplier_5x' if i==1 else 'multiplier_10x')
                     })
@@ -295,14 +295,15 @@ def get_shop():
                     level = (user_energy_boosts % 10) + 1
                     base_price = 500 * (i+1)
                     current_price = int(base_price * (1.02 ** (level - 1)))
+                    amount = 50 * (i+1)
                     items.append({
                         'id': f'energy_{i}',
-                        'name': f'⚡ Энергия +{50*(i+1)}',
-                        'description': f'Восполняет энергию на {50*(i+1)} единиц',
-                        'price': current_price,
-                        'level': level,
+                        'name': f'⚡ Энергия +{amount}',
+                        'description': f'⚡ Восполняет энергию на {amount} единиц',
+                        'price': 500 * (i+1),
+                        'level': 1,
                         'item_type': 'energy',
-                        'amount': 50*(i+1)
+                        'amount': amount
                     })
             elif category == 'cards':
                 card_templates = [
