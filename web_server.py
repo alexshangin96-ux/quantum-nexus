@@ -120,15 +120,15 @@ def get_user_data():
             # Return default values if user not found
             return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
         
-        # Check if user is banned or frozen
-        if user.is_banned:
+        # Check if user is banned or frozen (safe check for old DB schema)
+        if hasattr(user, 'is_banned') and user.is_banned:
             return jsonify({
                 'error': 'Вы заблокированы',
                 'is_banned': True,
-                'ban_reason': user.ban_reason
+                'ban_reason': getattr(user, 'ban_reason', None)
             }), 403
         
-        if user.is_frozen:
+        if hasattr(user, 'is_frozen') and user.is_frozen:
             return jsonify({
                 'error': 'Ваш аккаунт заморожен',
                 'is_frozen': True
