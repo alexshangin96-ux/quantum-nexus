@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Nexus Admin</title>
+    <title>⚛️ Quantum Nexus - Admin Control Center</title>
     <style>
         * {
             margin: 0;
@@ -11,78 +11,106 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --danger: #ef4444;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --dark: #0f172a;
+            --darker: #0a0e27;
+            --card-bg: rgba(15, 23, 42, 0.95);
+            --border: rgba(102, 126, 234, 0.3);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1d2e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
         }
 
-        .login-form {
-            max-width: 400px;
-            margin: 100px auto;
-            background: rgba(15, 23, 42, 0.9);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid rgba(102, 126, 234, 0.3);
+        /* Login Form */
+        .login-container {
+            max-width: 450px;
+            margin: 80px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.6);
+            animation: slideIn 0.5s ease;
         }
 
-        .form-title {
-            font-size: 28px;
-            margin-bottom: 30px;
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-title {
+            font-size: 36px;
             text-align: center;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: white;
             font-size: 16px;
+            transition: all 0.3s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
         }
 
-        .btn {
+        .btn-login {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .btn:hover {
+        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
         }
 
+        /* Main Panel */
         .admin-panel {
             display: none;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
@@ -91,144 +119,341 @@
         }
 
         .header {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
         }
 
-        .header h1 {
-            font-size: 32px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        .header-left h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
         }
 
-        .tabs {
+        .header-left p {
+            opacity: 0.7;
+            font-size: 16px;
+        }
+
+        .header-right {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+            gap: 15px;
         }
 
-        .tab {
+        .header-btn {
             padding: 12px 24px;
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             color: white;
             cursor: pointer;
-            border-bottom: 2px solid transparent;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .tab.active {
-            border-bottom-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+        .header-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .tab-content {
-            display: none;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
         }
 
-        .tab-content.active {
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
             display: block;
         }
 
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 14px 28px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+        }
+
+        /* Content Area */
+        .content-area {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            min-height: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 50px 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            opacity: 0.5;
+        }
+
+        /* Users Grid */
         .users-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 20px;
+            gap: 24px;
         }
 
         .user-card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 15px;
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
             transition: all 0.3s;
         }
 
         .user-card:hover {
-            border-color: rgba(102, 126, 234, 0.6);
-            transform: translateY(-5px);
+            transform: translateX(8px);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
+            border-color: var(--primary);
         }
 
         .user-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-info h3 {
+            font-size: 22px;
+            margin-bottom: 6px;
         }
 
         .user-id {
-            font-size: 12px;
+            font-size: 13px;
             opacity: 0.6;
+            margin-top: 4px;
         }
 
-        .stat-line {
+        .user-badges {
             display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            gap: 8px;
         }
 
-        .stat-label {
-            opacity: 0.8;
-        }
-
-        .stat-value {
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: bold;
-            color: #f093fb;
         }
 
-        .actions {
-            margin-top: 15px;
+        .badge-banned {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .badge-frozen {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .stats-grid-mini {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-label-small {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .stat-value-small {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
         .action-btn {
-            padding: 8px;
+            padding: 12px;
+            border-radius: 12px;
             border: none;
-            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-weight: bold;
             transition: all 0.3s;
+            color: white;
+            font-size: 13px;
         }
 
         .action-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .add-coins-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        .btn-add {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
 
-        .set-energy-btn {
-            background: rgba(102, 126, 234, 0.3);
-            color: white;
+        .btn-remove {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.8));
         }
 
-        .withdraw-request {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+        .btn-status {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.8), rgba(234, 179, 8, 0.8));
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, rgba(76, 222, 128, 0.8), rgba(34, 197, 94, 0.8));
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.6), rgba(220, 38, 38, 0.6));
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Withdrawal Requests */
+        .withdraw-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .withdraw-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
         }
 
         .withdraw-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .withdraw-status {
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 12px;
+        .status-badge {
+            padding: 8px 18px;
+            border-radius: 24px;
+            font-size: 13px;
             font-weight: bold;
         }
 
@@ -244,106 +469,159 @@
             border: 1px solid #4ade80;
         }
 
-        .withdraw-info {
+        .withdraw-details {
             background: rgba(102, 126, 234, 0.1);
-            padding: 12px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .approve-btn {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .reject-btn {
-            background: rgba(239, 68, 68, 0.3);
-            color: white;
-            border: 1px solid #ef4444;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .logout-btn {
-            padding: 12px 24px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .search-bar {
+            padding: 20px;
+            border-radius: 14px;
             margin-bottom: 20px;
         }
 
-        .search-bar input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            opacity: 0.7;
+        }
+
+        .detail-value {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .address-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            color: #4ade80;
+            margin: 15px 0;
+        }
+
+        .withdraw-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 18px;
+            opacity: 0.7;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="loginForm" class="login-form">
-        <h2 class="form-title">🔐 Admin Panel</h2>
+    <!-- Login Form -->
+    <div id="loginForm" class="login-container">
+        <h2 class="login-title">⚛️ Admin Control</h2>
         <div class="form-group">
             <label>Логин</label>
-            <input type="text" id="login" placeholder="Введите логин">
+            <input type="text" id="login" placeholder="smartfixnsk">
         </div>
         <div class="form-group">
             <label>Пароль</label>
-            <input type="password" id="password" placeholder="Введите пароль">
+            <input type="password" id="password" placeholder="••••••••">
         </div>
-        <button class="btn" onclick="login()">Войти</button>
+        <button class="btn-login" onclick="login()">🔓 Войти</button>
     </div>
 
-    <div id="adminPanel" class="admin-panel">
+    <!-- Main Panel -->
+    <div id="adminPanel" class="admin-panel hidden">
+        <!-- Header -->
         <div class="header">
-            <h1>⚛️ Quantum Nexus Admin</h1>
-            <button class="logout-btn" onclick="logout()">Выйти</button>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('users')">👥 Пользователи</button>
-            <button class="tab" onclick="switchTab('withdrawals')">💸 Заявки на вывод</button>
-            <button class="tab" onclick="switchTab('stats')">📊 Статистика</button>
-        </div>
-
-        <div id="usersTab" class="tab-content active">
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="🔍 Поиск пользователей..." onkeyup="filterUsers()">
+            <div class="header-left">
+                <h1>⚛️ Quantum Nexus</h1>
+                <p>Панель управления игрой</p>
             </div>
-            <div id="usersList"></div>
+            <div class="header-right">
+                <button class="header-btn" onclick="refreshAll()">🔄 Обновить</button>
+                <button class="header-btn" onclick="logout()">🚪 Выйти</button>
+            </div>
         </div>
 
-        <div id="withdrawalsTab" class="tab-content">
-            <div id="withdrawalsList"></div>
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="switchTab('users')">
+                <span class="stat-icon">👥</span>
+                <div class="stat-label">Пользователи</div>
+                <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('revenue')">
+                <span class="stat-icon">💰</span>
+                <div class="stat-label">Доход</div>
+                <div class="stat-value" id="totalRevenue">0</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('activity')">
+                <span class="stat-icon">⚡</span>
+                <div class="stat-label">Активность</div>
+                <div class="stat-value" id="totalActivity">0</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('withdrawals')">
+                <span class="stat-icon">💸</span>
+                <div class="stat-label">Заявки</div>
+                <div class="stat-value" id="totalWithdrawals">0</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('taps')">
+                <span class="stat-icon">👆</span>
+                <div class="stat-label">Тапов</div>
+                <div class="stat-value" id="totalTaps">0</div>
+            </div>
+            <div class="stat-card" onclick="switchTab('referrals')">
+                <span class="stat-icon">🔗</span>
+                <div class="stat-label">Рефералы</div>
+                <div class="stat-value" id="totalReferrals">0</div>
+            </div>
         </div>
 
-        <div id="statsTab" class="tab-content">
-            <div id="statsContent"></div>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы</button>
+            <button class="tab-btn" onclick="switchTab('stats')">📊 Аналитика</button>
+            <button class="tab-btn" onclick="switchTab('logs')">📝 Логи</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area" id="content">
+            <div class="loading">Загрузка данных...</div>
         </div>
     </div>
 
@@ -351,14 +629,10 @@
         const ADMIN_LOGIN = 'smartfixnsk';
         const ADMIN_PASSWORD = 'Maga1996';
 
-        // Check if already logged in
+        // Auto-login check
         window.addEventListener('load', () => {
             if (localStorage.getItem('admin_logged_in') === 'true') {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('adminPanel').classList.add('active');
-                loadUsers();
-                loadWithdrawals();
-                loadStats();
+                initPanel();
             }
         });
 
@@ -368,101 +642,155 @@
 
             if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
                 localStorage.setItem('admin_logged_in', 'true');
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('adminPanel').classList.add('active');
-                loadUsers();
-                loadWithdrawals();
-                loadStats();
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                initPanel();
             } else {
-                alert('Неверный логин или пароль');
+                alert('❌ Неверный логин или пароль');
             }
         }
 
         function logout() {
             localStorage.removeItem('admin_logged_in');
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+        }
+
+        function initPanel() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            loadDashboard();
+            loadUsers();
+        }
+
+        function loadDashboard() {
+            fetch('/api/admin/stats')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('totalUsers').textContent = formatNumber(data.total_users || 0);
+                    document.getElementById('totalRevenue').textContent = formatNumber(data.total_revenue || 0);
+                    document.getElementById('totalActivity').textContent = formatNumber(data.total_activity || 0);
+                    document.getElementById('totalWithdrawals').textContent = formatNumber(data.pending_withdrawals || 0);
+                    document.getElementById('totalTaps').textContent = formatNumber(data.total_taps || 0);
+                    document.getElementById('totalReferrals').textContent = formatNumber(data.total_referrals || 0);
+                })
+                .catch(err => console.error('Error loading dashboard:', err));
         }
 
         function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            loadTab(tabName);
+        }
+
+        function loadTab(tabName) {
+            const content = document.getElementById('content');
+            
+            if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'withdrawals') {
+                loadWithdrawals();
+            } else if (tabName === 'stats') {
+                loadStats();
+            } else if (tabName === 'logs') {
+                content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><p>Логи недоступны</p></div>';
+            } else if (tabName === 'settings') {
+                content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚙️</div><p>Настройки в разработке</p></div>';
+            }
         }
 
         function loadUsers() {
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Загрузка пользователей...</div>';
+            
             fetch('/api/admin/users')
-            .then(res => res.json())
-            .then(data => {
-                console.log('Users data:', data);
-                window.allUsers = data.users || [];
-                renderUsers(data.users || []);
-            })
-            .catch(err => {
-                console.error('Error loading users:', err);
-                document.getElementById('usersList').innerHTML = '<p style="color: red;">Ошибка загрузки пользователей</p>';
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.users && data.users.length > 0) {
+                        window.allUsers = data.users;
+                        renderUsers(data.users);
+                    } else {
+                        content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>Нет пользователей</p></div>';
+                    }
+                })
+                .catch(err => {
+                    content.innerHTML = '<div class="empty-state" style="color: #ef4444;"><div class="empty-state-icon">❌</div><p>Ошибка загрузки пользователей</p></div>';
+                    console.error('Error:', err);
+                });
         }
 
         function renderUsers(users) {
-            const usersHtml = users.map(user => `
-                <div class="user-card" data-username="${user.username || ''}" data-id="${user.telegram_id}">
-                    <div class="user-header">
-                        <div>
-                            <strong>${user.username || 'Unknown'}</strong>
-                            <div class="user-id">ID: ${user.telegram_id}</div>
-                            ${user.is_banned ? '<span style="color: #ef4444; font-size: 12px;">🔒 Заблокирован</span>' : ''}
-                            ${user.is_frozen ? '<span style="color: #f59e0b; font-size: 12px;">❄️ Заморожен</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">💰 Коины</span>
-                        <span class="stat-value">${Math.floor(user.coins).toLocaleString()}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">💎 QuanHash</span>
-                        <span class="stat-value">${Math.floor(user.quanhash).toLocaleString()}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">⚡ Энергия</span>
-                        <span class="stat-value">${user.energy}/${user.max_energy}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">👆 Тапов</span>
-                        <span class="stat-value">${user.total_taps}</span>
-                    </div>
-                    <div class="stat-line">
-                        <span class="stat-label">👥 Рефералов</span>
-                        <span class="stat-value">${user.referrals_count}</span>
-                    </div>
-                    <div class="actions">
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
-                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_coins', 10000)">+10k 🪙</button>
-                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_coins', 100000)">+100k 🪙</button>
-                            <button class="action-btn" style="background: linear-gradient(135deg, #667eea, #764ba2);" onclick="modifyUser(${user.telegram_id}, 'add_quanhash', 10000)">+10k 💎</button>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
-                            <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(${user.telegram_id}, 'remove_coins', 5000)">-5k 🪙</button>
-                            <button class="action-btn" style="background: rgba(102, 126, 234, 0.3);" onclick="setEnergy(${user.telegram_id}, ${user.max_energy})">⚡ MAX</button>
-                            <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(${user.telegram_id}, 'remove_quanhash', 5000)">-5k 💎</button>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                            ${user.is_banned ? 
-                                '<button class="action-btn" style="background: rgba(76, 222, 128, 0.3); border: 1px solid #4ade80;" onclick="modifyUser(' + user.telegram_id + ', \'unban\', \'\')">🔓 Разблокировать</button>' :
-                                '<button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444;" onclick="modifyUser(' + user.telegram_id + ', \'ban\', \'Admin ban\')">🔒 Заблокировать</button>'
-                            }
-                            ${user.is_frozen ? 
-                                '<button class="action-btn" style="background: rgba(76, 222, 128, 0.3); border: 1px solid #4ade80;" onclick="modifyUser(' + user.telegram_id + ', \'unfreeze\', \'\')">🔥 Разморозить</button>' :
-                                '<button class="action-btn" style="background: rgba(251, 191, 36, 0.3); border: 1px solid #fbbf24;" onclick="modifyUser(' + user.telegram_id + ', \'freeze\', \'\')">❄️ Заморозить</button>'
-                            }
-                        </div>
-                        <button class="action-btn" style="background: rgba(239, 68, 68, 0.3); border: 1px solid #ef4444; width: 100%; margin-top: 8px;" onclick="modifyUser(${user.telegram_id}, 'reset', 0)">⚠️ Сбросить все</button>
-                    </div>
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по имени или ID..." onkeyup="filterUsers()">
                 </div>
-            `).join('');
-            document.getElementById('usersList').innerHTML = usersHtml;
+                <div class="users-grid" id="usersList">
+                    ${users.map(user => createUserCard(user)).join('')}
+                </div>
+            `;
+        }
+
+        function createUserCard(user) {
+            return `
+                <div class="user-card" data-id="${user.telegram_id}" data-username="${user.username || ''}">
+                    <div class="user-header">
+                        <div class="user-info">
+                            <h3>${user.username || 'Unknown'}</h3>
+                            <div class="user-id">ID: ${user.telegram_id}</div>
+                        </div>
+                        <div class="user-badges">
+                            ${user.is_banned ? '<span class="badge badge-banned">🔒 Заблокирован</span>' : ''}
+                            ${user.is_frozen ? '<span class="badge badge-frozen">❄️ Заморожен</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="stats-grid-mini">
+                        <div class="stat-item">
+                            <div class="stat-label-small">💰 Коины</div>
+                            <div class="stat-value-small">${formatNumber(user.coins)}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label-small">💎 QuanHash</div>
+                            <div class="stat-value-small">${formatNumber(user.quanhash)}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label-small">⚡ Энергия</div>
+                            <div class="stat-value-small">${user.energy}/${user.max_energy}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label-small">👆 Тапов</div>
+                            <div class="stat-value-small">${formatNumber(user.total_taps)}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label-small">💵 Заработано</div>
+                            <div class="stat-value-small">${formatNumber(user.total_earned)}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label-small">👥 Рефералов</div>
+                            <div class="stat-value-small">${user.referrals_count}</div>
+                        </div>
+                    </div>
+                    <div class="actions-grid">
+                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_coins', 10000)">+10k 🪙</button>
+                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_coins', 100000)">+100k 🪙</button>
+                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_quanhash', 10000)">+10k 💎</button>
+                        <button class="action-btn btn-add" onclick="modifyUser(${user.telegram_id}, 'add_quanhash', 100000)">+100k 💎</button>
+                        <button class="action-btn btn-remove" onclick="modifyUser(${user.telegram_id}, 'remove_coins', 5000)">-5k 🪙</button>
+                        <button class="action-btn btn-remove" onclick="modifyUser(${user.telegram_id}, 'remove_quanhash', 5000)">-5k 💎</button>
+                        <button class="action-btn btn-status" onclick="setEnergy(${user.telegram_id}, ${user.max_energy})">⚡ Полная энергия</button>
+                        ${user.is_banned ? 
+                            '<button class="action-btn btn-success" onclick="modifyUser(' + user.telegram_id + ', \'unban\', \'\')">🔓 Разблокировать</button>' :
+                            '<button class="action-btn btn-status" onclick="modifyUser(' + user.telegram_id + ', \'ban\', \'Admin ban\')">🔒 Заблокировать</button>'
+                        }
+                        ${user.is_frozen ? 
+                            '<button class="action-btn btn-success" onclick="modifyUser(' + user.telegram_id + ', \'unfreeze\', \'\')">🔥 Разморозить</button>' :
+                            '<button class="action-btn btn-status" onclick="modifyUser(' + user.telegram_id + ', \'freeze\', \'\')">❄️ Заморозить</button>'
+                        }
+                    </div>
+                    <button class="action-btn btn-reset" onclick="modifyUser(${user.telegram_id}, 'reset', 0)">⚠️ Сбросить весь аккаунт</button>
+                </div>
+            `;
         }
 
         function filterUsers() {
@@ -471,122 +799,134 @@
                 (u.username && u.username.toLowerCase().includes(search)) ||
                 u.telegram_id.toString().includes(search)
             );
-            renderUsers(filtered);
-        }
-
-        function addCoins(userId, amount) {
-            fetch('/api/admin/add_coins', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: userId, amount: amount})
-            })
-            .then(() => loadUsers());
-        }
-
-        function setEnergy(userId, energy) {
-            fetch('/api/admin/set_energy', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: userId, energy: energy})
-            })
-            .then(() => loadUsers());
+            document.getElementById('usersList').innerHTML = filtered.map(user => createUserCard(user)).join('');
         }
 
         function modifyUser(userId, action, value) {
-            if (!confirm(`Вы уверены? Действие: ${action}, Значение: ${value}`)) return;
+            if (!confirm(`Выполнить действие: ${action}\nЗначение: ${value || 'N/A'}`)) return;
             
             fetch('/api/admin/modify_user', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({user_id: userId, action: action, value: value})
             })
+            .then(() => {
+                alert('✅ Изменения применены');
+                loadUsers();
+            })
+            .catch(err => alert('❌ Ошибка: ' + err));
+        }
+
+        function setEnergy(userId, maxEnergy) {
+            fetch('/api/admin/set_energy', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: userId, energy: maxEnergy})
+            })
             .then(() => loadUsers());
         }
 
         function loadWithdrawals() {
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Загрузка заявок...</div>';
+            
             fetch('/api/admin/withdrawals')
-            .then(res => res.json())
-            .then(data => {
-                if (data.requests && data.requests.length > 0) {
-                    const html = data.requests.map(req => `
-                        <div class="withdraw-request">
-                            <div class="withdraw-header">
-                                <div>
-                                    <strong>Заявка #${req.id}</strong>
-                                    <div style="font-size: 12px; opacity: 0.6;">${new Date(req.created_at).toLocaleString()}</div>
+                .then(res => res.json())
+                .then(data => {
+                    if (data.requests && data.requests.length > 0) {
+                        content.innerHTML = data.requests.map(req => `
+                            <div class="withdraw-card">
+                                <div class="withdraw-header">
+                                    <div>
+                                        <h3>Заявка #${req.id}</h3>
+                                        <div style="font-size: 13px; opacity: 0.6; margin-top: 4px;">${new Date(req.created_at).toLocaleString()}</div>
+                                    </div>
+                                    <span class="status-badge ${req.status === 'pending' ? 'status-pending' : 'status-completed'}">
+                                        ${req.status === 'pending' ? '⏳ Ожидает' : '✅ Выполнено'}
+                                    </span>
                                 </div>
-                                <span class="withdraw-status ${req.status === 'pending' ? 'status-pending' : 'status-completed'}">
-                                    ${req.status === 'pending' ? '⏳ Ожидает' : '✅ Выполнено'}
-                                </span>
+                                <div class="withdraw-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">User ID</span>
+                                        <span class="detail-value">${req.user_id}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">QuanHash</span>
+                                        <span class="detail-value">${formatNumber(req.amount)}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">USDT</span>
+                                        <span class="detail-value">$${req.usdt_amount}</span>
+                                    </div>
+                                    <div class="address-box">${req.address}</div>
+                                </div>
+                                ${req.status === 'pending' ? `
+                                    <div class="withdraw-actions">
+                                        <button class="action-btn btn-success" onclick="processWithdrawal(${req.id}, 'completed')">✅ Одобрить</button>
+                                        <button class="action-btn btn-remove" onclick="processWithdrawal(${req.id}, 'rejected')">❌ Отклонить</button>
+                                    </div>
+                                ` : ''}
                             </div>
-                            <div class="withdraw-info">
-                                <div class="info-row">
-                                    <span>User ID:</span>
-                                    <span>${req.user_id}</span>
-                                </div>
-                                <div class="info-row">
-                                    <span>QuanHash:</span>
-                                    <span>${req.amount.toLocaleString()} ⚡</span>
-                                </div>
-                                <div class="info-row">
-                                    <span>USDT:</span>
-                                    <span>$${req.usdt_amount}</span>
-                                </div>
-                            </div>
-                            <div style="margin: 10px 0; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; font-family: monospace; word-break: break-all;">
-                                ${req.address}
-                            </div>
-                            ${req.status === 'pending' ? `
-                                <div class="action-buttons">
-                                    <button class="approve-btn" onclick="processWithdrawal(${req.id}, 'completed')">✅ Одобрить</button>
-                                    <button class="reject-btn" onclick="processWithdrawal(${req.id}, 'rejected')">❌ Отклонить</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `).join('');
-                    document.getElementById('withdrawalsList').innerHTML = html;
-                } else {
-                    document.getElementById('withdrawalsList').innerHTML = '<p style="text-align: center; opacity: 0.7;">Нет заявок на вывод</p>';
-                }
-            });
+                        `).join('');
+                    } else {
+                        content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💸</div><p>Нет заявок на вывод</p></div>';
+                    }
+                });
         }
 
-        function processWithdrawal(id, status) {
+        function processWithdrawal(requestId, status) {
             fetch('/api/admin/process_withdrawal', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({request_id: id, status: status})
+                body: JSON.stringify({request_id: requestId, status: status})
             })
-            .then(() => loadWithdrawals());
-        }
-
-        function loadStats() {
-            fetch('/api/admin/stats')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('statsContent').innerHTML = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
-                            <div style="font-size: 36px; margin-bottom: 10px;">👥</div>
-                            <div style="font-size: 24px; font-weight: bold;">${data.total_users || 0}</div>
-                            <div style="opacity: 0.7;">Пользователей</div>
-                        </div>
-                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
-                            <div style="font-size: 36px; margin-bottom: 10px;">👆</div>
-                            <div style="font-size: 24px; font-weight: bold;">${data.total_taps || 0}</div>
-                            <div style="opacity: 0.7;">Всего тапов</div>
-                        </div>
-                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
-                            <div style="font-size: 36px; margin-bottom: 10px;">💸</div>
-                            <div style="font-size: 24px; font-weight: bold;">${data.pending_withdrawals || 0}</div>
-                            <div style="opacity: 0.7;">Заявок на вывод</div>
-                        </div>
-                    </div>
-                `;
+            .then(() => {
+                alert('✅ Заявка обработана');
+                loadWithdrawals();
             });
         }
 
-        document.getElementById('password').addEventListener('keypress', function(e) {
+        function loadStats() {
+            const content = document.getElementById('content');
+            fetch('/api/admin/stats')
+                .then(res => res.json())
+                .then(data => {
+                    content.innerHTML = `
+                        <div style="display: grid; gap: 24px;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                                <div class="stat-card">
+                                    <span class="stat-icon">👥</span>
+                                    <div class="stat-label">Пользователей</div>
+                                    <div class="stat-value">${formatNumber(data.total_users || 0)}</div>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-icon">👆</span>
+                                    <div class="stat-label">Всего тапов</div>
+                                    <div class="stat-value">${formatNumber(data.total_taps || 0)}</div>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-icon">💸</span>
+                                    <div class="stat-label">Заявок</div>
+                                    <div class="stat-value">${formatNumber(data.pending_withdrawals || 0)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        function refreshAll() {
+            loadDashboard();
+            loadUsers();
+            alert('🔄 Данные обновлены');
+        }
+
+        function formatNumber(num) {
+            return Math.floor(num || 0).toLocaleString('ru');
+        }
+
+        // Enter key for login
+        document.getElementById('password')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
     </script>
