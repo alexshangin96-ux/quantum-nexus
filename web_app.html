@@ -1683,6 +1683,11 @@
                                 <div style="font-size: 18px; font-weight: bold;">500,000 💎 = $1 USDT</div>
                             </div>
                             <div style="margin-bottom: 15px;">
+                                <div style="margin-bottom: 8px; font-weight: 500;">Количество QuanHash (мин. 500,000):</div>
+                                <input type="number" id="quanhashAmount" value="500000" min="500000" step="1000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
+                                <div id="usdtAmount" style="margin-top: 8px; font-size: 14px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
                                 <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
                                 <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
                             </div>
@@ -1736,17 +1741,34 @@
             });
         }
 
+        function updateUSDTAmount() {
+            const amount = parseInt(document.getElementById('quanhashAmount').value) || 500000;
+            const usdtAmount = amount / 500000;
+            document.getElementById('usdtAmount').textContent = `Получите: $${usdtAmount.toFixed(2)} USDT`;
+        }
+        
         function withdraw() {
             const address = document.getElementById('usdtAddress').value.trim();
+            const amount = parseInt(document.getElementById('quanhashAmount').value) || 500000;
+            
             if (!address || !address.match(/^0x[a-fA-F0-9]{40}$/)) {
                 tg.showAlert('⚠️ Введите правильный BEP20 адрес');
+                return;
+            }
+            
+            if (amount < 500000) {
+                tg.showAlert('⚠️ Минимум 500,000 QuanHash');
                 return;
             }
 
             fetch('/api/withdraw', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id, address: address})
+                body: JSON.stringify({
+                    user_id: user?.id, 
+                    address: address,
+                    amount: amount
+                })
             })
             .then(res => res.json())
             .then(data => {

@@ -586,6 +586,7 @@ def create_withdraw():
         data = request.json
         user_id = data.get('user_id')
         address = data.get('address')
+        amount = data.get('amount', 500000)  # Default 500000 if not specified
         
         if not user_id or not address:
             return jsonify({'error': 'Missing parameters'}), 400
@@ -593,27 +594,32 @@ def create_withdraw():
         if not address.startswith('0x') or len(address) != 42:
             return jsonify({'success': False, 'error': 'Invalid BEP20 address'})
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
+        # Validate amount (minimum 500,000)
+        if amount < 500000:
+            return jsonify({'success': False, 'error': 'Минимум 500,000 QuanHash'})
         
-        if not user:
-            return jsonify({'success': False, 'error': 'User not found'})
-        
-        if user.quanhash < 500000:
-            return jsonify({'success': False, 'error': 'Insufficient QuanHash'})
-        
-        # Create withdrawal record with pending status
-        withdrawal = Withdrawal(
-            user_id=user.id,
-            amount=500000,
-            usdt_amount=1.0,
-            address=address,
-            status='pending'  # Status: pending (in process)
-        )
-        db.add(withdrawal)
-        user.quanhash -= 500000
-        
-        db.commit()
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            if user.quanhash < amount:
+                return jsonify({'success': False, 'error': 'Недостаточно QuanHash'})
+            
+            # Calculate USDT amount (500,000 QuanHash = $1 USDT)
+            usdt_amount = amount / 500000
+            
+            # Create withdrawal record with pending status
+            withdrawal = Withdrawal(
+                user_id=user.id,
+                amount=int(amount),
+                usdt_amount=usdt_amount,
+                address=address,
+                status='pending'  # Status: pending (in process)
+            )
+            db.add(withdrawal)
+            user.quanhash -= int(amount)
         
         return jsonify({'success': True})
     except Exception as e:
