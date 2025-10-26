@@ -1650,7 +1650,7 @@
         }
 
         function openWithdrawModal(e) {
-            e.preventDefault();
+            if(e && e.preventDefault) e.preventDefault();
             document.getElementById('withdrawModal').classList.add('active');
             
             // Check if user has enough QuanHash
@@ -1785,8 +1785,11 @@
             .then(data => {
                 if (data.success) {
                     tg.showAlert('✅ Запрос на вывод отправлен!');
-                    closeModal('withdrawModal');
                     loadData();
+                    // Reload withdrawal history after successful request
+                    setTimeout(() => {
+                        openWithdrawModal({preventDefault: () => {}});
+                    }, 500);
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
                 }
