@@ -459,15 +459,40 @@ def get_withdrawals():
 
 @app.route('/api/admin/stats', methods=['GET'])
 def get_admin_stats():
-    """Get admin statistics"""
+    """Get comprehensive admin statistics"""
     try:
+        from sqlalchemy import func
         db = next(get_db())
-        users = db.query(User).all()
         
+        # Basic stats
+        total_users = db.query(User).count()
+        total_taps = db.query(func.sum(User.total_taps)).scalar() or 0
+        total_revenue = db.query(func.sum(User.total_earned)).scalar() or 0
+        pending_withdrawals = db.query(Withdrawal).filter_by(status='pending').count()
+        
+        # Advanced stats
+        total_coins = db.query(func.sum(User.coins)).scalar() or 0
+        total_quanhash = db.query(func.sum(User.quanhash)).scalar() or 0
+        total_referrals = db.query(func.sum(User.referrals_count)).scalar() or 0
+        active_users = db.query(User).filter(User.total_taps > 0).count()
+        banned_users = db.query(User).filter_by(is_banned=True).count() if hasattr(User, 'is_banned') else 0
+        total_machines = db.query(MiningMachine).count()
+        total_card_owners = db.query(UserCard).distinct(UserCard.user_id).count()
+        
+        db.close()
         return jsonify({
-            'total_users': len(users),
-            'total_taps': sum(u.total_taps for u in users),
-            'pending_withdrawals': 0
+            'total_users': total_users,
+            'total_taps': total_taps,
+            'total_revenue': total_revenue,
+            'pending_withdrawals': pending_withdrawals,
+            'total_coins': total_coins,
+            'total_quanhash': total_quanhash,
+            'total_referrals': total_referrals,
+            'active_users': active_users,
+            'banned_users': banned_users,
+            'total_machines': total_machines,
+            'total_cards': total_card_owners,
+            'total_activity': active_users
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
