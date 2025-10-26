@@ -396,8 +396,13 @@
             fetch('/api/admin/users')
             .then(res => res.json())
             .then(data => {
-                window.allUsers = data.users;
-                renderUsers(data.users);
+                console.log('Users data:', data);
+                window.allUsers = data.users || [];
+                renderUsers(data.users || []);
+            })
+            .catch(err => {
+                console.error('Error loading users:', err);
+                document.getElementById('usersList').innerHTML = '<p style="color: red;">Ошибка загрузки пользователей</p>';
             });
         }
 
