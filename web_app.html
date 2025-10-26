@@ -1209,43 +1209,150 @@
 
         function openMining(e) {
             e.preventDefault();
-            document.getElementById('miningModal').classList.add('active');
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'miningModal2';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="font-size: 20px; margin-bottom: 20px; color: #fff;">⚡ Майнинг</h2>
+                    <div style="display:flex;gap:10px;margin-bottom:20px;">
+                        <button class="category-btn" onclick="loadMiningCategory('starter')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:600;">📊 Стартовые</button>
+                        <button class="category-btn" onclick="loadMiningCategory('premium')" style="padding:10px 20px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;">💎 Премиум</button>
+                    </div>
+                    <div id="miningShop" style="display:grid;gap:10px;margin-bottom:20px;"></div>
+                    <div id="userMachines" style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);">
+                        <h3 style="font-size:16px;margin-bottom:10px;">🗃️ Ваши машины</h3>
+                        <div id="machinesList"></div>
+                    </div>
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;margin-top:20px;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            loadMiningCategory('starter');
+        }
+        
+        function loadMiningCategory(category) {
+            // Update button states
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.textContent.includes(category === 'starter' ? 'Стартовые' : 'Премиум')) {
+                    btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                    btn.style.border = 'none';
+                } else {
+                    btn.style.background = 'rgba(255,255,255,0.1)';
+                    btn.style.border = '1px solid rgba(255,255,255,0.3)';
+                }
+            });
+            
             fetch('/api/mining', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: user?.id, category: category})
             })
             .then(res => res.json())
             .then(data => {
-                if (data.machines && data.machines.length > 0) {
-                    document.getElementById('machinesList').innerHTML = data.machines.map(machine => `
-                        <div class="mining-machine">
-                            <span class="machine-tag ${machine.tag || 'free'}">${machine.tag === 'premium' ? 'Премиум' : 'FREE'}</span>
-                            <div class="machine-header">
-                                <div class="machine-name">${machine.name || 'Майнер'} <span class="machine-level">Lv.${machine.level}</span></div>
-                            </div>
-                            <div class="machine-stats">
-                                <div class="stat-item">
-                                    <div class="stat-label">Hash</div>
-                                    <div class="stat-value">${machine.hash_rate}/s</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-label">Доход</div>
-                                    <div class="stat-value">${machine.income_per_hour}/ч</div>
-                                </div>
-                            </div>
+                const shop = document.getElementById('miningShop');
+                shop.innerHTML = data.shop_machines.map(m => `
+                    <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;border:1px solid rgba(102,126,234,0.3);">
+                        <div style="font-weight:700;margin-bottom:8px;">${m.name}</div>
+                        <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">
+                            ⚡ Hash: ${m.hash_rate}/s | 💰 Доход/ч: ${m.hash_per_hour}
+                        </div>
+                        <button onclick="buyMachine('${m.id}', ${m.price}, '${m.currency}')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">
+                            Купить за ${m.price} ${m.currency === 'coins' ? '🪙' : '💎'}
+                        </button>
+                    </div>
+                `).join('');
+                
+                const list = document.getElementById('machinesList');
+                if(data.user_machines && data.user_machines.length > 0) {
+                    list.innerHTML = data.user_machines.map(m => `
+                        <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin-bottom:8px;">
+                            <div style="font-weight:600;">${m.name}</div>
+                            <div style="font-size:12px;color:#94a3b8;">⚡ Hash: ${m.hash_rate}/s</div>
                         </div>
                     `).join('');
                 } else {
-                    document.getElementById('machinesList').innerHTML = '<p style="text-align: center; opacity: 0.7;">У вас нет машин. Купите их в магазине!</p>';
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;">У вас нет машин</p>';
+                }
+            });
+        }
+        
+        function buyMachine(id, price, currency) {
+            fetch('/api/buy_machine', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id,
+                    machine_id: id,
+                    price: price,
+                    currency: currency
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    tg.showAlert('✅ Машина куплена!');
+                    loadMiningCategory(document.querySelector('.category-btn[style*="background: linear-gradient"]').textContent.includes('Стартовые') ? 'starter' : 'premium');
+                    loadData();
+                } else {
+                    tg.showAlert('❌ ' + data.error);
                 }
             });
         }
 
         function openCards(e) {
             e.preventDefault();
-            document.getElementById('cardsModal').classList.add('active');
-            document.getElementById('myCardsList').innerHTML = '<p style="text-align: center; opacity: 0.7;">У вас нет карточек. Купите их в магазине!</p>';
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'cardsModal2';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="font-size: 20px; margin-bottom: 10px; color: #fff;">💳 Карточки</h2>
+                    <p style="text-align:center;font-size:12px;color:#94a3b8;margin-bottom:20px;">Карточки дают пассивный доход в коинах каждый час</p>
+                    <div id="userCardsList" style="display:grid;gap:10px;margin-bottom:20px;"></div>
+                    <div id="passiveInfo" style="background:rgba(102,126,234,0.1);padding:15px;border-radius:12px;margin-bottom:20px;border:1px solid rgba(102,126,234,0.3);">
+                        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">💰 Пассивный доход</div>
+                        <div style="font-size:24px;font-weight:900;">+0 🪙/час</div>
+                    </div>
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            fetch('/api/cards', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('userCardsList');
+                let totalPassive = 0;
+                if(data.cards && data.cards.length > 0) {
+                    list.innerHTML = data.cards.map(card => {
+                        totalPassive += (card.income_per_minute || 0) * 60;
+                        const rarity = card.card_type || 'common';
+                        const rarityColors = {
+                            'common': 'rgba(255,255,255,0.1)',
+                            'rare': 'rgba(102,126,234,0.2)',
+                            'epic': 'rgba(118,75,162,0.2)',
+                            'legendary': 'rgba(234,179,8,0.2)'
+                        };
+                        return `
+                            <div style="background:${rarityColors[rarity]};padding:15px;border-radius:12px;border:2px solid ${rarity === 'legendary' ? '#eab308' : (rarity === 'epic' ? '#764ba2' : (rarity === 'rare' ? '#667eea' : 'rgba(255,255,255,0.3)'))};">
+                                <div style="font-weight:700;margin-bottom:5px;text-transform:capitalize;">${rarity} карточка</div>
+                                <div style="font-size:12px;color:#94a3b8;">💰 +${(card.income_per_minute || 0) * 60} 🪙/час</div>
+                                ${card.is_active ? '<div style="color:#10b981;font-size:12px;margin-top:5px;">✅ Активна</div>' : '<div style="color:#ef4444;font-size:12px;margin-top:5px;">❌ Неактивна</div>'}
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    document.getElementById('passiveInfo').querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
+                } else {
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;grid-column:1/-1;">У вас нет карточек. Купите их в магазине!</p>';
+                    document.getElementById('passiveInfo').querySelector('div:last-child').textContent = '+0 🪙/час';
+                }
+            });
         }
 
         function openStats(e) {
