@@ -172,29 +172,29 @@ def tap():
         if not user_id:
             return jsonify({'success': False, 'error': 'User ID required. Please start the bot first.'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'success': False, 'error': 'User not found. Please start the bot first.'}), 404
-        
-        # Check energy
-        if user.energy < ENERGY_COST_PER_TAP:
-            return jsonify({'success': False, 'error': 'Недостаточно энергии!'})
-        
-        # Calculate reward
-        reward = BASE_TAP_REWARD * user.active_multiplier
-        
-        # Update user
-        user.coins += reward
-        user.energy -= ENERGY_COST_PER_TAP
-        user.total_taps += 1
-        user.total_earned += reward
-        user.last_active = datetime.utcnow()
-        
-        db.commit()
-        
-        return jsonify({'success': True, 'reward': int(reward)})
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found. Please start the bot first.'}), 404
+            
+            # Check energy
+            if user.energy < ENERGY_COST_PER_TAP:
+                return jsonify({'success': False, 'error': 'Недостаточно энергии!'})
+            
+            # Calculate reward
+            reward = BASE_TAP_REWARD * user.active_multiplier
+            
+            # Update user
+            user.coins += reward
+            user.energy -= ENERGY_COST_PER_TAP
+            user.total_taps += 1
+            user.total_earned += reward
+            user.last_active = datetime.utcnow()
+            
+            db.commit()
+            
+            return jsonify({'success': True, 'reward': int(reward)})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -375,22 +375,22 @@ def get_offline_income():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        now = datetime.utcnow()
-        time_diff = (now - user.last_active).total_seconds()
-        
-        offline_time = min(time_diff, 3 * 60 * 60)  # 3 hours max
-        offline_income = offline_time * 0.1  # 0.1 coins per second
-        
-        return jsonify({
-            'offline_time': int(offline_time),
-            'offline_income': offline_income
-        })
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            now = datetime.utcnow()
+            time_diff = (now - user.last_active).total_seconds()
+            
+            offline_time = min(time_diff, 3 * 60 * 60)  # 3 hours max
+            offline_income = offline_time * 0.1  # 0.1 coins per second
+            
+            return jsonify({
+                'offline_time': int(offline_time),
+                'offline_income': offline_income
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
