@@ -332,7 +332,8 @@
         function showNotification(m){const n=document.createElement('div');n.className='notification';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),3000);}
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
-        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);setInterval(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){loadUsers();loadStats();}},10000);}
+        let withdrawalCount = 0;
+        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;});},3000);setInterval(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){loadUsers();loadStats();}},10000);}
         
         function loadStats(){
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
@@ -602,13 +603,51 @@
                     d.requests.forEach(r=>{
                         const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.telegram_id);
                         const div=document.createElement('div');div.className='user-card';
-                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"><div><div style="font-size:11px;color:#94a3b8;">Пользователь:</div><div style="font-size:14px;color:#fff;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:11px;color:#94a3b8;">Telegram ID:</div><div style="font-size:14px;color:#fff;">'+(r.telegram_id||r.user_id)+'</div></div><div><div style="font-size:11px;color:#94a3b8;">Коины:</div><div style="font-size:14px;color:#fff;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:11px;color:#94a3b8;">QuanHash:</div><div style="font-size:14px;color:#fff;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">'+(r.amount||0).toLocaleString()+' QuanHash ≈ $'+(r.usdt_amount||0)+'</div></div><div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Адрес USDT (BEP20):</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:4px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;color:#a78bfa;">'+r.address+'</div></div></div>';
-                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="processWithdrawalBtn(this)">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="processWithdrawalBtn(this)">❌ Отклонить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>';
+                        const statusColor = r.status==='completed'?'rgba(16,185,129,0.2)':r.status==='rejected'?'rgba(239,68,68,0.2)':'rgba(245,158,11,0.2)';
+                        const statusIcon = r.status==='completed'?'✅':r.status==='rejected'?'❌':'⏳';
+                        const statusText = r.status==='completed'?'Выполнено':r.status==='rejected'?'Отклонено':'Ожидает';
+                        const html='<div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-weight:800;font-size:20px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="padding:10px 20px;background:'+statusColor+';border-radius:12px;color:#fff;font-weight:700;font-size:14px;border:2px solid rgba(255,255,255,0.1);">'+statusIcon+' '+statusText+'</div></div></div><div style="background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;margin-bottom:16px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;"><div><div style="font-size:12px;color:#94a3b8;">Пользователь:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Telegram ID:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(r.telegram_id||r.user_id)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Коины:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">QuanHash:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:16px;padding:16px;background:rgba(102,126,234,0.15);border-radius:12px;border:2px solid rgba(102,126,234,0.3);"><div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">Сумма вывода:</div><div style="font-size:28px;font-weight:900;color:#667eea;line-height:1.2;">💎 '+(r.amount||0).toLocaleString()+' QuanHash</div><div style="font-size:16px;color:#94a3b8;margin-top:8px;">≈ $'+(parseFloat(r.usdt_amount||0)).toFixed(2)+' USDT</div></div><div style="margin-top:16px;"><div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Адрес BEP20:</div><div style="background:rgba(102,126,234,0.2);padding:16px;border-radius:12px;border:2px solid rgba(102,126,234,0.4);display:flex;align-items:center;gap:12px;"><div style="flex:1;font-family:monospace;font-size:13px;color:#fff;word-break:break-all;font-weight:600;">'+(r.address||'N/A')+'</div><button onclick="copyAddress(\''+(r.address||'')+'\')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(102,126,234,0.4);transition:all 0.3s;">📋 Копировать</button></div></div></div>';
+                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="confirmWithdrawal(this,\'approved\')">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="confirmWithdrawal(this,\'rejected\')">❌ Отклонить</button></div>':'';
                         div.innerHTML=html+actions;
                         c.appendChild(div);
                     });
                 }else{c.innerHTML='<div class="loading">Нет заявок на вывод</div>';}
             });
+        }
+        
+        function copyAddress(address){
+            navigator.clipboard.writeText(address).then(()=>{
+                showNotification('📋 Адрес скопирован в буфер обмена!');
+            }).catch(()=>showNotification('❌ Ошибка копирования'));
+        }
+        
+        function confirmWithdrawal(btn,type){
+            const rid=btn.getAttribute('data-rid');
+            const status=type==='approved'?'completed':'rejected';
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">${type==='approved'?'✅ Одобрить заявку':'❌ Отклонить заявку'}</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(${type==='approved'?'16,185,129':'239,68,68'},0.1);padding:15px;border-radius:12px;border:2px solid rgba(${type==='approved'?'16,185,129':'239,68,68'},0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите ${type==='approved'?'одобрить':'отклонить'} эту заявку на вывод?</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="processWithdrawalBtnConfirmed(${rid},'${status}');document.getElementById('confirmModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,${type==='approved'?'#10b981,#059669':'#ef4444,#dc2626'});color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">${type==='approved'?'✅ Одобрить':'❌ Отклонить'}</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            modal.id='confirmModal';
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function processWithdrawalBtnConfirmed(rid,status){
+            fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Заявка одобрена':'❌ Заявка отклонена');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));
         }
         
         function processWithdrawalBtn(btn){const rid=btn.getAttribute('data-rid');const status=btn.getAttribute('data-status');fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}

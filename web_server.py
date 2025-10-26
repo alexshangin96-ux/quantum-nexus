@@ -1159,6 +1159,16 @@ def get_unread_count():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/admin/withdrawal_count', methods=['GET'])
+def get_withdrawal_count():
+    """Get pending withdrawal requests count"""
+    try:
+        with get_db() as db:
+            withdrawal_count = db.query(Withdrawal).filter_by(status='pending').count()
+            return jsonify({'count': withdrawal_count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/admin/answer_ticket', methods=['POST'])
 def answer_ticket():
     """Answer support ticket and notify user"""
