@@ -620,6 +620,8 @@ def create_withdraw():
             )
             db.add(withdrawal)
             user.quanhash -= int(amount)
+            db.commit()  # Explicit commit
+            print(f"Withdrawal created: user_id={user.id}, amount={amount}, usdt={usdt_amount}, status=pending")
         
         return jsonify({'success': True})
     except Exception as e:
