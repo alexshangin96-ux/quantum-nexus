@@ -254,12 +254,27 @@
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
         function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();}
         
-        function loadStats(){fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
-            document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
-            document.getElementById('totalRevenue').querySelector('.stat-value').textContent=d.total_revenue||0;
-            document.getElementById('totalActivity').querySelector('.stat-value').textContent=d.active_users||0;
-            document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
-        });}
+        function loadStats(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=d.total_revenue||0;
+                document.getElementById('totalActivity').querySelector('.stat-value').textContent=d.active_users||0;
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+                c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📊 Подробная статистика</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">'+
+                    '<div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Пользователей</div><div class="stat-value">'+d.total_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">👆</div><div class="stat-label">Всего тапов</div><div class="stat-value">'+Math.floor(d.total_taps||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Общий доход</div><div class="stat-value">'+Math.floor(d.total_revenue||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💸</div><div class="stat-label">Заявок на вывод</div><div class="stat-value">'+d.pending_withdrawals+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-label">Всего коинов</div><div class="stat-value">'+Math.floor(d.total_coins||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💎</div><div class="stat-label">Всего QuanHash</div><div class="stat-value">'+Math.floor(d.total_quanhash||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔗</div><div class="stat-label">Рефералов</div><div class="stat-value">'+Math.floor(d.total_referrals||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-label">Активных</div><div class="stat-value">'+d.active_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔒</div><div class="stat-label">Заблокированных</div><div class="stat-value">'+d.banned_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-label">Машин</div><div class="stat-value">'+d.total_machines+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🎴</div><div class="stat-label">Карточек</div><div class="stat-value">'+d.total_cards+'</div></div></div>';
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки статистики</div>');
+        }
         
         function loadUsers(){
             const c=document.getElementById('content');
@@ -273,9 +288,9 @@
                         const card=document.createElement('div');card.className='user-card';
                         card.innerHTML=`<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${(u.coins||0).toLocaleString()}</div></div>
-<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${(u.quanhash||0).toLocaleString()}</div></div>
-<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${u.energy}/${u.max_energy}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.energy||0)}/${Math.floor(u.max_energy||0)}</div></div>
 </div>
 <div class="actions-grid">
 <button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${u.coins||0})">💰 Изменить коины</button>
@@ -320,18 +335,17 @@
                 if(d.requests&&d.requests.length>0){
                     c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💸 Заявки на вывод ('+d.requests.length+')</h2>';
                     d.requests.forEach(r=>{
-                        fetch('/api/admin/users').then(ru=>ru.json()).then(du=>{
-                            const user=du.users&&du.users.find(u=>u.telegram_id===r.user_id);
-                            const div=document.createElement('div');div.className='user-card';
-                            div.innerHTML=`<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">Заявка #${r.id}</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div>
+                        const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.user_id);
+                        const div=document.createElement('div');div.className='user-card';
+                        div.innerHTML=`<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">Заявка #${r.id}</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div>
 <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
 <div><div style="font-size:11px;color:#94a3b8;">Пользователь:</div><div style="font-size:14px;color:#fff;">${user?user.username:'Unknown'}</div></div>
 <div><div style="font-size:11px;color:#94a3b8;">Telegram ID:</div><div style="font-size:14px;color:#fff;">${r.user_id}</div></div>
-<div><div style="font-size:11px;color:#94a3b8;">Коины:</div><div style="font-size:14px;color:#fff;">${user?user.coins.toLocaleString():0}</div></div>
-<div><div style="font-size:11px;color:#94a3b8;">QuanHash:</div><div style="font-size:14px;color:#fff;">${user?user.quanhash.toLocaleString():0}</div></div>
+<div><div style="font-size:11px;color:#94a3b8;">Коины:</div><div style="font-size:14px;color:#fff;">${user?Math.floor(user.coins||0).toLocaleString():0}</div></div>
+<div><div style="font-size:11px;color:#94a3b8;">QuanHash:</div><div style="font-size:14px;color:#fff;">${user?Math.floor(user.quanhash||0).toLocaleString():0}</div></div>
 </div>
-<div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">${(r.amount||0).toLocaleString()} QuanHash ≈ $${(r.usdt_amount||0).toLocaleString()}</div></div>
+<div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(r.amount||0).toLocaleString()} QuanHash ≈ $${(r.usdt_amount||0).toFixed(2)}</div></div>
 <div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Адрес USDT (BEP20):</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:4px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;color:#a78bfa;">${r.address}</div></div>
 </div>
 ${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" onclick="processWithdrawal('+r.id+',\'completed\')">✅ Одобрить</button><button class="action-btn btn-danger" onclick="processWithdrawal('+r.id+',\'rejected\')">❌ Отклонить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>'}`;
