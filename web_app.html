@@ -1235,13 +1235,20 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    const coinAnimation = document.createElement('div');
-                    coinAnimation.className = 'coin-animation';
-                    coinAnimation.textContent = '+' + data.reward;
-                    coinAnimation.style.left = '50%';
-                    coinAnimation.style.top = '50%';
-                    document.body.appendChild(coinAnimation);
-                    setTimeout(() => { document.body.removeChild(coinAnimation); }, 1000);
+                    const button = document.querySelector('.tap-button');
+                    if(button){
+                        const rect = button.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const centerY = rect.top + rect.height / 2;
+                        
+                        const coinAnimation = document.createElement('div');
+                        coinAnimation.className = 'coin-animation';
+                        coinAnimation.textContent = '+' + data.reward;
+                        coinAnimation.style.left = centerX + 'px';
+                        coinAnimation.style.top = centerY + 'px';
+                        document.body.appendChild(coinAnimation);
+                        setTimeout(() => { document.body.removeChild(coinAnimation); }, 1000);
+                    }
                     loadData();
                 }
             });
