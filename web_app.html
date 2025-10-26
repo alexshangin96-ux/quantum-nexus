@@ -749,16 +749,33 @@
             <p>Привет, <span id="username">Майнер</span>!</p>
         </div>
 
-        <div id="offlineNotice" class="offline-notice hidden"></div>
+        <!-- Offline Income Popup -->
+        <div id="offlinePopup" class="modal">
+            <div class="modal-content" style="max-width: 350px;">
+                <div class="modal-header">
+                    <div class="modal-title">💰 Оффлайн доход</div>
+                    <button class="close-btn" onclick="closeModal('offlinePopup')">✕</button>
+                </div>
+                <div id="offlineContent"></div>
+            </div>
+        </div>
 
         <div class="stats">
             <div class="stat-row">
-                <span class="stat-label">💰 Коins</span>
+                <span class="stat-label">💰 Коины</span>
                 <span class="stat-value" id="coins">0</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">💎 QuanHash</span>
                 <span class="stat-value" id="quanhash">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">💰 Пассивно/ч</span>
+                <span class="stat-value" id="passiveCoins">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">💎 Пассивно/ч</span>
+                <span class="stat-value" id="passiveHash">0</span>
             </div>
             <div class="energy-bar-container">
                 <div class="stat-row">
