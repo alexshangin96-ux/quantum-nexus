@@ -1665,29 +1665,27 @@
                 const hasEnough = quanhash >= 500000;
                 
                 document.getElementById('withdrawContent').innerHTML = `
-                    <div style="display: flex; flex-direction: column; height: 100%; max-height: 80vh;">
-                        <div style="flex: 1; overflow-y: auto; padding: 20px;">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
-                                <div style="font-size: 18px; font-weight: bold;">Вывод средств</div>
-                                <div style="font-size: 14px; opacity: 0.7; margin-top: 5px;">У вас: ${quanhash.toLocaleString()} 💎</div>
-                            </div>
-                            <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                                <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Обмен</div>
-                                <div style="font-size: 18px; font-weight: bold;">500,000 💎 = $1 USDT</div>
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <div style="margin-bottom: 8px; font-weight: 500;">Количество QuanHash (мин. 500,000):</div>
-                                <input type="number" id="quanhashAmount" value="500000" min="500000" step="1000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
-                                <div id="usdtAmount" style="margin-top: 8px; font-size: 14px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
-                                <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
-                            </div>
-                            <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно QuanHash'}</button>
+                    <div style="padding: 20px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
+                            <div style="font-size: 18px; font-weight: bold;">Вывод средств</div>
+                            <div style="font-size: 14px; opacity: 0.7; margin-top: 5px;">У вас: ${quanhash.toLocaleString()} 💎</div>
                         </div>
-                        <div style="border-top: 2px solid rgba(255,255,255,0.1); padding: 20px; background: inherit;">
+                        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                            <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Обмен</div>
+                            <div style="font-size: 18px; font-weight: bold;">500,000 💎 = $1 USDT</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="margin-bottom: 8px; font-weight: 500;">Количество QuanHash (мин. 500,000):</div>
+                            <input type="number" id="quanhashAmount" value="500000" min="500000" step="1000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
+                            <div id="usdtAmount" style="margin-top: 8px; font-size: 14px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
+                            <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
+                        </div>
+                        <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно QuanHash'}</button>
+                        <div style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
                             <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center;">📜 История выводов</div>
                             <div id="withdrawHistory" style="max-height: 150px; overflow-y: auto;"></div>
                         </div>
