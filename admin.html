@@ -182,7 +182,7 @@
         <div class="form-group">
             <input type="password" id="password" placeholder="Пароль" autocomplete="current-password">
         </div>
-        <button class="btn" id="loginBtn" type="button" onclick="login()">🚀 Войти</button>
+        <button class="btn" id="loginBtn" type="button">🚀 Войти</button>
     </div>
 
     <div id="adminPanel" class="hidden">
@@ -229,8 +229,7 @@
         const ADMIN_LOGIN='smartfixnsk'; const ADMIN_PASSWORD='Maga1996';
         let quickEditData=null, logs=[], currentUser=null;
         
-        // Global login function - accessible from onclick
-        window.login = function(){
+        function login(){
             console.log('Login function called');
             const loginInput=document.getElementById('login');
             const passInput=document.getElementById('password');
@@ -276,10 +275,7 @@
             document.getElementById('adminPanel').classList.remove('hidden');
             initPanel();
             return true;
-        };
-        
-        // Also define as regular function for backwards compatibility
-        function login(){return window.login();}
+        }
         
         window.addEventListener('load',function(){
             const loginBtn=document.getElementById('loginBtn');
