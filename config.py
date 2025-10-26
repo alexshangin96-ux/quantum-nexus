@@ -16,8 +16,8 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
 
 # Game Configuration
 OFFLINE_INCOME_DURATION = 3 * 60 * 60  # 3 hours in seconds
-ENERGY_REGEN_PER_MINUTE = 1
-MAX_ENERGY = 100
+ENERGY_REGEN_PER_SECOND = 10  # 10 energy per second
+MAX_ENERGY = 1000
 
 # Tap Configuration
 BASE_TAP_REWARD = 1
