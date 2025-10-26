@@ -279,17 +279,13 @@
         }
 
         .tap-button {
-            width: 260px;
-            height: 260px;
+            width: 280px;
+            height: 280px;
             margin: 30px auto;
-            background-image: url('http://unlock-rent.ru/tap.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
             border-radius: 50px;
             position: relative;
-            background-color: transparent;
-            border: none;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            border: 4px solid transparent;
             cursor: pointer;
             box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
             transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -300,40 +296,64 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tap-button svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(255, 192, 203, 0.6));
         }
 
         @keyframes pulse {
             0%, 100% {
                 transform: scale(1);
                 box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(102, 126, 234, 0.4);
-                filter: hue-rotate(0deg);
+                border-color: rgba(102, 126, 234, 0.6);
             }
             50% {
                 transform: scale(1.05);
                 box-shadow: 0 20px 60px rgba(102, 126, 234, 0.7), 0 0 40px 20px rgba(102, 126, 234, 0.3);
-                filter: hue-rotate(10deg);
+                border-color: rgba(240, 147, 251, 0.8);
             }
         }
         
         @keyframes tapPress {
             0% { 
                 transform: scale(1);
-                filter: hue-rotate(0deg) brightness(1);
+                filter: brightness(1);
+                box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(240, 147, 251, 0.8);
             }
             50% {
-                transform: scale(0.92);
-                filter: hue-rotate(60deg) brightness(1.3);
+                transform: scale(0.85);
+                filter: brightness(1.4);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.8), 0 0 60px 30px rgba(240, 147, 251, 1);
             }
             100% {
                 transform: scale(1);
-                filter: hue-rotate(0deg) brightness(1);
+                filter: brightness(1);
+                box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(240, 147, 251, 0.8);
+            }
+        }
+        
+        @keyframes neonBurst {
+            0% {
+                box-shadow: 0 0 0 0 rgba(240, 147, 251, 0);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(240, 147, 251, 0), 0 0 0 40px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(240, 147, 251, 0), 0 0 0 0 rgba(102, 126, 234, 0);
             }
         }
         
         .tap-button.tap-pressed {
-            animation: tapPress 0.4s ease;
-            transform: scale(0.92) !important;
-            filter: brightness(1.1);
+            animation: tapPress 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: scale(0.85) !important;
+            box-shadow: 0 5px 30px rgba(102, 126, 234, 1), 0 0 80px 40px rgba(240, 147, 251, 0.8) !important;
         }
 
         .tap-button::before {
@@ -798,11 +818,30 @@
         }
 
         .coin-animation {
-            position: absolute;
-            font-size: 24px;
+            position: fixed;
+            font-size: 32px;
+            font-weight: 900;
             pointer-events: none;
-            animation: coinFloat 0.8s ease-out;
-            z-index: 100;
+            animation: coinFloat 1s ease-out forwards;
+            z-index: 9999;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 40px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 1));
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -150%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -250%) scale(1);
+            }
         }
 
         .loading {
@@ -875,7 +914,7 @@
                 </defs>
                 <circle cx="110" cy="110" r="100" fill="url(#tapGrad)" filter="url(#glow)" opacity="0.9"/>
                 <circle cx="110" cy="110" r="90" fill="none" stroke="#f093fb" stroke-width="2" opacity="0.6"/>
-                <text x="110" y="140" font-size="60" text-anchor="middle" fill="#fff" font-weight="bold">💰</text>
+                <text x="110" y="150" font-size="100" text-anchor="middle" fill="#fff" font-weight="bold" style="filter: drop-shadow(0 0 15px rgba(255, 192, 203, 0.8));">💰</text>
             </svg>
         </div>
 
@@ -1193,10 +1232,8 @@
                     coinAnimation.textContent = '+' + data.reward;
                     coinAnimation.style.left = '50%';
                     coinAnimation.style.top = '50%';
-                    coinAnimation.style.position = 'absolute';
-                    coinAnimation.style.transform = 'translate(-50%, -50%)';
                     document.body.appendChild(coinAnimation);
-                    setTimeout(() => { document.body.removeChild(coinAnimation); }, 800);
+                    setTimeout(() => { document.body.removeChild(coinAnimation); }, 1000);
                     loadData();
                 }
             });
