@@ -1132,8 +1132,78 @@
 
         function openShop(e) {
             e.preventDefault();
-            document.getElementById('shopModal').classList.add('active');
-            renderShop();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'shopModal2';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="font-size: 20px; margin-bottom: 20px; color: #fff;">🛒 Магазин</h2>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
+                        <button class="shop-cat-btn" onclick="loadShopCategory('boosts')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">📈 Бусты (20)</button>
+                        <button class="shop-cat-btn" onclick="loadShopCategory('energy')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ Энергия (20)</button>
+                        <button class="shop-cat-btn" onclick="loadShopCategory('cards')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">🎴 Карточки (20)</button>
+                        <button class="shop-cat-btn" onclick="loadShopCategory('auto')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">🤖 Авто (20)</button>
+                    </div>
+                    <div id="shopItemsList" style="display:grid;gap:8px;"></div>
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;margin-top:20px;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            loadShopCategory('boosts');
+        }
+        
+        function loadShopCategory(category) {
+            // Update button states
+            document.querySelectorAll('.shop-cat-btn').forEach(btn => {
+                if(btn.textContent.toLowerCase().includes(category)) {
+                    btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                    btn.style.border = 'none';
+                } else {
+                    btn.style.background = 'rgba(255,255,255,0.1)';
+                    btn.style.border = '1px solid rgba(255,255,255,0.3)';
+                }
+            });
+            
+            fetch('/api/shop', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, category: category})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('shopItemsList');
+                list.innerHTML = data.items.map(item => `
+                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;border:1px solid rgba(102,126,234,0.3);">
+                        <div style="font-weight:700;margin-bottom:5px;">${item.name}</div>
+                        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">
+                            ${category === 'cards' ? '💰 Пассивный доход' : category === 'energy' ? '⚡ +Энергия' : category === 'boosts' ? '📈 Усилитель' : '🤖 Автоматизация'}
+                        </div>
+                        <button onclick="buyShopItem('${item.item_type}', ${item.price})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;">
+                            Купить ${item.price.toLocaleString()} 🪙
+                        </button>
+                    </div>
+                `).join('');
+            });
+        }
+        
+        function buyShopItem(item_type, price) {
+            fetch('/api/buy', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, item_type: item_type, price: price})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    tg.showAlert('✅ Покупка успешна!');
+                    loadData();
+                    loadShopCategory(document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
+                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('energy') ? 'energy' :
+                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto');
+                } else {
+                    tg.showAlert('❌ ' + data.error);
+                }
+            });
         }
 
         function renderShop() {
