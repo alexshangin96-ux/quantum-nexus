@@ -161,6 +161,7 @@ class SupportTicket(Base):
     message = Column(Text)  # Message content
     answer = Column(Text, nullable=True)  # Admin answer
     status = Column(String(20), default='pending')  # pending, answered, resolved
+    is_read = Column(Boolean, default=False)  # Mark if user has read the answer
     
     created_at = Column(DateTime, default=datetime.utcnow)
     answered_at = Column(DateTime, nullable=True)

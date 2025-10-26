@@ -1050,11 +1050,40 @@ def get_user_support():
                     'message': ticket.message,
                     'answer': ticket.answer,
                     'status': display_status,  # Show "answered" if there's an answer
+                    'is_read': ticket.is_read if hasattr(ticket, 'is_read') else False,
                     'created_at': ticket.created_at.isoformat() if ticket.created_at else None,
                     'answered_at': ticket.answered_at.isoformat() if ticket.answered_at else None
                 })
             
             return jsonify({'tickets': tickets_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/mark_tickets_read', methods=['POST'])
+def mark_tickets_read():
+    """Mark all user's answered tickets as read"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Mark all answered tickets as read
+            answered_tickets = db.query(SupportTicket).filter(
+                SupportTicket.user_id == user.id,
+                SupportTicket.answer.isnot(None)
+            ).all()
+            for ticket in answered_tickets:
+                ticket.is_read = True
+        
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

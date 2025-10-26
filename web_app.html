@@ -1947,6 +1947,17 @@
         }
         
         function loadMyTickets() {
+            // Hide badge when opening my tickets
+            const badge = document.getElementById('supportBadge');
+            badge.style.display = 'none';
+            
+            // Mark all answered tickets as read
+            fetch('/api/mark_tickets_read', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            });
+            
             fetch('/api/user_support', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
