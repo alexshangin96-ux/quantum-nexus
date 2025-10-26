@@ -739,41 +739,50 @@ def buy_machine():
     try:
         data = request.json
         user_id = data.get('user_id')
-        machine_type = data.get('machine_type')
+        machine_id = data.get('machine_id')
+        price = data.get('price')
+        currency = data.get('currency', 'coins')
         
-        if not user_id or not machine_type:
+        if not user_id or not machine_id or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'success': False, 'error': 'User not found'})
-        
-        machines_config = {
-            'basic': {'price': 10000, 'hash_rate': 0.01, 'name': 'Базовая машина'},
-            'advanced': {'price': 50000, 'hash_rate': 0.05, 'name': 'Продвинутая машина'},
-            'pro': {'price': 200000, 'hash_rate': 0.2, 'name': 'Профессиональная машина'},
-            'legendary': {'price': 1000000, 'hash_rate': 1.0, 'name': 'Легендарная машина'},
-        }
-        
-        machine_config = machines_config.get(machine_type)
-        if not machine_config:
-            return jsonify({'success': False, 'error': 'Invalid machine type'})
-        
-        if user.coins < machine_config['price']:
-            return jsonify({'success': False, 'error': 'Недостаточно коинов'})
-        
-        machine = MiningMachine(
-            user_id=user.id,
-            name=machine_config['name'],
-            hash_rate=machine_config['hash_rate'],
-            level=1
-        )
-        db.add(machine)
-        user.coins -= machine_config['price']
-        
-        db.commit()
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Check balance
+            if currency == 'coins':
+                if user.coins < price:
+                    return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+                user.coins -= price
+            else:  # quanhash
+                if user.quanhash < price:
+                    return jsonify({'success': False, 'error': 'Недостаточно QuanHash'})
+                user.quanhash -= price
+            
+            # Parse machine info from ID (format: starter_0, premium_15, etc)
+            parts = machine_id.split('_')
+            if len(parts) != 2:
+                return jsonify({'success': False, 'error': 'Invalid machine ID'})
+            
+            machine_num = int(parts[1])
+            if parts[0] == 'starter':
+                hash_rate = round(0.05 * (machine_num + 1), 2)
+                name = f'Стартовая машина #{machine_num + 1}'
+            else:  # premium
+                hash_rate = round(0.5 * (machine_num + 1), 2)
+                name = f'Премиум машина #{machine_num + 1}'
+            
+            machine = MiningMachine(
+                user_id=user.id,
+                name=name,
+                hash_rate=hash_rate,
+                level=1,
+                machine_type=machine_id
+            )
+            db.add(machine)
         
         return jsonify({'success': True})
     except Exception as e:

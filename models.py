@@ -66,6 +66,7 @@ class MiningMachine(Base):
     hash_rate = Column(Float, default=0.01)
     power_consumption = Column(Float, default=0.0)
     efficiency = Column(Float, default=1.0)
+    machine_type = Column(String(50), nullable=True)
     
     # Mining status
     is_active = Column(Boolean, default=True)
