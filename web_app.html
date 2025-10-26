@@ -1898,8 +1898,12 @@
                     message: message
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log('Support response status:', res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log('Support response data:', data);
                 if (data.success) {
                     tg.showAlert('✅ Сообщение отправлено!');
                     const modal = document.querySelector('#supportModal') || document.querySelector('.modal.active');
@@ -1910,7 +1914,7 @@
             })
             .catch(err => {
                 console.error('Support send error:', err);
-                tg.showAlert('❌ Ошибка при отправке');
+                tg.showAlert('❌ Ошибка при отправке: ' + err.message);
             });
         }
     </script>
