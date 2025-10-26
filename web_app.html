@@ -487,22 +487,7 @@
             position: relative;
         }
 
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            padding: 2px;
-            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-        
-        .modal-content-without-border::before {
-            content: none;
-        }
+        /* .modal-content::before - Removed to fix double border issue */
 
         .modal-header {
             display: flex;
@@ -990,7 +975,7 @@
 
     <!-- Withdraw Modal -->
     <div id="withdrawModal" class="modal">
-        <div class="modal-content modal-content-without-border" style="max-height: 80vh; overflow-y: auto;">
+        <div class="modal-content" style="max-height: 80vh; overflow-y: auto;">
             <div class="modal-header">
                 <div class="modal-title">💸 Вывод средств</div>
                 <button class="close-btn" onclick="closeModal('withdrawModal')">✕</button>
