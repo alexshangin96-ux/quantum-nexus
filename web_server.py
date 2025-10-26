@@ -1042,12 +1042,14 @@ def get_user_support():
             
             tickets_data = []
             for ticket in tickets:
+                # If ticket has an answer, show status as "answered" to user, regardless of database status
+                display_status = 'answered' if ticket.answer else ticket.status
                 tickets_data.append({
                     'id': ticket.id,
                     'topic': ticket.topic,
                     'message': ticket.message,
                     'answer': ticket.answer,
-                    'status': ticket.status,
+                    'status': display_status,  # Show "answered" if there's an answer
                     'created_at': ticket.created_at.isoformat() if ticket.created_at else None,
                     'answered_at': ticket.answered_at.isoformat() if ticket.answered_at else None
                 })
@@ -1196,8 +1198,10 @@ def archive_ticket():
             if not ticket:
                 return jsonify({'success': False, 'error': 'Ticket not found'}), 404
             
+            # Mark as resolved for archive, but keep status as "answered" so user sees it as "ready"
             ticket.status = 'resolved'
-            ticket.answered_at = datetime.utcnow()
+            if not ticket.answered_at:
+                ticket.answered_at = datetime.utcnow()
         
         return jsonify({'success': True})
     except Exception as e:
