@@ -32,20 +32,26 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         # Check for referral - use telegram_id as referral code
         if context.args and context.args[0]:
+            referral_value = context.args[0]
+            referrer = None
+            
+            # First try to find by telegram_id (most common case)
             try:
-                referral_telegram_id = int(context.args[0])
+                referral_telegram_id = int(referral_value)
                 referrer = db.query(User).filter_by(telegram_id=referral_telegram_id).first()
+                print(f"Looking for referrer by telegram_id: {referral_telegram_id}, found: {referrer is not None}")
             except ValueError:
-                referral_code = context.args[0]
-                referrer = db.query(User).filter_by(referral_code=referral_code).first()
-            else:
-                referrer = None
+                # Try by referral_code if it's not a number
+                referrer = db.query(User).filter_by(referral_code=referral_value).first()
+                print(f"Looking for referrer by code: {referral_value}, found: {referrer is not None}")
+            
             if referrer and referrer.id != db_user.id:
                 db_user.referred_by = referrer.id
                 referrer.referrals_count += 1
                 db_user.coins += REFERRAL_BONUS
                 referrer.coins += REFERRAL_BONUS // 2
                 db.commit()
+                logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
     
     # Calculate offline income
     offline_income = calculate_offline_income(db_user)
