@@ -250,37 +250,53 @@ def get_shop():
 
 @app.route('/api/mining', methods=['POST'])
 def get_mining():
-    """Get mining data"""
+    """Get mining data with categories"""
     try:
         data = request.json
         user_id = data.get('user_id')
+        category = data.get('category', 'starter')
         
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        machines = db.query(MiningMachine).filter_by(user_id=user.id).all()
-        
-        machines_data = []
-        for machine in machines:
-            machines_data.append({
-                'id': machine.id,
-                'name': machine.name,
-                'level': machine.level,
-                'hash_rate': machine.hash_rate,
-                'income_per_hour': machine.hash_rate * 3600,
-                'tag': 'premium' if machine.hash_rate > 0.1 else 'free'
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Generate 30 machines for each category
+            if category == 'starter':
+                # Machines for coins (starting from 5000)
+                machines = [
+                    {'id': f'starter_{i}', 'name': f'Стартовая машина #{i+1}', 'price': 5000 + i*5000, 'hash_rate': round(0.05*(i+1), 2), 'currency': 'coins', 'hash_per_hour': round(0.05*(i+1)*3600)}
+                    for i in range(30)
+                ]
+            else:
+                # Machines for QuanHash
+                machines = [
+                    {'id': f'premium_{i}', 'name': f'Премиум машина #{i+1}', 'price': 50 + i*50, 'hash_rate': round(0.5*(i+1), 2), 'currency': 'quanhash', 'hash_per_hour': round(0.5*(i+1)*3600)}
+                    for i in range(30)
+                ]
+            
+            user_machines = db.query(MiningMachine).filter_by(user_id=user.id).all()
+            machines_data = []
+            for machine in user_machines:
+                machines_data.append({
+                    'id': machine.id,
+                    'name': machine.name,
+                    'level': machine.level,
+                    'hash_rate': machine.hash_rate,
+                    'income_per_hour': machine.hash_rate * 3600,
+                })
+            
+            return jsonify({
+                'quanhash': user.quanhash,
+                'coins': user.coins,
+                'category': category,
+                'shop_machines': machines,
+                'user_machines': machines_data
             })
-        
-        return jsonify({
-            'quanhash': user.quanhash,
-            'machines': machines_data
-        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
