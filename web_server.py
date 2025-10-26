@@ -1387,7 +1387,8 @@ def get_transaction_history():
                     'timestamp': t.created_at.timestamp() if t.created_at else 0
                 })
             
-            # Add withdrawals
+            # Add withdrawals (sorted by timestamp descending)
+            withdrawal_list = []
             for w in withdrawals:
                 # Map status to Russian
                 status_map = {
@@ -1397,7 +1398,7 @@ def get_transaction_history():
                 }
                 status_text = status_map.get(w.status, w.status)
                 
-                history.append({
+                withdrawal_list.append({
                     'type': 'withdrawal',
                     'amount': w.usdt_amount,
                     'currency': 'usd',
@@ -1408,10 +1409,10 @@ def get_transaction_history():
                     'timestamp': w.created_at.timestamp() if w.created_at else 0
                 })
             
-            # Sort by timestamp descending
-            history.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
+            # Sort withdrawals by timestamp descending and return only last 3
+            withdrawal_list.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
             
-            return jsonify({'history': history[:3]})  # Return last 3 withdrawals
+            return jsonify({'history': withdrawal_list[:3]})  # Return only last 3 withdrawals
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
