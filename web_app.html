@@ -1624,9 +1624,9 @@
             .then(data => {
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
                 document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
-                // Generate correct referral link using user's telegram_id as referral code
+                // Generate correct referral link using referral_code
                 const botUsername = 'Quanexus_bot'; // Bot username without @
-                const refCode = user?.id || data.referral_code || 'no_code'; // Use user.id (telegram_id)
+                const refCode = data.referral_code || user?.id || 'no_code'; // Use referral_code from API
                 const refLink = `https://t.me/${botUsername}?start=${refCode}`;
                 document.getElementById('refLink').textContent = refLink;
             });

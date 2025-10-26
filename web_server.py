@@ -473,17 +473,17 @@ def get_referrals():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        return jsonify({
-            'referral_code': user.referral_code,
-            'referrals_count': user.referrals_count,
-            'referral_income': user.referral_income
-        })
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            return jsonify({
+                'referral_code': user.referral_code,
+                'referrals_count': user.referrals_count,
+                'referral_income': user.referral_income
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
