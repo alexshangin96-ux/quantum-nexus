@@ -427,8 +427,10 @@
         function loadQuestions(){
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
             fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const unreadCount = d.unread_count || 0;
+                const unreadBadge = unreadCount > 0 ? '<span style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-left:10px;box-shadow:0 4px 12px rgba(239,68,68,0.4);">'+unreadCount+' новое</span>' : '';
                 if(d.tickets&&d.tickets.length>0){
-                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💬 Вопросы от пользователей ('+d.tickets.length+')</h2>';
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;display:flex;align-items:center;">💬 Вопросы от пользователей ('+d.tickets.length+')'+unreadBadge+'</h2>';
                     d.tickets.forEach(t=>{
                         const div=document.createElement('div');div.className='user-card';
                         const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';

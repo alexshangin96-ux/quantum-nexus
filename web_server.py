@@ -1011,6 +1011,9 @@ def get_support_tickets():
         with get_db() as db:
             tickets = db.query(SupportTicket).order_by(SupportTicket.created_at.desc()).all()
             
+            # Count unread tickets (pending status)
+            unread_count = db.query(SupportTicket).filter_by(status='pending').count()
+            
             tickets_data = []
             for t in tickets:
                 user = db.query(User).filter_by(id=t.user_id).first()
@@ -1025,7 +1028,17 @@ def get_support_tickets():
                     'created_at': t.created_at.isoformat() if t.created_at else None
                 })
             
-            return jsonify({'tickets': tickets_data})
+            return jsonify({'tickets': tickets_data, 'unread_count': unread_count})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/unread_count', methods=['GET'])
+def get_unread_count():
+    """Get unread support tickets count"""
+    try:
+        with get_db() as db:
+            unread_count = db.query(SupportTicket).filter_by(status='pending').count()
+            return jsonify({'unread_count': unread_count})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
