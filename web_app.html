@@ -1665,6 +1665,7 @@
                 const hasEnough = quanhash >= 500000;
                 
                 document.getElementById('withdrawContent').innerHTML = `
+                    <div style="max-height: 80vh; overflow-y: auto;">
                         <div style="padding: 20px;">
                             <div style="text-align: center; margin-bottom: 20px;">
                                 <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
@@ -1684,13 +1685,14 @@
                                 <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
                                 <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
                             </div>
-                            <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно валюты'}</button>
+                            <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно QuanHash'}</button>
                             <div style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
                                 <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center;">📜 История выводов</div>
-                                <div id="withdrawHistory" style="max-height: 200px; overflow-y: auto;"></div>
+                                <div id="withdrawHistory" style="max-height: 150px; overflow-y: auto;"></div>
                             </div>
                         </div>
-                    `;
+                    </div>
+                `;
                     
                     // Load transaction history
                     loadWithdrawHistory();
