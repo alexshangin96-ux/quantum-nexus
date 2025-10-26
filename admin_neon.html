@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚛️ Quantum Nexus Admin - Neon Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --neon-cyan: #00ffff; --neon-purple: #a855f7; --neon-pink: #ff00ff;
+            --neon-blue: #0066ff; --neon-green: #00ff00; --neon-yellow: #ffff00;
+            --dark: #0a0a0a; --card: rgba(15, 15, 30, 0.9);
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #0d0d0d 50%, #000033 100%);
+            background-size: 400% 400%;
+            animation: bgShift 15s ease infinite;
+            color: #e0e0e0; min-height: 100vh; padding: 15px;
+            overflow-x: hidden;
+        }
+        @keyframes bgShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes neonGlow {
+            0%, 100% { 
+                text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+                box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, inset 0 0 20px currentColor;
+            }
+            50% { 
+                text-shadow: 0 0 20px currentColor, 0 0 30px currentColor, 0 0 40px currentColor;
+                box-shadow: 0 0 20px currentColor, 0 0 30px currentColor, inset 0 0 30px currentColor;
+            }
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .neon-text { color: var(--neon-cyan); text-shadow: 0 0 10px currentColor; animation: neonGlow 2s ease infinite; }
+        .neon-purple { color: var(--neon-purple); text-shadow: 0 0 10px currentColor; }
+        .neon-pink { color: var(--neon-pink); text-shadow: 0 0 10px currentColor; }
+        
+        .container { max-width: 1900px; margin: 0 auto; position: relative; z-index: 1; }
+        
+        .login-container {
+            max-width: 420px; margin: 80px auto;
+            background: linear-gradient(135deg, rgba(15,15,30,0.95), rgba(30,15,45,0.95));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 24px; padding: 50px 40px;
+            box-shadow: 0 0 50px rgba(0,255,255,0.5), 0 0 100px rgba(168,85,247,0.3);
+            animation: float 0.6s, neonGlow 3s ease infinite;
+        }
+        @keyframes float { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .login-title { font-size: 40px; text-align: center; margin-bottom: 30px; font-weight: 900; }
+        .login-icon { font-size: 80px; margin: 0 auto 20px; display: block; text-align: center; animation: pulse 2s ease infinite; }
+        
+        .form-group { margin-bottom: 24px; position: relative; }
+        .form-group input {
+            width: 100%; padding: 16px 20px; background: rgba(0,0,0,0.6);
+            border: 2px solid transparent; border-radius: 12px; color: #fff;
+            font-size: 16px; transition: all 0.4s;
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
+        }
+        .form-group input:focus {
+            outline: none; border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0,255,255,0.6), 0 0 60px rgba(168,85,247,0.3);
+            background: rgba(0,0,0,0.8);
+        }
+        
+        .btn {
+            width: 100%; padding: 18px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: #000; font-weight: 900; font-size: 18px; cursor: pointer;
+            transition: all 0.4s; box-shadow: 0 0 30px rgba(0,255,255,0.6);
+        }
+        .btn:hover { transform: translateY(-4px); box-shadow: 0 0 50px rgba(0,255,255,1), 0 0 80px rgba(168,85,247,0.8); }
+        
+        .header {
+            background: var(--card); backdrop-filter: blur(30px); border: 2px solid var(--neon-cyan);
+            border-radius: 20px; padding: 24px 32px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 0 40px rgba(0,255,255,0.3);
+            animation: slideIn 0.5s;
+        }
+        .header h1 { font-size: 28px; margin: 0; font-weight: 900; }
+        .header-right { display: flex; gap: 12px; }
+        .header-btn {
+            padding: 10px 20px; background: var(--glass); border: 2px solid var(--neon-purple);
+            border-radius: 12px; color: #fff; cursor: pointer; font-weight: 700;
+            transition: all 0.3s; box-shadow: 0 0 20px rgba(168,85,247,0.3);
+        }
+        .header-btn:hover {
+            background: rgba(168,85,247,0.2); border-color: var(--neon-cyan);
+            transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,255,255,0.6);
+        }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(15,15,30,0.9), rgba(30,15,45,0.9));
+            border: 2px solid var(--neon-cyan); border-radius: 18px; padding: 22px;
+            text-align: center; transition: all 0.3s; cursor: pointer;
+            box-shadow: 0 0 30px rgba(0,255,255,0.2);
+            animation: float 0.6s;
+        }
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.05); border-color: var(--neon-purple);
+            box-shadow: 0 0 50px rgba(168,85,247,0.8);
+        }
+        .stat-icon { font-size: 40px; margin-bottom: 12px; filter: drop-shadow(0 0 10px currentColor); }
+        .stat-label { font-size: 11px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+        .stat-value { font-size: 32px; font-weight: 900; }
+        
+        .tabs-container {
+            background: var(--card); backdrop-filter: blur(30px); border: 2px solid var(--neon-purple);
+            border-radius: 18px; padding: 10px; margin-bottom: 20px;
+            display: flex; gap: 10px; flex-wrap: wrap;
+            box-shadow: 0 0 40px rgba(168,85,247,0.3);
+        }
+        .tab-btn {
+            padding: 12px 24px; background: transparent; border: 2px solid transparent;
+            border-radius: 14px; color: #94a3b8; cursor: pointer; font-weight: 800;
+            transition: all 0.3s; font-size: 14px;
+        }
+        .tab-btn:hover { background: rgba(168,85,247,0.1); color: #fff; border-color: var(--neon-purple); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: #000; box-shadow: 0 0 30px rgba(168,85,247,0.8);
+            border-color: var(--neon-cyan);
+        }
+        
+        .content-area {
+            background: var(--card); backdrop-filter: blur(30px); border: 2px solid var(--neon-cyan);
+            border-radius: 24px; padding: 30px; min-height: 700px;
+            box-shadow: 0 0 50px rgba(0,255,255,0.3);
+            animation: float 0.4s;
+        }
+        
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+        .action-btn {
+            padding: 14px 18px; border-radius: 12px; border: 2px solid;
+            cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s;
+        }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px currentColor; }
+        .btn-edit { background: linear-gradient(135deg, var(--neon-cyan), #00ccff); color: #000; border-color: var(--neon-cyan); }
+        .btn-manage { background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink)); color: #fff; border-color: var(--neon-purple); }
+        .btn-danger { background: linear-gradient(135deg, #ff0000, #ff6600); color: #fff; border-color: #ff0000; }
+        .btn-success { background: linear-gradient(135deg, var(--neon-green), #00cc00); color: #000; border-color: var(--neon-green); }
+        
+        .user-card {
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(15,15,30,0.8));
+            border: 2px solid var(--neon-cyan); border-radius: 18px; padding: 22px;
+            margin-bottom: 16px; transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(0,255,255,0.2);
+        }
+        .user-card:hover {
+            transform: translateX(8px) scale(1.02); border-color: var(--neon-purple);
+            box-shadow: 0 0 50px rgba(168,85,247,0.8);
+        }
+        .user-header { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid rgba(0,255,255,0.2); }
+        .user-info h3 { font-size: 20px; margin-bottom: 6px; font-weight: 900; }
+        .user-id { font-size: 12px; color: #94a3b8; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 100000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15,15,30,0.98), rgba(30,15,45,0.98));
+            border: 3px solid var(--neon-cyan); border-radius: 24px; padding: 32px;
+            max-width: 500px; width: 90%; box-shadow: 0 0 60px rgba(0,255,255,0.8);
+        }
+        .modal-title { font-size: 24px; margin-bottom: 20px; font-weight: 900; }
+        .modal-input {
+            width: 100%; padding: 16px; background: rgba(0,0,0,0.6); border: 2px solid var(--neon-cyan);
+            border-radius: 12px; color: white; font-size: 16px; margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+        }
+        .modal-actions { display: flex; gap: 12px; }
+        .btn-modal { flex: 1; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-weight: 800; }
+        
+        .hidden { display: none !important; }
+        .loading { text-align: center; padding: 60px 20px; color: #94a3b8; font-size: 18px; }
+        
+        .notification {
+            position: fixed; top: 20px; right: 20px; background: var(--card);
+            border: 2px solid var(--neon-cyan); border-radius: 14px; padding: 16px 20px;
+            box-shadow: 0 0 40px rgba(0,255,255,0.5); animation: float 0.3s; z-index: 99999;
+            max-width: 350px; font-weight: 700;
+        }
+        
+        .settings-grid, .security-grid, .tools-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;
+        }
+        .setting-card, .security-card, .tool-card {
+            background: rgba(0,0,0,0.6); border: 2px solid var(--neon-purple);
+            border-radius: 16px; padding: 22px; transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(168,85,247,0.3);
+        }
+        .setting-card:hover, .security-card:hover, .tool-card:hover {
+            transform: translateY(-4px); border-color: var(--neon-cyan);
+            box-shadow: 0 0 50px rgba(0,255,255,0.6);
+        }
+        .card-title { font-size: 18px; margin-bottom: 12px; font-weight: 900; }
+        .card-desc { font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
+        .card-actions { display: flex; gap: 8px; }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="login-container">
+        <div class="login-icon neon-text">⚛️</div>
+        <div class="login-title neon-text">Quantum Nexus</div>
+        <div class="form-group">
+            <input type="text" id="login" placeholder="Введите логин" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Введите пароль" autocomplete="current-password">
+        </div>
+        <button class="btn" id="loginBtn" type="button">🚀 Войти</button>
+    </div>
+
+    <div id="adminPanel" class="container hidden">
+        <div class="header">
+            <div><h1 class="neon-text">⚛️ Quantum Nexus - Admin Control</h1></div>
+            <div class="header-right">
+                <button class="header-btn" onclick="refreshAll()">🔄</button>
+                <button class="header-btn" onclick="exportData()">📥</button>
+                <button class="header-btn" onclick="logout()">🚪</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card neon-text" id="totalUsers">👥<div class="stat-label">Пользователи</div><div class="stat-value">0</div></div>
+            <div class="stat-card neon-purple" id="totalRevenue">💰<div class="stat-label">Доход</div><div class="stat-value">0</div></div>
+            <div class="stat-card neon-text" id="totalActivity">⚡<div class="stat-label">Активность</div><div class="stat-value">0</div></div>
+            <div class="stat-card neon-pink" id="totalWithdrawals">💸<div class="stat-label">Заявки</div><div class="stat-value">0</div></div>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы</button>
+            <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
+            <button class="tab-btn" onclick="switchTab('security')">🔒 Безопасность</button>
+            <button class="tab-btn" onclick="switchTab('tools')">🛠️ Инструменты</button>
+        </div>
+
+        <div class="content-area" id="content"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <div class="modal" id="quickEditModal">
+        <div class="modal-content">
+            <h2 class="modal-title neon-text" id="modalTitle">Редактирование</h2>
+            <input type="number" class="modal-input" id="modalInput" placeholder="Введите значение">
+            <div class="modal-actions">
+                <button class="btn-modal" onclick="closeModal()">Отмена</button>
+                <button class="btn-modal btn" onclick="confirmQuickEdit()">Применить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_LOGIN='smartfixnsk'; const ADMIN_PASSWORD='Maga1996';
+        let quickEditData=null, logs=[], currentUser=null;
+        
+        function login(){
+            const loginInput=document.getElementById('login'); const passInput=document.getElementById('password');
+            if(!loginInput||!passInput){alert('Ошибка загрузки'); return false;}
+            const l=loginInput.value.trim(); const p=passInput.value.trim();
+            if(!l){alert('❌ Введите логин'); loginInput.focus(); return false;}
+            if(!p){alert('❌ Введите пароль'); passInput.focus(); return false;}
+            if(l!==ADMIN_LOGIN){alert('❌ Неверный логин'); loginInput.focus(); return false;}
+            if(p!==ADMIN_PASSWORD){alert('❌ Неверный пароль'); passInput.focus(); return false;}
+            localStorage.setItem('admin_logged_in','true');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            initPanel(); return true;
+        }
+        
+        function setupLogin(){const btn=document.getElementById('loginBtn');if(btn){btn.addEventListener('click',login);console.log('Login handler attached');}}
+        if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setupLogin);}else{setupLogin();}
+        window.addEventListener('load',setupLogin);
+        
+        function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');}
+        function refreshAll(){loadUsers();showNotification('🔄 Обновлено');}
+        function exportData(){const data=JSON.stringify(window.allUsers||[],null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='users_export.json';a.click();}
+        
+        function showNotification(m){const n=document.createElement('div');n.className='notification neon-text';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),4000);}
+        
+        function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
+        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
+        
+        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();}
+        
+        function loadStats(){fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+            document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+            document.getElementById('totalRevenue').querySelector('.stat-value').textContent=d.total_revenue||0;
+            document.getElementById('totalActivity').querySelector('.stat-value').textContent=d.active_users||0;
+            document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+        });}
+        
+        function loadUsers(){
+            const c=document.getElementById('content');
+            c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
+                if(d.users&&d.users.length>0){
+                    window.allUsers=d.users;
+                    c.innerHTML='<div class="search-container"><input type="text" class="search-input" placeholder="🔍 Поиск пользователей..." style="width:100%;padding:14px;background:rgba(0,0,0,0.6);border:2px solid var(--neon-cyan);border-radius:12px;color:#fff;margin-bottom:20px;box-shadow:0 0 20px rgba(0,255,255,0.3);"></div>';
+                    const ul=document.createElement('div');ul.className='users-list';
+                    d.users.forEach(u=>{
+                        const card=document.createElement('div');card.className='user-card';
+                        card.innerHTML=`
+<div class="user-header">
+<div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">
+<div style="text-align:center;padding:12px;background:rgba(0,0,0,0.4);border-radius:10px;border:1px solid rgba(0,255,255,0.3);">
+<div style="font-size:11px;color:#94a3b8;margin-bottom:6px;">💰 Коины</div><div class="neon-text" style="font-size:20px;font-weight:900;">${(u.coins||0).toLocaleString()}</div>
+</div>
+<div style="text-align:center;padding:12px;background:rgba(0,0,0,0.4);border-radius:10px;border:1px solid rgba(168,85,247,0.3);">
+<div style="font-size:11px;color:#94a3b8;margin-bottom:6px;">💎 QuanHash</div><div class="neon-purple" style="font-size:20px;font-weight:900;">${(u.quanhash||0).toLocaleString()}</div>
+</div>
+<div style="text-align:center;padding:12px;background:rgba(0,0,0,0.4);border-radius:10px;border:1px solid rgba(0,255,255,0.3);">
+<div style="font-size:11px;color:#94a3b8;margin-bottom:6px;">⚡ Энергия</div><div class="neon-text" style="font-size:20px;font-weight:900;">${u.energy}/${u.max_energy}</div>
+</div>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${u.coins})">💰 Изменить коины</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${u.quanhash})">💎 Изменить QuanHash</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${u.energy})">⚡ Изменить энергию</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
+<button class="action-btn ${u.is_frozen?'btn-success':'btn-manage'}" onclick="toggleFreeze(${u.telegram_id},${u.is_frozen})">${u.is_frozen?'🔥 Разморозить':'❄️ Заморозить'}</button>
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс аккаунта</button>
+</div>`;
+                        ul.appendChild(card);
+                    });
+                    c.appendChild(ul);
+                }else{c.innerHTML='<div class="loading">Нет пользователей</div>';}
+            });
+        }
+        
+        function openEditModal(uid,field,title,currentValue){
+            document.getElementById('modalTitle').textContent=title;
+            document.getElementById('modalInput').value=currentValue||0;
+            document.getElementById('quickEditModal').classList.add('active');
+            quickEditData={userId:uid,field};
+        }
+        function closeModal(){document.getElementById('quickEditModal').classList.remove('active');quickEditData=null;}
+        function confirmQuickEdit(){
+            if(!quickEditData)return;
+            const v=parseFloat(document.getElementById('modalInput').value);
+            if(isNaN(v)){alert('❌ Введите значение');return;}
+            modifyUser(quickEditData.userId,'set_'+quickEditData.field,v);closeModal();
+        }
+        function toggleBan(uid,isBanned){if(confirm(isBanned?'Разблокировать?':'Заблокировать?')){modifyUser(uid,isBanned?'unban':'ban','Admin');}}
+        function toggleFreeze(uid,isFrozen){if(confirm(isFrozen?'Разморозить?':'Заморозить?')){modifyUser(uid,isFrozen?'unfreeze':'freeze','');}}
+        function resetUser(uid){if(confirm('Сбросить аккаунт? Действие необратимо!')){modifyUser(uid,'reset',0);}}
+        function modifyUser(uid,a,v){
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:a,value:v})}).then(()=>{showNotification('✅ Применено');loadUsers();});
+        }
+        
+        function loadWithdrawals(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{
+                if(d.requests&&d.requests.length>0){
+                    c.innerHTML='<h2 class="neon-text">💸 Заявки на вывод ('+d.requests.length+')</h2>';
+                    d.requests.forEach(r=>{
+                        const div=document.createElement('div');div.className='user-card';
+                        div.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:16px;"><div><strong>Заявка #${r.id}</strong><div style="font-size:12px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div><span style="padding:6px 12px;border-radius:10px;background:rgba(0,255,255,0.2);color:var(--neon-cyan);">${r.status==='pending'?'⏳ Ожидает':'✅ Выполнено'}</span></div><div style="margin-bottom:16px;">User: ${r.user_id}<br>QuanHash: ${(r.amount||0).toLocaleString()}<br>USDT: $${(r.usdt_amount||0).toLocaleString()}<br><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:8px;padding:12px;background:rgba(0,0,0,0.5);border-radius:10px;">${r.address}</div></div>${r.status==='pending'?'<div class="actions-grid"><button class="btn-modal btn-success" onclick="processWithdrawal('+r.id+',\'completed\')">✅ Одобрить</button><button class="btn-modal btn-danger" onclick="processWithdrawal('+r.id+',\'rejected\')">❌ Отклонить</button></div>':''}`;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет заявок</div>';}
+            });
+        }
+        function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();});}
+        
+        function loadSettings(){
+            document.getElementById('content').innerHTML=`
+<h2 class="neon-text" style="margin-bottom:24px;">⚙️ Настройки системы</h2>
+<div class="settings-grid">
+<div class="setting-card"><div class="card-title neon-text">🎮 Настройки игры</div><div class="card-desc">Конфигурация игровых параметров</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('energy_regeneration','Энергия/сек')">⚡ Энергия</button><button class="btn-modal btn-edit" onclick="editSetting('tap_reward','Тап/награда')">👆 Тапы</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">💰 Настройки валют</div><div class="card-desc">Управление коинами и QuanHash</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('coins_per_tap','Коины/тап')">💰 Коины</button><button class="btn-modal btn-manage" onclick="editSetting('hash_per_hour','Hash/час')">💎 QuanHash</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">🎁 Настройки бустов</div><div class="card-desc">Конфигурация бустов и усилений</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('boost_multiplier','Множитель')">⭐ Бусты</button><button class="btn-modal btn-manage" onclick="editSetting('energy_regen_boost','Регенерация')">⚡ Энергия+</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">⚡ Настройки энергии</div><div class="card-desc">Лимиты и регенерация энергии</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('max_energy','Макс. энергия')">📊 Лимит</button><button class="btn-modal btn-edit" onclick="editSetting('energy_regen_rate','Скорость')">⏱ Реген</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">🔗 Настройки рефералов</div><div class="card-desc">Параметры реферальной системы</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('referral_bonus','Бонус')">🎁 Бонус</button><button class="btn-modal btn-manage" onclick="editSetting('referral_percent','Процент')">% Пассивка</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">💸 Настройки вывода</div><div class="card-desc">Параметры вывода средств</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('min_withdrawal','Мин. вывод')">💎 Мин</button><button class="btn-modal btn-edit" onclick="editSetting('withdrawal_rate','Курс')">📈 Курс</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">🎨 Настройки дизайна</div><div class="card-desc">Тема и внешний вид</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('theme','Тема')">🎨 Тема</button><button class="btn-modal btn-manage" onclick="editSetting('animations','Анимации')">✨ Эффекты</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">📊 Настройки статистики</div><div class="card-desc">Отображение статистики</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('update_interval','Интервал')">⏱ Интервал</button><button class="btn-modal btn-edit" onclick="editSetting('cache_duration','Кэш')">💾 Кэш</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">🔔 Настройки уведомлений</div><div class="card-desc">Система оповещений</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('notifications','Уведомления')">🔔 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="editSetting('sound','Звук')">🔊 Звук</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">🌐 Настройки API</div><div class="card-desc">Конфигурация API</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('api_rate_limit','Лимит')">🚦 Лимит</button><button class="btn-modal btn-edit" onclick="editSetting('timeout','Таймаут')">⏱ Таймаут</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">🔄 Настройки автообновления</div><div class="card-desc">Автоматическое обновление</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('auto_refresh','Автообнов')">🔄 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="editSetting('refresh_interval','Интервал')">⏱ Интервал</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">📱 Настройки мобильной версии</div><div class="card-desc">Адаптивность</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('mobile_layout','Лейаут')">📱 Лейаут</button><button class="btn-modal btn-edit" onclick="editSetting('mobile_optimization','Оптимизация')">⚡ Оптим</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">🎯 Настройки баланса</div><div class="card-desc">Баланс игры</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('balance','Баланс')">⚖️ Баланс</button><button class="btn-modal btn-manage" onclick="editSetting('economy','Экономика')">💰 Экономика</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">🔐 Настройки доступа</div><div class="card-desc">Управление доступом</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('access_level','Уровень')">🔐 Уровень</button><button class="btn-modal btn-edit" onclick="editSetting('permissions','Права')">👮 Права</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">💾 Настройки хранения</div><div class="card-desc">База данных</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('db_backup','Бэкап')">💾 Бэкап</button><button class="btn-modal btn-manage" onclick="editSetting('db_optimization','Оптимизация')">⚡ Оптим</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">📈 Настройки аналитики</div><div class="card-desc">Аналитика и отчеты</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('analytics_enabled','Аналитика')">📊 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="editSetting('report_interval','Отчеты')">📄 Интервал</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">🌍 Настройки локализации</div><div class="card-desc">Язык и регион</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('language','Язык')">🌍 Язык</button><button class="btn-modal btn-manage" onclick="editSetting('timezone','Часовой пояс')">🕐 Таймзон</button></div></div>
+<div class="setting-card"><div class="card-title neon-pink">🎮 Настройки турниров</div><div class="card-desc">Соревнования</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('tournament_enabled','Турниры')">🏆 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="editSetting('prize_pool','Призы')">🎁 Призы</button></div></div>
+<div class="setting-card"><div class="card-title neon-text">🤖 Настройки ботов</div><div class="card-desc">Автоматизация</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editSetting('bot_enabled','Боты')">🤖 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="editSetting('bot_interval','Интервал')">⏱ Интервал</button></div></div>
+<div class="setting-card"><div class="card-title neon-purple">📢 Настройки рассылки</div><div class="card-desc">Маркетинг</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editSetting('newsletter_enabled','Рассылка')">📧 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="editSetting('promo_codes','Промокоды')">🎫 Промокоды</button></div></div>
+</div>`;
+        }
+        
+        function loadSecurity(){
+            document.getElementById('content').innerHTML=`
+<h2 class="neon-text" style="margin-bottom:24px;">🔒 Безопасность системы</h2>
+<div class="security-grid">
+<div class="security-card"><div class="card-title neon-text">🛡️ Защита от DDoS</div><div class="card-desc">Анти-ДДос защита</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="toggleSecurity('ddos_protection')">🛡️ Вкл/выкл</button><button class="btn-modal btn-edit" onclick="viewSecurityLogs('ddos')">📊 Логи</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🔐 Двухфакторная аутентификация</div><div class="card-desc">2FA для админов</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="toggleSecurity('2fa')">🔐 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="configure2FA()">⚙️ Настройка</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🚫 Защита от ботов</div><div class="card-desc">Anti-Bot система</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="toggleSecurity('antibot')">🤖 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="viewSecurityLogs('antibot')">📊 Активность</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🔒 Шифрование данных</div><div class="card-desc">Криптография</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="toggleSecurity('encryption')">🔐 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="updateEncryption()">🔄 Обновить ключи</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🚪 Система логинов</div><div class="card-desc">Контроль доступа</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="viewLoginLogs()">📊 История входов</button><button class="btn-modal btn-edit" onclick="blockIP()">🚫 Блокировать IP</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🔐 Политика паролей</div><div class="card-desc">Требования к паролям</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="editPasswordPolicy()">⚙️ Настройка</button><button class="btn-modal btn-manage" onclick="forcePasswordChange()">🔄 Принудит. смена</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🛡️ Файрвол</div><div class="card-desc">Межсетевой экран</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="toggleSecurity('firewall')">🔥 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="configureFirewall()">⚙️ Правила</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🔍 Аудит безопасности</div><div class="card-desc">Мониторинг системы</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="runSecurityAudit()">🔍 Запустить аудит</button><button class="btn-modal btn-manage" onclick="viewAuditLogs()">📊 Отчеты</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🚨 Система оповещений</div><div class="card-desc">Уведомления безопасности</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="toggleSecurity('alerts')">🚨 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="configureAlerts()">⚙️ Настройка</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🔐 Резервное копирование</div><div class="card-desc">Бэкап данных</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="createBackup()">💾 Создать бэкап</button><button class="btn-modal btn-manage" onclick="restoreFromBackup()">🔄 Восстановить</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🚫 Блокировка подозрительных аккаунтов</div><div class="card-desc">Автоматический бан</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="toggleSecurity('auto_ban')">🚫 Вкл/выкл</button><button class="btn-modal btn-edit" onclick="configureAutoBan()">⚙️ Настройка</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🔐 Проверка целостности</div><div class="card-desc">Контроль целостности файлов</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="runIntegrityCheck()">🔍 Проверка</button><button class="btn-modal btn-manage" onclick="fixIntegrityIssues()">🔧 Исправить</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🔐 SSL/TLS настройки</div><div class="card-desc">Шифрование соединения</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="viewSSLCertificates()">📜 Сертификаты</button><button class="btn-modal btn-edit" onclick="renewSSL()">🔄 Обновить SSL</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🚨 Мониторинг вторжений</div><div class="card-desc">Система обнаружения вторжений</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="toggleSecurity('ids')">🛡️ Вкл/выкл</button><button class="btn-modal btn-manage" onclick="viewIntrusionLogs()">📊 Логи IDS</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🔐 Ключевая ротация</div><div class="card-desc">Смена ключей шифрования</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="rotateEncryptionKeys()">🔄 Ротация</button><button class="btn-modal btn-edit" onclick="viewKeyHistory()">📜 История</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🚫 IP белый список</div><div class="card-desc">Разрешенные IP адреса</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="manageWhitelist()">✅ Управление</button><button class="btn-modal btn-manage" onclick="addToWhitelist()">➕ Добавить IP</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🔐 Rate Limiting</div><div class="card-desc">Ограничение запросов</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="configureRateLimit()">⚙️ Настройка</button><button class="btn-modal btn-edit" onclick="viewRateLimitLogs()">📊 Логи</button></div></div>
+<div class="security-card"><div class="card-title neon-pink">🔍 Сканирование на вирусы</div><div class="card-desc">Антивирусная проверка</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="scanForViruses()">🔍 Сканировать</button><button class="btn-modal btn-manage" onclick="viewScanResults()">📊 Результаты</button></div></div>
+<div class="security-card"><div class="card-title neon-text">🔐 Журнал изменений</div><div class="card-desc">Версионность данных</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="viewChangeLog()">📜 История</button><button class="btn-modal btn-edit" onclick="revertChanges()">↩️ Откат</button></div></div>
+<div class="security-card"><div class="card-title neon-purple">🚨 Мониторинг аномалий</div><div class="card-desc">Обнаружение подозрительной активности</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="toggleSecurity('anomaly_detection')">🔍 Вкл/выкл</button><button class="btn-modal btn-manage" onclick="configureAnomalyDetection()">⚙️ Настройка</button></div></div>
+</div>`;
+        }
+        
+        function loadTools(){
+            document.getElementById('content').innerHTML=`
+<h2 class="neon-text" style="margin-bottom:24px;">🛠️ Инструменты администратора</h2>
+<div class="tools-grid">
+<div class="tool-card"><div class="card-title neon-text">📊 Анализ базы данных</div><div class="card-desc">Проверка и оптимизация БД</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="analyzeDatabase()">📊 Анализ</button><button class="btn-modal btn-edit" onclick="optimizeDatabase()">⚡ Оптимизация</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">🔄 Массовые операции</div><div class="card-desc">Операции с пользователями</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="massOperation('give_coins')">💰 Дать коины</button><button class="btn-modal btn-manage" onclick="massOperation('reset_energy')">⚡ Сброс энергии</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">📤 Экспорт данных</div><div class="card-desc">Выгрузка информации</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="exportUsers()">👥 Экспорт юзеров</button><button class="btn-modal btn-edit" onclick="exportStatistics()">📊 Статистика</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">🧹 Очистка данных</div><div class="card-desc">Удаление старых данных</div><div class="card-actions"><button class="btn-modal btn-danger" onclick="cleanOldData()">🗑️ Очистить</button><button class="btn-modal btn-edit" onclick="viewCleanupLogs()">📜 Логи</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">⚡ Тестирование API</div><div class="card-desc">Проверка API endpoints</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="testAPIConnection()">🔌 Тест</button><button class="btn-modal btn-manage" onclick="viewAPILogs()">📊 Логи API</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">🔄 Обновление системы</div><div class="card-desc">Обновление конфигурации</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="updateSystem()">🔄 Обновить</button><button class="btn-modal btn-edit" onclick="rollbackUpdate()">↩️ Откат</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">📊 Генерация отчетов</div><div class="card-desc">Создание отчетов</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="generateReport('daily')">📅 Дневной</button><button class="btn-modal btn-manage" onclick="generateReport('weekly')">📅 Недельный</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">🎯 Промо акции</div><div class="card-desc">Управление акциями</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="createPromoCode()">🎫 Создать промо</button><button class="btn-modal btn-edit" onclick="viewPromoCodes()">📜 Список промо</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">📧 Массовая рассылка</div><div class="card-desc">Отправка сообщений</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="sendBulkMessage()">📨 Отправить</button><button class="btn-modal btn-manage" onclick="scheduleMessage()">⏰ Запланировать</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">🎮 Управление турнирами</div><div class="card-desc">Создание и управление</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="createTournament()">🏆 Создать</button><button class="btn-modal btn-edit" onclick="manageTournaments()">⚙️ Управление</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">📱 SMS уведомления</div><div class="card-desc">Сервис СМС</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="sendSMSNotification()">📱 Отправить SMS</button><button class="btn-modal btn-manage" onclick="configureSMS()">⚙️ Настройка</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">🎁 Подарки пользователям</div><div class="card-desc">Массовая раздача</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="giveMassBonus()">🎁 Выдать подарок</button><button class="btn-modal btn-edit" onclick="createBonusCampaign()">📢 Кампания</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">🔄 Кэш очистка</div><div class="card-desc">Очистка кэша</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="clearCache()">🧹 Очистить</button><button class="btn-modal btn-manage" onclick="viewCacheStats()">📊 Статистика</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">📊 Мониторинг сервера</div><div class="card-desc">Состояние сервера</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="viewServerStatus()">📊 Статус</button><button class="btn-modal btn-edit" onclick="restartServer()">🔄 Перезапуск</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">🔍 Поиск пользователей</div><div class="card-desc">Расширенный поиск</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="advancedSearch()">🔍 Поиск</button><button class="btn-modal btn-manage" onclick="saveSearchQuery()">💾 Сохранить</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">📈 Бенчмаркинг</div><div class="card-desc">Тестирование производительности</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="runBenchmark()">⚡ Бенчмарк</button><button class="btn-modal btn-edit" onclick="viewBenchmarkResults()">📊 Результаты</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">🔄 Автоматизация задач</div><div class="card-desc">Cron задачи</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="manageCronJobs()">⏰ Cron задачи</button><button class="btn-modal btn-manage" onclick="createScheduledTask()">➕ Добавить</button></div></div>
+<div class="tool-card"><div class="card-title neon-pink">🔧 Редактор конфигурации</div><div class="card-desc">Изменение конфигов</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="editConfigFile()">⚙️ Редактировать</button><button class="btn-modal btn-edit" onclick="validateConfig()">✅ Проверить</button></div></div>
+<div class="tool-card"><div class="card-title neon-text">📱 Push уведомления</div><div class="card-desc">Отправка Push</div><div class="card-actions"><button class="btn-modal btn-manage" onclick="sendPushNotification()">📱 Push</button><button class="btn-modal btn-manage" onclick="configurePush()">⚙️ Настройка</button></div></div>
+<div class="tool-card"><div class="card-title neon-purple">🎯 A/B тестирование</div><div class="card-desc">Эксперименты</div><div class="card-actions"><button class="btn-modal btn-edit" onclick="createABTest()">🔬 Создать тест</button><button class="btn-modal btn-edit" onclick="viewABTestResults()">📊 Результаты</button></div></div>
+</div>`;
+        }
+        
+        function editSetting(key,name){alert('Настройка: '+name);showNotification('⚙️ Настройка '+name);}
+        function toggleSecurity(key){alert('Безопасность: '+key);showNotification('🔒 Обновление безопасности');}
+        function analyzeDatabase(){showNotification('📊 Анализ БД запущен');}
+        function massOperation(type){showNotification('🔄 Массовая операция: '+type);}
+        
+        window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
+    </script>
+</body>
+</html>
+
