@@ -140,6 +140,40 @@
             text-shadow: 0 0 10px rgba(240, 147, 251, 0.3);
         }
 
+        .stat-compact-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item-compact {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-main-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-passive-value {
+            font-size: 11px;
+            color: #4ade80;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .stat-label-small {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
         .energy-bar-container {
             padding-top: 15px;
         }
@@ -777,21 +811,17 @@
         </div>
 
         <div class="stats">
-            <div class="stat-row">
-                <span class="stat-label">💰 Коины</span>
-                <span class="stat-value" id="coins">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">💎 QuanHash</span>
-                <span class="stat-value" id="quanhash">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">💰 Пассивно/ч</span>
-                <span class="stat-value" id="passiveCoins">0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">💎 Пассивно/ч</span>
-                <span class="stat-value" id="passiveHash">0</span>
+            <div class="stat-compact-row">
+                <div class="stat-item-compact">
+                    <div class="stat-main-value" id="coins">0</div>
+                    <div class="stat-passive-value" id="passiveCoins">+0/час</div>
+                    <div class="stat-label-small">💰 Коины</div>
+                </div>
+                <div class="stat-item-compact">
+                    <div class="stat-main-value" id="quanhash">0</div>
+                    <div class="stat-passive-value" id="passiveHash">+0/час</div>
+                    <div class="stat-label-small">💎 QuanHash</div>
+                </div>
             </div>
             <div class="energy-bar-container">
                 <div class="stat-row">
@@ -988,11 +1018,11 @@
                 const passiveCoins = Math.floor(data.passive_coins_per_hour || 0);
                 const passiveHash = Math.floor(data.passive_hash_per_hour || 0);
                 
-                document.getElementById('coins').textContent = coins;
-                document.getElementById('quanhash').textContent = quanhash;
+                document.getElementById('coins').textContent = coins.toLocaleString();
+                document.getElementById('quanhash').textContent = quanhash.toLocaleString();
                 document.getElementById('energy-text').textContent = `${energy}/${maxEnergy}`;
-                document.getElementById('passiveCoins').textContent = `${passiveCoins}/ч`;
-                document.getElementById('passiveHash').textContent = `${passiveHash}/ч`;
+                document.getElementById('passiveCoins').textContent = `+${passiveCoins.toLocaleString()}/час`;
+                document.getElementById('passiveHash').textContent = `+${passiveHash.toLocaleString()}/час`;
                 
                 const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
                 document.getElementById('energy-bar').style.width = energyPercent + '%';
