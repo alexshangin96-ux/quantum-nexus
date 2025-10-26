@@ -347,7 +347,7 @@
                     else if(activeTab === 'questions') refreshQuestionsOnly();
                     else if(activeTab === 'archive') refreshArchiveOnly();
                     else if(activeTab === 'stats') refreshStatsOnly();
-                    loadStats(); // Обновляем топ-статистику
+                    refreshTopStats();
                 }
             },10000);
         }
@@ -443,6 +443,18 @@
         }
         
         function refreshStatsOnly(){
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                c.innerHTML = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px;"><div class="stat-card"><div class="stat-label">Всего пользователей</div><div class="stat-value">'+(d.total_users||0)+'</div></div><div class="stat-card"><div class="stat-label">Всего тапов</div><div class="stat-value">'+(d.total_taps||0).toLocaleString()+'</div></div><div class="stat-card"><div class="stat-label">Общий доход</div><div class="stat-value">'+(d.total_revenue||0).toLocaleString()+'</div></div><div class="stat-card"><div class="stat-label">Заявки на вывод</div><div class="stat-value">'+(d.pending_withdrawals||0)+'</div></div></div>';
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalTaps').querySelector('.stat-value').textContent=(d.total_taps||0).toLocaleString();
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=(d.total_revenue||0).toLocaleString();
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+            });
+        }
+        
+        function refreshTopStats(){
             fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
                 document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
                 document.getElementById('totalTaps').querySelector('.stat-value').textContent=(d.total_taps||0).toLocaleString();
