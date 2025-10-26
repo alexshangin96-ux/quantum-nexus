@@ -998,6 +998,7 @@ def create_support_ticket():
                 message=message
             )
             db.add(support_ticket)
+            # Transaction is committed automatically by the context manager
         
         return jsonify({'success': True, 'message': 'Сообщение отправлено!'})
     except Exception as e:
