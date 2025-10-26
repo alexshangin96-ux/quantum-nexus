@@ -354,19 +354,41 @@
         }
         
         function refreshUsersOnly(){
+            const searchInput = document.getElementById('userSearch');
+            const searchTerm = searchInput ? searchInput.value : '';
             fetch('/api/admin/users').then(r=>r.json()).then(d=>{
-                window.allUsers = d.users;
-                const c = document.getElementById('content');
-                if(!c || !c.innerHTML.includes('user-card')) return;
-                const searchTerm = document.getElementById('userSearch')?.value || '';
-                const filteredUsers = searchTerm?d.users.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):d.users;
-                c.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 style="color:#fff;font-size:20px;">👥 Пользователи ('+filteredUsers.length+')</h2><input type="text" id="userSearch" placeholder="🔍 Поиск..." style="padding:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;width:250px;" oninput="filterUsers()"></div>';
-                filteredUsers.forEach(u=>{
-                    const div = document.createElement('div');
-                    div.className = 'user-card';
-                    div.innerHTML = getUserCardHTML(u);
-                    c.appendChild(div);
-                });
+                if(d.users&&d.users.length>0){
+                    window.allUsers=d.users;
+                    const c=document.getElementById('content');
+                    if(!c) return;
+                    const filteredUsers = searchTerm?d.users.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):d.users;
+                    c.innerHTML='';
+                    const ul=document.createElement('div');
+                    filteredUsers.forEach(u=>{
+                        const card=document.createElement('div');card.className='user-card';
+                        card.innerHTML=`<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.energy||0)}/${Math.floor(u.max_energy||0)}</div></div>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${Math.floor(u.coins||0)})">💰 Изменить коины</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${Math.floor(u.quanhash||0)})">💎 Изменить Hash</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${Math.floor(u.energy||0)})">⚡ Изменить энергию</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
+<button class="action-btn ${u.is_frozen?'btn-success':'btn-manage'}" onclick="toggleFreeze(${u.telegram_id},${u.is_frozen})">${u.is_frozen?'🔥 Разморозить':'❄️ Заморозить'}</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+</div>`;
+                        ul.appendChild(card);
+                    });
+                    c.appendChild(ul);
+                }
             });
         }
         
