@@ -142,3 +142,16 @@ class Withdrawal(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     processed_at = Column(DateTime, nullable=True)
+
+class SupportTicket(Base):
+    __tablename__ = 'support_tickets'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    
+    topic = Column(String(100))  # Topic category
+    message = Column(Text)  # Message content
+    status = Column(String(20), default='pending')  # pending, answered, resolved
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    answered_at = Column(DateTime, nullable=True)

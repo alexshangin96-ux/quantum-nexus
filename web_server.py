@@ -761,5 +761,58 @@ def buy_energy():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/support', methods=['POST'])
+def create_support_ticket():
+    """Create support ticket"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        topic = data.get('topic')
+        message = data.get('message')
+        
+        if not user_id or not topic or not message:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            support_ticket = SupportTicket(
+                user_id=user.id,
+                topic=topic,
+                message=message
+            )
+            db.add(support_ticket)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/support', methods=['GET'])
+def get_support_tickets():
+    """Get all support tickets"""
+    try:
+        with get_db() as db:
+            tickets = db.query(SupportTicket).order_by(SupportTicket.created_at.desc()).all()
+            
+            tickets_data = []
+            for t in tickets:
+                user = db.query(User).filter_by(id=t.user_id).first()
+                tickets_data.append({
+                    'id': t.id,
+                    'user_id': t.user_id,
+                    'telegram_id': user.telegram_id if user else None,
+                    'username': user.username if user else 'Unknown',
+                    'topic': t.topic,
+                    'message': t.message,
+                    'status': t.status,
+                    'created_at': t.created_at.isoformat() if t.created_at else None
+                })
+            
+            return jsonify({'tickets': tickets_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
