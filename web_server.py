@@ -995,7 +995,8 @@ def create_support_ticket():
             support_ticket = SupportTicket(
                 user_id=user.id,
                 topic=topic,
-                message=message
+                message=message,
+                status='pending'  # Статус "в процессе"
             )
             db.add(support_ticket)
             # Transaction is committed automatically by the context manager
@@ -1042,6 +1043,54 @@ def get_unread_count():
             return jsonify({'unread_count': unread_count})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/answer_ticket', methods=['POST'])
+def answer_ticket():
+    """Answer support ticket and notify user"""
+    try:
+        data = request.json
+        ticket_id = data.get('ticket_id')
+        answer = data.get('answer')
+        
+        if not ticket_id or not answer:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            ticket = db.query(SupportTicket).filter_by(id=ticket_id).first()
+            
+            if not ticket:
+                return jsonify({'success': False, 'error': 'Ticket not found'}), 404
+            
+            # Update ticket status
+            ticket.status = 'answered'
+            ticket.answered_at = datetime.utcnow()
+            
+            # Get user
+            user = db.query(User).filter_by(id=ticket.user_id).first()
+            
+            # Send notification to user via Telegram
+            if user:
+                # Import bot here to avoid circular imports
+                try:
+                    from telegram import Bot
+                    from config import BOT_TOKEN
+                    bot = Bot(token=BOT_TOKEN)
+                    
+                    message = f"💬 <b>Ответ на ваш вопрос:</b>\n\n{answer}"
+                    
+                    # Send notification asynchronously
+                    import asyncio
+                    asyncio.run(bot.send_message(
+                        chat_id=user.telegram_id,
+                        text=message,
+                        parse_mode='HTML'
+                    ))
+                except Exception as e:
+                    print(f"Failed to send notification: {e}")
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/daily_tasks', methods=['POST'])
 def get_daily_tasks():
