@@ -82,7 +82,7 @@
 
         .admin-panel {
             display: none;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -104,18 +104,39 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .logout-btn {
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .tab {
             padding: 12px 24px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
+            background: transparent;
+            border: none;
             color: white;
             cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .users-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
         }
 
@@ -124,6 +145,12 @@
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .user-card:hover {
+            border-color: rgba(102, 126, 234, 0.6);
+            transform: translateY(-5px);
         }
 
         .user-header {
@@ -156,17 +183,22 @@
 
         .actions {
             margin-top: 15px;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
         }
 
         .action-btn {
-            flex: 1;
             padding: 8px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
         }
 
         .add-coins-btn {
@@ -177,6 +209,99 @@
         .set-energy-btn {
             background: rgba(102, 126, 234, 0.3);
             color: white;
+        }
+
+        .withdraw-request {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .withdraw-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .withdraw-status {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .status-completed {
+            background: rgba(76, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
+        .withdraw-info {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .approve-btn {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .reject-btn {
+            background: rgba(239, 68, 68, 0.3);
+            color: white;
+            border: 1px solid #ef4444;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -199,7 +324,27 @@
             <h1>⚛️ Quantum Nexus Admin</h1>
             <button class="logout-btn" onclick="logout()">Выйти</button>
         </div>
-        <div id="usersList"></div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('users')">👥 Пользователи</button>
+            <button class="tab" onclick="switchTab('withdrawals')">💸 Заявки на вывод</button>
+            <button class="tab" onclick="switchTab('stats')">📊 Статистика</button>
+        </div>
+
+        <div id="usersTab" class="tab-content active">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 Поиск пользователей..." onkeyup="filterUsers()">
+            </div>
+            <div id="usersList"></div>
+        </div>
+
+        <div id="withdrawalsTab" class="tab-content">
+            <div id="withdrawalsList"></div>
+        </div>
+
+        <div id="statsTab" class="tab-content">
+            <div id="statsContent"></div>
+        </div>
     </div>
 
     <script>
@@ -214,6 +359,8 @@
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminPanel').classList.add('active');
                 loadUsers();
+                loadWithdrawals();
+                loadStats();
             } else {
                 alert('Неверный логин или пароль');
             }
@@ -224,46 +371,69 @@
             document.getElementById('adminPanel').classList.remove('active');
         }
 
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
         function loadUsers() {
-            fetch('/api/admin/users', {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'}
-            })
+            fetch('/api/admin/users')
             .then(res => res.json())
             .then(data => {
-                const usersHtml = data.users.map(user => `
-                    <div class="user-card">
-                        <div class="user-header">
-                            <div>
-                                <strong>${user.username || 'Unknown'}</strong>
-                                <div class="user-id">ID: ${user.telegram_id}</div>
-                            </div>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">💰 Коины</span>
-                            <span class="stat-value">${Math.floor(user.coins)}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">💎 QuanHash</span>
-                            <span class="stat-value">${Math.floor(user.quanhash)}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">⚡ Энергия</span>
-                            <span class="stat-value">${user.energy}/${user.max_energy}</span>
-                        </div>
-                        <div class="stat-line">
-                            <span class="stat-label">👆 Тапов</span>
-                            <span class="stat-value">${user.total_taps}</span>
-                        </div>
-                        <div class="actions">
-                            <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 10000)">+10k 🪙</button>
-                            <button class="action-btn set-energy-btn" onclick="setEnergy(${user.telegram_id}, 1000)">⚡ MAX</button>
+                window.allUsers = data.users;
+                renderUsers(data.users);
+            });
+        }
+
+        function renderUsers(users) {
+            const usersHtml = users.map(user => `
+                <div class="user-card" data-username="${user.username || ''}" data-id="${user.telegram_id}">
+                    <div class="user-header">
+                        <div>
+                            <strong>${user.username || 'Unknown'}</strong>
+                            <div class="user-id">ID: ${user.telegram_id}</div>
                         </div>
                     </div>
-                `).join('');
-                document.getElementById('usersList').innerHTML = usersHtml;
-            })
-            .catch(err => console.error('Error:', err));
+                    <div class="stat-line">
+                        <span class="stat-label">💰 Коины</span>
+                        <span class="stat-value">${Math.floor(user.coins).toLocaleString()}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">💎 QuanHash</span>
+                        <span class="stat-value">${Math.floor(user.quanhash).toLocaleString()}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">⚡ Энергия</span>
+                        <span class="stat-value">${user.energy}/${user.max_energy}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">👆 Тапов</span>
+                        <span class="stat-value">${user.total_taps}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">👥 Рефералов</span>
+                        <span class="stat-value">${user.referrals_count}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 10000)">+10k 🪙</button>
+                        <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 50000)">+50k 🪙</button>
+                        <button class="action-btn set-energy-btn" onclick="setEnergy(${user.telegram_id}, 1000)">⚡ MAX</button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('usersList').innerHTML = usersHtml;
+        }
+
+        function filterUsers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = window.allUsers.filter(u => 
+                (u.username && u.username.toLowerCase().includes(search)) ||
+                u.telegram_id.toString().includes(search)
+            );
+            renderUsers(filtered);
         }
 
         function addCoins(userId, amount) {
@@ -284,11 +454,92 @@
             .then(() => loadUsers());
         }
 
-        // Allow Enter to submit
+        function loadWithdrawals() {
+            fetch('/api/admin/withdrawals')
+            .then(res => res.json())
+            .then(data => {
+                if (data.requests && data.requests.length > 0) {
+                    const html = data.requests.map(req => `
+                        <div class="withdraw-request">
+                            <div class="withdraw-header">
+                                <div>
+                                    <strong>Заявка #${req.id}</strong>
+                                    <div style="font-size: 12px; opacity: 0.6;">${new Date(req.created_at).toLocaleString()}</div>
+                                </div>
+                                <span class="withdraw-status ${req.status === 'pending' ? 'status-pending' : 'status-completed'}">
+                                    ${req.status === 'pending' ? '⏳ Ожидает' : '✅ Выполнено'}
+                                </span>
+                            </div>
+                            <div class="withdraw-info">
+                                <div class="info-row">
+                                    <span>User ID:</span>
+                                    <span>${req.user_id}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>QuanHash:</span>
+                                    <span>${req.amount.toLocaleString()} ⚡</span>
+                                </div>
+                                <div class="info-row">
+                                    <span>USDT:</span>
+                                    <span>$${req.usdt_amount}</span>
+                                </div>
+                            </div>
+                            <div style="margin: 10px 0; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 8px; font-family: monospace; word-break: break-all;">
+                                ${req.address}
+                            </div>
+                            ${req.status === 'pending' ? `
+                                <div class="action-buttons">
+                                    <button class="approve-btn" onclick="processWithdrawal(${req.id}, 'completed')">✅ Одобрить</button>
+                                    <button class="reject-btn" onclick="processWithdrawal(${req.id}, 'rejected')">❌ Отклонить</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                    document.getElementById('withdrawalsList').innerHTML = html;
+                } else {
+                    document.getElementById('withdrawalsList').innerHTML = '<p style="text-align: center; opacity: 0.7;">Нет заявок на вывод</p>';
+                }
+            });
+        }
+
+        function processWithdrawal(id, status) {
+            fetch('/api/admin/process_withdrawal', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({request_id: id, status: status})
+            })
+            .then(() => loadWithdrawals());
+        }
+
+        function loadStats() {
+            fetch('/api/admin/stats')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('statsContent').innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">👥</div>
+                            <div style="font-size: 24px; font-weight: bold;">${data.total_users || 0}</div>
+                            <div style="opacity: 0.7;">Пользователей</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">👆</div>
+                            <div style="font-size: 24px; font-weight: bold;">${data.total_taps || 0}</div>
+                            <div style="opacity: 0.7;">Всего тапов</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 15px; padding: 20px; text-align: center;">
+                            <div style="font-size: 36px; margin-bottom: 10px;">💸</div>
+                            <div style="font-size: 24px; font-weight: bold;">${data.pending_withdrawals || 0}</div>
+                            <div style="opacity: 0.7;">Заявок на вывод</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         document.getElementById('password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
     </script>
 </body>
 </html>
-

@@ -310,5 +310,100 @@ def update_energy():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/offline_income', methods=['POST'])
+def get_offline_income():
+    """Get offline income"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        now = datetime.utcnow()
+        time_diff = (now - user.last_active).total_seconds()
+        
+        offline_time = min(time_diff, 3 * 60 * 60)  # 3 hours max
+        offline_income = offline_time * 0.1  # 0.1 coins per second
+        
+        return jsonify({
+            'offline_time': int(offline_time),
+            'offline_income': offline_income
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/withdraw', methods=['POST'])
+def create_withdraw():
+    """Create withdrawal request"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        address = data.get('address')
+        
+        if not user_id or not address:
+            return jsonify({'error': 'Missing parameters'}), 400
+        
+        if not address.startswith('0x') or len(address) != 42:
+            return jsonify({'success': False, 'error': 'Invalid BEP20 address'})
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        if user.quanhash < 500000:
+            return jsonify({'success': False, 'error': 'Insufficient QuanHash'})
+        
+        # TODO: Create withdrawal record
+        user.quanhash -= 500000
+        
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/withdrawals', methods=['GET'])
+def get_withdrawals():
+    """Get withdrawal requests"""
+    return jsonify({'requests': []})
+
+@app.route('/api/admin/stats', methods=['GET'])
+def get_admin_stats():
+    """Get admin statistics"""
+    try:
+        db = next(get_db())
+        users = db.query(User).all()
+        
+        return jsonify({
+            'total_users': len(users),
+            'total_taps': sum(u.total_taps for u in users),
+            'pending_withdrawals': 0
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/process_withdrawal', methods=['POST'])
+def process_withdrawal():
+    """Process withdrawal request"""
+    try:
+        data = request.json
+        request_id = data.get('request_id')
+        status = data.get('status')
+        
+        # TODO: Update withdrawal status
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
