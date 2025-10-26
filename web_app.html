@@ -839,7 +839,7 @@
         </div>
 
         <div class="tap-button" onclick="tap()">
-            <img src="http://unlock-rent.ru/tap.png" alt="Tap" style="width:100%;height:100%;object-fit:contain;pointer-events:none;">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 0 40px rgba(102,126,234,0.6),inset 0 0 40px rgba(118,75,162,0.3);animation:pulse 2s ease-in-out infinite;">💰</div>
         </div>
 
 
@@ -868,9 +868,9 @@
                 <div class="btn-emoji">💸</div>
                 <div>Вывод</div>
             </a>
-            <a href="#" class="btn" onclick="openHistory(event)">
-                <div class="btn-emoji">📜</div>
-                <div>История</div>
+            <a href="#" class="btn" onclick="openDailyBonus(event)">
+                <div class="btn-emoji">🎁</div>
+                <div>Бонусы</div>
             </a>
         </div>
     </div>
@@ -1213,6 +1213,16 @@
         }
         
         function buyShopItem(item_type, price) {
+            // Create purchase animation
+            const anim = document.createElement('div');
+            anim.style.position='fixed';anim.style.top='50%';anim.style.left='50%';anim.style.transform='translate(-50%,-50%)';anim.style.zIndex='10000';
+            anim.style.background='linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95))';
+            anim.style.padding='20px 40px';anim.style.borderRadius='15px';anim.style.fontSize='32px';anim.style.boxShadow='0 10px 40px rgba(0,0,0,0.5)';
+            anim.style.opacity='0';anim.style.transition='all 0.3s';
+            anim.innerHTML='✅ Покупка успешна!';
+            document.body.appendChild(anim);
+            setTimeout(()=>{anim.style.opacity='1';},10);
+            
             fetch('/api/buy', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1221,13 +1231,19 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    tg.showAlert('✅ Покупка успешна!');
+                    anim.innerHTML='✅';
+                    setTimeout(()=>{
+                        anim.style.opacity='0';anim.style.transform='translate(-50%,-50%) scale(1.5)';
+                        setTimeout(()=>{anim.remove();},300);
+                    },500);
                     loadData();
                     loadShopCategory(document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
                                        document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('energy') ? 'energy' :
                                        document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto');
                 } else {
-                    tg.showAlert('❌ ' + data.error);
+                    anim.innerHTML='❌ ' + data.error;
+                    anim.style.background='rgba(239,68,68,0.95)';
+                    setTimeout(()=>{anim.remove();},1500);
                 }
             });
         }
@@ -1411,6 +1427,15 @@
         }
         
         function buyMachine(id, price, currency) {
+            const anim = document.createElement('div');
+            anim.style.position='fixed';anim.style.top='50%';anim.style.left='50%';anim.style.transform='translate(-50%,-50%)';anim.style.zIndex='10000';
+            anim.style.background='linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95))';
+            anim.style.padding='20px 40px';anim.style.borderRadius='15px';anim.style.fontSize='32px';anim.style.boxShadow='0 10px 40px rgba(0,0,0,0.5)';
+            anim.style.opacity='0';anim.style.transition='all 0.3s';
+            anim.innerHTML='⚡ Покупка...';
+            document.body.appendChild(anim);
+            setTimeout(()=>{anim.style.opacity='1';},10);
+            
             fetch('/api/buy_machine', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1424,11 +1449,17 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    tg.showAlert('✅ Машина куплена!');
+                    anim.innerHTML='✅';
+                    setTimeout(()=>{
+                        anim.style.opacity='0';anim.style.transform='translate(-50%,-50%) scale(1.5)';
+                        setTimeout(()=>{anim.remove();},300);
+                    },500);
                     loadMiningCategory(document.querySelector('.category-btn[style*="background: linear-gradient"]').textContent.includes('Стартовые') ? 'starter' : 'premium');
                     loadData();
                 } else {
-                    tg.showAlert('❌ ' + data.error);
+                    anim.innerHTML='❌ ' + data.error;
+                    anim.style.background='rgba(239,68,68,0.95)';
+                    setTimeout(()=>{anim.remove();},1500);
                 }
             });
         }
