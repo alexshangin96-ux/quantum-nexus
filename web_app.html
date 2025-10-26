@@ -904,9 +904,10 @@
                 <div class="btn-emoji">💳</div>
                 <div>Карточки</div>
             </a>
-            <a href="#" class="btn" onclick="openSupport(event)">
+            <a href="#" class="btn" onclick="openSupport(event)" id="supportBtn" style="position:relative;">
                 <div class="btn-emoji">💬</div>
                 <div>Поддержка</div>
+                <span id="supportBadge" style="display:none;position:absolute;top:5px;right:5px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:3px 7px;border-radius:10px;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(239,68,68,0.5);animation:pulse 2s ease-in-out infinite;">0</span>
             </a>
             <a href="#" class="btn" onclick="openReferrals(event)">
                 <div class="btn-emoji">👥</div>
@@ -1763,11 +1764,37 @@
         checkOfflineIncome();
         startEnergyRegen();
         startAutoTap();
+        updateSupportBadge();
         
         // Auto-update data every 2 seconds
         setInterval(() => {
             loadData();
         }, 2000);
+        
+        // Update support badge every 5 seconds
+        setInterval(() => {
+            updateSupportBadge();
+        }, 5000);
+        
+        function updateSupportBadge() {
+            fetch('/api/user_support', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const answeredTickets = (data.tickets || []).filter(t => t.status === 'answered' && t.answer && !t.is_read).length;
+                const badge = document.getElementById('supportBadge');
+                if(answeredTickets > 0) {
+                    badge.textContent = answeredTickets;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(() => {});
+        }
         
         // Auto-tap function
         function startAutoTap() {
@@ -1801,9 +1828,13 @@
             modal.id = 'supportModal';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 400px;">
-                    <div style="position:relative;text-align:center;margin-bottom:30px;">
-                        <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(102,126,234,0.8));">💬</div>
-                        <h2 style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:2px;">Поддержка</h2>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <div style="position:relative;text-align:center;flex:1;">
+                            <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 20px rgba(102,126,234,0.8));">💬</div>
+                            <h2 style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-transform:uppercase;letter-spacing:2px;">Поддержка</h2>
+                        </div>
+                        <button onclick="document.getElementById('supportModal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
                         <p style="font-size:12px;opacity:0.6;margin-top:8px;">Мы всегда готовы помочь вам</p>
                     </div>
                     

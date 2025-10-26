@@ -205,7 +205,10 @@
         <div class="tabs-container">
             <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
             <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы</button>
-            <button class="tab-btn" onclick="switchTab('questions')">💬 Вопросы</button>
+            <button class="tab-btn" onclick="switchTab('questions')">
+                💬 Вопросы 
+                <span id="questionsBadge" style="display:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:700;margin-left:5px;">0</span>
+            </button>
             <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
             <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
             <button class="tab-btn" onclick="switchTab('security')">🔒 Безопасность</button>
@@ -428,6 +431,13 @@
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
             fetch('/api/admin/support').then(r=>r.json()).then(d=>{
                 const unreadCount = d.unread_count || 0;
+                const badgeEl = document.getElementById('questionsBadge');
+                if(unreadCount > 0) {
+                    badgeEl.textContent = unreadCount;
+                    badgeEl.style.display = 'inline-block';
+                } else {
+                    badgeEl.style.display = 'none';
+                }
                 const unreadBadge = unreadCount > 0 ? '<span style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-left:10px;box-shadow:0 4px 12px rgba(239,68,68,0.4);">'+unreadCount+' новое</span>' : '';
                 if(d.tickets&&d.tickets.length>0){
                     c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;display:flex;align-items:center;">💬 Вопросы от пользователей ('+d.tickets.length+')'+unreadBadge+'</h2>';
