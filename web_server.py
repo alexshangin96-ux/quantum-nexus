@@ -602,12 +602,13 @@ def create_withdraw():
         if user.quanhash < 500000:
             return jsonify({'success': False, 'error': 'Insufficient QuanHash'})
         
-        # Create withdrawal record
+        # Create withdrawal record with pending status
         withdrawal = Withdrawal(
             user_id=user.id,
             amount=500000,
             usdt_amount=1.0,
-            address=address
+            address=address,
+            status='pending'  # Status: pending (in process)
         )
         db.add(withdrawal)
         user.quanhash -= 500000
@@ -687,7 +688,7 @@ def process_withdrawal():
     try:
         data = request.json
         request_id = data.get('request_id')
-        status = data.get('status')
+        status = data.get('status')  # 'completed' or 'rejected'
         
         with get_db() as db:
             withdrawal = db.query(Withdrawal).filter_by(id=request_id).first()
@@ -695,8 +696,15 @@ def process_withdrawal():
             if not withdrawal:
                 return jsonify({'success': False, 'error': 'Withdrawal not found'}), 404
             
+            # Update status
             withdrawal.status = status
             withdrawal.processed_at = datetime.utcnow()
+            
+            # If rejected, return QuanHash to user
+            if status == 'rejected':
+                user = db.query(User).filter_by(id=withdrawal.user_id).first()
+                if user:
+                    user.quanhash += withdrawal.amount
         
         return jsonify({'success': True})
     except Exception as e:
@@ -1375,11 +1383,20 @@ def get_transaction_history():
             
             # Add withdrawals
             for w in withdrawals:
+                # Map status to Russian
+                status_map = {
+                    'pending': 'В процессе',
+                    'completed': 'Выплачено',
+                    'rejected': 'Отклонено'
+                }
+                status_text = status_map.get(w.status, w.status)
+                
                 history.append({
                     'type': 'withdrawal',
                     'amount': w.usdt_amount,
                     'currency': 'usd',
-                    'status': w.status,
+                    'status': status_text,  # Status in Russian
+                    'status_code': w.status,  # Original status code
                     'address': w.address,
                     'date': w.created_at.isoformat() if w.created_at else None,
                     'timestamp': w.created_at.timestamp() if w.created_at else 0

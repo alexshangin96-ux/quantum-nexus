@@ -1715,14 +1715,18 @@
                 if(withdrawals.length > 0) {
                     historyDiv.innerHTML = withdrawals.slice(0, 5).map(w => {
                         const date = new Date(w.date);
-                        const statusEmoji = w.status === 'pending' ? '⏳' : w.status === 'completed' ? '✅' : '❌';
+                        // Status in Russian from server
+                        const statusText = w.status || 'В процессе';
+                        const statusEmoji = statusText === 'В процессе' ? '⏳' : statusText === 'Выплачено' ? '✅' : statusText === 'Отклонено' ? '❌' : '⏳';
+                        const statusColor = statusText === 'В процессе' ? '#f59e0b' : statusText === 'Выплачено' ? '#10b981' : statusText === 'Отклонено' ? '#ef4444' : '#94a3b8';
                         return `
                             <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:8px;">
                                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
                                     <span style="font-size:12px;font-weight:600;">${statusEmoji} $${Math.floor(w.amount || 0)}</span>
                                     <span style="font-size:11px;opacity:0.7;">${date.toLocaleDateString('ru')}</span>
                                 </div>
-                                <div style="font-size:10px;opacity:0.6;">${w.address ? (w.address.substring(0,10) + '...') : ''}</div>
+                                <div style="font-size:10px;opacity:0.6;margin-bottom:5px;">${w.address ? (w.address.substring(0,10) + '...') : ''}</div>
+                                <div style="font-size:10px;color:${statusColor};font-weight:600;">${statusText}</div>
                             </div>
                         `;
                     }).join('');
