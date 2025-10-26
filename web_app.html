@@ -1386,6 +1386,67 @@
         setInterval(() => {
             loadData();
         }, 5000);
+        
+        // Support functions
+        function openSupport(event) {
+            event.preventDefault();
+            tg.HapticFeedback.impactOccurred('light');
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'supportModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 380px;">
+                    <h2 style="font-size: 20px; margin-bottom: 20px; color: #fff;">💬 Поддержка</h2>
+                    <select id="supportTopic" class="modal-input" style="margin-bottom: 15px;">
+                        <option value="Общие вопросы">Общие вопросы</option>
+                        <option value="Проблемы с балансом">Проблемы с балансом</option>
+                        <option value="Вывод средств">Вывод средств</option>
+                        <option value="Майнинг">Майнинг</option>
+                        <option value="Карточки">Карточки</option>
+                        <option value="Реферальная программа">Реферальная программа</option>
+                        <option value="Технические проблемы">Технические проблемы</option>
+                        <option value="Предложения">Предложения</option>
+                        <option value="Жалобы">Жалобы</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                    <textarea id="supportMessage" class="modal-input" placeholder="Опишите ваш вопрос..." rows="4" style="resize: vertical;"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:15px;">
+                        <button onclick="sendSupport()" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:600;">📤 Отправить</button>
+                        <button onclick="document.getElementById('supportModal').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function sendSupport() {
+            const topic = document.getElementById('supportTopic').value;
+            const message = document.getElementById('supportMessage').value;
+            
+            if (!message) {
+                tg.showAlert('⚠️ Введите сообщение');
+                return;
+            }
+            
+            fetch('/api/support', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id,
+                    topic: topic,
+                    message: message
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert('✅ Сообщение отправлено!');
+                    document.getElementById('supportModal').remove();
+                } else {
+                    tg.showAlert('❌ Ошибка: ' + (data.error || 'неизвестная'));
+                }
+            });
+        }
     </script>
 </body>
 </html>
