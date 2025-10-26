@@ -68,14 +68,17 @@
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 28px;
+            font-weight: 900;
             margin-bottom: 10px;
             text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: glow 3s ease-in-out infinite;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         @keyframes glow {
@@ -863,6 +866,10 @@
                 <div class="btn-emoji">💸</div>
                 <div>Вывод</div>
             </a>
+            <a href="#" class="btn" onclick="openHistory(event)">
+                <div class="btn-emoji">📜</div>
+                <div>История</div>
+            </a>
         </div>
     </div>
 
@@ -1044,13 +1051,28 @@
                     const hours = Math.floor(data.offline_time / 3600);
                     const minutes = Math.floor((data.offline_time % 3600) / 60);
                     
+                    // Check for offline QuanHash income too
+                    const offlineHash = data.offline_hash || 0;
+                    
                     const offlineContent = `
-                        <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">💰</div>
-                            <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px; background: linear-gradient(45deg, #4ade80, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Оффлайн доход!</div>
-                            <div style="font-size: 16px; opacity: 0.8; margin-bottom: 20px;">Вы были оффлайн ${hours}ч ${minutes}м</div>
-                            <div style="font-size: 32px; font-weight: bold; color: #4ade80;">+${Math.floor(data.offline_income)} 🪙</div>
-                            <div style="font-size: 14px; opacity: 0.7; margin-top: 10px;">Получено автоматически</div>
+                        <div style="text-align: center; padding: 30px 20px;">
+                            <div style="position: relative; margin-bottom: 20px;">
+                                <div style="font-size: 64px; margin-bottom: 15px; filter: drop-shadow(0 0 20px rgba(102,126,234,0.8));">💎</div>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 140px; opacity: 0.1; font-weight: 900;">QN</div>
+                            </div>
+                            <div style="font-size: 28px; font-weight: 900; margin-bottom: 15px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 2px;">Оффлайн доход</div>
+                            <div style="font-size: 14px; opacity: 0.7; margin-bottom: 25px; padding: 8px 16px; background: rgba(102,126,234,0.1); border-radius: 20px; display: inline-block;">Вы были оффлайн ${hours}ч ${minutes}м</div>
+                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2)); border: 2px solid rgba(102,126,234,0.5); border-radius: 20px; padding: 20px; margin-bottom: 15px;">
+                                <div style="font-size: 20px; opacity: 0.8; margin-bottom: 8px; font-weight: 600;">💰 Коины</div>
+                                <div style="font-size: 42px; font-weight: 900; color: #4ade80; text-shadow: 0 0 15px rgba(74,222,128,0.5);">+${Math.floor(data.offline_income).toLocaleString()} 🪙</div>
+                            </div>
+                            ${offlineHash > 0 ? `
+                            <div style="background: linear-gradient(135deg, rgba(118,75,162,0.2), rgba(102,126,234,0.2)); border: 2px solid rgba(118,75,162,0.5); border-radius: 20px; padding: 20px; margin-bottom: 15px;">
+                                <div style="font-size: 20px; opacity: 0.8; margin-bottom: 8px; font-weight: 600;">💎 QuanHash</div>
+                                <div style="font-size: 42px; font-weight: 900; color: #f093fb; text-shadow: 0 0 15px rgba(240,147,251,0.5);">+${Math.floor(offlineHash).toLocaleString()} ⚡</div>
+                            </div>
+                            ` : ''}
+                            <div style="font-size: 13px; opacity: 0.5; margin-top: 15px; font-style: italic;">✨ Получено автоматически</div>
                         </div>
                     `;
                     document.getElementById('offlineContent').innerHTML = offlineContent;
