@@ -531,11 +531,27 @@ def get_offline_income():
             time_diff = (now - user.last_active).total_seconds()
             
             offline_time = min(time_diff, 3 * 60 * 60)  # 3 hours max
-            offline_income = offline_time * 0.1  # 0.1 coins per second
+            
+            # Calculate passive coins from cards during offline
+            passive_coins_per_hour = 0
+            for card in user.cards:
+                if card.is_active:
+                    passive_coins_per_hour += card.income_per_minute * 60
+            
+            offline_income = (passive_coins_per_hour / 3600) * offline_time
+            
+            # Calculate passive QuanHash from machines during offline
+            passive_hash_per_hour = 0
+            for machine in user.machines:
+                if machine.is_active:
+                    passive_hash_per_hour += machine.hash_rate * 3600
+            
+            offline_hash = (passive_hash_per_hour / 3600) * offline_time
             
             return jsonify({
                 'offline_time': int(offline_time),
-                'offline_income': offline_income
+                'offline_income': int(offline_income),
+                'offline_hash': int(offline_hash)
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
