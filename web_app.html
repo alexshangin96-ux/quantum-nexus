@@ -1718,7 +1718,7 @@
                 
                 const withdrawals = data.history ? data.history.filter(h => h.type === 'withdrawal') : [];
                 if(withdrawals.length > 0) {
-                    historyDiv.innerHTML = withdrawals.slice(0, 5).map(w => {
+                    historyDiv.innerHTML = withdrawals.slice(0, 3).map(w => {
                         const date = new Date(w.date);
                         // Status in Russian from server
                         const statusText = w.status || 'В процессе';
