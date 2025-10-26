@@ -503,20 +503,67 @@ def process_withdrawal():
         request_id = data.get('request_id')
         status = data.get('status')
         
-        db = next(get_db())
-        withdrawal = db.query(Withdrawal).filter_by(id=request_id).first()
-        
-        if not withdrawal:
-            return jsonify({'error': 'Withdrawal not found'}), 404
-        
-        withdrawal.status = status
-        withdrawal.processed_at = datetime.utcnow()
-        
-        db.commit()
+        with get_db() as db:
+            withdrawal = db.query(Withdrawal).filter_by(id=request_id).first()
+            
+            if not withdrawal:
+                return jsonify({'success': False, 'error': 'Withdrawal not found'}), 404
+            
+            withdrawal.status = status
+            withdrawal.processed_at = datetime.utcnow()
         
         return jsonify({'success': True})
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/withdrawals', methods=['GET'])
+def get_admin_withdrawals():
+    """Get all withdrawal requests"""
+    try:
+        with get_db() as db:
+            withdrawals = db.query(Withdrawal).order_by(Withdrawal.created_at.desc()).all()
+            
+            result = {
+                'requests': [{
+                    'id': w.id,
+                    'user_id': w.user_id,
+                    'amount': int(w.amount) if w.amount else 0,
+                    'usdt_amount': float(w.usdt_amount) if w.usdt_amount else 0.0,
+                    'address': w.address,
+                    'status': w.status,
+                    'created_at': w.created_at.isoformat() if w.created_at else datetime.utcnow().isoformat(),
+                    'processed_at': w.processed_at.isoformat() if w.processed_at else None
+                } for w in withdrawals]
+            }
+            return jsonify(result)
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/mass_notify', methods=['POST'])
+def mass_notify():
+    """Send mass notification to users"""
+    try:
+        data = request.json
+        message = data.get('message')
+        user_ids = data.get('user_ids', [])
+        
+        if not message:
+            return jsonify({'success': False, 'error': 'Message required'}), 400
+        
+        # Store notifications (in real implementation, send via Telegram Bot API)
+        notification_data = {
+            'message': message,
+            'user_ids': user_ids if user_ids else 'all',
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        # TODO: Implement actual Telegram bot notification sending
+        # from bot import send_notification
+        # send_notification(user_ids, message)
+        
+        return jsonify({'success': True, 'notification': notification_data})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/admin/modify_user', methods=['POST'])
