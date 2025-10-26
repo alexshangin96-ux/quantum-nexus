@@ -1716,9 +1716,13 @@
                 const historyDiv = document.getElementById('withdrawHistory');
                 if(!historyDiv) return;
                 
-                const withdrawals = data.history ? data.history.filter(h => h.type === 'withdrawal') : [];
+                console.log('Withdrawal history data:', data);
+                
+                const withdrawals = data.history || [];
+                console.log('Withdrawals found:', withdrawals.length);
+                
                 if(withdrawals.length > 0) {
-                    historyDiv.innerHTML = withdrawals.slice(0, 3).map(w => {
+                    historyDiv.innerHTML = withdrawals.map(w => {
                         const date = new Date(w.date);
                         // Status in Russian from server
                         const statusText = w.status || 'В процессе';
@@ -1737,6 +1741,13 @@
                     }).join('');
                 } else {
                     historyDiv.innerHTML = '<div style="text-align:center;opacity:0.5;font-size:12px;padding:10px;">История пуста</div>';
+                }
+            })
+            .catch(err => {
+                console.error('Error loading history:', err);
+                const historyDiv = document.getElementById('withdrawHistory');
+                if(historyDiv) {
+                    historyDiv.innerHTML = '<div style="text-align:center;opacity:0.5;font-size:12px;padding:10px;">Ошибка загрузки</div>';
                 }
             });
         }
