@@ -209,6 +209,7 @@
                 💬 Вопросы 
                 <span id="questionsBadge" style="display:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:700;margin-left:5px;">0</span>
             </button>
+            <button class="tab-btn" onclick="switchTab('archive')">📁 Архив</button>
             <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
             <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
             <button class="tab-btn" onclick="switchTab('security')">🔒 Безопасность</button>
@@ -330,8 +331,8 @@
         function exportData(){const data=JSON.stringify(window.allUsers||[],null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='users_export.json';a.click();}
         function showNotification(m){const n=document.createElement('div');n.className='notification';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),3000);}
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
-        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
-        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();}
+        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
+        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);}
         
         function loadStats(){
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
@@ -449,7 +450,7 @@
                         c.appendChild(div);
                     });
                 }else{c.innerHTML='<div class="loading">Нет вопросов</div>';}
-            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');}
         }
         
         function answerQuestion(id){
@@ -511,6 +512,23 @@
                 }
             })
             .catch(() => showNotification('❌ Ошибка архивирования'));
+        }
+        
+        function loadArchive(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const archivedTickets = (d.tickets || []).filter(t => t.status === 'resolved');
+                if(archivedTickets.length > 0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📁 Архив вопросов ('+archivedTickets.length+')</h2>';
+                    archivedTickets.forEach(t=>{
+                        const div=document.createElement('div');div.className='user-card';
+                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                        const statusDiv='<div style="padding:10px;background:rgba(99,102,241,0.2);border-radius:10px;color:#6366f1;text-align:center;font-weight:700;">📁 Архив</div>';
+                        div.innerHTML=html+statusDiv;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Архив пуст</div>';}
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
         }
         
         function loadSettings(){

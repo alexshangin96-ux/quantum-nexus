@@ -1000,6 +1000,22 @@ def create_support_ticket():
             )
             db.add(support_ticket)
             # Transaction is committed automatically by the context manager
+            
+            # Send notification to admin chat
+            try:
+                from telegram import Bot
+                from config import BOT_TOKEN
+                bot = Bot(token=BOT_TOKEN)
+                
+                admin_message = f"💬 Новый вопрос от {user.username if user else 'Unknown'}:\n\nТема: {topic}\n\n{message}"
+                
+                import asyncio
+                asyncio.run(bot.send_message(
+                    chat_id="@SmartFix_Nsk",
+                    text=admin_message
+                ))
+            except Exception as e:
+                print(f"Failed to send to admin chat: {e}")
         
         return jsonify({'success': True, 'message': 'Сообщение отправлено!'})
     except Exception as e:
@@ -1112,7 +1128,7 @@ def answer_ticket():
                     from config import BOT_TOKEN
                     bot = Bot(token=BOT_TOKEN)
                     
-                    notification = "💬 У вас новый ответ в поддержке! Откройте раздел \"Поддержка\" в приложении."
+                    notification = f"💬 Ответ на ваш вопрос:\n\n{ticket.topic}\n\n{answer}"
                     
                     import asyncio
                     asyncio.run(bot.send_message(
@@ -1120,7 +1136,23 @@ def answer_ticket():
                         text=notification
                     ))
                 except Exception as e:
-                    print(f"Failed to send notification: {e}")
+                    print(f"Failed to send notification to user: {e}")
+            
+            # Also send to admin chat
+            try:
+                from telegram import Bot
+                from config import BOT_TOKEN
+                bot = Bot(token=BOT_TOKEN)
+                
+                admin_message = f"💬 Новый вопрос от {user.username}:\n\nТема: {ticket.topic}\n\n{ticket.message}"
+                
+                import asyncio
+                asyncio.run(bot.send_message(
+                    chat_id="@SmartFix_Nsk",
+                    text=admin_message
+                ))
+            except Exception as e:
+                print(f"Failed to send to admin chat: {e}")
         
         return jsonify({'success': True})
     except Exception as e:
