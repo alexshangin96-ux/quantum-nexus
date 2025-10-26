@@ -619,9 +619,11 @@ def create_withdraw():
                 status='pending'  # Status: pending (in process)
             )
             db.add(withdrawal)
+            db.flush()  # Get the ID before commit
+            withdrawal_id = withdrawal.id
             user.quanhash -= int(amount)
             db.commit()  # Explicit commit
-            print(f"Withdrawal created: user_id={user.id}, amount={amount}, usdt={usdt_amount}, status=pending")
+            print(f"Withdrawal created: id={withdrawal_id}, user_id={user.id}, amount={amount}, usdt={usdt_amount}, address={address}, status=pending")
         
         return jsonify({'success': True})
     except Exception as e:
@@ -1406,13 +1408,17 @@ def get_transaction_history():
                     'currency': 'usd',
                     'status': status_text,  # Status in Russian
                     'status_code': w.status,  # Original status code
-                    'address': w.address,
+                    'address': w.address,  # BEP20 address
                     'date': w.created_at.isoformat() if w.created_at else None,
                     'timestamp': w.created_at.timestamp() if w.created_at else 0
                 })
             
             # Sort withdrawals by timestamp descending and return only last 3
             withdrawal_list.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
+            
+            print(f"Returning {len(withdrawal_list[:3])} withdrawals for user_id={user.id}")
+            for w in withdrawal_list[:3]:
+                print(f"  - amount={w['amount']}, address={w['address']}, status={w['status']}")
             
             return jsonify({'history': withdrawal_list[:3]})  # Return only last 3 withdrawals
     except Exception as e:
