@@ -422,22 +422,43 @@
         function confirmQuickEdit(){if(!quickEditData)return;const v=parseFloat(document.getElementById('modalInput').value);if(isNaN(v)){showNotification('❌ Введите значение','error');return;}modifyUser(quickEditData.userId,`set_${quickEditData.field}`,v);closeModal();}
         window.addEventListener('load',()=>{createParticles();addLog('Система загружена','success');if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
         function login(){
-            const loginInput=document.getElementById('login');
-            const passInput=document.getElementById('password');
-            if(!loginInput||!passInput){showNotification('❌ Ошибка загрузки','error');return;}
-            const l=loginInput.value.trim();
-            const p=passInput.value.trim();
-            if(!l||!p){showNotification('❌ Заполните все поля','error');return;}
-            if(l===ADMIN_LOGIN&&p===ADMIN_PASSWORD){
-                localStorage.setItem('admin_logged_in','true');
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                initPanel();
-                addLog('Вход выполнен','success');
-                showNotification('✅ Добро пожаловать','success');
-            }else{
-                showNotification('❌ Неверный логин или пароль','error');
-                addLog('Ошибка входа','error');
+            console.log('Login clicked');
+            try {
+                const loginInput=document.getElementById('login');
+                const passInput=document.getElementById('password');
+                console.log('Inputs found:', loginInput, passInput);
+                if(!loginInput||!passInput){
+                    showNotification('❌ Ошибка загрузки элементов','error');
+                    console.error('Login or password input not found');
+                    return;
+                }
+                const l=loginInput.value.trim();
+                const p=passInput.value.trim();
+                console.log('Login attempt:', l, 'Password length:', p.length);
+                console.log('Expected login:', ADMIN_LOGIN, 'Expected pass:', ADMIN_PASSWORD);
+                if(!l||!p){
+                    showNotification('❌ Заполните все поля','error');
+                    console.log('Empty fields');
+                    return;
+                }
+                console.log('Comparing:', l, '===', ADMIN_LOGIN, ':', l===ADMIN_LOGIN);
+                console.log('Comparing:', p, '===', ADMIN_PASSWORD, ':', p===ADMIN_PASSWORD);
+                if(l===ADMIN_LOGIN&&p===ADMIN_PASSWORD){
+                    console.log('Login successful');
+                    localStorage.setItem('admin_logged_in','true');
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('adminPanel').classList.remove('hidden');
+                    initPanel();
+                    addLog('Вход выполнен','success');
+                    showNotification('✅ Добро пожаловать','success');
+                }else{
+                    showNotification('❌ Неверный логин или пароль','error');
+                    addLog('Ошибка входа','error');
+                    console.log('Login failed - credentials mismatch');
+                }
+            }catch(e){
+                console.error('Login error:', e);
+                showNotification('❌ Ошибка: '+e.message,'error');
             }
         }
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');addLog('Выход','info');}
@@ -464,7 +485,36 @@
         function loadSecurity(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🔒 Безопасность</h2><div class="stat-card"><span class="stat-icon">🔒</span><div class="stat-label">Безопасность</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function loadTools(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🛠️ Инструменты</h2><div class="stat-card"><span class="stat-icon">🛠️</span><div class="stat-label">Инструменты</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function formatNumber(n){return Math.floor(n||0).toLocaleString('ru');}
-        window.addEventListener('DOMContentLoaded',()=>{const loginInput=document.getElementById('login');const passInput=document.getElementById('password');if(loginInput){loginInput.addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('password').focus();}});}if(passInput){passInput.addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();login();}});}});
+        window.addEventListener('DOMContentLoaded',()=>{
+            console.log('DOM loaded');
+            const loginInput=document.getElementById('login');
+            const passInput=document.getElementById('password');
+            const loginBtn=document.querySelector('.btn');
+            console.log('Elements:', loginInput, passInput, loginBtn);
+            if(loginBtn){
+                loginBtn.addEventListener('click',function(e){
+                    console.log('Button clicked');
+                    e.preventDefault();
+                    login();
+                });
+            }
+            if(loginInput){
+                loginInput.addEventListener('keypress',e=>{
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        document.getElementById('password').focus();
+                    }
+                });
+            }
+            if(passInput){
+                passInput.addEventListener('keypress',e=>{
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
