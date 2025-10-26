@@ -803,11 +803,13 @@ def buy_item():
             elif item_type == 'multiplier_10x':
                 user.active_multiplier = 10.0
                 user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
-            elif item_type == 'double_energy':
-                user.max_energy = 2000
+            elif item_type == 'energy':
+                # Add energy from purchase
+                amount = data.get('amount', 50)
+                user.energy = min(user.energy + amount, user.max_energy)
             elif item_type == 'regen_boost':
-                # TODO: Add regen boost
-                pass
+                # Increase regeneration rate
+                user.energy_regen_rate = getattr(user, 'energy_regen_rate', 1) + 0.5
             elif item_type in ['common', 'rare', 'epic', 'legendary']:
                 # Check existing card level
                 existing_cards = db.query(UserCard).filter_by(user_id=user.id, card_type=item_type).all()
@@ -831,9 +833,13 @@ def buy_item():
                 db.add(card)
             elif item_type == 'auto_bot':
                 # Auto-tap bot implementation
+                taps_per_sec = data.get('taps_per_sec', 2)
                 user.auto_tap_enabled = True
                 user.auto_tap_level = getattr(user, 'auto_tap_level', 0) + 1
-                user.auto_tap_speed = 2 + (user.auto_tap_level - 1) * 0.5  # taps per second
+                user.auto_tap_speed = taps_per_sec
+                # Store expiration (24 hours)
+                from datetime import timedelta
+                user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
         
         return jsonify({'success': True})
     except Exception as e:
