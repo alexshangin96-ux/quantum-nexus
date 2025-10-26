@@ -205,6 +205,7 @@
         <div class="tabs-container">
             <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
             <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы</button>
+            <button class="tab-btn" onclick="switchTab('questions')">💬 Вопросы</button>
             <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
             <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
             <button class="tab-btn" onclick="switchTab('security')">🔒 Безопасность</button>
@@ -326,7 +327,7 @@
         function exportData(){const data=JSON.stringify(window.allUsers||[],null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='users_export.json';a.click();}
         function showNotification(m){const n=document.createElement('div');n.className='notification';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),3000);}
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
-        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
+        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
         function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();}
         
         function loadStats(){
