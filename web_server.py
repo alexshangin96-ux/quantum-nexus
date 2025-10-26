@@ -116,49 +116,49 @@ def get_user_data():
         if not user_id:
             return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown'}), 200
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            # Return default values if user not found (need to start bot first)
-            return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown', 'message': 'Start bot first'}), 200
-        
-        # Check if user is banned or frozen (safe check for old DB schema)
-        if hasattr(user, 'is_banned') and user.is_banned:
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                # Return default values if user not found (need to start bot first)
+                return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown', 'message': 'Start bot first'}), 200
+            
+            # Check if user is banned or frozen (safe check for old DB schema)
+            if hasattr(user, 'is_banned') and user.is_banned:
+                return jsonify({
+                    'error': 'Вы заблокированы',
+                    'is_banned': True,
+                    'ban_reason': getattr(user, 'ban_reason', None)
+                }), 403
+            
+            if hasattr(user, 'is_frozen') and user.is_frozen:
+                return jsonify({
+                    'error': 'Ваш аккаунт заморожен',
+                    'is_frozen': True
+                }), 403
+            
+            # Calculate passive income
+            passive_coins_per_hour = 0
+            passive_hash_per_hour = 0
+            
+            for card in user.cards:
+                if card.is_active:
+                    passive_coins_per_hour += card.income_per_minute * 60
+            
+            for machine in user.machines:
+                if machine.is_active:
+                    passive_hash_per_hour += machine.hash_rate * 3600
+            
             return jsonify({
-                'error': 'Вы заблокированы',
-                'is_banned': True,
-                'ban_reason': getattr(user, 'ban_reason', None)
-            }), 403
-        
-        if hasattr(user, 'is_frozen') and user.is_frozen:
-            return jsonify({
-                'error': 'Ваш аккаунт заморожен',
-                'is_frozen': True
-            }), 403
-        
-        # Calculate passive income
-        passive_coins_per_hour = 0
-        passive_hash_per_hour = 0
-        
-        for card in user.cards:
-            if card.is_active:
-                passive_coins_per_hour += card.income_per_minute * 60
-        
-        for machine in user.machines:
-            if machine.is_active:
-                passive_hash_per_hour += machine.hash_rate * 3600
-        
-        return jsonify({
-            'coins': user.coins,
-            'quanhash': user.quanhash,
-            'energy': user.energy,
-            'max_energy': user.max_energy,
-            'total_taps': user.total_taps,
-            'total_earned': user.total_earned,
-            'passive_coins_per_hour': passive_coins_per_hour,
-            'passive_hash_per_hour': passive_hash_per_hour
-        })
+                'coins': user.coins,
+                'quanhash': user.quanhash,
+                'energy': user.energy,
+                'max_energy': user.max_energy,
+                'total_taps': user.total_taps,
+                'total_earned': user.total_earned,
+                'passive_coins_per_hour': passive_coins_per_hour,
+                'passive_hash_per_hour': passive_hash_per_hour
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
