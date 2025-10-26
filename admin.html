@@ -433,29 +433,9 @@ ${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-
         
         function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}
         
-        function loadSettings(){
-            const settings=['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'];
-            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">⚙️ Настройки системы</h2><div class="settings-grid">';
-            settings.forEach(s=>{html+=`<div class="setting-card"><div class="card-title">⚙️ ${s}</div><div class="card-desc">Настройка параметров ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" onclick="showNotification('⚙️ Настройка: '+String(s))">⚙️ Настроить</button></div></div>`;});
-            html+='</div>';
-            document.getElementById('content').innerHTML=html;
-        }
-        
-        function loadSecurity(){
-            const security=['DDoS защита','2FA аутентификация','Anti-Bot','Шифрование','Логины','Пароли','Файрвол','Аудит','Оповещения','Резервный Бэкап','Автобан','Целостность','SSL/TLS','IDS','Ротация ключей','IP Whitelist','Rate Limiting','Антивирус','Журнал изменений','Мониторинг аномалий'];
-            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🔒 Безопасность системы</h2><div class="security-grid">';
-            security.forEach(s=>{html+=`<div class="security-card"><div class="card-title">🔒 ${s}</div><div class="card-desc">Безопасность: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;" onclick="showNotification('🔒 Безопасность: '+String(s))">🔒 Настроить</button></div></div>`;});
-            html+='</div>';
-            document.getElementById('content').innerHTML=html;
-        }
-        
-        function loadTools(){
-            const tools=['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'];
-            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🛠️ Инструменты администратора</h2><div class="tools-grid"><div class="tool-card"><div class="card-title">📨 Массовая рассылка</div><div class="card-desc">Отправить уведомление всем пользователям</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;padding:10px 20px;width:100%;" onclick="openMassNotifyModal()">📨 Отправить</button></div></div>';
-            tools.forEach(s=>{html+=`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: '+String(s))">🛠️ Использовать</button></div></div>`;});
-            html+='</div>';
-            document.getElementById('content').innerHTML=html;
-        }
+        function loadSettings(){document.getElementById('content').innerHTML='<div class="loading">📌 Настройки</div>';}
+        function loadSecurity(){document.getElementById('content').innerHTML='<div class="loading">📌 Безопасность</div>';}
+        function loadTools(){document.getElementById('content').innerHTML='<div class="loading">📌 Инструменты</div>';}
         
         function openMassNotifyModal(){
             const modal=document.createElement('div');modal.className='modal active';
