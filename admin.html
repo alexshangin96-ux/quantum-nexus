@@ -368,9 +368,9 @@
 <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.energy||0)}/${Math.floor(u.max_energy||0)}</div></div>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${u.coins||0})">💰 Изменить коины</button>
-<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${u.quanhash||0})">💎 Изменить Hash</button>
-<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${u.energy||0})">⚡ Изменить энергию</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${Math.floor(u.coins||0)})">💰 Изменить коины</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${Math.floor(u.quanhash||0)})">💎 Изменить Hash</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${Math.floor(u.energy||0)})">⚡ Изменить энергию</button>
 </div>
 <div class="actions-grid">
 <button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
