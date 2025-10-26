@@ -352,16 +352,16 @@ def update_energy():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        user.energy = min(energy, user.max_energy)
-        db.commit()
-        
-        return jsonify({'success': True})
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            user.energy = min(energy, user.max_energy)
+            db.commit()
+            
+            return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
