@@ -424,6 +424,24 @@
         
         function processWithdrawalBtn(btn){const rid=btn.getAttribute('data-rid');const status=btn.getAttribute('data-status');fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}
         
+        function loadQuestions(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                if(d.tickets&&d.tickets.length>0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💬 Вопросы от пользователей ('+d.tickets.length+')</h2>';
+                    d.tickets.forEach(t=>{
+                        const div=document.createElement('div');div.className='user-card';
+                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                        const actions=t.status==='pending'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="answerQuestion('+t.id+')">📝 Ответить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Отвечено</div>';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет вопросов</div>';}
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
+        }
+        
+        function answerQuestion(id){const msg=prompt('Введите ответ:');if(msg)showNotification('📝 Ответ будет отправлен');}
+        
         function loadSettings(){
             const arr=['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'];
             let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">⚙️ Настройки системы</h2><div class="settings-grid">';
