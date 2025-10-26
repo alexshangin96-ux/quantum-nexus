@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1d2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .form-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .admin-panel {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-id {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .stat-label {
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #f093fb;
+        }
+
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-coins-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .set-energy-btn {
+            background: rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="login-form">
+        <h2 class="form-title">🔐 Admin Panel</h2>
+        <div class="form-group">
+            <label>Логин</label>
+            <input type="text" id="login" placeholder="Введите логин">
+        </div>
+        <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="password" placeholder="Введите пароль">
+        </div>
+        <button class="btn" onclick="login()">Войти</button>
+    </div>
+
+    <div id="adminPanel" class="admin-panel">
+        <div class="header">
+            <h1>⚛️ Quantum Nexus Admin</h1>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+        <div id="usersList"></div>
+    </div>
+
+    <script>
+        const ADMIN_LOGIN = 'smartfixnsk';
+        const ADMIN_PASSWORD = 'Maga1996';
+
+        function login() {
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadUsers();
+            } else {
+                alert('Неверный логин или пароль');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminPanel').classList.remove('active');
+        }
+
+        function loadUsers() {
+            fetch('/api/admin/users', {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(res => res.json())
+            .then(data => {
+                const usersHtml = data.users.map(user => `
+                    <div class="user-card">
+                        <div class="user-header">
+                            <div>
+                                <strong>${user.username || 'Unknown'}</strong>
+                                <div class="user-id">ID: ${user.telegram_id}</div>
+                            </div>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">💰 Коины</span>
+                            <span class="stat-value">${Math.floor(user.coins)}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">💎 QuanHash</span>
+                            <span class="stat-value">${Math.floor(user.quanhash)}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">⚡ Энергия</span>
+                            <span class="stat-value">${user.energy}/${user.max_energy}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">👆 Тапов</span>
+                            <span class="stat-value">${user.total_taps}</span>
+                        </div>
+                        <div class="actions">
+                            <button class="action-btn add-coins-btn" onclick="addCoins(${user.telegram_id}, 10000)">+10k 🪙</button>
+                            <button class="action-btn set-energy-btn" onclick="setEnergy(${user.telegram_id}, 1000)">⚡ MAX</button>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('usersList').innerHTML = usersHtml;
+            })
+            .catch(err => console.error('Error:', err));
+        }
+
+        function addCoins(userId, amount) {
+            fetch('/api/admin/add_coins', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: userId, amount: amount})
+            })
+            .then(() => loadUsers());
+        }
+
+        function setEnergy(userId, energy) {
+            fetch('/api/admin/set_energy', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: userId, energy: energy})
+            })
+            .then(() => loadUsers());
+        }
+
+        // Allow Enter to submit
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
+

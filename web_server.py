@@ -21,6 +21,81 @@ def index():
     """Serve web app"""
     return send_from_directory('.', 'web_app.html')
 
+@app.route('/admin')
+def admin():
+    """Serve admin panel"""
+    return send_from_directory('.', 'admin.html')
+
+@app.route('/api/admin/users', methods=['GET'])
+def get_all_users():
+    """Get all users for admin panel"""
+    try:
+        db = next(get_db())
+        users = db.query(User).all()
+        return jsonify({
+            'users': [{
+                'telegram_id': u.telegram_id,
+                'username': u.username,
+                'coins': u.coins,
+                'quanhash': u.quanhash,
+                'energy': u.energy,
+                'max_energy': u.max_energy,
+                'total_taps': u.total_taps,
+                'total_earned': u.total_earned,
+                'referrals_count': u.referrals_count
+            } for u in users]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/add_coins', methods=['POST'])
+def add_coins():
+    """Add coins to user"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        amount = data.get('amount')
+        
+        if not user_id or not amount:
+            return jsonify({'error': 'Missing parameters'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user.coins += amount
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/admin/set_energy', methods=['POST'])
+def set_energy():
+    """Set user energy"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        energy = data.get('energy')
+        
+        if not user_id or energy is None:
+            return jsonify({'error': 'Missing parameters'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user.energy = min(energy, user.max_energy)
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/user_data', methods=['POST'])
 def get_user_data():
     """Get user data"""
@@ -184,6 +259,54 @@ def get_cards():
             'coins': user.coins,
             'cards': []
         })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/referrals', methods=['POST'])
+def get_referrals():
+    """Get user referrals info"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'referral_code': user.referral_code,
+            'referrals_count': user.referrals_count,
+            'referral_income': user.referral_income
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/update_energy', methods=['POST'])
+def update_energy():
+    """Update user energy"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        energy = data.get('energy')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user.energy = min(energy, user.max_energy)
+        db.commit()
+        
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
