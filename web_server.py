@@ -227,24 +227,56 @@ def get_stats():
 
 @app.route('/api/shop', methods=['POST'])
 def get_shop():
-    """Get shop items"""
+    """Get shop items by category"""
     try:
         data = request.json
         user_id = data.get('user_id')
+        category = data.get('category', 'boosts')  # boosts, energy, cards, auto
         
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        return jsonify({
-            'coins': user.coins,
-            'quanhash': user.quanhash
-        })
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Define 4 categories with 20 items each
+            if category == 'boosts':
+                items = [
+                    {'id': f'boost_{i}', 'name': f'Множитель x{i+1}', 'price': 1000*(i+1), 'item_type': 'multiplier_2x' if i==0 else ('multiplier_5x' if i==1 else 'multiplier_10x')}
+                    for i in range(20)
+                ]
+            elif category == 'energy':
+                items = [
+                    {'id': f'energy_{i}', 'name': f'Энергия +{50*(i+1)}', 'price': 500*(i+1), 'item_type': 'energy'}
+                    for i in range(20)
+                ]
+            elif category == 'cards':
+                card_types = ['common', 'rare', 'epic', 'legendary']
+                items = []
+                for i in range(20):
+                    card_type = card_types[i % 4]
+                    items.append({
+                        'id': f'card_{i}',
+                        'name': f'{card_type.capitalize()} карточка',
+                        'price': 5000*(i+1),
+                        'item_type': card_type,
+                        'rarity': card_type
+                    })
+            else:  # auto
+                items = [
+                    {'id': f'auto_{i}', 'name': f'Авто-бот {i+1}', 'price': 10000*(i+1), 'item_type': 'auto_bot'}
+                    for i in range(20)
+                ]
+            
+            return jsonify({
+                'coins': user.coins,
+                'quanhash': user.quanhash,
+                'category': category,
+                'items': items
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
