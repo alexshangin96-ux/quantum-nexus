@@ -486,8 +486,8 @@
             // Success
             console.log('LOGIN SUCCESS!');
             localStorage.setItem('admin_logged_in', 'true');
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
             initPanel();
             console.log('=== LOGIN COMPLETE ===');
             return true;
@@ -506,11 +506,8 @@
             const uid=u.telegram_id;
             const username=u.username||'Unknown';
             const badges=(u.is_banned?'<span class="badge badge-banned">🔒</span>':'')+(u.is_frozen?'<span class="badge badge-frozen">❄️</span>':'')+'<span class="badge badge-vip">⭐</span>';
-            const banBtn=u.is_banned?'<button class="action-btn btn-success" onclick="modifyUser('+uid+',\'unban\',\'\')">🔓</button>':'<button class="action-btn btn-status" onclick="modifyUser('+uid+',\'ban\',\'Admin\')">🔒</button>';
-            const freezeBtn=u.is_frozen?'<button class="action-btn btn-success" onclick="modifyUser('+uid+',\'unfreeze\',\'\')">🔥</button>':'<button class="action-btn btn-status" onclick="modifyUser('+uid+',\'freeze\',\'\')">❄️</button>';
-            const extraBtn=u.is_banned?'':'<button class="action-btn btn-info" onclick="viewUserDetails('+uid+')">📋</button>';
             return `
-<div class="user-card" onclick="selectUser(${uid})">
+<div class="user-card">
 <div class="user-header">
 <div class="user-info"><h3>${username}</h3><div class="user-id">ID: ${uid}</div></div>
 <div class="user-badges">${badges}</div>
@@ -521,25 +518,38 @@
 <div class="stat-item"><div class="stat-label-small">⚡</div><div class="stat-value-small">${u.energy}/${u.max_energy}</div></div>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-add" onclick="quickEdit(${uid},'coins','💰 Коины')">💰</button>
-<button class="action-btn btn-add" onclick="quickEdit(${uid},'quanhash','💎 QuanHash')">💎</button>
-<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',10000)">+10k</button>
-<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',100000)">+100k</button>
-<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_quanhash',10000)">+10k💎</button>
-<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_quanhash',100000)">+100k💎</button>
-<button class="action-btn btn-add" onclick="modifyUser(${uid},'add_coins',1000000)">💎 Млн</button>
-<button class="action-btn btn-info" onclick="viewUserDetails(${uid})">📊</button>
+<button class="action-btn btn-add" onclick="openEditModal(${uid},'coins','💰 Коины',${u.coins})" title="Изменить коины">💰</button>
+<button class="action-btn btn-add" onclick="openEditModal(${uid},'quanhash','💎 QuanHash',${u.quanhash})" title="Изменить QuanHash">💎</button>
+<button class="action-btn btn-status" onclick="openEditModal(${uid},'energy','⚡ Энергия',${u.energy})" title="Изменить энергию">⚡</button>
+<button class="action-btn btn-info" onclick="viewUserDetails(${uid})" title="Подробности">📋</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-status" onclick="setEnergy(${uid},${u.max_energy})">⚡</button>
-<button class="action-btn btn-remove" onclick="modifyUser(${uid},'remove_coins',5000)">-5k</button>
-<button class="action-btn btn-remove" onclick="modifyUser(${uid},'remove_quanhash',5000)">-5k💎</button>
-<button class="action-btn btn-status" onclick="modifyUser(${uid},'reset',0)">⚠️</button>
-${banBtn}
-${freezeBtn}
-${extraBtn}
+<button class="action-btn ${u.is_banned?'btn-success':'btn-status'}" onclick="toggleBan(${uid},${u.is_banned})" title="${u.is_banned?'Разблокировать':'Заблокировать'}">${u.is_banned?'🔓':'🔒'}</button>
+<button class="action-btn ${u.is_frozen?'btn-success':'btn-status'}" onclick="toggleFreeze(${uid},${u.is_frozen})" title="${u.is_frozen?'Разморозить':'Заморозить'}">${u.is_frozen?'🔥':'❄️'}</button>
+<button class="action-btn btn-remove" onclick="resetUser(${uid})" title="Сброс аккаунта">⚠️</button>
 </div>
 </div>`;
+        }
+        function openEditModal(uid,field,title,currentValue){
+            document.getElementById('modalTitle').textContent=title;
+            document.getElementById('modalInput').value=currentValue||0;
+            document.getElementById('quickEditModal').classList.add('active');
+            quickEditData={userId:uid,field};
+        }
+        function toggleBan(uid,isBanned){
+            if(confirm(isBanned?'Разблокировать пользователя?':'Заблокировать пользователя?')){
+                modifyUser(uid,isBanned?'unban':'ban','Admin');
+            }
+        }
+        function toggleFreeze(uid,isFrozen){
+            if(confirm(isFrozen?'Разморозить пользователя?':'Заморозить пользователя?')){
+                modifyUser(uid,isFrozen?'unfreeze':'freeze','');
+            }
+        }
+        function resetUser(uid){
+            if(confirm('Сбросить аккаунт пользователя? Это действие необратимо!')){
+                modifyUser(uid,'reset',0);
+            }
         }
         function selectUser(uid){currentUser=uid;showNotification(`Пользователь #${uid} выбран`,'info');}
         function viewUserDetails(uid){const u=window.allUsers.find(us=>us.telegram_id===uid);if(!u){showNotification('Пользователь не найден','error');return;}alert(`Детали:\nКоины: ${u.coins}\nQuanHash: ${u.quanhash}\nТапы: ${u.total_taps}\nРефералы: ${u.referrals_count}\nЗаработано: ${u.total_earned}`);}
