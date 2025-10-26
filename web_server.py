@@ -1126,6 +1126,51 @@ def answer_ticket():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/admin/delete_ticket', methods=['POST'])
+def delete_ticket():
+    """Delete support ticket"""
+    try:
+        data = request.json
+        ticket_id = data.get('ticket_id')
+        
+        if not ticket_id:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            ticket = db.query(SupportTicket).filter_by(id=ticket_id).first()
+            
+            if not ticket:
+                return jsonify({'success': False, 'error': 'Ticket not found'}), 404
+            
+            db.delete(ticket)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/archive_ticket', methods=['POST'])
+def archive_ticket():
+    """Archive support ticket (mark as resolved)"""
+    try:
+        data = request.json
+        ticket_id = data.get('ticket_id')
+        
+        if not ticket_id:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            ticket = db.query(SupportTicket).filter_by(id=ticket_id).first()
+            
+            if not ticket:
+                return jsonify({'success': False, 'error': 'Ticket not found'}), 404
+            
+            ticket.status = 'resolved'
+            ticket.answered_at = datetime.utcnow()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/daily_tasks', methods=['POST'])
 def get_daily_tasks():
     """Get daily tasks for user"""
