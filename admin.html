@@ -49,7 +49,9 @@
         .login-container {
             max-width: 420px; margin: 80px auto;
             background: rgba(30, 41, 59, 0.98);
-            backdrop-filter: blur(30px); border: 2px solid rgba(139, 92, 246, 0.5);
+            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px);
+            border: 2px solid rgba(139, 92, 246, 0.5);
             border-radius: 28px; padding: 50px 40px;
             box-shadow: 0 25px 80px rgba(139, 92, 246, 0.4),
                         0 0 100px rgba(139, 92, 246, 0.2);
@@ -346,7 +348,7 @@
             <div class="form-group">
                 <input type="password" id="password" placeholder="Password" autocomplete="current-password">
             </div>
-            <button class="btn" onclick="login()" type="button">🚀 Войти</button>
+            <button class="btn" id="loginBtn" type="button">🚀 Войти</button>
         </div>
 
         <div id="adminPanel" class="admin-panel hidden container">
@@ -486,18 +488,30 @@
         function loadTools(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🛠️ Инструменты</h2><div class="stat-card"><span class="stat-icon">🛠️</span><div class="stat-label">Инструменты</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function formatNumber(n){return Math.floor(n||0).toLocaleString('ru');}
         window.addEventListener('DOMContentLoaded',()=>{
-            console.log('DOM loaded');
+            console.log('DOM Content Loaded');
+            
+            const loginBtn=document.getElementById('loginBtn');
             const loginInput=document.getElementById('login');
             const passInput=document.getElementById('password');
-            const loginBtn=document.querySelector('.btn');
-            console.log('Elements:', loginInput, passInput, loginBtn);
+            
+            console.log('Login button:', loginBtn);
+            console.log('Login input:', loginInput);
+            console.log('Pass input:', passInput);
+            
             if(loginBtn){
+                console.log('Adding click listener to button');
                 loginBtn.addEventListener('click',function(e){
-                    console.log('Button clicked');
+                    console.log('Login button clicked!');
                     e.preventDefault();
+                    e.stopPropagation();
                     login();
-                });
+                    return false;
+                },true);
+                console.log('Click listener added');
+            }else{
+                console.error('Login button not found!');
             }
+            
             if(loginInput){
                 loginInput.addEventListener('keypress',e=>{
                     if(e.key==='Enter'){
@@ -506,6 +520,7 @@
                     }
                 });
             }
+            
             if(passInput){
                 passInput.addEventListener('keypress',e=>{
                     if(e.key==='Enter'){
@@ -514,6 +529,15 @@
                     }
                 });
             }
+            
+            // Additional fallback
+            setTimeout(()=>{
+                const btn=document.getElementById('loginBtn');
+                if(btn){
+                    console.log('Fallback: re-adding click handler');
+                    btn.onclick=login;
+                }
+            },100);
         });
     </script>
 </body>
