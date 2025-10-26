@@ -1105,30 +1105,34 @@
                     const offlineHash = data.offline_hash || 0;
                     
                     const offlineContent = `
-                        <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 20px rgba(74,222,128,0.8));">💰</div>
-                            <div style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #4ade80;">Вы заработали пока отдыхали!</div>
-                            <div style="font-size: 12px; opacity: 0.7; margin-bottom: 20px; padding: 6px 14px; background: rgba(102,126,234,0.15); border-radius: 15px; display: inline-block;">⏱️ ${hours}ч ${minutes}м</div>
-                            
-                            ${data.offline_income > 0 ? `
-                            <div style="background: linear-gradient(135deg, rgba(102,126,234,0.25), rgba(118,75,162,0.25)); border: 1.5px solid rgba(102,126,234,0.6); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(102,126,234,0.2);">
-                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 6px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <span>🪙</span> <span>Коины</span>
-                                </div>
-                                <div style="font-size: 36px; font-weight: 900; color: #4ade80; text-shadow: 0 0 15px rgba(74,222,128,0.5);">+${Math.floor(data.offline_income).toLocaleString()}</div>
+                        <div style="text-align: center; padding: 25px 15px;">
+                            <div style="margin-bottom: 16px;">
+                                <div style="font-size: 50px; filter: drop-shadow(0 0 15px rgba(74,222,128,0.6)); margin-bottom: 10px;">💰</div>
+                                <div style="font-size: 16px; font-weight: 700; color: #4ade80; margin-bottom: 8px;">Привет, с возвращением!</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.6); padding: 5px 12px; background: rgba(102,126,234,0.12); border-radius: 12px; display: inline-block;">⏱️ ${hours}ч ${minutes}м</div>
                             </div>
-                            ` : ''}
                             
-                            ${offlineHash > 0 ? `
-                            <div style="background: linear-gradient(135deg, rgba(118,75,162,0.25), rgba(240,147,251,0.25)); border: 1.5px solid rgba(118,75,162,0.6); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(118,75,162,0.2);">
-                                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 6px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <span>💎</span> <span>QuanHash</span>
+                            <div style="display: grid; gap: 10px; margin-bottom: 12px;">
+                                ${data.offline_income > 0 ? `
+                                <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2)); border: 1px solid rgba(102,126,234,0.5); border-radius: 14px; padding: 12px 16px; backdrop-filter: blur(10px);">
+                                    <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                        <span>🪙</span> <span>КОИНЫ</span>
+                                    </div>
+                                    <div style="font-size: 32px; font-weight: 900; color: #4ade80; letter-spacing: -1px;">+${Math.floor(data.offline_income).toLocaleString()}</div>
                                 </div>
-                                <div style="font-size: 36px; font-weight: 900; color: #f093fb; text-shadow: 0 0 15px rgba(240,147,251,0.5);">+${Math.floor(offlineHash).toLocaleString()}</div>
+                                ` : ''}
+                                
+                                ${offlineHash > 0 ? `
+                                <div style="background: linear-gradient(135deg, rgba(118,75,162,0.2), rgba(240,147,251,0.2)); border: 1px solid rgba(118,75,162,0.5); border-radius: 14px; padding: 12px 16px; backdrop-filter: blur(10px);">
+                                    <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                        <span>💎</span> <span>QUANHASH</span>
+                                    </div>
+                                    <div style="font-size: 32px; font-weight: 900; color: #f093fb; letter-spacing: -1px;">+${Math.floor(offlineHash).toLocaleString()}</div>
+                                </div>
+                                ` : ''}
                             </div>
-                            ` : ''}
                             
-                            <div style="font-size: 11px; opacity: 0.5; margin-top: 15px; font-style: italic;">✨ Доход добавлен к балансу</div>
+                            <div style="font-size: 10px; opacity: 0.4; font-style: italic; margin-top: 12px;">✨ Добавлено на баланс</div>
                         </div>
                     `;
                     document.getElementById('offlineContent').innerHTML = offlineContent;
