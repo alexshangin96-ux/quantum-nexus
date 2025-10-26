@@ -334,10 +334,9 @@
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
         let withdrawalCount = 0;
         function initPanel(){
-            loadStats();
             const saved=localStorage.getItem('active_tab');
             if(saved)loadTab(saved);
-            else loadUsers();
+            else{loadTab('stats');loadStats();}
             setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);
             setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;});},3000);
             setInterval(()=>{
