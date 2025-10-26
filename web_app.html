@@ -117,10 +117,31 @@
             align-items: center;
             justify-content: center;
             font-size: 80px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
         .tap-button:active {
             transform: scale(0.95);
+        }
+
+        @keyframes coinFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.5);
+            }
+        }
+
+        .coin-animation {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: coinFloat 0.8s ease-out;
         }
 
         .loading {
@@ -211,6 +232,13 @@
         function tap() {
             tg.HapticFeedback.impactOccurred('light');
             
+            // Animate button
+            const button = document.querySelector('.tap-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+            }, 100);
+            
             fetch('/api/tap', {
                 method: 'POST',
                 headers: {
@@ -223,10 +251,20 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
+                    // Show coin animation
+                    const coinAnimation = document.createElement('div');
+                    coinAnimation.className = 'coin-animation';
+                    coinAnimation.textContent = '+' + data.reward;
+                    coinAnimation.style.left = '50%';
+                    coinAnimation.style.top = '50%';
+                    coinAnimation.style.position = 'absolute';
+                    coinAnimation.style.transform = 'translate(-50%, -50%)';
+                    document.body.appendChild(coinAnimation);
+                    setTimeout(() => {
+                        document.body.removeChild(coinAnimation);
+                    }, 800);
+                    
                     loadData();
-                    tg.showAlert('💰 +' + data.reward);
-                } else {
-                    tg.showAlert('⚠️ ' + data.error);
                 }
             })
             .catch(err => console.error('Error:', err));
@@ -235,22 +273,77 @@
         // Menu functions
         function openShop(e) {
             e.preventDefault();
-            tg.showAlert('Магазин скоро откроется!');
+            fetch('/api/shop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Shop data:', data);
+                // TODO: Show shop modal
+            })
+            .catch(err => console.error('Error:', err));
         }
 
         function openMining(e) {
             e.preventDefault();
-            tg.showAlert('Майнинг скоро откроется!');
+            fetch('/api/mining', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Mining data:', data);
+                // TODO: Show mining modal
+            })
+            .catch(err => console.error('Error:', err));
         }
 
         function openCards(e) {
             e.preventDefault();
-            tg.showAlert('Карточки скоро откроются!');
+            fetch('/api/cards', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Cards data:', data);
+                // TODO: Show cards modal
+            })
+            .catch(err => console.error('Error:', err));
         }
 
         function openStats(e) {
             e.preventDefault();
-            tg.showAlert('Статистика скоро откроется!');
+            fetch('/api/stats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                tg.showAlert(`📊 Статистика:\n\n👆 Тапов: ${data.total_taps}\n💰 Заработано: ${data.total_earned}\n💎 Добыто: ${data.total_mined}`);
+            })
+            .catch(err => console.error('Error:', err));
         }
 
         // Load data on start

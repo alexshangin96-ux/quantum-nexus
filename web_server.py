@@ -88,9 +88,104 @@ def tap():
         
         db.commit()
         
-        return jsonify({'success': True, 'reward': reward})
+        return jsonify({'success': True, 'reward': int(reward)})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/stats', methods=['POST'])
+def get_stats():
+    """Get user statistics"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'total_taps': user.total_taps,
+            'total_earned': user.total_earned,
+            'total_mined': user.total_mined,
+            'coins': user.coins,
+            'quanhash': user.quanhash
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/shop', methods=['POST'])
+def get_shop():
+    """Get shop items"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'coins': user.coins,
+            'quanhash': user.quanhash
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/mining', methods=['POST'])
+def get_mining():
+    """Get mining data"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'quanhash': user.quanhash,
+            'machines': []
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/cards', methods=['POST'])
+def get_cards():
+    """Get user cards"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'coins': user.coins,
+            'cards': []
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
