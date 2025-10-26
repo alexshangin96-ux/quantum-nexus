@@ -815,6 +815,22 @@ def modify_user():
                 user.is_frozen = True
             elif action == 'unfreeze':
                 user.is_frozen = False
+            elif action == 'set_referrer':
+                # Find referrer by telegram_id
+                referrer_telegram_id = int(value)
+                referrer = db.query(User).filter_by(telegram_id=referrer_telegram_id).first()
+                if referrer:
+                    old_referred_by = user.referred_by
+                    user.referred_by = referrer.id
+                    # Update referral counts if needed
+                    if old_referred_by:
+                        old_ref = db.query(User).filter_by(id=old_referred_by).first()
+                        if old_ref and old_ref.referrals_count > 0:
+                            old_ref.referrals_count -= 1
+                    if user.referred_by:
+                        referrer.referrals_count += 1
+                else:
+                    return jsonify({'success': False, 'error': 'Referrer not found'}), 404
             elif action == 'reset':
                 user.coins = 0
                 user.quanhash = 0
