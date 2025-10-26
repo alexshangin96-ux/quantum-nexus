@@ -1625,7 +1625,7 @@
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
                 document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
                 // Generate correct referral link using referral_code
-                const botUsername = 'QuantumNexus_Bot'; // Correct bot username
+                const botUsername = 'qanexus_bot'; // Correct bot username
                 const refCode = data.referral_code || user?.id || 'no_code'; // Use referral_code from API
                 const refLink = `https://t.me/${botUsername}?start=${refCode}`;
                 document.getElementById('refLink').textContent = refLink;
