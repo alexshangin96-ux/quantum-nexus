@@ -229,7 +229,8 @@
         const ADMIN_LOGIN='smartfixnsk'; const ADMIN_PASSWORD='Maga1996';
         let quickEditData=null, logs=[], currentUser=null;
         
-        function login(){
+        // Login function - must be defined early
+        window.login = function(){
             console.log('Login function called');
             const loginInput=document.getElementById('login');
             const passInput=document.getElementById('password');
