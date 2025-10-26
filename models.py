@@ -18,8 +18,8 @@ class User(Base):
     quanhash = Column(Float, default=0.0)
     
     # Energy
-    energy = Column(Integer, default=100)
-    max_energy = Column(Integer, default=100)
+    energy = Column(Integer, default=1000)
+    max_energy = Column(Integer, default=1000)
     
     # Statistics
     total_taps = Column(Integer, default=0)

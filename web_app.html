@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1d2e 100%);
+            background: #0a0e27;
             color: #fff;
             min-height: 100vh;
             padding: 20px;
@@ -24,15 +24,22 @@
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: 
+                linear-gradient(45deg, transparent 30%, rgba(102, 126, 234, 0.05) 50%, transparent 70%),
                 radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
             pointer-events: none;
+            animation: drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-20px); }
         }
 
         .container {
@@ -45,26 +52,62 @@
         .header {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
         }
 
         .header h1 {
             font-size: 32px;
             margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
             background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5)); }
+            50% { filter: drop-shadow(0 0 20px rgba(118, 75, 162, 0.8)); }
         }
 
         .stats {
-            background: rgba(15, 23, 42, 0.8);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(26, 29, 46, 0.9) 100%);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             border: 1px solid rgba(102, 126, 234, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .stat-row {
@@ -73,6 +116,8 @@
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .stat-row:last-child {
@@ -91,27 +136,52 @@
             font-size: 18px;
             font-weight: bold;
             color: #f093fb;
+            text-shadow: 0 0 10px rgba(240, 147, 251, 0.3);
+        }
+
+        .energy-bar-container {
+            padding-top: 15px;
         }
 
         .energy-bar {
             width: 100%;
-            height: 8px;
+            height: 10px;
             background: rgba(255,255,255,0.1);
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
             margin-top: 5px;
+            position: relative;
         }
 
         .energy-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .energy-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: energyFlow 2s infinite;
+        }
+
+        @keyframes energyFlow {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .energy-regen {
             font-size: 12px;
             color: #4ade80;
             margin-top: 5px;
+            text-align: center;
         }
 
         .buttons {
@@ -122,9 +192,9 @@
         }
 
         .btn {
-            background: rgba(15, 23, 42, 0.8);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.4);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -139,33 +209,51 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
             border-color: rgba(102, 126, 234, 0.6);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
         }
 
         .btn-emoji {
             font-size: 32px;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3));
         }
 
         .tap-button {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 220px;
+            height: 220px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             border-radius: 50%;
             border: 4px solid rgba(102, 126, 234, 0.5);
             cursor: pointer;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            font-size: 90px;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
@@ -175,15 +263,110 @@
 
         @keyframes pulse {
             0%, 100% {
-                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(102, 126, 234, 0.4);
+                transform: scale(1);
+                box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(102, 126, 234, 0.4);
             }
             50% {
-                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.8), 0 0 30px 15px rgba(102, 126, 234, 0.3);
+                transform: scale(1.05);
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.7), 0 0 40px 20px rgba(102, 126, 234, 0.3);
             }
+        }
+
+        .tap-button::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .tap-button:active {
             transform: scale(0.95);
+        }
+
+        .tap-button:not(:active)::before {
+            opacity: 0.2;
+        }
+
+        /* Offline Income Notice */
+        .offline-notice {
+            background: linear-gradient(135deg, rgba(76, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+            border: 1px solid rgba(76, 222, 128, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Withdraw Section */
+        .withdraw-section {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(26, 29, 46, 0.9) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .withdraw-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #f093fb;
+        }
+
+        .withdraw-info {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
         }
 
         /* Modal Styles */
@@ -194,10 +377,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             overflow-y: auto;
             padding: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .modal.active {
@@ -208,14 +392,28 @@
 
         .modal-content {
             background: linear-gradient(135deg, #0a0e27 0%, #1a1d2e 100%);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.5);
             border-radius: 20px;
             padding: 20px;
             max-width: 400px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            pointer-events: none;
+            opacity: 0.3;
         }
 
         .modal-header {
@@ -251,6 +449,7 @@
 
         .close-btn:hover {
             background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
         }
 
         .shop-category {
@@ -262,11 +461,14 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: #f093fb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .item {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
@@ -275,11 +477,29 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .item:hover::before {
+            left: 100%;
         }
 
         .item:hover {
             background: rgba(102, 126, 234, 0.2);
-            border-color: rgba(102, 126, 234, 0.5);
+            border-color: rgba(102, 126, 234, 0.6);
+            transform: translateX(5px);
         }
 
         .item-info {
@@ -301,21 +521,51 @@
             margin-bottom: 5px;
         }
 
+        .item-desc {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
         .item-price {
             font-size: 14px;
-            opacity: 0.9;
             color: #f093fb;
+            font-weight: bold;
         }
 
         .mining-machine {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .machine-info {
+        .machine-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .machine-tag.free {
+            background: rgba(76, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
+        .machine-tag.premium {
+            background: rgba(240, 147, 251, 0.2);
+            color: #f093fb;
+            border: 1px solid #f093fb;
+        }
+
+        .machine-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -324,25 +574,61 @@
 
         .machine-name {
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .machine-status {
+        .machine-level {
             font-size: 14px;
             opacity: 0.8;
         }
 
         .machine-stats {
-            display: flex;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             font-size: 14px;
+        }
+
+        .stat-item {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: #f093fb;
         }
 
         .card-item {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-glow {
+            position: absolute;
+            inset: -2px;
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card-item:hover .card-glow {
+            opacity: 1;
         }
 
         .card-header {
@@ -354,6 +640,9 @@
 
         .card-name {
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-level {
@@ -369,7 +658,7 @@
 
         .stats-window {
             background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 10px;
@@ -395,6 +684,35 @@
             color: #f093fb;
         }
 
+        .referral-link {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-family: monospace;
+            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .referral-benefits {
+            background: rgba(76, 222, 128, 0.1);
+            border: 1px solid rgba(76, 222, 128, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
         @keyframes coinFloat {
             0% {
                 opacity: 1;
@@ -418,36 +736,55 @@
             text-align: center;
             padding: 40px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>⚛️ Quantum Nexus ⚛️</h1>
-            <p>Привет, <span id="username">Игрок</span>!</p>
+            <p>Привет, <span id="username">Майнер</span>!</p>
         </div>
+
+        <div id="offlineNotice" class="offline-notice hidden"></div>
 
         <div class="stats">
             <div class="stat-row">
-                <span class="stat-label">💰 Коины</span>
+                <span class="stat-label">💰 Коins</span>
                 <span class="stat-value" id="coins">0</span>
             </div>
             <div class="stat-row">
                 <span class="stat-label">💎 QuanHash</span>
                 <span class="stat-value" id="quanhash">0</span>
             </div>
-            <div class="stat-row">
-                <span class="stat-label">⚡ Энергия</span>
-                <span class="stat-value" id="energy-text">0/1000</span>
+            <div class="energy-bar-container">
+                <div class="stat-row">
+                    <span class="stat-label">⚡ Энергия</span>
+                    <span class="stat-value" id="energy-text">0/1000</span>
+                </div>
+                <div class="energy-bar">
+                    <div class="energy-fill" id="energy-bar" style="width: 0%"></div>
+                </div>
+                <div class="energy-regen">+1/сек</div>
             </div>
-            <div class="energy-bar">
-                <div class="energy-fill" id="energy-bar"></div>
-            </div>
-            <div class="energy-regen" id="energy-regen">+10/сек</div>
         </div>
 
         <div class="tap-button" onclick="tap()">
             ⚛️
+        </div>
+
+        <div class="withdraw-section hidden" id="withdrawSection">
+            <div class="withdraw-title">💰 Вывод средств</div>
+            <div class="withdraw-info">
+                Продайте 500,000 ⚡ QuanHash за $1 USDT
+            </div>
+            <div class="input-group">
+                <input type="text" id="usdtAddress" placeholder="0x0000...0000 (BEP20)" maxlength="42">
+            </div>
+            <button class="action-btn" onclick="withdraw()">💸 Вывести</button>
         </div>
 
         <div class="buttons">
@@ -470,6 +807,10 @@
             <a href="#" class="btn" onclick="openReferrals(event)">
                 <div class="btn-emoji">👥</div>
                 <div>Рефералы</div>
+            </a>
+            <a href="#" class="btn" onclick="toggleWithdraw()">
+                <div class="btn-emoji">💸</div>
+                <div>Вывод</div>
             </a>
         </div>
     </div>
@@ -497,12 +838,16 @@
                 <div id="boostsList"></div>
             </div>
             <div class="shop-category">
-                <div class="category-title">💳 Карточки</div>
-                <div id="cardsList"></div>
+                <div class="category-title">🤖 Автоматизация</div>
+                <div id="automationList"></div>
             </div>
             <div class="shop-category">
                 <div class="category-title">⚡ Энергия</div>
                 <div id="energyList"></div>
+            </div>
+            <div class="shop-category">
+                <div class="category-title">💳 Карточки</div>
+                <div id="cardsList"></div>
             </div>
         </div>
     </div>
@@ -515,7 +860,7 @@
                 <button class="close-btn" onclick="closeModal('miningModal')">✕</button>
             </div>
             <div id="machinesList"></div>
-            <button class="btn" onclick="openShop(event)">➕ Купить машину</button>
+            <button class="btn" onclick="closeModal('miningModal'); openShop(event)">➕ Купить машину</button>
         </div>
     </div>
 
@@ -534,8 +879,13 @@
     <div id="referralsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">👥 Рефералы</div>
+                <div class="modal-title">👥 Реферальная система</div>
                 <button class="close-btn" onclick="closeModal('referralsModal')">✕</button>
+            </div>
+            <div class="referral-benefits">
+                <div class="benefit-item">✅ 5% пассивный доход от приглашенных</div>
+                <div class="benefit-item">🎁 100 🪙 за каждого реферала</div>
+                <div class="benefit-item">💰 Доход в реальном времени</div>
             </div>
             <div class="stats-window">
                 <div class="stats-row">
@@ -548,43 +898,46 @@
                 </div>
             </div>
             <div style="margin-top: 20px;">
-                <div style="margin-bottom: 10px; font-weight: bold;">Ваш реферальный код:</div>
-                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; font-family: monospace; text-align: center;" id="refCode">-</div>
-                <button class="btn" onclick="copyRefCode()" style="margin-top: 10px;">📋 Копировать</button>
+                <div style="margin-bottom: 10px; font-weight: bold;">Ваша реферальная ссылка:</div>
+                <div class="referral-link" id="refLink">-</div>
+                <button class="btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
             </div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        
         tg.ready();
         tg.expand();
 
         const user = tg.initDataUnsafe?.user;
         if (user) {
-            document.getElementById('username').textContent = user.first_name || 'Игрок';
+            document.getElementById('username').textContent = user.first_name || 'Майнер';
         }
 
         let energyRegenInterval;
 
         const shopItems = {
             boosts: [
-                {name: "2x Множитель", emoji: "⚡", price: 1000, type: "multiplier_2x"},
-                {name: "5x Множитель", emoji: "🔥", price: 5000, type: "multiplier_5x"},
-                {name: "10x Множитель", emoji: "💥", price: 20000, type: "multiplier_10x"},
-                {name: "Бустер энергии", emoji: "⚡", price: 500, type: "energy_booster"},
+                {name: "2x Множитель", emoji: "⚡", price: 1000, desc: "Удваивает доход с тапа", type: "multiplier_2x"},
+                {name: "5x Множитель", emoji: "🔥", price: 5000, desc: "Увеличивает доход в 5 раз", type: "multiplier_5x"},
+                {name: "10x Множитель", emoji: "💥", price: 20000, desc: "x10 к каждому тапу!", type: "multiplier_10x"},
             ],
-            cards: [
-                {name: "Обычная карточка", emoji: "🟢", price: 500, type: "common"},
-                {name: "Редкая карточка", emoji: "🔵", price: 2000, type: "rare"},
-                {name: "Эпическая карточка", emoji: "🟣", price: 10000, type: "epic"},
-                {name: "Легендарная карточка", emoji: "🟠", price: 50000, type: "legendary"},
+            automation: [
+                {name: "🤖 Авто-бот тапов", emoji: "🤖", price: 50000, desc: "Автоматически тапает за вас (5/сек)", type: "auto_bot"},
+                {name: "⚡ Двойная энергия", emoji: "⚡", price: 30000, desc: "Максимум энергии: 2000", type: "double_energy"},
+                {name: "🔄 Ускорение регенерации", emoji: "🔄", price: 40000, desc: "Энергия восстановливается быстрее", type: "regen_boost"},
             ],
             energy: [
                 {name: "Энергия +50", emoji: "⚡", price: 1000, amount: 50},
                 {name: "Энергия +200", emoji: "⚡⚡", price: 3500, amount: 200},
                 {name: "Энергия +500", emoji: "⚡⚡⚡", price: 8000, amount: 500},
+            ],
+            cards: [
+                {name: "Обычная карточка", emoji: "🟢", price: 500, desc: "Пассивный доход: 0.5 🪙/мин", type: "common"},
+                {name: "Редкая карточка", emoji: "🔵", price: 2000, desc: "Пассивный доход: 2 🪙/мин", type: "rare"},
+                {name: "Эпическая карточка", emoji: "🟣", price: 10000, desc: "Пассивный доход: 10 🪙/мин", type: "epic"},
+                {name: "Легендарная карточка", emoji: "🟠", price: 50000, desc: "Пассивный доход: 50 🪙/мин", type: "legendary"},
             ]
         };
 
@@ -607,11 +960,34 @@
                 
                 const energyPercent = (energy / maxEnergy) * 100;
                 document.getElementById('energy-bar').style.width = energyPercent + '%';
+
+                // Show withdraw button if user has 500k+ quanhash
+                if (quanhash >= 500000) {
+                    document.getElementById('withdrawSection').classList.remove('hidden');
+                }
             })
             .catch(err => console.error('Error:', err));
         }
 
-        // Start energy regeneration
+        function checkOfflineIncome() {
+            fetch('/api/offline_income', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.offline_time > 0 && data.offline_income > 0) {
+                    const hours = Math.floor(data.offline_time / 3600);
+                    const minutes = Math.floor((data.offline_time % 3600) / 60);
+                    const notice = document.getElementById('offlineNotice');
+                    notice.textContent = `⏰ Оффлайн ${hours}ч ${minutes}м | 💰 +${Math.floor(data.offline_income)} 🪙`;
+                    notice.classList.remove('hidden');
+                    loadData();
+                }
+            });
+        }
+
         function startEnergyRegen() {
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             
@@ -620,12 +996,11 @@
                 const maxEnergy = 1000;
                 
                 if (energy < maxEnergy) {
-                    const newEnergy = Math.min(energy + 10, maxEnergy);
+                    const newEnergy = Math.min(energy + 1, maxEnergy);
                     document.getElementById('energy-text').textContent = `${newEnergy}/${maxEnergy}`;
                     const energyPercent = (newEnergy / maxEnergy) * 100;
                     document.getElementById('energy-bar').style.width = energyPercent + '%';
                     
-                    // Update on server
                     fetch('/api/update_energy', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -640,7 +1015,7 @@
             
             const button = document.querySelector('.tap-button');
             button.style.transform = 'scale(0.95)';
-            setTimeout(() => { button.style.transform = 'scale(1)'; }, 100);
+            setTimeout(() => { button.style.transform = ''; }, 100);
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
@@ -667,8 +1042,7 @@
                     setTimeout(() => { document.body.removeChild(coinAnimation); }, 800);
                     loadData();
                 }
-            })
-            .catch(err => console.error('Error:', err));
+            });
         }
 
         function openShop(e) {
@@ -679,55 +1053,63 @@
 
         function renderShop() {
             const boostsHtml = shopItems.boosts.map(item => `
-                <div class="item" onclick="buyBoost('${item.type}', ${item.price})">
+                <div class="item" onclick="buyItem('boost', '${item.type}', ${item.price})">
                     <div class="item-info">
                         <div class="item-emoji">${item.emoji}</div>
                         <div class="item-details">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-price">${item.price} 🪙</div>
+                            <div class="item-desc">${item.desc}</div>
+                            <div class="item-price">${item.price.toLocaleString()} 🪙</div>
                         </div>
                     </div>
                 </div>
             `).join('');
             document.getElementById('boostsList').innerHTML = boostsHtml;
 
-            const cardsHtml = shopItems.cards.map(item => `
-                <div class="item" onclick="buyCard('${item.type}', ${item.price})">
+            const automationHtml = shopItems.automation.map(item => `
+                <div class="item" onclick="buyItem('automation', '${item.type}', ${item.price})">
                     <div class="item-info">
                         <div class="item-emoji">${item.emoji}</div>
                         <div class="item-details">
                             <div class="item-name">${item.name}</div>
-                            <div class="item-price">${item.price} 🪙</div>
+                            <div class="item-desc">${item.desc}</div>
+                            <div class="item-price">${item.price.toLocaleString()} 🪙</div>
                         </div>
                     </div>
                 </div>
             `).join('');
-            document.getElementById('cardsList').innerHTML = cardsHtml;
+            document.getElementById('automationList').innerHTML = automationHtml;
 
             const energyHtml = shopItems.energy.map(item => `
-                <div class="item" onclick="buyEnergy(${item.amount}, ${item.price})">
+                <div class="item" onclick="buyItem('energy', ${item.amount}, ${item.price})">
                     <div class="item-info">
                         <div class="item-emoji">${item.emoji}</div>
                         <div class="item-details">
-                            <div class="item-name">${item.name}</div>
-                            <div class="item-price">${item.price} 🪙</div>
+                            <div class="item-name">Энергия +${item.amount}</div>
+                            <div class="item-price">${item.price.toLocaleString()} 🪙</div>
                         </div>
                     </div>
                 </div>
             `).join('');
             document.getElementById('energyList').innerHTML = energyHtml;
+
+            const cardsHtml = shopItems.cards.map(item => `
+                <div class="item" onclick="buyItem('card', '${item.type}', ${item.price})">
+                    <div class="item-info">
+                        <div class="item-emoji">${item.emoji}</div>
+                        <div class="item-details">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-desc">${item.desc}</div>
+                            <div class="item-price">${item.price.toLocaleString()} 🪙</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('cardsList').innerHTML = cardsHtml;
         }
 
-        function buyBoost(type, price) {
-            tg.showAlert('🚧 В разработке');
-        }
-
-        function buyCard(type, price) {
-            tg.showAlert('🚧 В разработке');
-        }
-
-        function buyEnergy(amount, price) {
-            tg.showAlert('🚧 В разработке');
+        function buyItem(type, id, price) {
+            tg.showAlert('🚧 Покупки будут добавлены в следующем обновлении');
         }
 
         function openMining(e) {
@@ -743,19 +1125,24 @@
                 if (data.machines && data.machines.length > 0) {
                     document.getElementById('machinesList').innerHTML = data.machines.map(machine => `
                         <div class="mining-machine">
-                            <div class="machine-info">
-                                <div class="machine-name">${machine.name}</div>
-                                <div class="machine-status">${machine.is_active ? '✅ Активна' : '❌ Неактивна'}</div>
+                            <span class="machine-tag ${machine.tag || 'free'}">${machine.tag === 'premium' ? 'Премиум' : 'FREE'}</span>
+                            <div class="machine-header">
+                                <div class="machine-name">${machine.name || 'Майнер'} <span class="machine-level">Lv.${machine.level}</span></div>
                             </div>
                             <div class="machine-stats">
-                                <div>💎 Hash: ${machine.hash_rate}/s</div>
-                                <div>⚡ Энергия: ${machine.power_consumption}</div>
-                                <div>📊 Уровень: ${machine.level}</div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Hash</div>
+                                    <div class="stat-value">${machine.hash_rate}/s</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Доход</div>
+                                    <div class="stat-value">${machine.income_per_hour}/ч</div>
+                                </div>
                             </div>
                         </div>
                     `).join('');
                 } else {
-                    document.getElementById('machinesList').innerHTML = '<p>У вас нет машин. Купите их в магазине!</p>';
+                    document.getElementById('machinesList').innerHTML = '<p style="text-align: center; opacity: 0.7;">У вас нет машин. Купите их в магазине!</p>';
                 }
             });
         }
@@ -763,7 +1150,7 @@
         function openCards(e) {
             e.preventDefault();
             document.getElementById('cardsModal').classList.add('active');
-            document.getElementById('myCardsList').innerHTML = '<p>У вас нет карточек. Купите их в магазине!</p>';
+            document.getElementById('myCardsList').innerHTML = '<p style="text-align: center; opacity: 0.7;">У вас нет карточек. Купите их в магазине!</p>';
         }
 
         function openStats(e) {
@@ -793,6 +1180,10 @@
                         <span class="stats-label">💰 Баланс</span>
                         <span class="stats-value">${Math.floor(data.coins || 0)} 🪙</span>
                     </div>
+                    <div class="stats-row">
+                        <span class="stats-label">💎 QuanHash</span>
+                        <span class="stats-value">${Math.floor(data.quanhash || 0)} ⚡</span>
+                    </div>
                 `;
                 document.getElementById('statsContent').innerHTML = statsHtml;
             });
@@ -810,14 +1201,43 @@
             .then(data => {
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
                 document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
-                document.getElementById('refCode').textContent = data.referral_code || 'Нет кода';
+                const refLink = `https://t.me/qanexus_bot?start=${data.referral_code}`;
+                document.getElementById('refLink').textContent = refLink;
             });
         }
 
-        function copyRefCode() {
-            const code = document.getElementById('refCode').textContent;
-            navigator.clipboard.writeText(code);
-            tg.showAlert('✅ Код скопирован!');
+        function copyRefLink() {
+            const link = document.getElementById('refLink').textContent;
+            navigator.clipboard.writeText(link);
+            tg.showAlert('✅ Ссылка скопирована!');
+        }
+
+        function toggleWithdraw() {
+            const section = document.getElementById('withdrawSection');
+            section.classList.toggle('hidden');
+        }
+
+        function withdraw() {
+            const address = document.getElementById('usdtAddress').value.trim();
+            if (!address || !address.match(/^0x[a-fA-F0-9]{40}$/)) {
+                tg.showAlert('⚠️ Введите правильный BEP20 адрес');
+                return;
+            }
+
+            fetch('/api/withdraw', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, address: address})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert('✅ Запрос на вывод отправлен!');
+                    loadData();
+                } else {
+                    tg.showAlert('⚠️ ' + data.error);
+                }
+            });
         }
 
         function closeModal(modalId) {
@@ -825,6 +1245,7 @@
         }
 
         loadData();
+        checkOfflineIncome();
         startEnergyRegen();
     </script>
 </body>
