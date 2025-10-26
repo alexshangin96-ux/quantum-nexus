@@ -30,10 +30,16 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.add(db_user)
         db.commit()
         
-        # Check for referral
+        # Check for referral - use telegram_id as referral code
         if context.args and context.args[0]:
-            referral_code = context.args[0]
-            referrer = db.query(User).filter_by(referral_code=referral_code).first()
+            try:
+                referral_telegram_id = int(context.args[0])
+                referrer = db.query(User).filter_by(telegram_id=referral_telegram_id).first()
+            except ValueError:
+                referral_code = context.args[0]
+                referrer = db.query(User).filter_by(referral_code=referral_code).first()
+            else:
+                referrer = None
             if referrer and referrer.id != db_user.id:
                 db_user.referred_by = referrer.id
                 referrer.referrals_count += 1

@@ -917,9 +917,9 @@
                 <div class="btn-emoji">💸</div>
                 <div>Вывод</div>
             </a>
-            <a href="#" class="btn" onclick="openDailyBonus(event)">
+            <a href="#" class="btn" onclick="openDailyBonus(event)" style="grid-column: span 2;">
                 <div class="btn-emoji">🎁</div>
-                <div>Бонусы</div>
+                <div>Ежедневные задания</div>
             </a>
         </div>
     </div>
@@ -1456,6 +1456,29 @@
                             </button>
                         </div>
                     `).join('');
+                    
+                    // Show user machines
+                    const machinesList = document.getElementById('machinesList');
+                    if(machinesList && data.user_machines) {
+                        if(data.user_machines.length > 0) {
+                            machinesList.innerHTML = data.user_machines.map(m => `
+                                <div style="background:rgba(102,126,234,0.1);padding:12px;border-radius:10px;border:2px solid rgba(102,126,234,0.3);margin-bottom:8px;animation:slideIn 0.3s ease-out;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div>
+                                            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${m.name}</div>
+                                            <div style="font-size:11px;color:#94a3b8;">Уровень ${m.level} | ${m.hash_rate} Hash/s</div>
+                                            <div style="font-size:12px;color:#4ade80;margin-top:4px;">💰 +${Math.floor(m.income_per_hour || 0)}💎/час</div>
+                                        </div>
+                                        <div style="text-align:right;">
+                                            <div style="font-size:20px;">⚡</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('');
+                        } else {
+                            machinesList.innerHTML = '<p style="text-align:center;opacity:0.7;padding:15px;">У вас нет машин. Купите их выше!</p>';
+                        }
+                    }
                 }
                 
                 const list = document.getElementById('machinesList');
@@ -1622,10 +1645,10 @@
             .then(data => {
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
                 document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
-                // Get bot username from the bot token in config
-                const botUsername = 'Quanexus_bot'; // Correct bot username based on your bot token
-                const refCode = data.referral_code || user?.id || 'no_code';
-                const refLink = `https://t.me/${botUsername}?start=${refCode}`;
+                // Generate correct referral link using user's telegram_id as referral code
+                const botUsername = '@QuantumNexus_test_bot'; // Your actual bot username
+                const refCode = user?.id || data.referral_code || 'no_code'; // Use user.id (telegram_id)
+                const refLink = `https://t.me/${botUsername.replace('@','')}?start=${refCode}`;
                 document.getElementById('refLink').textContent = refLink;
             });
         }
@@ -1856,8 +1879,21 @@
         }
         
         function sendSupport() {
-            const topic = document.getElementById('supportTopic').value;
-            const message = document.getElementById('supportMessage').value;
+            const topicEl = document.querySelector('[id*="supportTopic"]');
+            const messageEl = document.querySelector('[id*="supportMessage"]');
+            
+            if (!topicEl || !messageEl) {
+                console.error('Support form elements not found');
+                return;
+            }
+            
+            const topic = topicEl.value;
+            const message = messageEl.value;
+            
+            if (!topic) {
+                tg.showAlert('⚠️ Выберите тему');
+                return;
+            }
             
             if (!message) {
                 tg.showAlert('⚠️ Введите сообщение');
@@ -1877,10 +1913,15 @@
             .then(data => {
                 if (data.success) {
                     tg.showAlert('✅ Сообщение отправлено!');
-                    document.getElementById('supportModal').remove();
+                    const modal = document.querySelector('#supportModal') || document.querySelector('.modal.active');
+                    if (modal) modal.remove();
                 } else {
                     tg.showAlert('❌ Ошибка: ' + (data.error || 'неизвестная'));
                 }
+            })
+            .catch(err => {
+                console.error('Support send error:', err);
+                tg.showAlert('❌ Ошибка при отправке');
             });
         }
     </script>

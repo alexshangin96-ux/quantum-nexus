@@ -943,6 +943,54 @@ def get_support_tickets():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/daily_tasks', methods=['POST'])
+def get_daily_tasks():
+    """Get daily tasks for user"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        # Generate daily tasks
+        tasks = [
+            {'id': 1, 'name': 'Ежедневный вход', 'emoji': '🚪', 'description': 'Зайдите в приложение', 'reward': 100, 'progress': 1, 'target': 1, 'completed': True},
+            {'id': 2, 'name': 'Тап мастер', 'emoji': '👆', 'description': 'Сделайте 100 тапов', 'reward': 500, 'progress': 0, 'target': 100, 'completed': False},
+            {'id': 3, 'name': 'Майнинг', 'emoji': '⚡', 'description': 'Заработайте 1000 QuanHash', 'reward': 1000, 'progress': 0, 'target': 1000, 'completed': False},
+            {'id': 4, 'name': 'Коллекционер', 'emoji': '💳', 'description': 'Купите 5 карточек', 'reward': 1500, 'progress': 0, 'target': 5, 'completed': False},
+            {'id': 5, 'name': 'Реферал', 'emoji': '👥', 'description': 'Пригласите 1 друга', 'reward': 2000, 'progress': 0, 'target': 1, 'completed': False},
+        ]
+        
+        return jsonify({'tasks': tasks})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/claim_task', methods=['POST'])
+def claim_task():
+    """Claim task reward"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        task_id = data.get('task_id')
+        
+        if not user_id or not task_id:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Add reward (for task 1 - daily login)
+            if task_id == 1:
+                user.coins += 100
+            
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/history', methods=['POST'])
 def get_transaction_history():
     """Get user transaction history"""
