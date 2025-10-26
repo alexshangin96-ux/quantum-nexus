@@ -412,20 +412,10 @@
                     d.requests.forEach(r=>{
                         const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.user_id);
                         const div=document.createElement('div');div.className='user-card';
-                        div.innerHTML=`<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">Заявка #${r.id}</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div>
-<div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-<div><div style="font-size:11px;color:#94a3b8;">Пользователь:</div><div style="font-size:14px;color:#fff;">${user?user.username:'Unknown'}</div></div>
-<div><div style="font-size:11px;color:#94a3b8;">Telegram ID:</div><div style="font-size:14px;color:#fff;">${r.user_id}</div></div>
-<div><div style="font-size:11px;color:#94a3b8;">Коины:</div><div style="font-size:14px;color:#fff;">${user?Math.floor(user.coins||0).toLocaleString():0}</div></div>
-<div><div style="font-size:11px;color:#94a3b8;">QuanHash:</div><div style="font-size:14px;color:#fff;">${user?Math.floor(user.quanhash||0).toLocaleString():0}</div></div>
-</div>
-<div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(r.amount||0).toLocaleString()} QuanHash ≈ $${(r.usdt_amount||0).toFixed(2)}</div></div>
-<div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Адрес USDT (BEP20):</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:4px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;color:#a78bfa;">${r.address}</div></div>
-</div>
-${r.status==='pending'?`<div class="actions-grid"><button class="action-btn btn-success" data-rid="${r.id}" data-status="completed" onclick="processWithdrawalBtn(this)">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="${r.id}" data-status="rejected" onclick="processWithdrawalBtn(this)">❌ Отклонить</button></div>`:`<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>`}`;
-                            c.appendChild(div);
-                        });
+                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"><div><div style="font-size:11px;color:#94a3b8;">Пользователь:</div><div style="font-size:14px;color:#fff;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:11px;color:#94a3b8;">Telegram ID:</div><div style="font-size:14px;color:#fff;">'+r.user_id+'</div></div><div><div style="font-size:11px;color:#94a3b8;">Коины:</div><div style="font-size:14px;color:#fff;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:11px;color:#94a3b8;">QuanHash:</div><div style="font-size:14px;color:#fff;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">'+Math.floor(r.amount||0).toLocaleString()+' QuanHash ≈ $'+(r.usdt_amount||0).toFixed(2)+'</div></div><div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Адрес USDT (BEP20):</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:4px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;color:#a78bfa;">'+r.address+'</div></div></div>';
+                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="processWithdrawalBtn(this)">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="processWithdrawalBtn(this)">❌ Отклонить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
                     });
                 }else{c.innerHTML='<div class="loading">Нет заявок на вывод</div>';}
             });
