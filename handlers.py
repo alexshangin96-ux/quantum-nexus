@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from models import User, MiningMachine, UserCard, Transaction
 from keyboards import *
 from utils import *
-from database import get_db
+from database import get_db, generate_referral_code
 from config import *
 import logging
 
