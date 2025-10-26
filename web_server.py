@@ -279,16 +279,49 @@ def get_shop():
                     for i in range(20)
                 ]
             elif category == 'cards':
-                card_types = ['common', 'rare', 'epic', 'legendary']
+                card_templates = [
+                    {'name': 'Стартовая карта', 'emoji': '🟢', 'income': 0.5, 'desc': 'Базовая добыча', 'rarity': 'common'},
+                    {'name': 'Карта энергии', 'emoji': '⚡', 'income': 1.2, 'desc': 'Увеличивает добычу', 'rarity': 'common'},
+                    {'name': 'Карта удачи', 'emoji': '🍀', 'income': 1.5, 'desc': 'Приносит удачу', 'rarity': 'common'},
+                    {'name': 'Карта процветания', 'emoji': '🌱', 'income': 2.0, 'desc': 'Растит доходы', 'rarity': 'rare'},
+                    {'name': 'Серебряная карта', 'emoji': '🥈', 'income': 3.0, 'desc': 'Серебряная добыча', 'rarity': 'rare'},
+                    {'name': 'Золотая карта', 'emoji': '🥇', 'income': 5.0, 'desc': 'Золотая добыча', 'rarity': 'rare'},
+                    {'name': 'Карта майнинга', 'emoji': '⛏️', 'income': 7.5, 'desc': 'Майнинговая мощь', 'rarity': 'epic'},
+                    {'name': 'Карта крипто', 'emoji': '₿', 'income': 10.0, 'desc': 'Криптовалютная', 'rarity': 'epic'},
+                    {'name': 'Карта звезды', 'emoji': '⭐', 'income': 15.0, 'desc': 'Звездная мощь', 'rarity': 'epic'},
+                    {'name': 'Карта пламени', 'emoji': '🔥', 'income': 20.0, 'desc': 'Горячая добыча', 'rarity': 'epic'},
+                    {'name': 'Легендарная карта 1', 'emoji': '👑', 'income': 30.0, 'desc': 'Королевская', 'rarity': 'legendary'},
+                    {'name': 'Легендарная карта 2', 'emoji': '💎', 'income': 40.0, 'desc': 'Драгоценная', 'rarity': 'legendary'},
+                    {'name': 'Легендарная карта 3', 'emoji': '🏆', 'income': 50.0, 'desc': 'Победная', 'rarity': 'legendary'},
+                    {'name': 'Карта времени', 'emoji': '⏰', 'income': 8.0, 'desc': 'Временная мощь', 'rarity': 'rare'},
+                    {'name': 'Карта магнита', 'emoji': '🧲', 'income': 12.0, 'desc': 'Притягивает доходы', 'rarity': 'rare'},
+                    {'name': 'Карта алхимии', 'emoji': '⚗️', 'income': 18.0, 'desc': 'Алхимическая', 'rarity': 'epic'},
+                    {'name': 'Карта НЛО', 'emoji': '🛸', 'income': 25.0, 'desc': 'Инопланетная', 'rarity': 'legendary'},
+                    {'name': 'Карта радуги', 'emoji': '🌈', 'income': 9.0, 'desc': 'Многоцветная', 'rarity': 'rare'},
+                    {'name': 'Карта грома', 'emoji': '⚡', 'income': 22.0, 'desc': 'Молниеносная', 'rarity': 'epic'},
+                    {'name': 'Карта лабиринта', 'emoji': '🧩', 'income': 28.0, 'desc': 'Загадочная', 'rarity': 'epic'},
+                    {'name': 'Карта ниндзя', 'emoji': '🥷', 'income': 35.0, 'desc': 'Скрытая мощь', 'rarity': 'legendary'},
+                    {'name': 'Карта космоса', 'emoji': '🚀', 'income': 45.0, 'desc': 'Космическая', 'rarity': 'legendary'},
+                    {'name': 'Карта дракона', 'emoji': '🐉', 'income': 55.0, 'desc': 'Драконья мощь', 'rarity': 'legendary'},
+                    {'name': 'Карта феникса', 'emoji': '🔥', 'income': 65.0, 'desc': 'Возрождающаяся', 'rarity': 'legendary'},
+                    {'name': 'Карта Вселенной', 'emoji': '🌌', 'income': 75.0, 'desc': 'Бесконечная', 'rarity': 'legendary'},
+                    {'name': 'Карта кванта', 'emoji': '⚛️', 'income': 85.0, 'desc': 'Квантовая', 'rarity': 'legendary'},
+                    {'name': 'Карта силы', 'emoji': '💪', 'income': 11.0, 'desc': 'Могучая', 'rarity': 'rare'},
+                    {'name': 'Карта мозга', 'emoji': '🧠', 'income': 16.0, 'desc': 'Умная', 'rarity': 'epic'},
+                    {'name': 'Карта молнии', 'emoji': '⚡', 'income': 24.0, 'desc': 'Быстрая', 'rarity': 'epic'},
+                    {'name': 'Карта богатства', 'emoji': '💰', 'income': 100.0, 'desc': 'Невероятная', 'rarity': 'legendary'},
+                ]
                 items = []
-                for i in range(20):
-                    card_type = card_types[i % 4]
+                for i, template in enumerate(card_templates):
                     items.append({
                         'id': f'card_{i}',
-                        'name': f'{card_type.capitalize()} карточка',
-                        'price': 5000*(i+1),
-                        'item_type': card_type,
-                        'rarity': card_type
+                        'name': template['name'],
+                        'emoji': template['emoji'],
+                        'price': int(1000 * (i+1) * (1.2 if template['rarity'] == 'rare' else (1.5 if template['rarity'] == 'epic' else (2.0 if template['rarity'] == 'legendary' else 1.0)))),
+                        'item_type': template['rarity'],
+                        'rarity': template['rarity'],
+                        'income_per_min': template['income'],
+                        'desc': template['desc']
                     })
             else:  # auto
                 items = [

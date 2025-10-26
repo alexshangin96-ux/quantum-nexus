@@ -1245,18 +1245,20 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    anim.innerHTML='✅';
                     setTimeout(()=>{
-                        anim.style.opacity='0';anim.style.transform='translate(-50%,-50%) scale(1.5)';
-                        setTimeout(()=>{anim.remove();},300);
-                    },500);
+                        anim.innerHTML='<div style="font-size:64px;">✅</div>';
+                        anim.style.transform='translate(-50%,-50%) scale(1.2)';
+                        setTimeout(()=>{
+                            anim.style.opacity='0';anim.style.transform='translate(-50%,-80%) scale(0.8)';
+                            setTimeout(()=>{anim.remove();},400);
+                        },300);
+                    },200);
                     loadData();
                     loadShopCategory(document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
                                        document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('energy') ? 'energy' :
                                        document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto');
                 } else {
-                    anim.innerHTML='❌ ' + data.error;
-                    anim.style.background='rgba(239,68,68,0.95)';
+                    anim.innerHTML='<div style="background:rgba(239,68,68,0.98);padding:25px 50px;border-radius:20px;font-size:36px;">❌ ' + data.error + '</div>';
                     setTimeout(()=>{anim.remove();},1500);
                 }
             });
