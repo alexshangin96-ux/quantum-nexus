@@ -332,7 +332,7 @@
         function showNotification(m){const n=document.createElement('div');n.className='notification';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),3000);}
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
-        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);}
+        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);setInterval(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){loadUsers();loadStats();}},10000);}
         
         function loadStats(){
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
@@ -407,17 +407,63 @@
         }
         function toggleBan(uid,isBanned){
             if(isBanned){
-                if(confirm('Разблокировать?'))modifyUser(uid,'unban','Admin');
+                showUnbanModal(uid);
             }else{
                 showBanModal(uid);
             }
         }
         function toggleFreeze(uid,isFrozen){
             if(isFrozen){
-                if(confirm('Разморозить?'))modifyUser(uid,'unfreeze','');
+                showUnfreezeModal(uid);
             }else{
                 showFreezeModal(uid);
             }
+        }
+        
+        function showUnbanModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'unbanModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔓 Разблокировать пользователя</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(16,185,129,0.1);padding:15px;border-radius:12px;border:2px solid rgba(16,185,129,0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите разблокировать этого пользователя?</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="modifyUser(${uid},'unban','Admin');document.getElementById('unbanModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">✅ Разблокировать</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function showUnfreezeModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'unfreezeModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔥 Разморозить аккаунт</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(245,158,11,0.1);padding:15px;border-radius:12px;border:2px solid rgba(245,158,11,0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите разморозить аккаунт этого пользователя? Все функции будут восстановлены.</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="modifyUser(${uid},'unfreeze','');document.getElementById('unfreezeModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔥 Разморозить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
         }
         
         function showBanModal(uid){
