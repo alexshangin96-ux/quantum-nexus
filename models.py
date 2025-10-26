@@ -41,6 +41,11 @@ class User(Base):
     is_frozen = Column(Boolean, default=False)
     ban_reason = Column(String(255), nullable=True)
     
+    # Auto-tap
+    auto_tap_enabled = Column(Boolean, default=False)
+    auto_tap_level = Column(Integer, default=0)
+    auto_tap_speed = Column(Float, default=2.0)  # taps per second
+    
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
     last_passive_update = Column(DateTime, default=datetime.utcnow)

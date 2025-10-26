@@ -770,21 +770,32 @@ def buy_item():
             elif item_type == 'regen_boost':
                 # TODO: Add regen boost
                 pass
-            elif item_type == 'common':
-                card = UserCard(user_id=user.id, card_type='common', income_per_minute=0.5, is_active=True)
-                db.add(card)
-            elif item_type == 'rare':
-                card = UserCard(user_id=user.id, card_type='rare', income_per_minute=2.0, is_active=True)
-                db.add(card)
-            elif item_type == 'epic':
-                card = UserCard(user_id=user.id, card_type='epic', income_per_minute=10.0, is_active=True)
-                db.add(card)
-            elif item_type == 'legendary':
-                card = UserCard(user_id=user.id, card_type='legendary', income_per_minute=50.0, is_active=True)
+            elif item_type in ['common', 'rare', 'epic', 'legendary']:
+                # Check existing card level
+                existing_cards = db.query(UserCard).filter_by(user_id=user.id, card_type=item_type).all()
+                level = len(existing_cards) + 1
+                
+                base_income = {
+                    'common': 0.5,
+                    'rare': 2.0,
+                    'epic': 10.0,
+                    'legendary': 50.0
+                }[item_type]
+                
+                income = base_income * (1.02 ** (level - 1))  # 2% increase per level
+                
+                card = UserCard(
+                    user_id=user.id,
+                    card_type=item_type,
+                    income_per_minute=income,
+                    is_active=True
+                )
                 db.add(card)
             elif item_type == 'auto_bot':
-                # TODO: Add auto bot
-                pass
+                # Auto-tap bot implementation
+                user.auto_tap_enabled = True
+                user.auto_tap_level = getattr(user, 'auto_tap_level', 0) + 1
+                user.auto_tap_speed = 2 + (user.auto_tap_level - 1) * 0.5  # taps per second
         
         return jsonify({'success': True})
     except Exception as e:
