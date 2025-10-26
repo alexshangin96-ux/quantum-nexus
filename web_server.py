@@ -272,15 +272,38 @@ def get_shop():
             
             # Define 4 categories with 20 items each
             if category == 'boosts':
-                items = [
-                    {'id': f'boost_{i}', 'name': f'Множитель x{i+1}', 'price': 1000*(i+1), 'item_type': 'multiplier_2x' if i==0 else ('multiplier_5x' if i==1 else 'multiplier_10x')}
-                    for i in range(20)
-                ]
+                # Get user's purchased boosts count
+                user_boosts = db.query(UserCard).filter_by(user_id=user.id, card_type='boosts').count() if hasattr(UserCard, 'card_type') else 0
+                items = []
+                for i in range(20):
+                    level = (user_boosts % 10) + 1  # Level 1-10 cycling
+                    base_price = 1000 * (i+1)
+                    current_price = int(base_price * (1.02 ** (level - 1)))  # 2% increase per level
+                    items.append({
+                        'id': f'boost_{i}',
+                        'name': f'Множитель тапов x{2 if i==0 else (5 if i==1 else 10)}',
+                        'description': f'Увеличивает доход от тапов на {2 if i==0 else (5 if i==1 else 10)}х на 24 часа',
+                        'price': current_price,
+                        'level': level,
+                        'item_type': 'multiplier_2x' if i==0 else ('multiplier_5x' if i==1 else 'multiplier_10x')
+                    })
             elif category == 'energy':
-                items = [
-                    {'id': f'energy_{i}', 'name': f'Энергия +{50*(i+1)}', 'price': 500*(i+1), 'item_type': 'energy'}
-                    for i in range(20)
-                ]
+                # Get user's purchased energy boosts count
+                user_energy_boosts = db.query(UserCard).filter_by(user_id=user.id, card_type='energy').count() if hasattr(UserCard, 'card_type') else 0
+                items = []
+                for i in range(20):
+                    level = (user_energy_boosts % 10) + 1
+                    base_price = 500 * (i+1)
+                    current_price = int(base_price * (1.02 ** (level - 1)))
+                    items.append({
+                        'id': f'energy_{i}',
+                        'name': f'⚡ Энергия +{50*(i+1)}',
+                        'description': f'Восполняет энергию на {50*(i+1)} единиц',
+                        'price': current_price,
+                        'level': level,
+                        'item_type': 'energy',
+                        'amount': 50*(i+1)
+                    })
             elif category == 'cards':
                 card_templates = [
                     {'name': 'Стартовая карта', 'emoji': '🟢', 'income': 0.5, 'desc': 'Базовая добыча', 'rarity': 'common'},
@@ -327,10 +350,22 @@ def get_shop():
                         'desc': template['desc']
                     })
             else:  # auto
-                items = [
-                    {'id': f'auto_{i}', 'name': f'Авто-бот {i+1}', 'price': 10000*(i+1), 'item_type': 'auto_bot'}
-                    for i in range(20)
-                ]
+                # Get user's purchased auto-bots count
+                user_auto_bots = db.query(UserCard).filter_by(user_id=user.id, card_type='auto').count() if hasattr(UserCard, 'card_type') else 0
+                items = []
+                for i in range(20):
+                    level = (user_auto_bots % 10) + 1
+                    base_price = 10000 * (i+1)
+                    current_price = int(base_price * (1.02 ** (level - 1)))
+                    items.append({
+                        'id': f'auto_{i}',
+                        'name': f'🤖 Авто-бот ур. {i+1}',
+                        'description': f'Автоматически тапает {2 + i} раз в секунду',
+                        'price': current_price,
+                        'level': level,
+                        'item_type': 'auto_bot',
+                        'taps_per_sec': 2 + i
+                    })
             
             return jsonify({
                 'coins': user.coins,
