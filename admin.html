@@ -278,48 +278,9 @@
             return true;
         }
         
-        window.addEventListener('load',function(){
-            const loginBtn=document.getElementById('loginBtn');
-            const passInput=document.getElementById('password');
-            const loginInput=document.getElementById('login');
-            
-            if(loginBtn){
-                loginBtn.addEventListener('click',function(e){
-                    e.preventDefault();
-                    login();
-                });
-                console.log('Login button handler attached on window load');
-            }
-            
-            if(passInput){
-                passInput.addEventListener('keypress',function(e){
-                    if(e.key==='Enter'){
-                        e.preventDefault();
-                        login();
-                    }
-                });
-            }
-            
-            if(loginInput){
-                loginInput.addEventListener('keypress',function(e){
-                    if(e.key==='Enter'){
-                        e.preventDefault();
-                        passInput.focus();
-                    }
-                });
-            }
-        });
-        
-        document.addEventListener('DOMContentLoaded',function(){
-            const loginBtn=document.getElementById('loginBtn');
-            if(loginBtn&&!loginBtn.hasAttribute('data-listener')){
-                loginBtn.addEventListener('click',function(e){
-                    e.preventDefault();
-                    login();
-                });
-                loginBtn.setAttribute('data-listener','true');
-                console.log('Login button handler attached on DOMContentLoaded');
-            }
+        // Add Enter key support
+        document.getElementById('password').addEventListener('keypress', function(e){
+            if(e.key==='Enter'){e.preventDefault();login();}
         });
         
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');}
