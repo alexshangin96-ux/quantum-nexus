@@ -346,7 +346,7 @@
             <div class="form-group">
                 <input type="password" id="password" placeholder="Password" autocomplete="current-password">
             </div>
-            <button class="btn" onclick="login()">🚀 Войти</button>
+            <button class="btn" onclick="login()" type="button">🚀 Войти</button>
         </div>
 
         <div id="adminPanel" class="admin-panel hidden container">
@@ -421,7 +421,25 @@
         function closeModal(){document.getElementById('quickEditModal').classList.remove('active');quickEditData=null;}
         function confirmQuickEdit(){if(!quickEditData)return;const v=parseFloat(document.getElementById('modalInput').value);if(isNaN(v)){showNotification('❌ Введите значение','error');return;}modifyUser(quickEditData.userId,`set_${quickEditData.field}`,v);closeModal();}
         window.addEventListener('load',()=>{createParticles();addLog('Система загружена','success');if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
-        function login(){const l=document.getElementById('login')?.value,p=document.getElementById('password')?.value;if(!l||!p){showNotification('❌ Заполните все поля','error');return;}if(l===ADMIN_LOGIN&&p===ADMIN_PASSWORD){localStorage.setItem('admin_logged_in','true');document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();addLog('Вход выполнен','success');showNotification('✅ Добро пожаловать','success');}else{showNotification('❌ Неверный логин или пароль','error');addLog('Ошибка входа','error');}}
+        function login(){
+            const loginInput=document.getElementById('login');
+            const passInput=document.getElementById('password');
+            if(!loginInput||!passInput){showNotification('❌ Ошибка загрузки','error');return;}
+            const l=loginInput.value.trim();
+            const p=passInput.value.trim();
+            if(!l||!p){showNotification('❌ Заполните все поля','error');return;}
+            if(l===ADMIN_LOGIN&&p===ADMIN_PASSWORD){
+                localStorage.setItem('admin_logged_in','true');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                initPanel();
+                addLog('Вход выполнен','success');
+                showNotification('✅ Добро пожаловать','success');
+            }else{
+                showNotification('❌ Неверный логин или пароль','error');
+                addLog('Ошибка входа','error');
+            }
+        }
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');addLog('Выход','info');}
         function refreshAll(){loadDashboard();if(localStorage.getItem('active_tab')==='users')loadUsers();showNotification('🔄 Обновлено','success');}
         function exportData(){const data=JSON.stringify(window.allUsers||[],null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='users_export.json';a.click();showNotification('📥 Экспорт данных','success');}
