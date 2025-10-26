@@ -1880,12 +1880,12 @@
             const message = messageEl.value;
             
             if (!topic) {
-                tg.showAlert('⚠️ Выберите тему');
+                alert('⚠️ Выберите тему');
                 return;
             }
             
             if (!message) {
-                tg.showAlert('⚠️ Введите сообщение');
+                alert('⚠️ Введите сообщение');
                 return;
             }
             
@@ -1905,16 +1905,16 @@
             .then(data => {
                 console.log('Support response data:', data);
                 if (data.success) {
-                    tg.showAlert('✅ Сообщение отправлено!');
+                    alert('✅ Сообщение отправлено!');
                     const modal = document.querySelector('#supportModal') || document.querySelector('.modal.active');
                     if (modal) modal.remove();
                 } else {
-                    tg.showAlert('❌ Ошибка: ' + (data.error || 'неизвестная'));
+                    alert('❌ Ошибка: ' + (data.error || 'неизвестная'));
                 }
             })
             .catch(err => {
                 console.error('Support send error:', err);
-                tg.showAlert('❌ Ошибка при отправке: ' + err.message);
+                alert('❌ Ошибка при отправке: ' + err.message);
             });
         }
     </script>
