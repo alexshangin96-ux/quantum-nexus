@@ -114,14 +114,14 @@ def get_user_data():
                 print(f"Init data received: {init_data[:50]}...")
         
         if not user_id:
-            return jsonify({'error': 'User ID required', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 400
+            return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown'}), 200
         
         db = next(get_db())
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
-            # Return default values if user not found
-            return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
+            # Return default values if user not found (need to start bot first)
+            return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown', 'message': 'Start bot first'}), 200
         
         # Check if user is banned or frozen (safe check for old DB schema)
         if hasattr(user, 'is_banned') and user.is_banned:
