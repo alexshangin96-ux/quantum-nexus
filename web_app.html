@@ -385,6 +385,17 @@
                 transform: translateY(0);
             }
         }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
 
         /* Withdraw Section */
         .withdraw-section {
@@ -1450,14 +1461,21 @@
                 const list = document.getElementById('machinesList');
                 if(list) {
                     if(data.user_machines && data.user_machines.length > 0) {
-                        list.innerHTML = data.user_machines.map(m => `
-                            <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin-bottom:8px;">
-                                <div style="font-weight:600;">${m.name}</div>
-                                <div style="font-size:12px;color:#94a3b8;">🪙 Hash: ${m.hash_rate}/s</div>
+                        list.innerHTML = data.user_machines.map((m, idx) => `
+                            <div style="background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.2));padding:15px;border-radius:12px;margin-bottom:10px;border:2px solid rgba(102,126,234,0.5);box-shadow:0 0 20px rgba(102,126,234,0.3);animation:slideIn 0.5s ease ${idx*0.1}s both;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <div style="font-weight:700;font-size:16px;color:#fff;">⚡ ${m.name}</div>
+                                    <div style="font-size:18px;">🔧</div>
+                                </div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+                                    <div><span style="color:#94a3b8;">Hash/s:</span> <span style="color:#4ade80;font-weight:700;">${m.hash_rate}</span></div>
+                                    <div><span style="color:#94a3b8;">Доход/ч:</span> <span style="color:#f093fb;font-weight:700;">${m.income_per_hour}</span></div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;margin-top:8px;text-align:center;font-size:11px;color:#94a3b8;">💰 Активно майнит QuanHash</div>
                             </div>
                         `).join('');
                     } else {
-                        list.innerHTML = '<p style="text-align:center;opacity:0.7;">У вас нет машин</p>';
+                        list.innerHTML = '<div style="text-align:center;opacity:0.7;padding:30px;"><div style="font-size:48px;margin-bottom:15px;">🤖</div><p>У вас нет машин<br>Купите их в магазине!</p></div>';
                     }
                 }
             });
