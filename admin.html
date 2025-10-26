@@ -443,7 +443,7 @@ ${['Энергия','Тапы','Коины','Hash','Бусты','Реферал�
         function loadSecurity(){
             document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🔒 Безопасность системы</h2>
 <div class="security-grid">
-${['DDoS защита','2FA аутентификация','Anti-Bot','Шифрование','Логины','Пароли','Файрвол','Аудит','Оповещения','Резервный Бэкап','Автобан','Целостность','SSL/TLS','IDS','Ротация ключей','IP Whitelist','Rate Limiting','Антивирус','Журнал изменений','Мониторинг аномалий'].map((s,i)=>`<div class="security-card"><div class="card-title">🔒 ${s}</div><div class="card-desc">Безопасность: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;" onclick="showNotification('🔒 Безопасность: ${s}')">🔒 Настроить</button></div></div>`).join('')}
+${['DDoS защита','2FA аутентификация','Anti-Bot','Шифрование','Логины','Пароли','Файрвол','Аудит','Оповещения','Резервный Бэкап','Автобан','Целостность','SSL/TLS','IDS','Ротация ключей','IP Whitelist','Rate Limiting','Антивирус','Журнал изменений','Мониторинг аномалий'].map((s,i)=>`<div class="security-card"><div class="card-title">🔒 ${s}</div><div class="card-desc">Безопасность: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;" onclick="showNotification('🔒 Безопасность: ' + '${s}')">🔒 Настроить</button></div></div>`).join('')}
 </div>`;
         }
         
@@ -451,7 +451,7 @@ ${['DDoS защита','2FA аутентификация','Anti-Bot','Шифро
             document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🛠️ Инструменты администратора</h2>
 <div class="tools-grid">
 <div class="tool-card"><div class="card-title">📨 Массовая рассылка</div><div class="card-desc">Отправить уведомление всем пользователям</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;padding:10px 20px;width:100%;" onclick="openMassNotifyModal()">📨 Отправить</button></div></div>
-${['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'].map((s,i)=>`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: ${s}')">🛠️ Использовать</button></div></div>`).join('')}
+${['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'].map((s,i)=>`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: ' + '${s}')">🛠️ Использовать</button></div></div>`).join('')}
 </div>`;
         }
         
