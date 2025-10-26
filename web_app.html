@@ -1604,16 +1604,10 @@
             .then(data => {
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
                 document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
-                // Get bot username from Telegram WebApp
-                let botUsername = 'QuantumNexus_bot'; // Fallback
-                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-                    const initData = window.Telegram.WebApp.initDataUnsafe;
-                    if (initData && initData.user) {
-                        // Try to get bot info if available
-                        botUsername = 'QuantumNexus_bot'; // Use the actual bot username
-                    }
-                }
-                const refLink = `https://t.me/${botUsername}?start=${data.referral_code || user?.id || 'no_code'}`;
+                // Get bot username from the bot token in config
+                const botUsername = 'Quanexus_bot'; // Correct bot username based on your bot token
+                const refCode = data.referral_code || user?.id || 'no_code';
+                const refLink = `https://t.me/${botUsername}?start=${refCode}`;
                 document.getElementById('refLink').textContent = refLink;
             });
         }
