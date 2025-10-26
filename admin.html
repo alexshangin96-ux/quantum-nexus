@@ -229,33 +229,95 @@
         const ADMIN_LOGIN='smartfixnsk'; const ADMIN_PASSWORD='Maga1996';
         let quickEditData=null, logs=[], currentUser=null;
         
-        // Simple working login function
         function login(){
+            console.log('Login function called');
             const loginInput=document.getElementById('login');
             const passInput=document.getElementById('password');
-            if(!loginInput||!passInput){alert('Ошибка загрузки');return;}
+            
+            if(!loginInput||!passInput){
+                alert('Ошибка: элементы формы не найдены');
+                console.error('Login or password input not found');
+                return false;
+            }
+            
             const l=loginInput.value.trim();
             const p=passInput.value.trim();
-            if(!l){alert('❌ Введите логин');return;}
-            if(!p){alert('❌ Введите пароль');return;}
-            if(l!==ADMIN_LOGIN){alert('❌ Неверный логин');return;}
-            if(p!==ADMIN_PASSWORD){alert('❌ Неверный пароль');return;}
+            
+            console.log('Login attempt:', l, 'Password length:', p.length);
+            
+            if(!l){
+                alert('❌ Введите логин');
+                loginInput.focus();
+                return false;
+            }
+            
+            if(!p){
+                alert('❌ Введите пароль');
+                passInput.focus();
+                return false;
+            }
+            
+            if(l!==ADMIN_LOGIN){
+                alert('❌ Неверный логин');
+                loginInput.focus();
+                return false;
+            }
+            
+            if(p!==ADMIN_PASSWORD){
+                alert('❌ Неверный пароль');
+                passInput.focus();
+                return false;
+            }
+            
+            console.log('Login successful');
             localStorage.setItem('admin_logged_in','true');
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
             initPanel();
+            return true;
         }
         
-        // Make login accessible globally
-        window.login = login;
-        
-        // Auto-focus and Enter support
-        document.addEventListener('DOMContentLoaded', function(){
-            const passInput = document.getElementById('password');
-            if(passInput){
-                passInput.addEventListener('keypress', function(e){
-                    if(e.key==='Enter'){e.preventDefault();login();}
+        window.addEventListener('load',function(){
+            const loginBtn=document.getElementById('loginBtn');
+            const passInput=document.getElementById('password');
+            const loginInput=document.getElementById('login');
+            
+            if(loginBtn){
+                loginBtn.addEventListener('click',function(e){
+                    e.preventDefault();
+                    login();
                 });
+                console.log('Login button handler attached on window load');
+            }
+            
+            if(passInput){
+                passInput.addEventListener('keypress',function(e){
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+            
+            if(loginInput){
+                loginInput.addEventListener('keypress',function(e){
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        passInput.focus();
+                    }
+                });
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded',function(){
+            const loginBtn=document.getElementById('loginBtn');
+            if(loginBtn&&!loginBtn.hasAttribute('data-listener')){
+                loginBtn.addEventListener('click',function(e){
+                    e.preventDefault();
+                    login();
+                });
+                loginBtn.setAttribute('data-listener','true');
+                console.log('Login button handler attached on DOMContentLoaded');
             }
         });
         
