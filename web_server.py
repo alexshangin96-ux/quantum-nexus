@@ -862,5 +862,58 @@ def get_support_tickets():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/history', methods=['POST'])
+def get_transaction_history():
+    """Get user transaction history"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Get transactions
+            transactions = db.query(Transaction).filter_by(user_id=user.id).order_by(Transaction.created_at.desc()).limit(100).all()
+            
+            # Get withdrawals
+            withdrawals = db.query(Withdrawal).filter_by(user_id=user.id).order_by(Withdrawal.created_at.desc()).all()
+            
+            history = []
+            
+            # Add transactions
+            for t in transactions:
+                history.append({
+                    'type': t.transaction_type,
+                    'amount': t.amount,
+                    'currency': t.currency,
+                    'date': t.created_at.isoformat() if t.created_at else None,
+                    'timestamp': t.created_at.timestamp() if t.created_at else 0
+                })
+            
+            # Add withdrawals
+            for w in withdrawals:
+                history.append({
+                    'type': 'withdrawal',
+                    'amount': w.usdt_amount,
+                    'currency': 'usd',
+                    'status': w.status,
+                    'address': w.address,
+                    'date': w.created_at.isoformat() if w.created_at else None,
+                    'timestamp': w.created_at.timestamp() if w.created_at else 0
+                })
+            
+            # Sort by timestamp descending
+            history.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
+            
+            return jsonify({'history': history[:50]})  # Return last 50
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
