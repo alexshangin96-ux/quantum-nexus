@@ -1820,6 +1820,64 @@
     </script>
     
     <script>
+        function openDailyBonus(e) {
+            e.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'dailyBonusModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff;">🎁 Ежедневные задания</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load daily tasks
+            fetch('/api/daily_tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('dailyTasksList');
+                if(data.tasks && data.tasks.length > 0) {
+                    list.innerHTML = data.tasks.map(task => `
+                        <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;border:2px solid ${task.completed ? 'rgba(74,222,128,0.5)' : 'rgba(102,126,234,0.5)'};">
+                            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">${task.emoji} ${task.name}</div>
+                            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">${task.description}</div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="font-size:14px;color:${task.completed ? '#4ade80' : '#f093fb'};">${task.completed ? '✅ Выполнено' : 'Прогресс: ' + task.progress + '/' + task.target}</div>
+                                <div style="font-size:16px;font-weight:700;">💰 +${task.reward}</div>
+                            </div>
+                            ${task.completed ? '<button onclick="claimReward(' + task.id + ')" style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;">🎁 Забрать награду</button>' : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
+                }
+            });
+        }
+        
+        function claimReward(taskId) {
+            fetch('/api/claim_task', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, task_id: taskId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    openDailyBonus({preventDefault:()=>{}});
+                    loadData();
+                }
+            });
+        }
+        
         function openHistory(e) {
             e.preventDefault();
             const modal = document.createElement('div');
