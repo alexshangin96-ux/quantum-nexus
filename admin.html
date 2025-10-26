@@ -278,10 +278,18 @@
             return true;
         }
         
-        // Add Enter key support
-        document.getElementById('password').addEventListener('keypress', function(e){
-            if(e.key==='Enter'){e.preventDefault();login();}
-        });
+        // Add Enter key support - delay until DOM is ready
+        setTimeout(function(){
+            const passInput = document.getElementById('password');
+            if(passInput){
+                passInput.addEventListener('keypress', function(e){
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+        }, 100);
         
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');}
         function refreshAll(){loadUsers();showNotification('🔄 Обновлено');}
