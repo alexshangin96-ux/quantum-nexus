@@ -899,8 +899,12 @@ def create_support_ticket():
         topic = data.get('topic')
         message = data.get('message')
         
-        if not user_id or not topic or not message:
-            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User ID required'}), 400
+        if not topic:
+            return jsonify({'success': False, 'error': 'Topic required'}), 400
+        if not message:
+            return jsonify({'success': False, 'error': 'Message required'}), 400
         
         with get_db() as db:
             user = db.query(User).filter_by(telegram_id=user_id).first()
@@ -914,8 +918,9 @@ def create_support_ticket():
             )
             db.add(support_ticket)
         
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Сообщение отправлено!'})
     except Exception as e:
+        print(f"Support ticket error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/admin/support', methods=['GET'])
@@ -953,17 +958,72 @@ def get_daily_tasks():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        # Generate daily tasks
-        tasks = [
-            {'id': 1, 'name': 'Ежедневный вход', 'emoji': '🚪', 'description': 'Зайдите в приложение', 'reward': 100, 'progress': 1, 'target': 1, 'completed': True},
-            {'id': 2, 'name': 'Тап мастер', 'emoji': '👆', 'description': 'Сделайте 100 тапов', 'reward': 500, 'progress': 0, 'target': 100, 'completed': False},
-            {'id': 3, 'name': 'Майнинг', 'emoji': '⚡', 'description': 'Заработайте 1000 QuanHash', 'reward': 1000, 'progress': 0, 'target': 1000, 'completed': False},
-            {'id': 4, 'name': 'Коллекционер', 'emoji': '💳', 'description': 'Купите 5 карточек', 'reward': 1500, 'progress': 0, 'target': 5, 'completed': False},
-            {'id': 5, 'name': 'Реферал', 'emoji': '👥', 'description': 'Пригласите 1 друга', 'reward': 2000, 'progress': 0, 'target': 1, 'completed': False},
-        ]
-        
-        return jsonify({'tasks': tasks})
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            # Count user cards
+            cards_count = db.query(UserCard).filter_by(user_id=user.id).count()
+            
+            # Get tasks with real progress
+            tasks = [
+                {
+                    'id': 1,
+                    'name': 'Ежедневный вход',
+                    'emoji': '🚪',
+                    'description': 'Зайдите в приложение',
+                    'reward': 100,
+                    'progress': 1,
+                    'target': 1,
+                    'completed': True
+                },
+                {
+                    'id': 2,
+                    'name': 'Тап мастер',
+                    'emoji': '👆',
+                    'description': f'Сделайте 100 тапов',
+                    'reward': 500,
+                    'progress': min(user.total_taps, 100),
+                    'target': 100,
+                    'completed': user.total_taps >= 100
+                },
+                {
+                    'id': 3,
+                    'name': 'Майнинг',
+                    'emoji': '⚡',
+                    'description': f'Заработайте 1000 QuanHash',
+                    'reward': 1000,
+                    'progress': min(int(user.quanhash), 1000),
+                    'target': 1000,
+                    'completed': user.quanhash >= 1000
+                },
+                {
+                    'id': 4,
+                    'name': 'Коллекционер',
+                    'emoji': '💳',
+                    'description': f'Купите 5 карточек',
+                    'reward': 1500,
+                    'progress': min(cards_count, 5),
+                    'target': 5,
+                    'completed': cards_count >= 5
+                },
+                {
+                    'id': 5,
+                    'name': 'Реферал',
+                    'emoji': '👥',
+                    'description': f'Пригласите 1 друга',
+                    'reward': 2000,
+                    'progress': min(user.referrals_count, 1),
+                    'target': 1,
+                    'completed': user.referrals_count >= 1
+                },
+            ]
+            
+            return jsonify({'tasks': tasks})
     except Exception as e:
+        print(f"Daily tasks error: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/claim_task', methods=['POST'])
