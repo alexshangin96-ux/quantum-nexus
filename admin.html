@@ -333,7 +333,102 @@
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');loadTab(t);}
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
         let withdrawalCount = 0;
-        function initPanel(){loadStats();const saved=localStorage.getItem('active_tab');if(saved)loadTab(saved);else loadUsers();setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;});},3000);setInterval(()=>{if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){loadUsers();loadStats();}},10000);}
+        function initPanel(){
+            loadStats();
+            const saved=localStorage.getItem('active_tab');
+            if(saved)loadTab(saved);
+            else loadUsers();
+            setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);
+            setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;});},3000);
+            setInterval(()=>{
+                const activeTab = localStorage.getItem('active_tab');
+                if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){
+                    if(activeTab === 'users') refreshUsersOnly();
+                    else if(activeTab === 'withdrawals') refreshWithdrawalsOnly();
+                    else if(activeTab === 'questions') refreshQuestionsOnly();
+                    else if(activeTab === 'archive') refreshArchiveOnly();
+                    else if(activeTab === 'stats') refreshStatsOnly();
+                    loadStats(); // Обновляем топ-статистику
+                }
+            },10000);
+        }
+        
+        function refreshUsersOnly(){
+            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
+                window.allUsers = d.users;
+                const c = document.getElementById('content');
+                if(!c || !c.innerHTML.includes('user-card')) return;
+                const searchTerm = document.getElementById('userSearch')?.value || '';
+                const filteredUsers = searchTerm?d.users.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):d.users;
+                c.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2 style="color:#fff;font-size:20px;">👥 Пользователи ('+filteredUsers.length+')</h2><input type="text" id="userSearch" placeholder="🔍 Поиск..." style="padding:10px;background:rgba(0,0,0,0.4);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;width:250px;" oninput="filterUsers()"></div>';
+                filteredUsers.forEach(u=>{
+                    const div = document.createElement('div');
+                    div.className = 'user-card';
+                    div.innerHTML = getUserCardHTML(u);
+                    c.appendChild(div);
+                });
+            });
+        }
+        
+        function refreshWithdrawalsOnly(){
+            fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c || !c.innerHTML.includes('user-card')) return;
+                if(d.requests&&d.requests.length>0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💸 Заявки на вывод ('+d.requests.length+')</h2>';
+                    d.requests.forEach(r=>{
+                        const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.telegram_id);
+                        const div=document.createElement('div');div.className='user-card';
+                        const statusColor = r.status==='completed'?'rgba(16,185,129,0.2)':r.status==='rejected'?'rgba(239,68,68,0.2)':'rgba(245,158,11,0.2)';
+                        const statusIcon = r.status==='completed'?'✅':r.status==='rejected'?'❌':'⏳';
+                        const statusText = r.status==='completed'?'Выполнено':r.status==='rejected'?'Отклонено':'Ожидает';
+                        const html='<div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-weight:800;font-size:20px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="padding:10px 20px;background:'+statusColor+';border-radius:12px;color:#fff;font-weight:700;font-size:14px;border:2px solid rgba(255,255,255,0.1);">'+statusIcon+' '+statusText+'</div></div></div><div style="background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;margin-bottom:16px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;"><div><div style="font-size:12px;color:#94a3b8;">Пользователь:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Telegram ID:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(r.telegram_id||r.user_id)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Коины:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">QuanHash:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:16px;padding:16px;background:rgba(102,126,234,0.15);border-radius:12px;border:2px solid rgba(102,126,234,0.3);"><div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">Сумма вывода:</div><div style="font-size:28px;font-weight:900;color:#667eea;line-height:1.2;">💎 '+(r.amount||0).toLocaleString()+' QuanHash</div><div style="font-size:16px;color:#94a3b8;margin-top:8px;">≈ $'+(parseFloat(r.usdt_amount||0)).toFixed(2)+' USDT</div></div><div style="margin-top:16px;"><div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Адрес BEP20:</div><div style="background:rgba(102,126,234,0.2);padding:16px;border-radius:12px;border:2px solid rgba(102,126,234,0.4);display:flex;align-items:center;gap:12px;"><div style="flex:1;font-family:monospace;font-size:13px;color:#fff;word-break:break-all;font-weight:600;">'+(r.address||'N/A')+'</div><button onclick="copyAddress(\''+(r.address||'')+'\')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(102,126,234,0.4);transition:all 0.3s;">📋 Копировать</button></div></div></div>';
+                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="confirmWithdrawal(this,\'approved\')">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="confirmWithdrawal(this,\'rejected\')">❌ Отклонить</button></div>':'';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет заявок на вывод</div>';}
+            });
+        }
+        
+        function refreshQuestionsOnly(){
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                const activeTickets = (d.tickets || []).filter(t => t.status !== 'resolved');
+                c.innerHTML = '<h2 style="color:#fff;font-size:20px;margin-bottom:20px;display:flex;align-items:center;">💬 Вопросы от пользователей ('+activeTickets.length+')</h2>';
+                activeTickets.forEach(t=>{
+                    const div=document.createElement('div');div.className='user-card';
+                    const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                    const actions=t.status==='pending'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="answerQuestion('+t.id+')">📝 Ответить</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':t.status==='answered'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);" onclick="archiveTicket('+t.id+')">📁 Архивировать</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':'<div style="padding:10px;background:rgba(99,102,241,0.2);border-radius:10px;color:#6366f1;text-align:center;font-weight:700;">📁 В архиве</div>';
+                    div.innerHTML=html+actions;
+                    c.appendChild(div);
+                });
+            });
+        }
+        
+        function refreshArchiveOnly(){
+            fetch('/api/admin/archive').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                const archivedTickets = d.tickets || [];
+                c.innerHTML = '<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📁 Архивированные заявки ('+archivedTickets.length+')</h2>';
+                archivedTickets.forEach(t=>{
+                    const div=document.createElement('div');div.className='user-card';
+                    div.innerHTML='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div><div style="background:rgba(99,102,241,0.1);padding:10px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Ответ:</div><div style="font-size:14px;color:#fff;margin-top:4px;">'+t.answer+'</div></div>';
+                    c.appendChild(div);
+                });
+            });
+        }
+        
+        function refreshStatsOnly(){
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalTaps').querySelector('.stat-value').textContent=(d.total_taps||0).toLocaleString();
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=(d.total_revenue||0).toLocaleString();
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+            });
+        }
         
         function loadStats(){
             const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
