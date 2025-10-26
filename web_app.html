@@ -1678,5 +1678,66 @@
             });
         }
     </script>
+    
+    <script>
+        function openHistory(e) {
+            e.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'historyModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="font-size: 20px; margin-bottom: 20px; color: #fff;">📜 История транзакций</h2>
+                    <div id="historyList" style="display:flex;flex-direction:column;gap:10px;"></div>
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:600;margin-top:20px;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            fetch('/api/history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('historyList');
+                if(data.history && data.history.length > 0) {
+                    list.innerHTML = data.history.map(tr => {
+                        const date = new Date(tr.date);
+                        const typeLabel = tr.type === 'withdrawal' ? '💸 Вывод' : tr.type === 'tap_earn' ? '💰 Тап' : tr.type === 'mining_earn' ? '⚡ Майнинг' : tr.type === 'passive_earn' ? '📊 Пассив' : '💳 Покупка';
+                        const color = tr.type === 'withdrawal' ? '#ef4444' : tr.type === 'tap_earn' || tr.type === 'mining_earn' || tr.type === 'passive_earn' ? '#4ade80' : '#f093fb';
+                        const status = tr.status || 'completed';
+                        const statusEmoji = status === 'pending' ? '⏳' : status === 'completed' ? '✅' : '❌';
+                        
+                        return `
+                            <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;border:1px solid rgba(102,126,234,0.3);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                    <div style="font-weight:700;font-size:16px;">${typeLabel}</div>
+                                    <div style="font-size:14px;color:${color};font-weight:600;">
+                                        ${tr.type === 'withdrawal' ? '-' : '+'}${Math.floor(tr.amount || 0).toLocaleString()} 
+                                        ${tr.currency === 'usd' ? '💵 USD' : tr.currency === 'coins' ? '🪙' : '⚡'}
+                                    </div>
+                                </div>
+                                ${tr.type === 'withdrawal' ? `
+                                <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">Адрес: ${tr.address ? (tr.address.substring(0,10) + '...' + tr.address.substring(tr.address.length-8)) : 'N/A'}</div>
+                                ` : ''}
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div style="font-size:12px;color:#94a3b8;">
+                                        ${date.toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})}
+                                    </div>
+                                    <div style="font-size:12px;font-weight:600;">
+                                        ${statusEmoji} ${status === 'pending' ? 'Ожидание' : status === 'completed' ? 'Завершено' : 'Отклонено'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">История транзакций пуста</p>';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
