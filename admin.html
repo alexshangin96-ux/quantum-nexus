@@ -409,9 +409,40 @@
         function toggleFreeze(uid,isFrozen){if(confirm(isFrozen?'Разморозить?':'Заморозить?'))modifyUser(uid,isFrozen?'unfreeze':'freeze','');}
         function resetUser(uid){if(confirm('Сбросить аккаунт? Действие необратимо!'))modifyUser(uid,'reset',0);}
         function setReferrer(uid){
-            const refId = prompt('Введите Telegram ID реферера:');
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'referrerModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">👥 Назначить реферера</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Telegram ID реферера:</label>
+                        <input type="number" id="referrerInput" placeholder="Введите ID..." style="width:100%;padding:14px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:16px;outline:none;transition:all 0.3s;" onfocus="this.style.borderColor='#667eea';this.style.boxShadow='0 0 20px rgba(102,126,234,0.3)';" onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.boxShadow='none';">
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmSetReferrer(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#a78bfa,#8b5cf6);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(167,139,250,0.3);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(167,139,250,0.5)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(167,139,250,0.3)';">✅ Назначить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.onclick = (e) => {
+                if(e.target === modal) modal.remove();
+            };
+        }
+        
+        function confirmSetReferrer(uid){
+            const refId = document.getElementById('referrerInput').value;
             if(refId && !isNaN(refId)){
                 modifyUser(uid,'set_referrer',parseInt(refId));
+                document.getElementById('referrerModal').remove();
+            } else {
+                alert('❌ Введите корректный ID');
             }
         }
         function modifyUser(uid,a,v){
