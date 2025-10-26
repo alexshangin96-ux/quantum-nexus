@@ -159,6 +159,7 @@ class SupportTicket(Base):
     
     topic = Column(String(100))  # Topic category
     message = Column(Text)  # Message content
+    answer = Column(Text, nullable=True)  # Admin answer
     status = Column(String(20), default='pending')  # pending, answered, resolved
     
     created_at = Column(DateTime, default=datetime.utcnow)

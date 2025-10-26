@@ -1006,6 +1006,40 @@ def create_support_ticket():
         print(f"Support ticket error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/user_support', methods=['POST'])
+def get_user_support():
+    """Get user's support tickets"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            tickets = db.query(SupportTicket).filter_by(user_id=user.id).order_by(SupportTicket.created_at.desc()).limit(20).all()
+            
+            tickets_data = []
+            for ticket in tickets:
+                tickets_data.append({
+                    'id': ticket.id,
+                    'topic': ticket.topic,
+                    'message': ticket.message,
+                    'answer': ticket.answer,
+                    'status': ticket.status,
+                    'created_at': ticket.created_at.isoformat() if ticket.created_at else None,
+                    'answered_at': ticket.answered_at.isoformat() if ticket.answered_at else None
+                })
+            
+            return jsonify({'tickets': tickets_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/admin/support', methods=['GET'])
 def get_support_tickets():
     """Get all support tickets"""
@@ -1068,22 +1102,22 @@ def answer_ticket():
             # Get user
             user = db.query(User).filter_by(id=ticket.user_id).first()
             
+            # Save answer to ticket (user will see it in app)
+            ticket.answer = answer
+            
             # Send notification to user via Telegram
             if user:
-                # Import bot here to avoid circular imports
                 try:
                     from telegram import Bot
                     from config import BOT_TOKEN
                     bot = Bot(token=BOT_TOKEN)
                     
-                    message = f"💬 <b>Ответ на ваш вопрос:</b>\n\n{answer}"
+                    notification = "💬 У вас новый ответ в поддержке! Откройте раздел \"Поддержка\" в приложении."
                     
-                    # Send notification asynchronously
                     import asyncio
                     asyncio.run(bot.send_message(
                         chat_id=user.telegram_id,
-                        text=message,
-                        parse_mode='HTML'
+                        text=notification
                     ))
                 except Exception as e:
                     print(f"Failed to send notification: {e}")
