@@ -351,11 +351,23 @@
         const ADMIN_LOGIN = 'smartfixnsk';
         const ADMIN_PASSWORD = 'Maga1996';
 
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadUsers();
+                loadWithdrawals();
+                loadStats();
+            }
+        });
+
         function login() {
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
 
             if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
+                localStorage.setItem('admin_logged_in', 'true');
                 document.getElementById('loginForm').style.display = 'none';
                 document.getElementById('adminPanel').classList.add('active');
                 loadUsers();
@@ -367,6 +379,7 @@
         }
 
         function logout() {
+            localStorage.removeItem('admin_logged_in');
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('adminPanel').classList.remove('active');
         }
