@@ -421,7 +421,20 @@
         function createParticles(){const c=document.getElementById('particles');for(let i=0;i<50;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';c.appendChild(p);}}
         function showNotification(m,t='info'){const n=document.getElementById('notification');n.classList.remove('hidden','success','error','info','warning');n.classList.add(t);document.getElementById('notification-text').textContent=m;setTimeout(()=>n.classList.add('hidden'),4000);}
         function addLog(m,t='info'){logs.unshift({message:`[${new Date().toLocaleString()}] ${m}`,type:t});if(logs.length>300)logs.pop();}
-        function displayLogs(){const c=document.getElementById('content');if(logs.length===0){c.innerHTML='<div class="loading">Нет логов</div>';return;}c.innerHTML=`<h2 style="font-size:20px;margin-bottom:16px;color:#fff;font-weight:800;">📝 Системные логи (${logs.length})</h2><div style="max-height:600px;overflow-y:auto;">${logs.map(l=>`<div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;font-size:12px;font-family:monospace;border-left:4px solid ${l.type==='success'?'#10b981':l.type==='error'?'#ef4444':l.type==='warning'?'#f59e0b':'#6366f1'}">${l.message}</div>`).join('')}</div>`;}
+        function displayLogs(){
+            const c=document.getElementById('content');
+            if(logs.length===0){
+                c.innerHTML='<div class="loading">Нет логов</div>';
+                return;
+            }
+            const colorMap={
+                'success':'#10b981',
+                'error':'#ef4444',
+                'warning':'#f59e0b',
+                'info':'#6366f1'
+            };
+            c.innerHTML=`<h2 style="font-size:20px;margin-bottom:16px;color:#fff;font-weight:800;">📝 Системные логи (${logs.length})</h2><div style="max-height:600px;overflow-y:auto;">${logs.map(l=>`<div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;font-size:12px;font-family:monospace;border-left:4px solid ${colorMap[l.type]||'#6366f1'}">${l.message}</div>`).join('')}</div>`;
+        }
         function openQuickEdit(uid,field,title){quickEditData={userId:uid,field};document.getElementById('modalTitle').textContent=title;document.getElementById('modalInput').value='';document.getElementById('quickEditModal').classList.add('active');}
         function closeModal(){document.getElementById('quickEditModal').classList.remove('active');quickEditData=null;}
         function confirmQuickEdit(){if(!quickEditData)return;const v=parseFloat(document.getElementById('modalInput').value);if(isNaN(v)){showNotification('❌ Введите значение','error');return;}modifyUser(quickEditData.userId,`set_${quickEditData.field}`,v);closeModal();}
@@ -526,7 +539,24 @@ ${extraBtn}
         function setEnergy(uid,m){fetch('/api/admin/set_energy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,energy:m})}).then(()=>{showNotification('⚡ Восстановлено','success');loadUsers();});}
         function loadWithdrawals(){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{if(d.requests&&d.requests.length>0){c.innerHTML=`<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">💸 Заявки (${d.requests.length})</h2>${d.requests.map(r=>`<div class="user-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><div><strong>#${r.id}</strong><div style="font-size:11px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div><span class="badge ${r.status==='pending'?'badge-frozen':'badge-success'}">${r.status==='pending'?'⏳':'✅'}</span></div><div style="font-size:12px;color:#cbd5e1;margin-bottom:12px;"><div>User: ${r.user_id}</div><div>QuanHash: ${formatNumber(r.amount)}</div><div>USDT: $${r.usdt_amount}</div><div style="font-family:monospace;font-size:10px;word-break:break-all;margin-top:8px;padding:8px;background:var(--glass);border-radius:10px;">${r.address}</div></div>${r.status==='pending'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button class="action-btn btn-success" onclick="processWithdrawal(${r.id},'completed')">✅</button><button class="action-btn btn-remove" onclick="processWithdrawal(${r.id},'rejected')">❌</button></div>`:''}</div>`).join('');}else{c.innerHTML='<div class="loading">Нет заявок</div>';}});}
         function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено',status==='completed'?'success':'error');addLog(`Заявка #${rid}: ${status}`,'success');loadWithdrawals();});}
-        function loadStats(){const c=document.getElementById('content');fetch('/api/admin/stats').then(r=>r.json()).then(d=>{c.innerHTML=`<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">📊 Статистика</h2><div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">${['users','taps','withdrawals','coins','quanhash','referrals'].map(s=>`<div class="stat-card"><span class="stat-icon">${s==='users'?'👥':s==='taps'?'👆':s==='withdrawals'?'💸':s==='coins'?'💰':s==='quanhash'?'💎':'🔗'}</span><div class="stat-label">${['Пользователей','Тапов','Заявок','Коинов','QuanHash','Рефералов'][['users','taps','withdrawals','coins','quanhash','referrals'].indexOf(s)]}</div><div class="stat-value">${formatNumber(['total_users','total_taps','pending_withdrawals','total_coins','total_quanhash','total_referrals'][['users','taps','withdrawals','coins','quanhash','referrals'].indexOf(s)]?d[['total_users','total_taps','pending_withdrawals','total_coins','total_quanhash','total_referrals'][['users','taps','withdrawals','coins','quanhash','referrals'].indexOf(s)]]:0||0)}</div></div>`).join('')}</div>`);});}
+        function loadStats(){
+            const c=document.getElementById('content');
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                const stats=[
+                    {icon:'👥',label:'Пользователей',key:'total_users'},
+                    {icon:'👆',label:'Тапов',key:'total_taps'},
+                    {icon:'💸',label:'Заявок',key:'pending_withdrawals'},
+                    {icon:'💰',label:'Коинов',key:'total_coins'},
+                    {icon:'💎',label:'QuanHash',key:'total_quanhash'},
+                    {icon:'🔗',label:'Рефералов',key:'total_referrals'}
+                ];
+                const html=stats.map(s=>{
+                    const val=formatNumber(d[s.key]||0);
+                    return `<div class="stat-card"><span class="stat-icon">${s.icon}</span><div class="stat-label">${s.label}</div><div class="stat-value">${val}</div></div>`;
+                }).join('');
+                c.innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">📊 Статистика</h2><div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">'+html+'</div>';
+            });
+        }
         function loadAnalytics(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">📈 Аналитика</h2><div class="stat-card"><span class="stat-icon">📊</span><div class="stat-label">Аналитика</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function loadSettings(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">⚙️ Настройки</h2><div class="stat-card"><span class="stat-icon">⚙️</span><div class="stat-label">Настройки</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function loadSecurity(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🔒 Безопасность</h2><div class="stat-card"><span class="stat-icon">🔒</span><div class="stat-label">Безопасность</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
