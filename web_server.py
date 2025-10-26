@@ -29,13 +29,21 @@ def get_user_data():
         user_id = data.get('user_id')
         
         if not user_id:
-            return jsonify({'error': 'User ID required'}), 400
+            # Try to get initData from request
+            init_data = request.headers.get('X-Telegram-Init-Data')
+            if init_data:
+                # For now, skip validation, just log
+                print(f"Init data received: {init_data[:50]}...")
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 100, 'total_taps': 0, 'total_earned': 0}), 400
         
         db = next(get_db())
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            # Return default values if user not found
+            return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 100, 'total_taps': 0, 'total_earned': 0}), 404
         
         return jsonify({
             'coins': user.coins,
@@ -56,13 +64,13 @@ def tap():
         user_id = data.get('user_id')
         
         if not user_id:
-            return jsonify({'error': 'User ID required'}), 400
+            return jsonify({'success': False, 'error': 'User ID required. Please start the bot first.'}), 400
         
         db = next(get_db())
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'success': False, 'error': 'User not found. Please start the bot first.'}), 404
         
         # Check energy
         if user.energy < ENERGY_COST_PER_TAP:
