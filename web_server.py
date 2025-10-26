@@ -183,7 +183,10 @@ def get_user_data():
                 'total_taps': user.total_taps,
                 'total_earned': user.total_earned,
                 'passive_coins_per_hour': passive_coins_per_hour,
-                'passive_hash_per_hour': passive_hash_per_hour
+                'passive_hash_per_hour': passive_hash_per_hour,
+                'auto_tap_enabled': getattr(user, 'auto_tap_enabled', False),
+                'auto_tap_level': getattr(user, 'auto_tap_level', 0),
+                'auto_tap_speed': getattr(user, 'auto_tap_speed', 2.0)
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500

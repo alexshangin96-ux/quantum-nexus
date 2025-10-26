@@ -1750,11 +1750,35 @@
         loadData();
         checkOfflineIncome();
         startEnergyRegen();
+        startAutoTap();
         
         // Auto-update data every 2 seconds
         setInterval(() => {
             loadData();
         }, 2000);
+        
+        // Auto-tap function
+        function startAutoTap() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.auto_tap_enabled && data.energy > 0) {
+                    const speed = 1000 / (data.auto_tap_speed || 2); // taps per second
+                    if(!window.autoTapInterval) {
+                        window.autoTapInterval = setInterval(() => {
+                            tap();
+                        }, speed);
+                    }
+                } else if(window.autoTapInterval) {
+                    clearInterval(window.autoTapInterval);
+                    window.autoTapInterval = null;
+                }
+            });
+        }
         
         // Support functions
         function openSupport(event) {
