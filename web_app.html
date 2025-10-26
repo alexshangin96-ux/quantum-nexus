@@ -309,11 +309,32 @@
             0%, 100% {
                 transform: scale(1);
                 box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5), 0 0 0 0 rgba(102, 126, 234, 0.4);
+                filter: hue-rotate(0deg);
             }
             50% {
                 transform: scale(1.05);
                 box-shadow: 0 20px 60px rgba(102, 126, 234, 0.7), 0 0 40px 20px rgba(102, 126, 234, 0.3);
+                filter: hue-rotate(10deg);
             }
+        }
+        
+        @keyframes tapPress {
+            0% { 
+                transform: scale(1);
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            50% {
+                transform: scale(0.92);
+                filter: hue-rotate(60deg) brightness(1.3);
+            }
+            100% {
+                transform: scale(1);
+                filter: hue-rotate(0deg) brightness(1);
+            }
+        }
+        
+        .tap-button.tap-pressed {
+            animation: tapPress 0.4s ease;
         }
 
         .tap-button::before {
@@ -1138,8 +1159,8 @@
             
             const button = document.querySelector('.tap-button');
             if(button){
-                button.style.transform='scale(0.95)';
-                setTimeout(()=>{if(button)button.style.transform='scale(1)';},100);
+                button.classList.add('tap-pressed');
+                setTimeout(()=>{if(button)button.classList.remove('tap-pressed');},400);
             }
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
