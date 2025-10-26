@@ -1662,21 +1662,14 @@
             .then(res => res.json())
             .then(data => {
                 const quanhash = Math.floor(data.quanhash || 0);
-                if (quanhash < 500000) {
-                    document.getElementById('withdrawContent').innerHTML = `
-                        <div style="text-align: center; padding: 40px;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">💎</div>
-                            <div style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">Недостаточно QuanHash</div>
-                            <div style="opacity: 0.7;">Нужно минимум 500,000 💎</div>
-                            <div style="margin-top: 20px; font-size: 24px; color: #f093fb;">У вас: ${quanhash.toLocaleString()} 💎</div>
-                        </div>
-                    `;
-                } else {
-                    document.getElementById('withdrawContent').innerHTML = `
+                const hasEnough = quanhash >= 500000;
+                
+                document.getElementById('withdrawContent').innerHTML = `
                         <div style="padding: 20px;">
                             <div style="text-align: center; margin-bottom: 20px;">
                                 <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
                                 <div style="font-size: 18px; font-weight: bold;">Вывод средств</div>
+                                <div style="font-size: 14px; opacity: 0.7; margin-top: 5px;">У вас: ${quanhash.toLocaleString()} 💎</div>
                             </div>
                             <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                                 <div style="font-size: 14px; opacity: 0.8; margin-bottom: 5px;">Обмен</div>
@@ -1691,7 +1684,7 @@
                                 <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
                                 <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
                             </div>
-                            <button class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px;">💸 Вывести</button>
+                            <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно валюты'}</button>
                             <div style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
                                 <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center;">📜 История выводов</div>
                                 <div id="withdrawHistory" style="max-height: 200px; overflow-y: auto;"></div>
