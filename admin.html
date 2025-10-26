@@ -436,7 +436,7 @@ ${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-
         function loadSettings(){
             document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">⚙️ Настройки системы</h2>
 <div class="settings-grid">
-${['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'].map((s,i)=>`<div class="setting-card"><div class="card-title">⚙️ ${s}</div><div class="card-desc">Настройка параметров ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" onclick="showNotification('⚙️ Настройка: ${s}')">⚙️ Настроить</button></div></div>`).join('')}
+${['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'].map((s,i)=>`<div class="setting-card"><div class="card-title">⚙️ ${s}</div><div class="card-desc">Настройка параметров ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" onclick="showNotification('⚙️ Настройка: ' + '${s}')">⚙️ Настроить</button></div></div>`).join('')}
 </div>`;
         }
         
