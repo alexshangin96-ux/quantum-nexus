@@ -405,8 +405,107 @@
             if(isNaN(v)){alert('❌ Введите число');return;}
             modifyUser(quickEditData.userId,'set_'+quickEditData.field,v);closeModal();
         }
-        function toggleBan(uid,isBanned){if(confirm(isBanned?'Разблокировать?':'Заблокировать?'))modifyUser(uid,isBanned?'unban':'ban','Admin');}
-        function toggleFreeze(uid,isFrozen){if(confirm(isFrozen?'Разморозить?':'Заморозить?'))modifyUser(uid,isFrozen?'unfreeze':'freeze','');}
+        function toggleBan(uid,isBanned){
+            if(isBanned){
+                if(confirm('Разблокировать?'))modifyUser(uid,'unban','Admin');
+            }else{
+                showBanModal(uid);
+            }
+        }
+        function toggleFreeze(uid,isFrozen){
+            if(isFrozen){
+                if(confirm('Разморозить?'))modifyUser(uid,'unfreeze','');
+            }else{
+                showFreezeModal(uid);
+            }
+        }
+        
+        function showBanModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'banModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔒 Заблокировать пользователя</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Срок блокировки:</label>
+                        <select id="banDuration" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="1">1 день</option>
+                            <option value="7">7 дней</option>
+                            <option value="30">30 дней</option>
+                            <option value="365">1 год</option>
+                            <option value="-1">Навсегда</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Причина:</label>
+                        <textarea id="banReason" placeholder="Введите причину блокировки..." style="width:100%;min-height:80px;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;resize:vertical;outline:none;"></textarea>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmBan(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔒 Заблокировать</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function showFreezeModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'freezeModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">❄️ Заморозить аккаунт</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Срок заморозки:</label>
+                        <select id="freezeDuration" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="1">1 день</option>
+                            <option value="7">7 дней</option>
+                            <option value="30">30 дней</option>
+                            <option value="365">1 год</option>
+                            <option value="-1">Навсегда</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(102,126,234,0.1);padding:15px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">Что блокировать:</div>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><input type="checkbox" id="freezeTaps" checked><span>Тапы</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><input type="checkbox" id="freezeShop" checked><span>Магазин</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;"><input type="checkbox" id="freezeWithdraw" checked><span>Вывод</span></label>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmFreeze(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">❄️ Заморозить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function confirmBan(uid){
+            const duration = document.getElementById('banDuration').value;
+            const reason = document.getElementById('banReason').value || 'Блокировка администратором';
+            modifyUser(uid,'ban',reason+','+duration);
+            document.getElementById('banModal').remove();
+        }
+        
+        function confirmFreeze(uid){
+            const duration = document.getElementById('freezeDuration').value;
+            const freezeTaps = document.getElementById('freezeTaps').checked;
+            const freezeShop = document.getElementById('freezeShop').checked;
+            const freezeWithdraw = document.getElementById('freezeWithdraw').checked;
+            const flags = (freezeTaps?1:0)+(freezeShop?2:0)+(freezeWithdraw?4:0);
+            modifyUser(uid,'freeze',duration+','+flags);
+            document.getElementById('freezeModal').remove();
+        }
         function resetUser(uid){if(confirm('Сбросить аккаунт? Действие необратимо!'))modifyUser(uid,'reset',0);}
         function setReferrer(uid){
             const modal = document.createElement('div');
