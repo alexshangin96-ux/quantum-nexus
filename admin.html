@@ -375,8 +375,30 @@ ${['DDoS защита','2FA аутентификация','Anti-Bot','Шифро
         function loadTools(){
             document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🛠️ Инструменты администратора</h2>
 <div class="tools-grid">
-${['Анализ БД','Массовые операции','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Массовая рассылка','Турниры','SMS уведомления','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'].map((s,i)=>`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: ${s}')">🛠️ Использовать</button></div></div>`).join('')}
+<div class="tool-card"><div class="card-title">📨 Массовая рассылка</div><div class="card-desc">Отправить уведомление всем пользователям</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;padding:10px 20px;width:100%;" onclick="openMassNotifyModal()">📨 Отправить</button></div></div>
+${['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'].map((s,i)=>`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: ${s}')">🛠️ Использовать</button></div></div>`).join('')}
 </div>`;
+        }
+        
+        function openMassNotifyModal(){
+            const modal=document.createElement('div');modal.className='modal active';
+            modal.innerHTML=`<div class="modal-content" style="max-width:600px;">
+<h2 class="modal-title">📨 Массовая рассылка</h2>
+<textarea id="notifyMessage" placeholder="Введите текст уведомления..." style="width:100%;min-height:150px;padding:14px;background:rgba(0,0,0,0.3);border:1px solid rgba(99,102,241,0.2);border-radius:11px;color:#fff;font-size:15px;margin-bottom:18px;"></textarea>
+<div class="modal-actions">
+<button class="btn-modal" style="background:rgba(99,102,241,0.2);color:#fff;" onclick="this.closest('.modal').remove()">Отмена</button>
+<button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="sendMassNotification()">📨 Отправить всем</button>
+</div></div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function sendMassNotification(){
+            const msg=document.getElementById('notifyMessage').value;
+            if(!msg){alert('❌ Введите сообщение');return;}
+            fetch('/api/admin/mass_notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})}).then(r=>r.json()).then(d=>{
+                if(d.success){showNotification('✅ Уведомление отправлено');document.querySelector('.modal.active').remove();}
+                else showNotification('❌ Ошибка: '+d.error);
+            }).catch(()=>showNotification('❌ Ошибка отправки'));
         }
         
         window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
