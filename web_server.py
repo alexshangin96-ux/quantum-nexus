@@ -61,16 +61,16 @@ def add_coins():
         if not user_id or not amount:
             return jsonify({'error': 'Missing parameters'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        user.coins += amount
-        db.commit()
-        
-        return jsonify({'success': True})
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            user.coins += amount
+            db.commit()
+            
+            return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -85,7 +85,7 @@ def set_energy():
         if not user_id or energy is None:
             return jsonify({'error': 'Missing parameters'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -115,49 +115,49 @@ def get_user_data():
         if not user_id:
             return jsonify({'error': 'User ID required', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            # Return default values if user not found
-            return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
-        
-        # Check if user is banned or frozen (safe check for old DB schema)
-        if hasattr(user, 'is_banned') and user.is_banned:
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                # Return default values if user not found
+                return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
+            
+            # Check if user is banned or frozen (safe check for old DB schema)
+            if hasattr(user, 'is_banned') and user.is_banned:
+                return jsonify({
+                    'error': 'Вы заблокированы',
+                    'is_banned': True,
+                    'ban_reason': getattr(user, 'ban_reason', None)
+                }), 403
+            
+            if hasattr(user, 'is_frozen') and user.is_frozen:
+                return jsonify({
+                    'error': 'Ваш аккаунт заморожен',
+                    'is_frozen': True
+                }), 403
+            
+            # Calculate passive income
+            passive_coins_per_hour = 0
+            passive_hash_per_hour = 0
+            
+            for card in user.cards:
+                if card.is_active:
+                    passive_coins_per_hour += card.income_per_minute * 60
+            
+            for machine in user.machines:
+                if machine.is_active:
+                    passive_hash_per_hour += machine.hash_rate * 3600
+            
             return jsonify({
-                'error': 'Вы заблокированы',
-                'is_banned': True,
-                'ban_reason': getattr(user, 'ban_reason', None)
-            }), 403
-        
-        if hasattr(user, 'is_frozen') and user.is_frozen:
-            return jsonify({
-                'error': 'Ваш аккаунт заморожен',
-                'is_frozen': True
-            }), 403
-        
-        # Calculate passive income
-        passive_coins_per_hour = 0
-        passive_hash_per_hour = 0
-        
-        for card in user.cards:
-            if card.is_active:
-                passive_coins_per_hour += card.income_per_minute * 60
-        
-        for machine in user.machines:
-            if machine.is_active:
-                passive_hash_per_hour += machine.hash_rate * 3600
-        
-        return jsonify({
-            'coins': user.coins,
-            'quanhash': user.quanhash,
-            'energy': user.energy,
-            'max_energy': user.max_energy,
-            'total_taps': user.total_taps,
-            'total_earned': user.total_earned,
-            'passive_coins_per_hour': passive_coins_per_hour,
-            'passive_hash_per_hour': passive_hash_per_hour
-        })
+                'coins': user.coins,
+                'quanhash': user.quanhash,
+                'energy': user.energy,
+                'max_energy': user.max_energy,
+                'total_taps': user.total_taps,
+                'total_earned': user.total_earned,
+                'passive_coins_per_hour': passive_coins_per_hour,
+                'passive_hash_per_hour': passive_hash_per_hour
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -171,7 +171,7 @@ def tap():
         if not user_id:
             return jsonify({'success': False, 'error': 'User ID required. Please start the bot first.'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -207,7 +207,7 @@ def get_stats():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -233,7 +233,7 @@ def get_shop():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -256,7 +256,7 @@ def get_mining():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -292,7 +292,7 @@ def get_cards():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -326,7 +326,7 @@ def get_referrals():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -351,7 +351,7 @@ def update_energy():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -374,7 +374,7 @@ def get_offline_income():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -407,7 +407,7 @@ def create_withdraw():
         if not address.startswith('0x') or len(address) != 42:
             return jsonify({'success': False, 'error': 'Invalid BEP20 address'})
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -436,7 +436,7 @@ def create_withdraw():
 def get_withdrawals():
     """Get withdrawal requests"""
     try:
-        db = next(get_db())
+        with get_db() as db:
         withdrawals = db.query(Withdrawal).order_by(Withdrawal.created_at.desc()).all()
         
         requests_data = []
@@ -459,7 +459,7 @@ def get_withdrawals():
 def get_admin_stats():
     """Get admin statistics"""
     try:
-        db = next(get_db())
+        with get_db() as db:
         users = db.query(User).all()
         
         return jsonify({
@@ -478,7 +478,7 @@ def process_withdrawal():
         request_id = data.get('request_id')
         status = data.get('status')
         
-        db = next(get_db())
+        with get_db() as db:
         withdrawal = db.query(Withdrawal).filter_by(id=request_id).first()
         
         if not withdrawal:
@@ -506,7 +506,7 @@ def modify_user():
         if not user_id or not action:
             return jsonify({'error': 'Missing parameters'}), 400
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -562,7 +562,7 @@ def buy_item():
         if not user_id or not item_type or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -622,7 +622,7 @@ def buy_machine():
         if not user_id or not machine_type:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
@@ -670,7 +670,7 @@ def buy_energy():
         if not user_id or not amount or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
-        db = next(get_db())
+        with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
