@@ -423,7 +423,7 @@
 <div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Сумма вывода:</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(r.amount||0).toLocaleString()} QuanHash ≈ $${(r.usdt_amount||0).toFixed(2)}</div></div>
 <div style="margin-top:8px;"><div style="font-size:11px;color:#94a3b8;">Адрес USDT (BEP20):</div><div style="font-family:monospace;font-size:11px;word-break:break-all;margin-top:4px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;color:#a78bfa;">${r.address}</div></div>
 </div>
-${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="processWithdrawal(this)">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="processWithdrawal(this)">❌ Отклонить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>'}`;
+${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" onclick="processWithdrawal('+r.id+',\'completed\')">✅ Одобрить</button><button class="action-btn btn-danger" onclick="processWithdrawal('+r.id+',\'rejected\')">❌ Отклонить</button></div>':'<div style="padding:10px;background:rgba(16,185,129,0.2);border-radius:10px;color:#10b981;text-align:center;font-weight:700;">✅ Выполнено</div>'}`;
                             c.appendChild(div);
                         });
                     });
@@ -431,11 +431,29 @@ ${r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-
             });
         }
         
-        function processWithdrawal(btn){const rid=btn.getAttribute('data-rid');const status=btn.getAttribute('data-status');fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}
+        function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}
         
-        function loadSettings(){document.getElementById('content').innerHTML='<div class="loading">📌 Настройки</div>';}
-        function loadSecurity(){document.getElementById('content').innerHTML='<div class="loading">📌 Безопасность</div>';}
-        function loadTools(){document.getElementById('content').innerHTML='<div class="loading">📌 Инструменты</div>';}
+        function loadSettings(){
+            document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">⚙️ Настройки системы</h2>
+<div class="settings-grid">
+${['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'].map((s,i)=>`<div class="setting-card"><div class="card-title">⚙️ ${s}</div><div class="card-desc">Настройка параметров ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" onclick="showNotification('⚙️ Настройка: ${s}')">⚙️ Настроить</button></div></div>`).join('')}
+</div>`;
+        }
+        
+        function loadSecurity(){
+            document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🔒 Безопасность системы</h2>
+<div class="security-grid">
+${['DDoS защита','2FA аутентификация','Anti-Bot','Шифрование','Логины','Пароли','Файрвол','Аудит','Оповещения','Резервный Бэкап','Автобан','Целостность','SSL/TLS','IDS','Ротация ключей','IP Whitelist','Rate Limiting','Антивирус','Журнал изменений','Мониторинг аномалий'].map((s,i)=>`<div class="security-card"><div class="card-title">🔒 ${s}</div><div class="card-desc">Безопасность: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;" onclick="showNotification('🔒 Безопасность: ${s}')">🔒 Настроить</button></div></div>`).join('')}
+</div>`;
+        }
+        
+        function loadTools(){
+            document.getElementById('content').innerHTML=`<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🛠️ Инструменты администратора</h2>
+<div class="tools-grid">
+<div class="tool-card"><div class="card-title">📨 Массовая рассылка</div><div class="card-desc">Отправить уведомление всем пользователям</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;padding:10px 20px;width:100%;" onclick="openMassNotifyModal()">📨 Отправить</button></div></div>
+${['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'].map((s,i)=>`<div class="tool-card"><div class="card-title">🛠️ ${s}</div><div class="card-desc">Инструмент: ${s.toLowerCase()}</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="showNotification('🛠️ Инструмент: ${s}')">🛠️ Использовать</button></div></div>`).join('')}
+</div>`;
+        }
         
         function openMassNotifyModal(){
             const modal=document.createElement('div');modal.className='modal active';
