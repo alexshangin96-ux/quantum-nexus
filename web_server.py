@@ -22,6 +22,7 @@ def index():
     return send_from_directory('.', 'web_app.html')
 
 @app.route('/admin')
+@app.route('/admin.html')
 def admin():
     """Serve admin panel"""
     return send_from_directory('.', 'admin.html')
