@@ -380,6 +380,9 @@
 <div class="actions-grid">
 <button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
 <button class="action-btn ${u.is_frozen?'btn-success':'btn-manage'}" onclick="toggleFreeze(${u.telegram_id},${u.is_frozen})">${u.is_frozen?'🔥 Разморозить':'❄️ Заморозить'}</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
+</div>
+<div class="actions-grid">
 <button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
 </div>`;
                         ul.appendChild(card);
@@ -405,6 +408,12 @@
         function toggleBan(uid,isBanned){if(confirm(isBanned?'Разблокировать?':'Заблокировать?'))modifyUser(uid,isBanned?'unban':'ban','Admin');}
         function toggleFreeze(uid,isFrozen){if(confirm(isFrozen?'Разморозить?':'Заморозить?'))modifyUser(uid,isFrozen?'unfreeze':'freeze','');}
         function resetUser(uid){if(confirm('Сбросить аккаунт? Действие необратимо!'))modifyUser(uid,'reset',0);}
+        function setReferrer(uid){
+            const refId = prompt('Введите Telegram ID реферера:');
+            if(refId && !isNaN(refId)){
+                modifyUser(uid,'set_referrer',parseInt(refId));
+            }
+        }
         function modifyUser(uid,a,v){
             fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:a,value:v})}).then(r=>r.json()).then(()=>{showNotification('✅ Применено');loadUsers();}).catch(()=>showNotification('❌ Ошибка'));
         }
