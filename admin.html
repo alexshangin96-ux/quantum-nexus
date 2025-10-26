@@ -447,41 +447,50 @@
             if(!loginInput || !passInput) {
                 console.error('Inputs not found');
                 alert('Ошибка: элементы формы не найдены');
-                return;
+                return false;
             }
             
-            const login = loginInput.value.trim();
-            const pass = passInput.value.trim();
+            const loginVal = loginInput.value.trim();
+            const passVal = passInput.value.trim();
             
-            console.log('Input login:', login);
-            console.log('Input pass length:', pass.length);
+            console.log('Input login:', loginVal);
+            console.log('Input pass:', passVal);
             console.log('Expected login:', ADMIN_LOGIN);
             console.log('Expected pass:', ADMIN_PASSWORD);
             
-            if(!login || !pass) {
-                console.log('Empty fields');
-                alert('Заполните все поля');
-                return;
+            // Validation
+            if(!loginVal) {
+                alert('❌ Введите логин');
+                loginInput.focus();
+                return false;
             }
             
-            const loginMatch = login === ADMIN_LOGIN;
-            const passMatch = pass === ADMIN_PASSWORD;
-            
-            console.log('Login match:', loginMatch);
-            console.log('Password match:', passMatch);
-            
-            if(loginMatch && passMatch) {
-                console.log('LOGIN SUCCESS!');
-                localStorage.setItem('admin_logged_in', 'true');
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                initPanel();
-                alert('✅ Добро пожаловать!');
-                console.log('=== LOGIN COMPLETE ===');
-            } else {
-                console.log('LOGIN FAILED');
-                alert('❌ Неверный логин или пароль');
+            if(!passVal) {
+                alert('❌ Введите пароль');
+                passInput.focus();
+                return false;
             }
+            
+            if(loginVal !== ADMIN_LOGIN) {
+                alert('❌ Неверный логин');
+                loginInput.focus();
+                return false;
+            }
+            
+            if(passVal !== ADMIN_PASSWORD) {
+                alert('❌ Неверный пароль');
+                passInput.focus();
+                return false;
+            }
+            
+            // Success
+            console.log('LOGIN SUCCESS!');
+            localStorage.setItem('admin_logged_in', 'true');
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            initPanel();
+            console.log('=== LOGIN COMPLETE ===');
+            return true;
         }
         function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');addLog('Выход','info');}
         function refreshAll(){loadDashboard();if(localStorage.getItem('active_tab')==='users')loadUsers();showNotification('🔄 Обновлено','success');}
@@ -537,7 +546,24 @@ ${extraBtn}
         function filterUsers(){const s=document.getElementById('searchInput').value.toLowerCase();localStorage.setItem('search_value',s);const f=window.allUsers.filter(u=>(u.username&&u.username.toLowerCase().includes(s))||u.telegram_id.toString().includes(s));document.getElementById('usersList').innerHTML=f.map(u=>createUserCard(u)).join('');}
         function modifyUser(uid,a,v){fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:a,value:v})}).then(()=>{showNotification('✅ Применено','success');addLog(`Изменение ${uid}: ${a}=${v}`,'success');loadUsers();});}
         function setEnergy(uid,m){fetch('/api/admin/set_energy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,energy:m})}).then(()=>{showNotification('⚡ Восстановлено','success');loadUsers();});}
-        function loadWithdrawals(){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{if(d.requests&&d.requests.length>0){c.innerHTML=`<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">💸 Заявки (${d.requests.length})</h2>${d.requests.map(r=>`<div class="user-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><div><strong>#${r.id}</strong><div style="font-size:11px;color:#94a3b8;margin-top:4px;">${new Date(r.created_at).toLocaleString()}</div></div><span class="badge ${r.status==='pending'?'badge-frozen':'badge-success'}">${r.status==='pending'?'⏳':'✅'}</span></div><div style="font-size:12px;color:#cbd5e1;margin-bottom:12px;"><div>User: ${r.user_id}</div><div>QuanHash: ${formatNumber(r.amount)}</div><div>USDT: $${r.usdt_amount}</div><div style="font-family:monospace;font-size:10px;word-break:break-all;margin-top:8px;padding:8px;background:var(--glass);border-radius:10px;">${r.address}</div></div>${r.status==='pending'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button class="action-btn btn-success" onclick="processWithdrawal(${r.id},'completed')">✅</button><button class="action-btn btn-remove" onclick="processWithdrawal(${r.id},'rejected')">❌</button></div>`:''}</div>`).join('');}else{c.innerHTML='<div class="loading">Нет заявок</div>';}});}
+        function loadWithdrawals(){
+            const c=document.getElementById('content');
+            c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{
+                if(d.requests&&d.requests.length>0){
+                    const html=d.requests.map(r=>{
+                        const statusClass=r.status==='pending'?'badge-frozen':'badge-success';
+                        const statusIcon=r.status==='pending'?'⏳':'✅';
+                        const actionBtns=r.status==='pending'?
+                            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><button class="action-btn btn-success" onclick="processWithdrawal('+r.id+',\'completed\')">✅</button><button class="action-btn btn-remove" onclick="processWithdrawal('+r.id+',\'rejected\')">❌</button></div>':'';
+                        return '<div class="user-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;"><div><strong>#'+r.id+'</strong><div style="font-size:11px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><span class="badge '+statusClass+'">'+statusIcon+'</span></div><div style="font-size:12px;color:#cbd5e1;margin-bottom:12px;"><div>User: '+r.user_id+'</div><div>QuanHash: '+formatNumber(r.amount)+'</div><div>USDT: $'+r.usdt_amount+'</div><div style="font-family:monospace;font-size:10px;word-break:break-all;margin-top:8px;padding:8px;background:var(--glass);border-radius:10px;">'+r.address+'</div></div>'+actionBtns+'</div>';
+                    }).join('');
+                    c.innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">💸 Заявки ('+d.requests.length+')</h2>'+html;
+                }else{
+                    c.innerHTML='<div class="loading">Нет заявок</div>';
+                }
+            });
+        }
         function processWithdrawal(rid,status){fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено',status==='completed'?'success':'error');addLog(`Заявка #${rid}: ${status}`,'success');loadWithdrawals();});}
         function loadStats(){
             const c=document.getElementById('content');
