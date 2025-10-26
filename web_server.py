@@ -443,11 +443,13 @@ def get_withdrawals():
             
             requests_data = []
             for w in withdrawals:
+                user = db.query(User).filter_by(id=w.user_id).first()
                 requests_data.append({
                     'id': w.id,
                     'user_id': w.user_id,
-                    'amount': w.amount,
-                    'usdt_amount': w.usdt_amount,
+                    'telegram_id': user.telegram_id if user else None,
+                    'amount': int(w.amount) if w.amount else 0,
+                    'usdt_amount': int(w.usdt_amount) if w.usdt_amount else 0,
                     'address': w.address,
                     'status': w.status,
                     'created_at': w.created_at.isoformat() if w.created_at else None
