@@ -413,7 +413,10 @@
     </div>
 
     <script>
-        const ADMIN_LOGIN='smartfixnsk',ADMIN_PASSWORD='Maga1996';
+        console.log('Admin panel script loading...');
+        const ADMIN_LOGIN='smartfixnsk';
+        const ADMIN_PASSWORD='Maga1996';
+        console.log('Credentials loaded:', {login: ADMIN_LOGIN, passLength: ADMIN_PASSWORD.length});
         let quickEditData=null,logs=[],currentUser=null;
         function createParticles(){const c=document.getElementById('particles');for(let i=0;i<50;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=Math.random()*100+'%';p.style.animationDelay=Math.random()*15+'s';c.appendChild(p);}}
         function showNotification(m,t='info'){const n=document.getElementById('notification');n.classList.remove('hidden','success','error','info','warning');n.classList.add(t);document.getElementById('notification-text').textContent=m;setTimeout(()=>n.classList.add('hidden'),4000);}
@@ -487,57 +490,52 @@
         function loadSecurity(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🔒 Безопасность</h2><div class="stat-card"><span class="stat-icon">🔒</span><div class="stat-label">Безопасность</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function loadTools(){document.getElementById('content').innerHTML='<h2 style="font-size:22px;margin-bottom:18px;color:#fff;font-weight:800;">🛠️ Инструменты</h2><div class="stat-card"><span class="stat-icon">🛠️</span><div class="stat-label">Инструменты</div><div class="stat-value" style="font-size:18px;margin-top:10px;">В разработке</div></div>';}
         function formatNumber(n){return Math.floor(n||0).toLocaleString('ru');}
-        window.addEventListener('DOMContentLoaded',()=>{
+        // Direct button onclick - simple and reliable
+        window.addEventListener('load', () => {
+            console.log('Window loaded');
+            const btn = document.getElementById('loginBtn');
+            if (btn) {
+                console.log('Login button found:', btn);
+                btn.onclick = function() {
+                    console.log('Button clicked via onclick');
+                    login();
+                };
+                console.log('onclick handler set');
+            } else {
+                console.error('Login button not found');
+            }
+        });
+
+        // Also handle DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM Content Loaded');
             
-            const loginBtn=document.getElementById('loginBtn');
-            const loginInput=document.getElementById('login');
-            const passInput=document.getElementById('password');
-            
-            console.log('Login button:', loginBtn);
-            console.log('Login input:', loginInput);
-            console.log('Pass input:', passInput);
-            
-            if(loginBtn){
-                console.log('Adding click listener to button');
-                loginBtn.addEventListener('click',function(e){
-                    console.log('Login button clicked!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    login();
-                    return false;
-                },true);
-                console.log('Click listener added');
-            }else{
-                console.error('Login button not found!');
+            // Try to set onclick again
+            const btn = document.getElementById('loginBtn');
+            if (btn && !btn.onclick) {
+                btn.onclick = login;
+                console.log('onclick set via DOMContentLoaded');
             }
+
+            // Add Enter key handlers
+            const loginInput = document.getElementById('login');
+            const passInput = document.getElementById('password');
             
-            if(loginInput){
-                loginInput.addEventListener('keypress',e=>{
-                    if(e.key==='Enter'){
-                        e.preventDefault();
+            if (loginInput) {
+                loginInput.addEventListener('keypress', e => {
+                    if (e.key === 'Enter') {
                         document.getElementById('password').focus();
                     }
                 });
             }
             
-            if(passInput){
-                passInput.addEventListener('keypress',e=>{
-                    if(e.key==='Enter'){
-                        e.preventDefault();
+            if (passInput) {
+                passInput.addEventListener('keypress', e => {
+                    if (e.key === 'Enter') {
                         login();
                     }
                 });
             }
-            
-            // Additional fallback
-            setTimeout(()=>{
-                const btn=document.getElementById('loginBtn');
-                if(btn){
-                    console.log('Fallback: re-adding click handler');
-                    btn.onclick=login;
-                }
-            },100);
         });
     </script>
 </body>
