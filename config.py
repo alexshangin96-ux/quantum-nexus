@@ -8,7 +8,7 @@ BOT_TOKEN = "8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog"
 APP_URL = "https://quantum-nexus.ru/"
 
 # Database Configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://quantum:your_secure_password@localhost:5432/quantum_nexus")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://quantum:quantum123@localhost:5432/quantum_nexus")
 
 # Redis Configuration
 REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
