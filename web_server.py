@@ -472,8 +472,8 @@ def get_admin_stats():
             pending_withdrawals = db.query(Withdrawal).filter_by(status='pending').count()
             
             # Advanced stats
-            total_coins = db.query(func.sum(User.coins)).scalar() or 0
-            total_quanhash = db.query(func.sum(User.quanhash)).scalar() or 0
+            total_coins = int(db.query(func.sum(User.coins)).scalar() or 0)
+            total_quanhash = int(db.query(func.sum(User.quanhash)).scalar() or 0)
             total_referrals = db.query(func.sum(User.referrals_count)).scalar() or 0
             active_users = db.query(User).filter(User.total_taps > 0).count()
             banned_users = db.query(User).filter_by(is_banned=True).count() if hasattr(User, 'is_banned') else 0
@@ -638,49 +638,47 @@ def buy_item():
         if not user_id or not item_type or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'success': False, 'error': 'User not found'})
-        
-        if user.coins < price:
-            return jsonify({'success': False, 'error': 'Недостаточно коинов'})
-        
-        user.coins -= price
-        
-        # Apply item effect
-        if item_type == 'multiplier_2x':
-            user.active_multiplier = 2.0
-            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
-        elif item_type == 'multiplier_5x':
-            user.active_multiplier = 5.0
-            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
-        elif item_type == 'multiplier_10x':
-            user.active_multiplier = 10.0
-            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
-        elif item_type == 'double_energy':
-            user.max_energy = 2000
-        elif item_type == 'regen_boost':
-            # TODO: Add regen boost
-            pass
-        elif item_type == 'common':
-            card = UserCard(user_id=user.id, card_type='common', income_per_minute=0.5, is_active=True)
-            db.add(card)
-        elif item_type == 'rare':
-            card = UserCard(user_id=user.id, card_type='rare', income_per_minute=2.0, is_active=True)
-            db.add(card)
-        elif item_type == 'epic':
-            card = UserCard(user_id=user.id, card_type='epic', income_per_minute=10.0, is_active=True)
-            db.add(card)
-        elif item_type == 'legendary':
-            card = UserCard(user_id=user.id, card_type='legendary', income_per_minute=50.0, is_active=True)
-            db.add(card)
-        elif item_type == 'auto_bot':
-            # TODO: Add auto bot
-            pass
-        
-        db.commit()
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            if user.coins < price:
+                return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+            
+            user.coins -= price
+            
+            # Apply item effect
+            if item_type == 'multiplier_2x':
+                user.active_multiplier = 2.0
+                user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+            elif item_type == 'multiplier_5x':
+                user.active_multiplier = 5.0
+                user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+            elif item_type == 'multiplier_10x':
+                user.active_multiplier = 10.0
+                user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+            elif item_type == 'double_energy':
+                user.max_energy = 2000
+            elif item_type == 'regen_boost':
+                # TODO: Add regen boost
+                pass
+            elif item_type == 'common':
+                card = UserCard(user_id=user.id, card_type='common', income_per_minute=0.5, is_active=True)
+                db.add(card)
+            elif item_type == 'rare':
+                card = UserCard(user_id=user.id, card_type='rare', income_per_minute=2.0, is_active=True)
+                db.add(card)
+            elif item_type == 'epic':
+                card = UserCard(user_id=user.id, card_type='epic', income_per_minute=10.0, is_active=True)
+                db.add(card)
+            elif item_type == 'legendary':
+                card = UserCard(user_id=user.id, card_type='legendary', income_per_minute=50.0, is_active=True)
+                db.add(card)
+            elif item_type == 'auto_bot':
+                # TODO: Add auto bot
+                pass
         
         return jsonify({'success': True})
     except Exception as e:
