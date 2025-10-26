@@ -839,7 +839,24 @@
         </div>
 
         <div class="tap-button" onclick="tap()">
-            <div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:48px;box-shadow:0 0 40px rgba(102,126,234,0.6),inset 0 0 40px rgba(118,75,162,0.3);animation:pulse 2s ease-in-out infinite;">💰</div>
+            <svg width="220" height="220" viewBox="0 0 220 220" style="width:100%;height:100%;">
+                <defs>
+                    <radialGradient id="tapGrad" cx="50%" cy="50%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.9" />
+                    </radialGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <circle cx="110" cy="110" r="100" fill="url(#tapGrad)" filter="url(#glow)" opacity="0.9"/>
+                <circle cx="110" cy="110" r="90" fill="none" stroke="#f093fb" stroke-width="2" opacity="0.6"/>
+                <text x="110" y="140" font-size="60" text-anchor="middle" fill="#fff" font-weight="bold">💰</text>
+            </svg>
         </div>
 
 
@@ -1213,15 +1230,12 @@
         }
         
         function buyShopItem(item_type, price) {
-            // Create purchase animation
+            // Create beautiful purchase animation
             const anim = document.createElement('div');
-            anim.style.position='fixed';anim.style.top='50%';anim.style.left='50%';anim.style.transform='translate(-50%,-50%)';anim.style.zIndex='10000';
-            anim.style.background='linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95))';
-            anim.style.padding='20px 40px';anim.style.borderRadius='15px';anim.style.fontSize='32px';anim.style.boxShadow='0 10px 40px rgba(0,0,0,0.5)';
-            anim.style.opacity='0';anim.style.transition='all 0.3s';
-            anim.innerHTML='✅ Покупка успешна!';
+            anim.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);z-index:10000;opacity:0;transition:all 0.4s ease-out;pointer-events:none;';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.98),rgba(118,75,162,0.98),rgba(240,147,251,0.98));padding:25px 50px;border-radius:20px;font-size:42px;box-shadow:0 20px 60px rgba(102,126,234,0.8),inset 0 0 40px rgba(255,255,255,0.3);text-shadow:0 0 20px rgba(255,255,255,0.8);filter:drop-shadow(0 0 30px rgba(102,126,234,1));">✨ Покупка успешна!</div>';
             document.body.appendChild(anim);
-            setTimeout(()=>{anim.style.opacity='1';},10);
+            setTimeout(()=>{anim.style.opacity='1';anim.style.transform='translate(-50%,-50%) scale(1)';},10);
             
             fetch('/api/buy', {
                 method: 'POST',
@@ -1428,13 +1442,10 @@
         
         function buyMachine(id, price, currency) {
             const anim = document.createElement('div');
-            anim.style.position='fixed';anim.style.top='50%';anim.style.left='50%';anim.style.transform='translate(-50%,-50%)';anim.style.zIndex='10000';
-            anim.style.background='linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95))';
-            anim.style.padding='20px 40px';anim.style.borderRadius='15px';anim.style.fontSize='32px';anim.style.boxShadow='0 10px 40px rgba(0,0,0,0.5)';
-            anim.style.opacity='0';anim.style.transition='all 0.3s';
-            anim.innerHTML='⚡ Покупка...';
+            anim.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);z-index:10000;opacity:0;transition:all 0.4s ease-out;pointer-events:none;';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.98),rgba(118,75,162,0.98));padding:25px 50px;border-radius:20px;font-size:36px;box-shadow:0 20px 60px rgba(102,126,234,0.8);text-shadow:0 0 20px rgba(255,255,255,0.8);">⚡ Покупка...</div>';
             document.body.appendChild(anim);
-            setTimeout(()=>{anim.style.opacity='1';},10);
+            setTimeout(()=>{anim.style.opacity='1';anim.style.transform='translate(-50%,-50%) scale(1)';},10);
             
             fetch('/api/buy_machine', {
                 method: 'POST',
@@ -1696,10 +1707,10 @@
         checkOfflineIncome();
         startEnergyRegen();
         
-        // Auto-update data every 5 seconds
+        // Auto-update data every 2 seconds
         setInterval(() => {
             loadData();
-        }, 5000);
+        }, 2000);
         
         // Support functions
         function openSupport(event) {
