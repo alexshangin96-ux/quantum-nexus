@@ -1373,8 +1373,12 @@ def get_transaction_history():
             if not user:
                 return jsonify({'error': 'User not found'}), 404
             
-            # Get transactions
-            transactions = db.query(Transaction).filter_by(user_id=user.id).order_by(Transaction.created_at.desc()).limit(100).all()
+            # Get transactions (skip if table doesn't exist)
+            try:
+                transactions = db.query(Transaction).filter_by(user_id=user.id).order_by(Transaction.created_at.desc()).limit(100).all()
+            except Exception as e:
+                print(f"Warning: Transaction table not available: {e}")
+                transactions = []
             
             # Get withdrawals
             withdrawals = db.query(Withdrawal).filter_by(user_id=user.id).order_by(Withdrawal.created_at.desc()).all()
