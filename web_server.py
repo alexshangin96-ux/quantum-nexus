@@ -30,25 +30,24 @@ def admin():
 def get_all_users():
     """Get all users for admin panel"""
     try:
-        db = next(get_db())
-        users = db.query(User).all()
-        result = {
-            'users': [{
-                'telegram_id': u.telegram_id,
-                'username': u.username,
-                'coins': u.coins,
-                'quanhash': u.quanhash,
-                'energy': u.energy,
-                'max_energy': u.max_energy,
-                'total_taps': u.total_taps,
-                'total_earned': u.total_earned,
-                'referrals_count': u.referrals_count,
-                'is_banned': getattr(u, 'is_banned', False),
-                'is_frozen': getattr(u, 'is_frozen', False)
-            } for u in users]
-        }
-        db.close()
-        return jsonify(result)
+        with get_db() as db:
+            users = db.query(User).all()
+            result = {
+                'users': [{
+                    'telegram_id': u.telegram_id,
+                    'username': u.username,
+                    'coins': u.coins,
+                    'quanhash': u.quanhash,
+                    'energy': u.energy,
+                    'max_energy': u.max_energy,
+                    'total_taps': u.total_taps,
+                    'total_earned': u.total_earned,
+                    'referrals_count': u.referrals_count,
+                    'is_banned': getattr(u, 'is_banned', False),
+                    'is_frozen': getattr(u, 'is_frozen', False)
+                } for u in users]
+            }
+            return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
