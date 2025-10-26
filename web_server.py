@@ -7,10 +7,10 @@ Server for Telegram Web App
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from database import get_db
-from models import User
+from models import User, MiningMachine, UserCard, Withdrawal
 from utils import calculate_offline_income
 from datetime import datetime
-from config import BASE_TAP_REWARD, ENERGY_COST_PER_TAP
+from config import BASE_TAP_REWARD, ENERGY_COST_PER_TAP, MAX_ENERGY
 import os
 
 app = Flask(__name__, static_folder='.')
@@ -111,14 +111,14 @@ def get_user_data():
                 print(f"Init data received: {init_data[:50]}...")
         
         if not user_id:
-            return jsonify({'error': 'User ID required', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 100, 'total_taps': 0, 'total_earned': 0}), 400
+            return jsonify({'error': 'User ID required', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 400
         
         db = next(get_db())
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
             # Return default values if user not found
-            return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 100, 'total_taps': 0, 'total_earned': 0}), 404
+            return jsonify({'error': 'User not found, please start bot first', 'coins': 0, 'quanhash': 0, 'energy': 0, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0}), 404
         
         return jsonify({
             'coins': user.coins,
@@ -232,9 +232,22 @@ def get_mining():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         
+        machines = db.query(MiningMachine).filter_by(user_id=user.id).all()
+        
+        machines_data = []
+        for machine in machines:
+            machines_data.append({
+                'id': machine.id,
+                'name': machine.name,
+                'level': machine.level,
+                'hash_rate': machine.hash_rate,
+                'income_per_hour': machine.hash_rate * 3600,
+                'tag': 'premium' if machine.hash_rate > 0.1 else 'free'
+            })
+        
         return jsonify({
             'quanhash': user.quanhash,
-            'machines': []
+            'machines': machines_data
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -255,9 +268,20 @@ def get_cards():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         
+        cards = db.query(UserCard).filter_by(user_id=user.id).all()
+        
+        cards_data = []
+        for card in cards:
+            cards_data.append({
+                'id': card.id,
+                'card_type': card.card_type,
+                'card_level': card.card_level,
+                'income_per_minute': card.income_per_minute
+            })
+        
         return jsonify({
             'coins': user.coins,
-            'cards': []
+            'cards': cards_data
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -362,7 +386,14 @@ def create_withdraw():
         if user.quanhash < 500000:
             return jsonify({'success': False, 'error': 'Insufficient QuanHash'})
         
-        # TODO: Create withdrawal record
+        # Create withdrawal record
+        withdrawal = Withdrawal(
+            user_id=user.id,
+            amount=500000,
+            usdt_amount=1.0,
+            address=address
+        )
+        db.add(withdrawal)
         user.quanhash -= 500000
         
         db.commit()
@@ -374,7 +405,25 @@ def create_withdraw():
 @app.route('/api/admin/withdrawals', methods=['GET'])
 def get_withdrawals():
     """Get withdrawal requests"""
-    return jsonify({'requests': []})
+    try:
+        db = next(get_db())
+        withdrawals = db.query(Withdrawal).order_by(Withdrawal.created_at.desc()).all()
+        
+        requests_data = []
+        for w in withdrawals:
+            requests_data.append({
+                'id': w.id,
+                'user_id': w.user_id,
+                'amount': w.amount,
+                'usdt_amount': w.usdt_amount,
+                'address': w.address,
+                'status': w.status,
+                'created_at': w.created_at.isoformat() if w.created_at else None
+            })
+        
+        return jsonify({'requests': requests_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/admin/stats', methods=['GET'])
 def get_admin_stats():
@@ -399,11 +448,143 @@ def process_withdrawal():
         request_id = data.get('request_id')
         status = data.get('status')
         
-        # TODO: Update withdrawal status
+        db = next(get_db())
+        withdrawal = db.query(Withdrawal).filter_by(id=request_id).first()
+        
+        if not withdrawal:
+            return jsonify({'error': 'Withdrawal not found'}), 404
+        
+        withdrawal.status = status
+        withdrawal.processed_at = datetime.utcnow()
+        
+        db.commit()
         
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/buy', methods=['POST'])
+def buy_item():
+    """Buy item from shop"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        item_type = data.get('item_type')
+        price = data.get('price')
+        
+        if not user_id or not item_type or not price:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        if user.coins < price:
+            return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+        
+        user.coins -= price
+        
+        # Apply item effect
+        if item_type == 'multiplier_2x':
+            user.active_multiplier = 2.0
+            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+        elif item_type == 'multiplier_5x':
+            user.active_multiplier = 5.0
+            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+        elif item_type == 'multiplier_10x':
+            user.active_multiplier = 10.0
+            user.multiplier_expires_at = datetime.utcnow().replace(hour=23, minute=59, second=59)
+        elif item_type == 'double_energy':
+            user.max_energy = 2000
+        elif item_type == 'regen_boost':
+            # TODO: Add regen boost
+            pass
+        
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/buy_machine', methods=['POST'])
+def buy_machine():
+    """Buy mining machine"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        machine_type = data.get('machine_type')
+        
+        if not user_id or not machine_type:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        machines_config = {
+            'basic': {'price': 10000, 'hash_rate': 0.01, 'name': 'Базовая машина'},
+            'advanced': {'price': 50000, 'hash_rate': 0.05, 'name': 'Продвинутая машина'},
+            'pro': {'price': 200000, 'hash_rate': 0.2, 'name': 'Профессиональная машина'},
+            'legendary': {'price': 1000000, 'hash_rate': 1.0, 'name': 'Легендарная машина'},
+        }
+        
+        machine_config = machines_config.get(machine_type)
+        if not machine_config:
+            return jsonify({'success': False, 'error': 'Invalid machine type'})
+        
+        if user.coins < machine_config['price']:
+            return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+        
+        machine = MiningMachine(
+            user_id=user.id,
+            name=machine_config['name'],
+            hash_rate=machine_config['hash_rate'],
+            level=1
+        )
+        db.add(machine)
+        user.coins -= machine_config['price']
+        
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/buy_energy', methods=['POST'])
+def buy_energy():
+    """Buy energy"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        amount = data.get('amount')
+        price = data.get('price')
+        
+        if not user_id or not amount or not price:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        if user.coins < price:
+            return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+        
+        user.energy = min(user.energy + amount, user.max_energy)
+        user.coins -= price
+        db.commit()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

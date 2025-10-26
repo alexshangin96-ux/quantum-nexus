@@ -122,3 +122,18 @@ class Transaction(Base):
     currency = Column(String(20))  # coins or quanhash
     
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Withdrawal(Base):
+    __tablename__ = 'withdrawals'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    
+    amount = Column(Float)  # QuanHash amount
+    usdt_amount = Column(Float)  # USD amount
+    address = Column(String(100))  # USDT BEP20 address
+    status = Column(String(20), default='pending')  # pending, completed, rejected
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    processed_at = Column(DateTime, nullable=True)
