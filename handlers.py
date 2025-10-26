@@ -57,38 +57,30 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db_user.last_active = datetime.utcnow()
     db.commit()
     
-    message = f"""
-🌟 <b>Добро пожаловать в Quantum Nexus!</b> 🌟
-
-👤 <b>Профиль:</b>
-💰 Коины: {format_currency(db_user.coins)} 🪙
-💎 QuanHash: {format_currency(db_user.quanhash)} ⚡
-⚡ Энергия: {db_user.energy}/{db_user.max_energy}
-
-📊 <b>Статистика:</b>
-👆 Всего тапов: {db_user.total_taps}
-💵 Всего заработано: {format_currency(db_user.total_earned)} 🪙
-
-🆔 Реферальный код: <code>{db_user.referral_code}</code>
-👥 Рефералов: {db_user.referrals_count}
-
-Выберите действие:
-    """
+    message = """<b>Quantum Nexus</b>
     
-    if offline_income > 0:
-        message += f"\n💰 Оффлайн доход: {format_currency(offline_income)} 🪙"
-    
-    # Create keyboard with Web App button
+Крипто-тапалка нового поколения с уникальными возможностями майнинга и пассивного дохода.
+
+🔥 <b>Возможности:</b>
+• Система тапа с энергией
+• Майнинг QuanHash (обменивается на USDT)
+• Пассивный доход от карточек
+• Реферальная система
+• Магазин бустов и улучшений
+• Поддержка вывода средств
+
+💎 <b>Что вас ждет:</b>
+Развивайте свою крипто-империю, покупайте майнинг-машины, собирайте карточки для пассивного дохода и развивайтесь с друзьями!
+
+🚀 <b>Начните прямо сейчас!</b>
+
+Выберите действие:"""
     
     keyboard = [
         [
             InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html"))
         ]
     ]
-    
-    main_keyboard = get_main_menu().inline_keyboard
-    for row in main_keyboard:
-        keyboard.append(row)
     
     await update.message.reply_text(
         message,
