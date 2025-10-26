@@ -529,50 +529,52 @@ def modify_user():
         value = data.get('value')
         
         if not user_id or not action:
-            return jsonify({'error': 'Missing parameters'}), 400
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        if action == 'add_coins':
-            user.coins += value
-        elif action == 'remove_coins':
-            user.coins = max(0, user.coins - value)
-        elif action == 'add_quanhash':
-            user.quanhash += value
-        elif action == 'remove_quanhash':
-            user.quanhash = max(0, user.quanhash - value)
-        elif action == 'set_energy':
-            user.energy = min(value, user.max_energy)
-        elif action == 'set_max_energy':
-            user.max_energy = value
-            user.energy = min(user.energy, value)
-        elif action == 'ban':
-            user.is_banned = True
-            user.ban_reason = value if value else 'Нарушение правил'
-        elif action == 'unban':
-            user.is_banned = False
-            user.ban_reason = None
-        elif action == 'freeze':
-            user.is_frozen = True
-        elif action == 'unfreeze':
-            user.is_frozen = False
-        elif action == 'reset':
-            user.coins = 0
-            user.quanhash = 0
-            user.energy = user.max_energy
-            user.total_taps = 0
-            user.total_earned = 0
-            user.total_mined = 0
-        
-        db.commit()
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            if action == 'add_coins':
+                user.coins += value
+            elif action == 'remove_coins':
+                user.coins = max(0, user.coins - value)
+            elif action == 'add_quanhash':
+                user.quanhash += value
+            elif action == 'remove_quanhash':
+                user.quanhash = max(0, user.quanhash - value)
+            elif action == 'set_energy':
+                user.energy = min(value, user.max_energy)
+            elif action == 'set_max_energy':
+                user.max_energy = value
+                user.energy = min(user.energy, value)
+            elif action == 'set_coins':
+                user.coins = value
+            elif action == 'set_quanhash':
+                user.quanhash = value
+            elif action == 'ban':
+                user.is_banned = True
+                user.ban_reason = value if value else 'Админ бан'
+            elif action == 'unban':
+                user.is_banned = False
+                user.ban_reason = None
+            elif action == 'freeze':
+                user.is_frozen = True
+            elif action == 'unfreeze':
+                user.is_frozen = False
+            elif action == 'reset':
+                user.coins = 0
+                user.quanhash = 0
+                user.energy = user.max_energy
+                user.total_taps = 0
+                user.total_earned = 0
+                user.total_mined = 0
         
         return jsonify({'success': True})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/buy', methods=['POST'])
