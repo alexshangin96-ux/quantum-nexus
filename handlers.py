@@ -15,59 +15,60 @@ logger = logging.getLogger(__name__)
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command"""
     user = update.effective_user
-    db = next(get_db())
     
-    # Check if user exists
-    db_user = db.query(User).filter_by(telegram_id=user.id).first()
-    
-    if not db_user:
-        # Create new user
-        db_user = User(
-            telegram_id=user.id,
-            username=user.username,
-            referral_code=generate_referral_code(),
-        )
-        db.add(db_user)
-        db.commit()
+    with get_db() as db:
+        # Check if user exists
+        db_user = db.query(User).filter_by(telegram_id=user.id).first()
         
-        # Check for referral - use telegram_id as referral code
-        if context.args and context.args[0]:
-            referral_value = context.args[0]
-            referrer = None
+        if not db_user:
+            # Create new user
+            db_user = User(
+                telegram_id=user.id,
+                username=user.username,
+                referral_code=generate_referral_code(),
+            )
+            db.add(db_user)
+            db.flush()  # Get the ID
             
-            # First try to find by telegram_id (most common case)
+            # Check for referral - use telegram_id as referral code
+            if context.args and context.args[0]:
+                referral_value = context.args[0]
+                referrer = None
+                
+                # First try to find by telegram_id (most common case)
+                try:
+                    referral_telegram_id = int(referral_value)
+                    referrer = db.query(User).filter_by(telegram_id=referral_telegram_id).first()
+                    print(f"Looking for referrer by telegram_id: {referral_telegram_id}, found: {referrer is not None}")
+                except ValueError:
+                    # Try by referral_code if it's not a number
+                    referrer = db.query(User).filter_by(referral_code=referral_value).first()
+                    print(f"Looking for referrer by code: {referral_value}, found: {referrer is not None}")
+                
+                if referrer and referrer.id != db_user.id:
+                    db_user.referred_by = referrer.id
+                    referrer.referrals_count += 1
+                    db_user.coins += REFERRAL_BONUS
+                    referrer.coins += REFERRAL_BONUS // 2
+                    logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
+        
+        # Calculate offline income
+        offline_income = calculate_offline_income(db_user)
+        if offline_income > 0:
+            db_user.coins += offline_income
+            db_user.total_earned += offline_income
             try:
-                referral_telegram_id = int(referral_value)
-                referrer = db.query(User).filter_by(telegram_id=referral_telegram_id).first()
-                print(f"Looking for referrer by telegram_id: {referral_telegram_id}, found: {referrer is not None}")
-            except ValueError:
-                # Try by referral_code if it's not a number
-                referrer = db.query(User).filter_by(referral_code=referral_value).first()
-                print(f"Looking for referrer by code: {referral_value}, found: {referrer is not None}")
-            
-            if referrer and referrer.id != db_user.id:
-                db_user.referred_by = referrer.id
-                referrer.referrals_count += 1
-                db_user.coins += REFERRAL_BONUS
-                referrer.coins += REFERRAL_BONUS // 2
-                db.commit()
-                logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
-    
-    # Calculate offline income
-    offline_income = calculate_offline_income(db_user)
-    if offline_income > 0:
-        db_user.coins += offline_income
-        db_user.total_earned += offline_income
-        transaction = Transaction(
-            user_id=db_user.id,
-            transaction_type="offline_income",
-            amount=offline_income,
-            currency="coins"
-        )
-        db.add(transaction)
-    
-    db_user.last_active = datetime.utcnow()
-    db.commit()
+                transaction = Transaction(
+                    user_id=db_user.id,
+                    transaction_type="offline_income",
+                    amount=offline_income,
+                    currency="coins"
+                )
+                db.add(transaction)
+            except Exception as e:
+                logger.warning(f"Could not create transaction: {e}")
+        
+        db_user.last_active = datetime.utcnow()
     
     message = """<b>Quantum Nexus</b>
     
