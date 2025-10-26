@@ -442,7 +442,29 @@
             }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
         }
         
-        function answerQuestion(id){const msg=prompt('Введите ответ:');if(msg)showNotification('📝 Ответ будет отправлен');}
+        function answerQuestion(id){
+            const msg = prompt('Введите ответ:');
+            if(!msg) return;
+            
+            fetch('/api/admin/answer_ticket', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    ticket_id: id,
+                    answer: msg
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    showNotification('✅ Ответ отправлен пользователю');
+                    loadQuestions(); // Reload questions
+                } else {
+                    showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                }
+            })
+            .catch(() => showNotification('❌ Ошибка отправки'));
+        }
         
         function loadSettings(){
             const arr=['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'];
