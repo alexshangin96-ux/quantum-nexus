@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Nexus</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-emoji {
+            font-size: 32px;
+        }
+
+        .tap-button {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+        }
+
+        .tap-button:active {
+            transform: scale(0.95);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 Quantum Nexus 🌟</h1>
+            <p>Привет, <span id="username">Игрок</span>!</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-row">
+                <span class="stat-label">💰 Коины</span>
+                <span class="stat-value" id="coins">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">💎 QuanHash</span>
+                <span class="stat-value" id="quanhash">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">⚡ Энергия</span>
+                <span class="stat-value" id="energy">100/100</span>
+            </div>
+        </div>
+
+        <div class="tap-button" onclick="tap()">
+            💎
+        </div>
+
+        <div class="buttons">
+            <a href="#" class="btn" onclick="openShop(event)">
+                <div class="btn-emoji">🛒</div>
+                <div>Магазин</div>
+            </a>
+            <a href="#" class="btn" onclick="openMining(event)">
+                <div class="btn-emoji">🏭</div>
+                <div>Майнинг</div>
+            </a>
+            <a href="#" class="btn" onclick="openCards(event)">
+                <div class="btn-emoji">💳</div>
+                <div>Карточки</div>
+            </a>
+            <a href="#" class="btn" onclick="openStats(event)">
+                <div class="btn-emoji">📊</div>
+                <div>Статистика</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        
+        tg.ready();
+        tg.expand();
+
+        // Get user data
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('username').textContent = user.first_name || 'Игрок';
+        }
+
+        // Load user data
+        function loadData() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('coins').textContent = data.coins || 0;
+                document.getElementById('quanhash').textContent = data.quanhash || 0;
+                document.getElementById('energy').textContent = `${data.energy || 0}/${data.max_energy || 100}`;
+            })
+            .catch(err => console.error('Error:', err));
+        }
+
+        // Tap function
+        function tap() {
+            tg.HapticFeedback.impactOccurred('light');
+            
+            fetch('/api/tap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user?.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    loadData();
+                    tg.showAlert('💰 +' + data.reward);
+                } else {
+                    tg.showAlert('⚠️ ' + data.error);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+
+        // Menu functions
+        function openShop(e) {
+            e.preventDefault();
+            tg.showAlert('Магазин скоро откроется!');
+        }
+
+        function openMining(e) {
+            e.preventDefault();
+            tg.showAlert('Майнинг скоро откроется!');
+        }
+
+        function openCards(e) {
+            e.preventDefault();
+            tg.showAlert('Карточки скоро откроются!');
+        }
+
+        function openStats(e) {
+            e.preventDefault();
+            tg.showAlert('Статистика скоро откроется!');
+        }
+
+        // Load data on start
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
 from models import User, MiningMachine, UserCard, Transaction
@@ -78,9 +78,21 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if offline_income > 0:
         message += f"\n💰 Оффлайн доход: {format_currency(offline_income)} 🪙"
     
+    # Create keyboard with Web App button
+    
+    keyboard = [
+        [
+            InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html"))
+        ]
+    ]
+    
+    main_keyboard = get_main_menu().inline_keyboard
+    for row in main_keyboard:
+        keyboard.append(row)
+    
     await update.message.reply_text(
         message,
-        reply_markup=get_main_menu(),
+        reply_markup=InlineKeyboardMarkup(keyboard),
         parse_mode='HTML'
     )
 

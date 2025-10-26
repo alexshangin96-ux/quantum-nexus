@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""
+Quantum Nexus Web Server
+Server for Telegram Web App
+"""
+
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from database import get_db
+from models import User
+from utils import calculate_offline_income
+from datetime import datetime
+from config import BASE_TAP_REWARD, ENERGY_COST_PER_TAP
+import os
+
+app = Flask(__name__, static_folder='.')
+CORS(app)
+
+@app.route('/')
+def index():
+    """Serve web app"""
+    return send_from_directory('.', 'web_app.html')
+
+@app.route('/api/user_data', methods=['POST'])
+def get_user_data():
+    """Get user data"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'coins': user.coins,
+            'quanhash': user.quanhash,
+            'energy': user.energy,
+            'max_energy': user.max_energy,
+            'total_taps': user.total_taps,
+            'total_earned': user.total_earned
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/tap', methods=['POST'])
+def tap():
+    """Handle tap action"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'error': 'User ID required'}), 400
+        
+        db = next(get_db())
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Check energy
+        if user.energy < ENERGY_COST_PER_TAP:
+            return jsonify({'success': False, 'error': 'Недостаточно энергии!'})
+        
+        # Calculate reward
+        reward = BASE_TAP_REWARD * user.active_multiplier
+        
+        # Update user
+        user.coins += reward
+        user.energy -= ENERGY_COST_PER_TAP
+        user.total_taps += 1
+        user.total_earned += reward
+        user.last_active = datetime.utcnow()
+        
+        db.commit()
+        
+        return jsonify({'success': True, 'reward': reward})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
