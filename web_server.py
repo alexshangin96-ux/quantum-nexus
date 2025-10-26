@@ -1411,7 +1411,7 @@ def get_transaction_history():
             # Sort by timestamp descending
             history.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
             
-            return jsonify({'history': history[:50]})  # Return last 50
+            return jsonify({'history': history[:3]})  # Return last 3 withdrawals
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
