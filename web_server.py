@@ -467,8 +467,8 @@ def get_admin_stats():
         with get_db() as db:
             # Basic stats
             total_users = db.query(User).count()
-            total_taps = db.query(func.sum(User.total_taps)).scalar() or 0
-            total_revenue = db.query(func.sum(User.total_earned)).scalar() or 0
+            total_taps = int(db.query(func.sum(User.total_taps)).scalar() or 0)
+            total_revenue = int(db.query(func.sum(User.total_earned)).scalar() or 0)
             pending_withdrawals = db.query(Withdrawal).filter_by(status='pending').count()
             
             # Advanced stats
