@@ -1680,10 +1680,12 @@
                             <input type="number" id="quanhashAmount" value="500000" min="500000" step="1000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
                             <div id="usdtAmount" style="margin-top: 8px; font-size: 14px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
                         </div>
-                        <div style="margin-bottom: 15px;">
+                        <div style="margin-bottom: 20px;">
                             <div style="margin-bottom: 8px; font-weight: 500;">BEP20 адрес:</div>
-                            <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;">
+                            <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 15px; font-weight: 600;">
                         </div>
+                    </div>
+                    <div style="position: sticky; bottom: 0; background: inherit; padding: 0 20px 20px 20px; border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px;">
                         <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 20px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Недостаточно QuanHash'}</button>
                         <div style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
                             <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px; text-align: center;">📜 История выводов</div>
