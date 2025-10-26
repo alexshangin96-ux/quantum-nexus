@@ -528,9 +528,29 @@ def get_offline_income():
                 return jsonify({'error': 'User not found'}), 404
             
             now = datetime.utcnow()
-            time_diff = (now - user.last_active).total_seconds()
             
-            offline_time = min(time_diff, 3 * 60 * 60)  # 3 hours max
+            # Check if user was offline for significant time (more than 10 seconds)
+            if user.last_active:
+                time_diff = (now - user.last_active).total_seconds()
+                
+                # Only show offline income if user was away for more than 10 seconds
+                if time_diff < 10:
+                    # Update last_active to now (user is active in app)
+                    user.last_active = now
+                    return jsonify({
+                        'offline_time': 0,
+                        'offline_income': 0,
+                        'offline_hash': 0
+                    })
+                
+                offline_time = min(time_diff - 10, 3 * 60 * 60)  # 3 hours max, minus 10 seconds to exclude active time
+            else:
+                user.last_active = now
+                return jsonify({
+                    'offline_time': 0,
+                    'offline_income': 0,
+                    'offline_hash': 0
+                })
             
             # Calculate passive coins from cards during offline
             passive_coins_per_hour = 0
@@ -547,6 +567,9 @@ def get_offline_income():
                     passive_hash_per_hour += machine.hash_rate * 3600
             
             offline_hash = (passive_hash_per_hour / 3600) * offline_time
+            
+            # Update last_active to mark user is back in app
+            user.last_active = now
             
             return jsonify({
                 'offline_time': int(offline_time),
