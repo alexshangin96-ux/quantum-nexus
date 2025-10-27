@@ -2499,10 +2499,9 @@
                     return;
                 }
                 
-                const starsCount = productId === 1 ? 10 : 40;
+                const starsPrice = productId === 1 ? 10 : 40;
                 
                 // Show confirmation popup
-                const starsPrice = productId === 1 ? 10 : 40;
                 tg.showPopup({
                     title: '⭐ Покупка через Telegram Stars',
                     message: `Купить ${amount.toLocaleString()} коинов за ${starsPrice} ⭐?`,
@@ -2515,24 +2514,20 @@
                         // Close modal
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Show instructions
-                        tg.showAlert(
-                            '💎 Для оплаты через Stars:\n\n' +
-                            '1. Закройте веб-приложение\n' +
-                            '2. Откройте бота @qanexus_bot\n' +
-                            '3. Нажмите кнопку ниже в этом сообщении',
-                            () => {
-                                // Copy product ID for manual use
-                                navigator.clipboard.writeText(`${productId}`).then(() => {
-                                    tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-                                }).catch(() => {
-                                    tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-                                });
-                            }
-                        );
+                        // Use openInvoice directly in Mini App
+                        const invoiceSlug = `stars_pack_${productId}`;
                         
-                        // Also try to open bot
-                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+                        tg.openInvoice({
+                            invoiceSlug: invoiceSlug,
+                            successParam: 'purchase_success'
+                        }, (status) => {
+                            if(status === 'paid') {
+                                tg.showAlert('✨ Покупка успешна! Ко insetы добавлены.');
+                                loadData(); // Reload to show updated balance
+                            } else {
+                                tg.showAlert('ℹ️ Оплата отменена');
+                            }
+                        });
                     }
                 });
             } catch(err) {
