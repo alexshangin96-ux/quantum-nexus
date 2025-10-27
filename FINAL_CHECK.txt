@@ -1,0 +1,10 @@
+Execute these commands on server:
+cd /root/quantum-nexus
+head -n 3 web_app.html
+git fetch origin
+git reset --hard origin/main
+head -n 3 web_app.html
+grep "VIP стартовый" web_app.html
+systemctl restart quantum-nexus-web.service
+
+After running, send output of commands 1, 4, 5
