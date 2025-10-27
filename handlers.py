@@ -503,20 +503,20 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
 
 
 async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE, product_id: int):
-    """Send Stars invoice for product purchase"""
+    """Send Stars invoice or simulate payment"""
     
     # Define products
     products = {
         1: {
             'title': 'Стартовый пакет',
-            'description': '1,000,000 коинов',
-            'price': 10,  # stars
+            'description': '1,000,000 коинов за 100 коинов в игре',
+            'price': 100,  # в игре коины
             'coins': 1000000
         },
         2: {
             'title': 'Премиум пакет',
-            'description': '5,000,000 коинов',
-            'price': 40,  # stars
+            'description': '5,000,000 коинов за 500 коинов в игре',
+            'price': 500,  # в игре коины
             'coins': 5000000
         }
     }
@@ -526,16 +526,34 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         await update.message.reply_text("❌ Неверный товар")
         return
     
-    # Create invoice with Telegram Stars (XTR)
-    # Amount in stars: price * 100 (cents)
-    prices = [LabeledPrice(label=f"{product['title']} - {product['description']}", amount=product['price'] * 100)]
+    user_id = update.effective_user.id
     
-    await context.bot.send_invoice(
-        chat_id=update.effective_chat.id,
-        title=product['title'],
-        description=product['description'],
-        payload=f"stars_pack_{product_id}",
-        provider_token=None,  # Not needed for Stars
-        currency="XTR",
-        prices=prices
-    )
+    with get_db() as db:
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            await update.message.reply_text("❌ Пользователь не найден")
+            return
+        
+        # Проверяем баланс
+        if user.coins < product['price']:
+            await update.message.reply_text(
+                f"❌ Недостаточно коинов!\n\n"
+                f"💰 Ваш баланс: {user.coins:,}\n"
+                f"💎 Стоимость: {product['price']:,} коинов\n"
+                f"💵 Вы получите: {product['coins']:,} коинов"
+            )
+            return
+        
+        # Списываем коины и добавляем новые
+        user.coins -= product['price']
+        user.coins += product['coins']
+        
+        db.commit()
+        
+        await update.message.reply_text(
+            f"✨ Покупка успешна!\n\n"
+            f"💎 Потрачено: {product['price']:,} коинов\n"
+            f"💰 Получено: {product['coins']:,} коинов\n\n"
+            f"📊 Новый баланс: {user.coins:,} коинов"
+        )
