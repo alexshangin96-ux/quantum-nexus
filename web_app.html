@@ -47,6 +47,19 @@
             box-shadow: none !important;
             border: none !important;
         }
+        
+        /* Prevent all visual selection highlights */
+        .tap-button * {
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-touch-callout: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+        
+        /* Specific styles for auto-tap (no haptic feedback needed) */
+        body.auto-tapping .tap-button {
+            -webkit-tap-highlight-color: transparent !important;
+        }
 
         body::before {
             content: '';
@@ -868,8 +881,6 @@
                 0 0 50px rgba(255, 215, 0, 0.2);
             filter: drop-shadow(0 0 10px rgba(255, 215, 0, 1));
             will-change: transform, opacity, filter;
-            left: 50% !important;
-            top: 50% !important;
         }
 
         @keyframes coinFloat {
@@ -1322,11 +1333,10 @@
                         const coinAnimation = document.createElement('div');
                         coinAnimation.className = 'coin-animation';
                         coinAnimation.textContent = '+' + data.reward;
+                        // Position from center of button
                         coinAnimation.style.left = centerX + 'px';
                         coinAnimation.style.top = centerY + 'px';
-                        // Add random offset for variety
-                        const randomOffset = (Math.random() - 0.5) * 40;
-                        coinAnimation.style.setProperty('--random-x', randomOffset + 'px');
+                        coinAnimation.style.transform = 'translate(-50%, -50%)';
                         document.body.appendChild(coinAnimation);
                         setTimeout(() => { 
                             if(document.body.contains(coinAnimation)) {
@@ -1976,11 +1986,13 @@
                                 const energy = parseInt(energyElement.textContent.split('/')[0]);
                                 // Auto-tap stops at 10 energy, manual taps can go to 0
                                 if(energy > 10) {
-                                    // Call tap through API directly with auto-flag
+                                    // Call tap through API directly with auto-flag (silent, no visual feedback)
                                     fetch('/api/tap', {
                                         method: 'POST',
                                         headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({user_id: user?.id, is_auto: true})
+                                        body: JSON.stringify({user_id: user?.id, is_auto: true}),
+                                        // Disable all visual feedback for auto-tap
+                                        referrerPolicy: 'no-referrer'
                                     })
                                     .then(res => res.json())
                                     .then(data => {
