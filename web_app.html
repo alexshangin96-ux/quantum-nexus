@@ -2501,6 +2501,7 @@
                 
                 const starsCount = productId === 1 ? 10 : 40;
                 
+                // Show confirmation popup
                 tg.showPopup({
                     title: '⭐ Покупка через Stars',
                     message: `Купить ${amount.toLocaleString()} ${currency === 'coins' ? 'коинов' : 'QuanHash'} за ${starsCount} ⭐?`,
@@ -2510,8 +2511,37 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Simulate purchase - in real app would integrate with Telegram Stars API
-                        tg.showAlert('✨ Теперь доступно покупка через Telegram Stars API!');
+                        // Initialize Stars payment
+                        const invoice = {
+                            productId: productId,
+                            amount: starsCount,
+                            currency: 'XTR'
+                        };
+                        
+                        // Call backend to process stars payment
+                        fetch('/api/buy_with_stars', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                user_id: user?.id,
+                                product_id: productId,
+                                coins_amount: amount,
+                                stars_count: starsCount
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                tg.showAlert('✨ Покупка успешна!');
+                                loadData();
+                                document.querySelector('#buyCurrencyModal')?.remove();
+                            } else {
+                                tg.showAlert('❌ ' + data.error);
+                            }
+                        })
+                        .catch(err => {
+                            tg.showAlert('❌ Ошибка: ' + err.message);
+                        });
                     }
                 });
             } catch(err) {
