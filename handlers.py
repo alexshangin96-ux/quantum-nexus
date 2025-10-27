@@ -527,9 +527,11 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         return
     
     # Create invoice with Telegram Stars (XTR)
+    # Amount in stars: price * 100 (cents)
     prices = [LabeledPrice(label=f"{product['title']} - {product['description']}", amount=product['price'] * 100)]
     
-    await update.message.reply_invoice(
+    await context.bot.send_invoice(
+        chat_id=update.effective_chat.id,
         title=product['title'],
         description=product['description'],
         payload=f"stars_pack_{product_id}",
