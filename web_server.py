@@ -1116,42 +1116,13 @@ def buy_machine():
 
 @app.route('/api/buy_with_stars', methods=['POST'])
 def buy_with_stars():
-    """Buy currency using Telegram Stars"""
-    try:
-        data = request.json
-        user_id = data.get('user_id')
-        product_id = data.get('product_id')
-        coins_amount = data.get('coins_amount')
-        stars_count = data.get('stars_count')
-        
-        if not user_id or not product_id or not coins_amount:
-            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
-        
-        # In production, verify Stars payment with Telegram API here
-        # For now, we'll simulate the purchase
-        
-        with get_db() as db:
-            user = db.query(User).filter_by(telegram_id=user_id).first()
-            
-            if not user:
-                return jsonify({'success': False, 'error': 'User not found'}), 404
-            
-            # Add coins to user
-            user.coins += coins_amount
-            
-            # In production: verify with Telegram Stars API
-            # stars_invoice_id = data.get('invoice_id')
-            # Verify payment with Telegram Bot API
-            
-            db.commit()
-            
-            return jsonify({
-                'success': True,
-                'coins_added': coins_amount,
-                'stars_used': stars_count
-            })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+    """Stars payment is handled by Telegram bot, not web server"""
+    # Payment must go through bot invoice system
+    # This endpoint is disabled to prevent bypass
+    return jsonify({
+        'success': False,
+        'error': 'Stars payment must be done through Telegram bot. Use the "Купить" button.'
+    }), 400
 
 @app.route('/api/buy_energy', methods=['POST'])
 def buy_energy():
