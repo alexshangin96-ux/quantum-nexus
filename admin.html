@@ -513,12 +513,102 @@
 </div>
 <div class="actions-grid">
 <button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                         ul.appendChild(card);
                     });
                     c.appendChild(ul);
                 }else{c.innerHTML='<div class="loading">Нет пользователей</div>';}
             });
+        }
+        
+        function manageVIP(uid,vipLevel,vipBadge,hasSupport,hasProfile,hasPlace,hasDesign){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'vipModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">👑 Управление VIP-статусом</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="background:rgba(255,215,0,0.1);padding:15px;border-radius:12px;border:2px solid rgba(255,215,0,0.3);margin-bottom:20px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">VIP уровень:</div>
+                        <select id="vipLevel" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="0" ${vipLevel==0?'selected':''}>0 - Обычный</option>
+                            <option value="1" ${vipLevel==1?'selected':''}>1 - Bronze VIP</option>
+                            <option value="2" ${vipLevel==2?'selected':''}>2 - Silver VIP</option>
+                            <option value="3" ${vipLevel==3?'selected':''}>3 - Gold VIP</option>
+                            <option value="4" ${vipLevel==4?'selected':''}>4 - Platinum VIP</option>
+                            <option value="5" ${vipLevel==5?'selected':''}>5 - Diamond VIP</option>
+                            <option value="6" ${vipLevel==6?'selected':''}>6 - Absolute VIP</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">VIP Badge:</label>
+                        <select id="vipBadge" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="">Нет значка</option>
+                            <option value="bronze_vip" ${vipBadge=='bronze_vip'?'selected':''}>Bronze VIP</option>
+                            <option value="silver_vip" ${vipBadge=='silver_vip'?'selected':''}>Silver VIP</option>
+                            <option value="gold_vip" ${vipBadge=='gold_vip'?'selected':''}>Gold VIP</option>
+                            <option value="platinum_vip" ${vipBadge=='platinum_vip'?'selected':''}>Platinum VIP</option>
+                            <option value="diamond_vip" ${vipBadge=='diamond_vip'?'selected':''}>Diamond VIP</option>
+                            <option value="absolute_vip" ${vipBadge=='absolute_vip'?'selected':''}>Absolute VIP</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(102,126,234,0.1);padding:15px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">VIP привилегии:</div>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasSupport" ${hasSupport?'checked':''}><span>Premium Support</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasProfile" ${hasProfile?'checked':''}><span>Golden Profile</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasPlace" ${hasPlace?'checked':''}><span>Top Place</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="hasDesign" ${hasDesign?'checked':''}><span>Unique Design</span></label>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="saveVIPChanges(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">✅ Сохранить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function saveVIPChanges(uid){
+            const vipLevel = parseInt(document.getElementById('vipLevel').value);
+            const vipBadge = document.getElementById('vipBadge').value;
+            const hasSupport = document.getElementById('hasSupport').checked;
+            const hasProfile = document.getElementById('hasProfile').checked;
+            const hasPlace = document.getElementById('hasPlace').checked;
+            const hasDesign = document.getElementById('hasDesign').checked;
+            
+            const vipData = {
+                vip_level: vipLevel,
+                vip_badge: vipBadge,
+                has_premium_support: hasSupport,
+                has_golden_profile: hasProfile,
+                has_top_place: hasPlace,
+                has_unique_design: hasDesign
+            };
+            
+            fetch('/api/admin/set_vip', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: uid,
+                    vip_data: vipData
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    showNotification('✅ VIP-статус обновлён');
+                    document.getElementById('vipModal').remove();
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                }
+            })
+            .catch(() => showNotification('❌ Ошибка обновления'));
         }
         
         function openEditModal(uid,field,title,currentValue){

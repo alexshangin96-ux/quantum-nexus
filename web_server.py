@@ -45,7 +45,13 @@ def get_all_users():
                     'total_earned': u.total_earned,
                     'referrals_count': u.referrals_count,
                     'is_banned': getattr(u, 'is_banned', False),
-                    'is_frozen': getattr(u, 'is_frozen', False)
+                    'is_frozen': getattr(u, 'is_frozen', False),
+                    'vip_level': getattr(u, 'vip_level', 0),
+                    'vip_badge': getattr(u, 'vip_badge', None),
+                    'has_premium_support': getattr(u, 'has_premium_support', False),
+                    'has_golden_profile': getattr(u, 'has_golden_profile', False),
+                    'has_top_place': getattr(u, 'has_top_place', False),
+                    'has_unique_design': getattr(u, 'has_unique_design', False)
                 } for u in users]
             }
             return jsonify(result)
