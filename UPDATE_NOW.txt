@@ -1,0 +1,18 @@
+Обновление "Купить валюту" готово!
+
+Выполните на сервере:
+
+cd /root/quantum-nexus
+git pull origin main
+systemctl restart quantum-nexus-web.service
+systemctl status quantum-nexus-web.service
+
+После этого перезайдите в бота - изменения будут видны.
+
+В магазине теперь:
+- 6 категорий товаров
+- 60 товаров всего
+- Увеличенные иконки (32px)
+- Подробные описания
+- Новые цены
+
