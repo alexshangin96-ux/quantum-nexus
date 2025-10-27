@@ -1471,22 +1471,26 @@
                     'absolute_vip': '👑 ABSOLUTE VIP'
                 };
                 
-                if (badgeEl && vipBadge) {
+                if (badgeEl && vipBadge && vipLevel > 0) {
                     badgeEl.innerHTML = '<span style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;">' + (badges[vipBadge] || 'VIP') + '</span>';
                     badgeEl.style.display = 'inline';
+                } else if (badgeEl) {
+                    badgeEl.style.display = 'none';
                 }
                 
                 // VIP privileges display
                 if (privEl) {
                     const privs = [];
-                    if (hasPremium) privs.push('⭐ Premium Support');
-                    if (hasGolden) privs.push('🌟 Golden Profile');
-                    if (hasTop) privs.push('🏆 Top Place');
-                    if (hasUnique) privs.push('✨ Unique Design');
+                    if (hasPremium && vipLevel > 0) privs.push('⭐ Premium Support');
+                    if (hasGolden && vipLevel > 0) privs.push('🌟 Golden Profile');
+                    if (hasTop && vipLevel > 0) privs.push('🏆 Top Place');
+                    if (hasUnique && vipLevel > 0) privs.push('✨ Unique Design');
                     
                     if (privs.length > 0) {
                         privEl.textContent = privs.join(' • ');
                         privEl.style.display = 'block';
+                    } else {
+                        privEl.style.display = 'none';
                     }
                 }
                 
@@ -1788,7 +1792,7 @@
                             ${pkg.benefits.map(b => `<div>✓ ${b}</div>`).join('')}
                         </div>
                     </div>
-                    <button onclick="window.open('https://t.me/qanexus_bot?start=buy_vip_${pkg.level}')" style="width:100%;padding:10px;background:#000;color:${pkg.color};border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;">Купить за ${pkg.stars} ⭐</button>
+                    <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_${pkg.level + 50}')" style="width:100%;padding:10px;background:#000;color:${pkg.color};border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;">Купить за ${pkg.stars} ⭐</button>
                 </div>
             `).join('');
             
