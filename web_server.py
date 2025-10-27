@@ -1896,6 +1896,13 @@ def get_top_users():
                 vip_level = getattr(u, 'vip_level', 0) or 0
                 vip_badge = getattr(u, 'vip_badge', None) or ""
                 
+                # Generate random passive income for bots
+                import random
+                if hasattr(u, 'telegram_id') and u.telegram_id >= 9000000000:  # Bot user
+                    passive_income_per_hour = random.randint(10000, 1000000)
+                    if random.random() < 0.3:  # 30% chance to not have passive income
+                        passive_income_per_hour = 0
+                
                 top_users.append({
                     'username': u.username or 'Unknown',
                     'total_earned': int(u.total_earned or 0),
