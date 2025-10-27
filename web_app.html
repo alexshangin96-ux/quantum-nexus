@@ -1700,15 +1700,21 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({limit: 999})
                 })
-                .then(res => res.json())
+                .then(res => {
+                    console.log('[TOP_LEADERS] Response status:', res.status);
+                    return res.json();
+                })
                 .then(topData => {
+                    console.log('[TOP_LEADERS] Received data:', topData);
                     const topUsers = topData.users || [];
-                    // Sort: VIPs first, then by total_coins descending
+                    console.log('[TOP_LEADERS] Users count:', topUsers.length);
+                    
+                    // Sort: VIPs first, then by total_earned descending
                     const sortedUsers = [...topUsers].sort((a, b) => {
                         const aVip = a.vip_level || 0;
                         const bVip = b.vip_level || 0;
                         if (aVip !== bVip) return bVip - aVip; // VIPs first
-                        return (b.total_coins || 0) - (a.total_coins || 0);
+                        return (b.total_earned || 0) - (a.total_earned || 0);
                     });
                     
                     let topHTML = sortedUsers.map((u, idx) => {
@@ -1771,7 +1777,11 @@
                     }
                 })
                 .catch(err => {
-                    console.error('Error loading top users:', err);
+                    console.error('[TOP_LEADERS] Error loading top users:', err);
+                    const contentDiv = modal.querySelector('#topLeadersContent');
+                    if (contentDiv) {
+                        contentDiv.innerHTML = '<div style="text-align:center;color:#ef4444;padding:40px;font-size:14px;">Ошибка загрузки рейтинга</div>';
+                    }
                 });
             }
             
