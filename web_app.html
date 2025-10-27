@@ -2511,48 +2511,30 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        try {
-                            // Open invoice for Stars payment
-                            await tg.openInvoice({
-                                invoiceSlug: `stars_pack_${productId}`, // Unique invoice ID
-                                successParam: 'success'
-                            }, (status) => {
-                                if(status === 'paid') {
-                                    // Payment successful, call backend to verify and add coins
-                                    fetch('/api/buy_with_stars', {
-                                        method: 'POST',
-                                        headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({
-                                            user_id: user?.id,
-                                            product_id: productId,
-                                            coins_amount: amount,
-                                            stars_count: starsCount,
-                                            invoice_id: `stars_pack_${productId}`
-                                        })
-                                    })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        if(data.success) {
-                                            tg.showAlert('✨ Покупка успешна!');
-                                            loadData();
-                                            document.querySelector('#buyCurrencyModal')?.remove();
-                                        } else {
-                                            tg.showAlert('❌ ' + data.error);
-                                        }
-                                    })
-                                    .catch(err => {
-                                        tg.showAlert('❌ Ошибка: ' + err.message);
-                                    });
-                                } else if(status === 'failed') {
-                                    tg.showAlert('❌ Оплата не прошла');
-                                } else {
-                                    tg.showAlert('ℹ️ Оплата отменена');
-                                }
-                            });
-                        } catch(err) {
-                            // Fallback for older Telegram versions or non-Telegram
-                            tg.showAlert('⚠️ Stars API недоступен. Используйте версию Telegram с поддержкой Stars.');
-                        }
+                        // Process payment directly via backend
+                        fetch('/api/buy_with_stars', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                user_id: user?.id,
+                                product_id: productId,
+                                coins_amount: amount,
+                                stars_count: starsCount
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
+                                tg.showAlert('✨ Покупка успешна!');
+                                loadData();
+                                document.querySelector('#buyCurrencyModal')?.remove();
+                            } else {
+                                tg.showAlert('❌ ' + data.error);
+                            }
+                        })
+                        .catch(err => {
+                            tg.showAlert('❌ Ошибка: ' + err.message);
+                        });
                     }
                 });
             } catch(err) {
