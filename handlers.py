@@ -574,15 +574,19 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             
             logger.info(f"Attempting to send Stars invoice to user {user_id} for product {product_id}")
             
-            await context.bot.send_invoice(
+            # For Telegram Stars, set provider_token to None
+            invoice_result = await context.bot.send_invoice(
                 chat_id=update.effective_chat.id,
                 title=f"💎 {product['title']}",
                 description=product['description'],
                 payload=f"stars_{user.id}_{product_id}",
-                provider_token="",  # Empty for Stars
-                currency="XTR",  # Stars currency
-                prices=prices
+                provider_token=None,  # None for Stars (not empty string!)
+                currency="XTR",
+                prices=prices,
+                start_parameter=f"buy_stars_{product_id}"  # Add start parameter
             )
+            
+            logger.info(f"Invoice sent: {invoice_result.message_id}")
             
             logger.info(f"Stars invoice sent successfully to user {user_id}")
             
