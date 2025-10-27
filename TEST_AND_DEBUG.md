@@ -27,8 +27,7 @@
 Проверьте, есть ли пользователи в базе данных:
 ```bash
 cd /root/quantum-nexus
-source venv/bin/activate
-python3 -c "
+/root/quantum-nexus/venv/bin/python3 -c "
 from database import get_db
 from models import User
 with get_db() as db:
@@ -37,6 +36,11 @@ with get_db() as db:
     for u in users[:5]:
         print(f'{u.username}: total_earned={u.total_earned}, taps={u.total_taps}')
 "
+```
+
+Или проверьте через PostgreSQL напрямую:
+```bash
+sudo -u postgres psql quantum_nexus_db -c "SELECT username, total_earned, total_taps FROM users ORDER BY total_earned DESC LIMIT 10;"
 ```
 
 Если в базе нет пользователей или все `total_earned=0`, значит проблема в том, что:
