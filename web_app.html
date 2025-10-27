@@ -1446,24 +1446,21 @@
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-70%)';setTimeout(()=>{anim.remove();},300);},1000);
                     
                     loadData();
-                    loadShopCategory(document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
+                    // Reload cards shop to show updated prices and levels
+                    const category = document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
                                        document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('energy') ? 'energy' :
-                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto');
+                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto';
                     
-                    // Update passive income display
-                    fetch('/api/cards', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({user_id: user?.id})
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        const totalPassive = (data.total_passive_per_hour || 0);
-                        const passiveInfo = document.getElementById('passiveInfo');
-                        if(passiveInfo && passiveInfo.querySelector('div:last-child')) {
-                            passiveInfo.querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
-                        }
-                    });
+                    if(category === 'cards') {
+                        const activeBtn = document.querySelector('.filter-btn.active');
+                        const cardCategory = activeBtn && activeBtn.textContent.includes('В минуту') ? 'per_minute' : 'per_hour';
+                        loadCardsCategory(cardCategory);
+                    } else {
+                        loadShopCategory(category);
+                    }
+                    
+                    // Update passive income immediately
+                    updatePassiveIncome();
                 } else {
                     const error = document.createElement('div');
                     error.style.cssText='position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
@@ -1809,6 +1806,11 @@
             // Load per_hour cards by default
             loadCardsList('per_hour');
             
+            // Update passive income immediately
+            updatePassiveIncome();
+        }
+        
+        function updatePassiveIncome() {
             fetch('/api/cards', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1816,14 +1818,26 @@
             })
             .then(res => res.json())
             .then(data => {
-                // Update passive info display
-                const totalPassive = (data.total_passive_per_hour || 0);
+                // Update passive info display with rounded whole numbers
+                const totalPassive = Math.round(data.total_passive_per_hour || 0);
                 const passiveInfo = document.getElementById('passiveInfo');
                 if(passiveInfo && passiveInfo.querySelector('div:last-child')) {
                     passiveInfo.querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
                 }
-            });
+            })
+            .catch(err => console.error('Error updating passive income:', err));
         }
+        
+        // Update passive income every second when cards modal is open
+        let passiveIncomeInterval = null;
+        document.addEventListener('click', function(e) {
+            if(e.target.textContent && e.target.textContent.includes('Карточки')) {
+                if(!passiveIncomeInterval) {
+                    updatePassiveIncome();
+                    passiveIncomeInterval = setInterval(updatePassiveIncome, 1000);
+                }
+            }
+        });
 
         function openStats(e) {
             e.preventDefault();
