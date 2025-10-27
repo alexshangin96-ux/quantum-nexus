@@ -2471,7 +2471,7 @@
         
         let currentCategory = 'all';
         
-        function openBuyCurrency(e) {
+        window.openBuyCurrency = function(e) {
             try {
                 e.preventDefault();
             } catch(err) {}
@@ -3240,7 +3240,7 @@
             document.body.appendChild(modal);
             
             // Set initial active category after modal is attached
-            setTimeout(() => filterCategory('starter'), 100);
+            setTimeout(() => window.filterCategory('starter'), 100);
         }
         
         window.filterCategory = function(category) {
