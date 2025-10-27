@@ -2512,12 +2512,16 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal and redirect to bot for invoice
+                        // Close modal first
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Open bot with product info
-                        const tgLink = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
-                        tg.openTelegramLink(tgLink);
+                        // Close web app and open bot
+                        tg.close();
+                        
+                        // Give Telegram a moment to close, then open bot
+                        setTimeout(() => {
+                            window.location.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+                        }, 300);
                     }
                 });
             } catch(err) {
