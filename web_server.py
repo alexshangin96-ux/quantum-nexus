@@ -306,49 +306,102 @@ def get_shop():
                         'amount': amount
                     })
             elif category == 'cards':
-                card_templates = [
-                    {'name': 'Стартовая карта', 'emoji': '🟢', 'income': 0.5, 'desc': 'Базовая добыча', 'rarity': 'common'},
-                    {'name': 'Карта энергии', 'emoji': '⚡', 'income': 1.2, 'desc': 'Увеличивает добычу', 'rarity': 'common'},
-                    {'name': 'Карта удачи', 'emoji': '🍀', 'income': 1.5, 'desc': 'Приносит удачу', 'rarity': 'common'},
-                    {'name': 'Карта процветания', 'emoji': '🌱', 'income': 2.0, 'desc': 'Растит доходы', 'rarity': 'rare'},
-                    {'name': 'Серебряная карта', 'emoji': '🥈', 'income': 3.0, 'desc': 'Серебряная добыча', 'rarity': 'rare'},
-                    {'name': 'Золотая карта', 'emoji': '🥇', 'income': 5.0, 'desc': 'Золотая добыча', 'rarity': 'rare'},
-                    {'name': 'Карта майнинга', 'emoji': '⛏️', 'income': 7.5, 'desc': 'Майнинговая мощь', 'rarity': 'epic'},
-                    {'name': 'Карта крипто', 'emoji': '₿', 'income': 10.0, 'desc': 'Криптовалютная', 'rarity': 'epic'},
-                    {'name': 'Карта звезды', 'emoji': '⭐', 'income': 15.0, 'desc': 'Звездная мощь', 'rarity': 'epic'},
-                    {'name': 'Карта пламени', 'emoji': '🔥', 'income': 20.0, 'desc': 'Горячая добыча', 'rarity': 'epic'},
-                    {'name': 'Легендарная карта 1', 'emoji': '👑', 'income': 30.0, 'desc': 'Королевская', 'rarity': 'legendary'},
-                    {'name': 'Легендарная карта 2', 'emoji': '💎', 'income': 40.0, 'desc': 'Драгоценная', 'rarity': 'legendary'},
-                    {'name': 'Легендарная карта 3', 'emoji': '🏆', 'income': 50.0, 'desc': 'Победная', 'rarity': 'legendary'},
-                    {'name': 'Карта времени', 'emoji': '⏰', 'income': 8.0, 'desc': 'Временная мощь', 'rarity': 'rare'},
-                    {'name': 'Карта магнита', 'emoji': '🧲', 'income': 12.0, 'desc': 'Притягивает доходы', 'rarity': 'rare'},
-                    {'name': 'Карта алхимии', 'emoji': '⚗️', 'income': 18.0, 'desc': 'Алхимическая', 'rarity': 'epic'},
-                    {'name': 'Карта НЛО', 'emoji': '🛸', 'income': 25.0, 'desc': 'Инопланетная', 'rarity': 'legendary'},
-                    {'name': 'Карта радуги', 'emoji': '🌈', 'income': 9.0, 'desc': 'Многоцветная', 'rarity': 'rare'},
-                    {'name': 'Карта грома', 'emoji': '⚡', 'income': 22.0, 'desc': 'Молниеносная', 'rarity': 'epic'},
-                    {'name': 'Карта лабиринта', 'emoji': '🧩', 'income': 28.0, 'desc': 'Загадочная', 'rarity': 'epic'},
-                    {'name': 'Карта ниндзя', 'emoji': '🥷', 'income': 35.0, 'desc': 'Скрытая мощь', 'rarity': 'legendary'},
-                    {'name': 'Карта космоса', 'emoji': '🚀', 'income': 45.0, 'desc': 'Космическая', 'rarity': 'legendary'},
-                    {'name': 'Карта дракона', 'emoji': '🐉', 'income': 55.0, 'desc': 'Драконья мощь', 'rarity': 'legendary'},
-                    {'name': 'Карта феникса', 'emoji': '🔥', 'income': 65.0, 'desc': 'Возрождающаяся', 'rarity': 'legendary'},
-                    {'name': 'Карта Вселенной', 'emoji': '🌌', 'income': 75.0, 'desc': 'Бесконечная', 'rarity': 'legendary'},
-                    {'name': 'Карта кванта', 'emoji': '⚛️', 'income': 85.0, 'desc': 'Квантовая', 'rarity': 'legendary'},
-                    {'name': 'Карта силы', 'emoji': '💪', 'income': 11.0, 'desc': 'Могучая', 'rarity': 'rare'},
-                    {'name': 'Карта мозга', 'emoji': '🧠', 'income': 16.0, 'desc': 'Умная', 'rarity': 'epic'},
-                    {'name': 'Карта молнии', 'emoji': '⚡', 'income': 24.0, 'desc': 'Быстрая', 'rarity': 'epic'},
-                    {'name': 'Карта богатства', 'emoji': '💰', 'income': 100.0, 'desc': 'Невероятная', 'rarity': 'legendary'},
+                # 40 cards: 20 per minute, 20 per hour
+                # Per minute cards (expensive)
+                per_minute_cards = [
+                    {'name': '⚡ Энергетический генератор', 'desc': 'Производит 0.5 коинов/мин', 'base_income': 0.5, 'base_price': 50000, 'rarity': 'common'},
+                    {'name': '🔋 Мощная батарея', 'desc': 'Производит 1.2 коинов/мин', 'base_income': 1.2, 'base_price': 75000, 'rarity': 'common'},
+                    {'name': '💎 Драгоценный кристалл', 'desc': 'Производит 2.5 коинов/мин', 'base_income': 2.5, 'base_price': 120000, 'rarity': 'rare'},
+                    {'name': '⭐ Звездный ядро', 'desc': 'Производит 4.0 коинов/мин', 'base_income': 4.0, 'base_price': 200000, 'rarity': 'rare'},
+                    {'name': '🔥 Плазменный реактор', 'desc': 'Производит 6.5 коинов/мин', 'base_income': 6.5, 'base_price': 350000, 'rarity': 'epic'},
+                    {'name': '⚛️ Квантовый генератор', 'desc': 'Производит 10.0 коинов/мин', 'base_income': 10.0, 'base_price': 550000, 'rarity': 'epic'},
+                    {'name': '🌌 Галактический мотор', 'desc': 'Производит 15.0 коинов/мин', 'base_income': 15.0, 'base_price': 850000, 'rarity': 'legendary'},
+                    {'name': '👑 Императорский трон', 'desc': 'Производит 22.0 коинов/мин', 'base_income': 22.0, 'base_price': 1300000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сердце', 'desc': 'Производит 30.0 коинов/мин', 'base_income': 30.0, 'base_price': 2000000, 'rarity': 'legendary'},
+                    {'name': '💫 Бесконечность', 'desc': 'Производит 40.0 коинов/мин', 'base_income': 40.0, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '🧠 Нейросеть', 'desc': 'Производит 5.5 коинов/мин', 'base_income': 5.5, 'base_price': 280000, 'rarity': 'epic'},
+                    {'name': '🪐 Планетарный коллайдер', 'desc': 'Производит 18.0 коинов/мин', 'base_income': 18.0, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🎯 Точностный лазер', 'desc': 'Производит 3.0 коинов/мин', 'base_income': 3.0, 'base_price': 150000, 'rarity': 'rare'},
+                    {'name': '🛸 Внеземной чип', 'desc': 'Производит 14.0 коинов/мин', 'base_income': 14.0, 'base_price': 750000, 'rarity': 'epic'},
+                    {'name': '⚗️ Алхимический аппарат', 'desc': 'Производит 8.5 коинов/мин', 'base_income': 8.5, 'base_price': 450000, 'rarity': 'epic'},
+                    {'name': '🧪 Биомедиум', 'desc': 'Производит 12.0 коинов/мин', 'base_income': 12.0, 'base_price': 650000, 'rarity': 'epic'},
+                    {'name': '🌠 Новойдовый ускоритель', 'desc': 'Производит 25.0 коинов/мин', 'base_income': 25.0, 'base_price': 1700000, 'rarity': 'legendary'},
+                    {'name': '🔬 Крио-модуль', 'desc': 'Производит 9.0 коинов/мин', 'base_income': 9.0, 'base_price': 500000, 'rarity': 'epic'},
+                    {'name': '💻 Киберсистема', 'desc': 'Производит 35.0 коинов/мин', 'base_income': 35.0, 'base_price': 2500000, 'rarity': 'legendary'},
+                    {'name': '🏆 Победный трофей', 'desc': 'Производит 50.0 коинов/мин', 'base_income': 50.0, 'base_price': 5000000, 'rarity': 'legendary'},
                 ]
+                # Per hour cards (main income)
+                per_hour_cards = [
+                    {'name': '🟢 Базовая ферма', 'desc': 'Производит 5 коинов/час', 'base_income': 5, 'base_price': 1000, 'rarity': 'common'},
+                    {'name': '🌱 Росток успеха', 'desc': 'Производит 12 коинов/час', 'base_income': 12, 'base_price': 2500, 'rarity': 'common'},
+                    {'name': '🍀 Четырехлистник', 'desc': 'Производит 20 коинов/час', 'base_income': 20, 'base_price': 5000, 'rarity': 'common'},
+                    {'name': '⚡ Ускоритель', 'desc': 'Производит 35 коинов/час', 'base_income': 35, 'base_price': 8000, 'rarity': 'rare'},
+                    {'name': '🔵 Редкий артефакт', 'desc': 'Производит 55 коинов/час', 'base_income': 55, 'base_price': 15000, 'rarity': 'rare'},
+                    {'name': '🟣 Эпический кристалл', 'desc': 'Производит 90 коинов/час', 'base_income': 90, 'base_price': 30000, 'rarity': 'epic'},
+                    {'name': '⭐ Звездная пыль', 'desc': 'Производит 140 коинов/час', 'base_income': 140, 'base_price': 50000, 'rarity': 'epic'},
+                    {'name': '🔥 Огненное ядро', 'desc': 'Производит 220 коинов/час', 'base_income': 220, 'base_price': 85000, 'rarity': 'legendary'},
+                    {'name': '💎 Кристалл удачи', 'desc': 'Производит 350 коинов/час', 'base_income': 350, 'base_price': 150000, 'rarity': 'legendary'},
+                    {'name': '👑 Корона власти', 'desc': 'Производит 550 коинов/час', 'base_income': 550, 'base_price': 250000, 'rarity': 'legendary'},
+                    {'name': '🏆 Чемпионство', 'desc': 'Производит 850 коинов/час', 'base_income': 850, 'base_price': 400000, 'rarity': 'legendary'},
+                    {'name': '🚀 Ракета мечты', 'desc': 'Производит 1300 коинов/час', 'base_income': 1300, 'base_price': 650000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сокровище', 'desc': 'Производит 2000 коинов/час', 'base_income': 2000, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🌌 Галактика', 'desc': 'Производит 3100 коинов/час', 'base_income': 3100, 'base_price': 1800000, 'rarity': 'legendary'},
+                    {'name': '⚛️ Квантовый скачок', 'desc': 'Производит 5000 коинов/час', 'base_income': 5000, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '💫 Вечность', 'desc': 'Производит 8000 коинов/час', 'base_income': 8000, 'base_price': 5000000, 'rarity': 'legendary'},
+                    {'name': '🌈 Радужный мост', 'desc': 'Производит 13000 коинов/час', 'base_income': 13000, 'base_price': 8500000, 'rarity': 'legendary'},
+                    {'name': '🌠 Звездопад', 'desc': 'Производит 21000 коинов/час', 'base_income': 21000, 'base_price': 15000000, 'rarity': 'legendary'},
+                    {'name': '🎆 Новогодний салют', 'desc': 'Производит 34000 коинов/час', 'base_income': 34000, 'base_price': 25000000, 'rarity': 'legendary'},
+                    {'name': '🌟 Супернова', 'desc': 'Производит 55000 коинов/час', 'base_income': 55000, 'base_price': 50000000, 'rarity': 'legendary'},
+                ]
+                
                 items = []
-                for i, template in enumerate(card_templates):
+                user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
+                user_card_counts = {}
+                for uc in user_cards:
+                    key = f"{uc.card_type}_{uc.level if hasattr(uc, 'level') else 1}"
+                    user_card_counts[key] = user_card_counts.get(key, 0) + 1
+                
+                for i, template in enumerate(per_minute_cards):
+                    card_key = f"card_min_{i}"
+                    purchases = user_card_counts.get(card_key, 0)
+                    level = min(purchases + 1, 100)
+                    price = int(template['base_price'] * (1.15 ** (level - 1)))
+                    income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
                     items.append({
-                        'id': f'card_{i}',
+                        'id': card_key,
                         'name': template['name'],
-                        'emoji': template['emoji'],
-                        'price': int(1000 * (i+1) * (1.2 if template['rarity'] == 'rare' else (1.5 if template['rarity'] == 'epic' else (2.0 if template['rarity'] == 'legendary' else 1.0)))),
-                        'item_type': template['rarity'],
+                        'description': template['desc'],
+                        'base_price': template['base_price'],
+                        'price': price,
+                        'level': level,
                         'rarity': template['rarity'],
-                        'income_per_min': template['income'],
-                        'desc': template['desc']
+                        'income': income,
+                        'income_per_min': income,
+                        'income_type': 'per_minute',
+                        'type': 'card',
+                        'currency': 'coins'
+                    })
+                
+                for i, template in enumerate(per_hour_cards):
+                    card_key = f"card_hour_{i}"
+                    purchases = user_card_counts.get(card_key, 0)
+                    level = min(purchases + 1, 100)
+                    price = int(template['base_price'] * (1.15 ** (level - 1)))
+                    income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
+                    income_per_min = round(income / 60, 2)
+                    items.append({
+                        'id': card_key,
+                        'name': template['name'],
+                        'description': template['desc'],
+                        'base_price': template['base_price'],
+                        'price': price,
+                        'level': level,
+                        'rarity': template['rarity'],
+                        'income': income,
+                        'income_per_min': income_per_min,
+                        'income_type': 'per_hour',
+                        'type': 'card',
+                        'currency': 'coins'
                     })
             else:  # auto
                 # Get user's purchased auto-bots count
