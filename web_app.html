@@ -156,6 +156,16 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
             20%, 40%, 60%, 80% { transform: translateX(3px); }
         }
+        
+        @keyframes shine-btn {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         .stats {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(26, 29, 46, 0.9) 100%);
@@ -1079,9 +1089,11 @@
                 <div class="btn-emoji">🎁</div>
                 <div>Ежедневные задания</div>
             </a>
-            <a href="#" class="btn" onclick="openBuyCurrency(event)">
+            <a href="#" class="btn btn-premium" onclick="openBuyCurrency(event)" style="background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,255,100,0.2));border:2px solid rgba(255,215,0,0.5);box-shadow:0 0 20px rgba(255,215,0,0.3);position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:shine-btn 3s infinite;"></div>
                 <div class="btn-emoji">⭐</div>
-                <div>Купить валюту</div>
+                <div style="font-weight:700;text-shadow:0 0 10px rgba(255,215,0,0.5);">Купить валюту</div>
+                <div style="position:absolute;top:-5px;right:-5px;background:linear-gradient(135deg,#ff0000,#ff6666);color:#fff;padding:3px 8px;border-radius:10px;font-size:9px;font-weight:700;box-shadow:0 3px 10px rgba(255,0,0,0.5);">🔥</div>
             </a>
         </div>
     </div>
@@ -2454,28 +2466,58 @@
             });
         }
         
+        let currentCategory = 'all';
+        
         function openBuyCurrency(e) {
             e.preventDefault();
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'buyCurrencyModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                        <h2 style="font-size: 24px; color: #fff;">⭐ Купить валюту</h2>
-                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
-                    </div>
-                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
-                        <div style="font-size:13px;color:#94a3b8;line-height:1.6;text-align:center;">
-                            <strong style="color:#fff;">💎 Оплата через Telegram Stars</strong><br>
-                            <small style="color:#94a3b8;">Самый быстрый способ получить валюту</small>
+                <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
+                    <!-- Premium Header -->
+                    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 255, 100, 0.2));padding: 20px;margin: -20px -20px 20px -20px;border-radius: 20px 20px 0 0;border-bottom: 2px solid rgba(255, 215, 0, 0.5);position: relative;overflow: hidden;">
+                        <div style="position: absolute;top: -50%;left: -50%;width: 200%;height: 200%;background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);animation: rotate 3s linear infinite;"></div>
+                        <div style="display: flex;justify-content: space-between;align-items: center;position: relative;z-index: 1;">
+                            <div>
+                                <h2 style="font-size: 26px; color: #fff;margin: 0;text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);font-weight: 900;">
+                                    ⭐ Купить валюту
+                                </h2>
+                                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7);margin-top: 5px;">💎 Telegram Stars</div>
+                            </div>
+                            <button onclick="this.closest('.modal').remove()" style="background: rgba(255, 255, 255, 0.1);border: 1px solid rgba(255, 255, 255, 0.3);border-radius: 10px;width: 36px;height: 36px;color: #fff;cursor: pointer;font-size: 18px;transition: all 0.3s;">
+                                ✕
+                            </button>
                         </div>
                     </div>
-                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:15px;max-height:500px;overflow-y:auto;padding-right:10px;">
+                    
+                    <!-- Category Buttons -->
+                    <div style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 8px;margin-bottom: 20px;">
+                        <button onclick="filterCategory('all')" class="category-btn" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));border: 2px solid rgba(102, 126, 234, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                            ⭐ Все
+                        </button>
+                        <button onclick="filterCategory('starter')" class="category-btn" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));border: 2px solid rgba(102, 126, 234, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                            🎯 Старт
+                        </button>
+                        <button onclick="filterCategory('premium')" class="category-btn" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.3), rgba(251, 191, 36, 0.3));border: 2px solid rgba(234, 179, 8, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(234, 179, 8, 0.3);">
+                            🚀 Премиум
+                        </button>
+                        <button onclick="filterCategory('vip')" class="category-btn" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 255, 100, 0.3));border: 2px solid rgba(255, 215, 0, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);">
+                            👑 VIP
+                        </button>
+                        <button onclick="filterCategory('limited')" class="category-btn" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.3), rgba(255, 100, 100, 0.3));border: 2px solid rgba(255, 0, 0, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);">
+                            🔥 Акции
+                        </button>
+                        <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(0, 150, 255, 0.3), rgba(100, 200, 255, 0.3));border: 2px solid rgba(0, 150, 255, 0.6);padding: 12px 8px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 700;font-size: 11px;transition: all 0.3s;box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);">
+                            🚀 Мега
+                        </button>
+                    </div>
+                    
+                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:15px;max-height:450px;overflow-y:auto;padding-right:8px;">
                         <!-- CATEGORY 1: BEGINNER PACKS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(102,126,234,0.5);">🎯 СТАРТОВЫЕ НАБОРЫ</div>
+                        <div data-category="starter" style="display: block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(102,126,234,0.5);">🎯 СТАРТОВЫЕ НАБОРЫ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);animation:pulse 2s infinite;">
+                        <div data-category="starter" style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);animation:pulse 2s infinite;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;text-shadow:0 0 10px rgba(255,255,255,0.5);">💫 Первые шаги</div>
@@ -2488,7 +2530,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);">
+                        <div data-category="starter" style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;">✨ Базовый набор</div>
@@ -2502,9 +2544,9 @@
                         </div>
                         
                         <!-- CATEGORY 2: PREMIUM PACKS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(234,179,8,0.5);">🚀 ПРЕМИУМ НАБОРЫ</div>
+                        <div data-category="premium" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(234,179,8,0.5);">🚀 ПРЕМИУМ НАБОРЫ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);position:relative;">
+                        <div data-category="premium" style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);position:relative;">
                             <div style="position:absolute;top:-10px;left:-10px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 3px 10px rgba(255,0,0,0.4);">🔥 ЛУЧШАЯ ЦЕНА</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
@@ -2518,7 +2560,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);">
+                        <div data-category="premium" style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;">🎯 Профессионал</div>
@@ -2532,9 +2574,9 @@
                         </div>
                         
                         <!-- CATEGORY 3: VIP PACKS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(255,215,0,0.5);">👑 VIP КОЛЛЕКЦИИ</div>
+                        <div data-category="vip" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(255,215,0,0.5);">👑 VIP КОЛЛЕКЦИИ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);position:relative;">
+                        <div data-category="vip" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);position:relative;">
                             <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#ffd700,#ffff00);color:#000;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 3px 15px rgba(255,215,0,0.6);">⭐ VIP</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
@@ -2548,7 +2590,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);">
+                        <div data-category="vip" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;">💸 Платиновый VIP</div>
@@ -2562,9 +2604,9 @@
                         </div>
                         
                         <!-- CATEGORY 4: LIMITED OFFERS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(255,0,0,0.5);">🔥 ОГРАНИЧЕННЫЕ ПРЕДЛОЖЕНИЯ</div>
+                        <div data-category="limited" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(255,0,0,0.5);">🔥 ОГРАНИЧЕННЫЕ ПРЕДЛОЖЕНИЯ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;animation:shake 1s infinite;">
+                        <div data-category="limited" style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;animation:shake 1s infinite;">
                             <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff0000,#ff5555);color:#fff;padding:5px 20px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 20px rgba(255,0,0,0.6);">⚡ МОМЕНТАЛЬНАЯ АКЦИЯ</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;margin-top:15px;">
                                 <div>
@@ -2578,7 +2620,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;">
+                        <div data-category="limited" style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;">
                             <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;">⚡ ХОТ</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
@@ -2593,9 +2635,9 @@
                         </div>
                         
                         <!-- CATEGORY 5: ULTRA PACKS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(128,0,128,0.5);">💎 УЛЬТРА НАБОРЫ</div>
+                        <div data-category="ultra" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(128,0,128,0.5);">💎 УЛЬТРА НАБОРЫ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);position:relative;">
+                        <div data-category="ultra" style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);position:relative;">
                             <div style="position:absolute;top:-10px;left:-10px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 25px rgba(128,0,128,0.6);">💎 LEGENDARY</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
@@ -2609,7 +2651,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);">
+                        <div data-category="ultra" style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;">🌟 Мифический</div>
@@ -2623,9 +2665,9 @@
                         </div>
                         
                         <!-- CATEGORY 6: MEGA PACKS -->
-                        <div style="text-align:center;font-size:18px;font-weight:700;color:#fff;margin:20px 0 10px;text-shadow:0 0 20px rgba(0,200,255,0.5);">🚀 МЕГА НАБОРЫ</div>
+                        <div data-category="mega" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(0,200,255,0.5);">🚀 МЕГА НАБОРЫ</div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);position:relative;">
+                        <div data-category="mega" style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);position:relative;">
                             <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 25px rgba(0,200,255,0.6);">🚀 MEGA</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
@@ -2639,7 +2681,7 @@
                             </button>
                         </div>
                         
-                        <div style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);">
+                        <div data-category="mega" style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                                 <div>
                                     <div style="font-size:18px;font-weight:700;color:#fff;">⭐ Вселенная</div>
@@ -2655,6 +2697,38 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+        
+        function filterCategory(category) {
+            currentCategory = category;
+            const products = document.querySelectorAll('#currencyProductsList > [data-category]');
+            const buttons = document.querySelectorAll('.category-btn');
+            
+            // Update button styles
+            buttons.forEach(btn => {
+                const onclick = btn.getAttribute('onclick');
+                if (onclick && onclick.includes(category)) {
+                    btn.style.transform = 'scale(1.05)';
+                    btn.style.boxShadow = '0 6px 20px rgba(255, 215, 0, 0.4)';
+                } else {
+                    btn.style.transform = 'scale(1)';
+                    btn.style.boxShadow = btn.style.boxShadow.replace(/0 6px 20px/, '0 4px 15px');
+                }
+            });
+            
+            // Filter products
+            products.forEach(item => {
+                if (category === 'all') {
+                    item.style.display = '';
+                } else {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (itemCategory === category) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
         }
         
         function confirmStarsPayment(productId) {
