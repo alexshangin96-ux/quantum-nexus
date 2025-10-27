@@ -1812,5 +1812,58 @@ def buy_vip_boost():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/buy_vip_card', methods=['POST'])
+def buy_vip_card():
+    """Buy VIP exclusive card"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        card_type = data.get('card_type')
+        
+        if not user_id or not card_type:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            vip_level = getattr(user, 'vip_level', 0)
+            
+            card_data = {
+                'diamond': {'price': 50000000, 'income': 500000, 'min_level': 5}
+            }
+            
+            card_info = card_data.get(card_type)
+            if not card_info:
+                return jsonify({'success': False, 'error': 'Unknown card type'}), 400
+            
+            if vip_level < card_info['min_level']:
+                return jsonify({'success': False, 'error': f'Требуется VIP уровень {card_info["min_level"]}'}), 403
+            
+            if user.coins < card_info['price']:
+                return jsonify({'success': False, 'error': 'Недостаточно коинов'}), 400
+            
+            # Create VIP card
+            from models import Card
+            
+            vip_card = Card(
+                user_id=user.id,
+                name=f'VIP {card_type.capitalize()}',
+                description='VIP карточка с эксклюзивным доходом',
+                income=card_info['income'],
+                rarity='vip',
+                card_type='vip'
+            )
+            
+            user.coins -= card_info['price']
+            db.add(vip_card)
+            db.commit()
+            
+            return jsonify({'success': True, 'message': 'VIP карточка куплена!'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
