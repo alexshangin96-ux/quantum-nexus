@@ -2492,21 +2492,34 @@
         }
         
         function goToStarsPayment(productId) {
-            // Close modal
-            document.querySelector('#buyCurrencyModal')?.remove();
-            
-            // Show message and open bot
-            tg.showAlert('💎 Открываем бота для оплаты...');
-            
-            // Try multiple methods to open bot
-            setTimeout(() => {
-                tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-            }, 500);
-            
-            // Also try direct link
-            setTimeout(() => {
-                window.location.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
-            }, 1000);
+            // Don't close modal - keep it open
+            // Show invoice right in the modal area
+            const modal = document.querySelector('#buyCurrencyModal');
+            if(modal) {
+                // Replace modal content with invoice UI
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 400px;">
+                        <h2 style="margin-bottom: 20px; color: #fff;">💎 Оплата через Stars</h2>
+                        <div style="background: rgba(102,126,234,0.1); padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                            <div style="font-size: 18px; margin-bottom: 10px;">
+                                ${productId === 1 ? 'Стартовый пакет' : 'Премиум пакет'}
+                            </div>
+                            <div style="font-size: 14px; color: #94a3b8; margin-bottom: 15px;">
+                                Получите ${productId === 1 ? '1,000,000' : '5,000,000'} коинов
+                            </div>
+                            <div style="font-size: 24px; font-weight: 700;">
+                                ${productId === 1 ? '10' : '40'} ⭐
+                            </div>
+                        </div>
+                        <button onclick="this.closest('.modal').remove(); goToStarsPayment(${productId})" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;">
+                            💎 Подтвердить оплату
+                        </button>
+                        <button onclick="this.closest('.modal').remove(); openBuyCurrency()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;margin-top:10px;">
+                            Отмена
+                        </button>
+                    </div>
+                `;
+            }
         }
         
         async function buyWithStars(productId, amount, currency) {
