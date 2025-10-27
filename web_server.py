@@ -1865,5 +1865,27 @@ def buy_vip_card():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/top_users', methods=['POST'])
+def get_top_users():
+    """Get top users by total earnings"""
+    try:
+        data = request.json
+        limit = data.get('limit', 10)
+        
+        with get_db() as db:
+            users = db.query(User).order_by(User.total_earned.desc()).limit(limit).all()
+            
+            top_users = []
+            for u in users:
+                top_users.append({
+                    'username': u.username or 'Unknown',
+                    'total_coins': int(u.total_earned or 0),
+                    'level': u.level or 1
+                })
+            
+            return jsonify({'users': top_users})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
