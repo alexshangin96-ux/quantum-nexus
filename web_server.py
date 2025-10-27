@@ -1880,7 +1880,11 @@ def get_top_users():
                 # Calculate passive income from cards
                 passive_income = 0
                 for card in getattr(u, 'cards', []):
-                    passive_income += getattr(card, 'income', 0) or 0
+                    if card and card.is_active:
+                        passive_income += getattr(card, 'income_per_minute', 0) or 0
+                
+                # Convert to per hour for display
+                passive_income_per_hour = int(passive_income * 60) if passive_income else 0
                 
                 top_users.append({
                     'username': u.username or 'Unknown',
@@ -1888,7 +1892,7 @@ def get_top_users():
                     'coins': int(u.coins or 0),
                     'level': u.level or 1,
                     'vip_level': getattr(u, 'vip_level', 0) or 0,
-                    'passive_income': int(passive_income),
+                    'passive_income': passive_income_per_hour,
                     'quanhash': int(getattr(u, 'quanhash', 0) or 0),
                     'total_taps': int(getattr(u, 'total_taps', 0) or 0)
                 })
