@@ -2234,6 +2234,7 @@
                             <button class="filter-btn shop-cat-btn" data-category="per_minute" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
                         </div>
                         <div id="shopCardsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+                        <div id="vipCardsSection" style="display:none;margin-top:20px;"></div>
                     </div>
                     
                     <div id="passiveInfo" style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(34,197,94,0.2));padding:20px;border-radius:15px;border:2px solid rgba(16,185,129,0.4);text-align:center;margin-top:20px;margin-bottom:15px;">
@@ -2245,6 +2246,9 @@
                 </div>
             `;
             document.body.appendChild(modal);
+            
+            // Load VIP cards
+            showVIPCards();
             
             // Load cards function
             window.loadCardsCategory = function(category) {
@@ -2258,6 +2262,56 @@
                     }
                 });
                 loadCardsList(category);
+            };
+            
+            function showVIPCards() {
+                fetch('/api/user_data', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user?.id})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const vipLevel = data.vip_level || 0;
+                    const vipCardsSection = document.getElementById('vipCardsSection');
+                    
+                    if (vipLevel >= 3 && vipCardsSection) {
+                        vipCardsSection.style.display = 'block';
+                        vipCardsSection.innerHTML = `
+                            <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:12px;border-radius:12px;margin-bottom:15px;border:3px solid #ffd700;">
+                                <div style="font-size:14px;font-weight:800;color:#000;margin-bottom:5px;">👑 VIP КАРТОЧКИ</div>
+                                <div style="font-size:11px;color:rgba(0,0,0,0.7);margin-bottom:10px;">Эксклюзивные карточки только для VIP!</div>
+                                <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                                    <div style="font-size:12px;font-weight:700;color:#000;margin-bottom:5px;">💎 VIP Diamond Card</div>
+                                    <div style="font-size:11px;color:rgba(0,0,0,0.7);margin-bottom:8px;">+500,000 🪙/час • Только для Diamond VIP</div>
+                                    <button onclick="buyVIPCard('diamond')" style="width:100%;padding:9px;background:#000;color:#ffd700;border:none;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;">💰 50M 🪙</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            window.buyVIPCard = function(cardType) {
+                fetch('/api/buy_vip_card', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: user?.id,
+                        card_type: cardType
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        tg.showAlert('✅ VIP карточка куплена!');
+                        loadData();
+                        showVIPCards();
+                    } else {
+                        tg.showAlert('❌ ' + data.error);
+                    }
+                })
+                .catch(err => tg.showAlert('❌ Ошибка покупки'));
             };
             
             function loadCardsList(category) {
@@ -2429,6 +2483,14 @@
             .then(data => {
                 const quanhash = Math.floor(data.quanhash || 0);
                 const hasEnough = quanhash >= 500000;
+                const vipLevel = data.vip_level || 0;
+                const isVIP = vipLevel >= 3;
+                const isDiamond = vipLevel >= 5;
+                
+                // VIP bonuses
+                const feePercent = isDiamond ? 0 : isVIP ? 2 : 5;
+                const minWithdraw = isDiamond ? 100000 : isVIP ? 250000 : 500000;
+                const withdrawMultiplier = isDiamond ? 2 : isVIP ? 1.5 : 1;
                 
                 document.getElementById('withdrawContent').innerHTML = `
                     <div style="padding: 15px;">
@@ -2436,14 +2498,22 @@
                             <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
                             <div style="font-size: 16px; font-weight: bold;">Вывод средств</div>
                             <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">У вас: ${quanhash.toLocaleString()} 💎</div>
+                            ${isVIP ? `
+                            <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:12px;font-weight:800;color:#000;border:2px solid #ffd700;">
+                                👑 VIP БОНУС: ${feePercent === 0 ? '0% комиссия!' : feePercent + '% комиссия • x' + withdrawMultiplier + ' лимит'}
+                            </div>
+                            ` : ''}
                         </div>
                         <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 15px;">
                             <div style="font-size: 13px; opacity: 0.8; margin-bottom: 4px;">Обмен</div>
                             <div style="font-size: 16px; font-weight: bold;">500,000 💎 = $1 USDT</div>
+                            ${feePercent === 0 ? `
+                            <div style="font-size:12px;color:#ffd700;font-weight:700;margin-top:4px;">✨ НЕТ КОМИССИИ (Diamond VIP)</div>
+                            ` : ''}
                         </div>
                         <div style="margin-bottom: 12px;">
                             <div style="margin-bottom: 6px; font-weight: 500; font-size: 13px;">Количество QuanHash (мин. 500,000):</div>
-                            <input type="number" id="quanhashAmount" value="500000" min="500000" step="1000" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
+                            <input type="number" id="quanhashAmount" value="${minWithdraw}" min="${minWithdraw}" step="1000" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
                             <div id="usdtAmount" style="margin-top: 6px; font-size: 13px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
                         </div>
                         <div style="margin-bottom: 15px;">
