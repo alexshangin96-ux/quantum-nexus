@@ -504,11 +504,9 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
         
         # Define product amounts
         product_coins = {
-            1: 1000000,
-            2: 5000000,
-            3: 500000,
-            4: 10000000,
-            5: 50000000
+            1: 200000, 2: 500000, 3: 1500000, 4: 3000000,
+            5: 5000000, 6: 8000000, 7: 12000000, 8: 15000000,
+            9: 25000000, 10: 35000000, 11: 50000000, 12: 100000000
         }
         
         coins_to_add = product_coins.get(product_id, 0)
@@ -552,36 +550,18 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
     
     # Define products with Stars prices
     products = {
-        1: {
-            'title': 'Стартовый пакет',
-            'description': '1,000,000 коинов',
-            'stars': 10,  # Stars
-            'coins': 1000000
-        },
-        2: {
-            'title': 'Премиум пакет',
-            'description': '5,000,000 коинов',
-            'stars': 40,  # Stars
-            'coins': 5000000
-        },
-        3: {
-            'title': '⚡ Бонусный набор',
-            'description': '500,000 коинов',
-            'stars': 15,  # Stars
-            'coins': 500000
-        },
-        4: {
-            'title': '👑 VIP набор',
-            'description': '10,000,000 коинов',
-            'stars': 100,  # Stars
-            'coins': 10000000
-        },
-        5: {
-            'title': '💎 Легендарный пакет',
-            'description': '50,000,000 коинов',
-            'stars': 500,  # Stars
-            'coins': 50000000
-        }
+        1: {'title': '💫 Первые шаги', 'description': '200,000 коинов', 'stars': 50, 'coins': 200000},
+        2: {'title': '✨ Базовый набор', 'description': '500,000 коинов', 'stars': 120, 'coins': 500000},
+        3: {'title': '⚡ Световой пакет', 'description': '1,500,000 коинов', 'stars': 300, 'coins': 1500000},
+        4: {'title': '🎯 Профессионал', 'description': '3,000,000 коинов', 'stars': 600, 'coins': 3000000},
+        5: {'title': '👑 Золотой статус', 'description': '5,000,000 коинов', 'stars': 1000, 'coins': 5000000},
+        6: {'title': '💸 Платиновый VIP', 'description': '8,000,000 коинов', 'stars': 1600, 'coins': 8000000},
+        7: {'title': '🔥 Файер-набор', 'description': '12,000,000 коинов', 'stars': 2500, 'coins': 12000000},
+        8: {'title': '💥 Мега взрыв', 'description': '15,000,000 коинов', 'stars': 3200, 'coins': 15000000},
+        9: {'title': '💎 Легенда', 'description': '25,000,000 коинов', 'stars': 5000, 'coins': 25000000},
+        10: {'title': '🌟 Мифический', 'description': '35,000,000 коинов', 'stars': 7000, 'coins': 35000000},
+        11: {'title': '🚀 Космос', 'description': '50,000,000 коинов', 'stars': 10000, 'coins': 50000000},
+        12: {'title': '⭐ Вселенная', 'description': '100,000,000 коинов', 'stars': 20000, 'coins': 100000000}
     }
     
     product = products.get(product_id)
