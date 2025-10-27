@@ -20,3 +20,4 @@ fi
 sudo systemctl restart quantum-nexus-web
 
 echo "✅ Admin panel updated!"
+

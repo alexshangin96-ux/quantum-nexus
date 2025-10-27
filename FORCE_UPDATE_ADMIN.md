@@ -20,3 +20,4 @@ head -20 /var/www/quantum-nexus/admin.html | grep "value=\"smartfixnsk\""
 
 Если видите "value=\"smartfixnsk\"", то обновление прошло успешно.
 
+

@@ -30,3 +30,4 @@ sudo journalctl -u quantum-nexus-web -n 50 --no-pager
 echo ""
 echo "✅ Server restarted!"
 echo "Visit: https://quantum-nexus.ru/admin"
+

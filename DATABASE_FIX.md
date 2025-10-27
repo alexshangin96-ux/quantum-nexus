@@ -56,3 +56,4 @@ sudo systemctl restart quantum-nexus-web
 ```bash
 sudo journalctl -u quantum-nexus -f
 ```
+

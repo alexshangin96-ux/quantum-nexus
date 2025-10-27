@@ -14,3 +14,4 @@ python web_server.py &
 
 echo "✅ Web Server started!"
 echo "📊 Check status: systemctl status quantum-nexus-web"
+

@@ -268,3 +268,4 @@ sudo systemctl restart quantum-nexus-web
 
 Все API эндпоинты готовы и протестированы. Нужно только добавить HTML/CSS/JS в `web_app.html` согласно инструкциям выше.
 
+

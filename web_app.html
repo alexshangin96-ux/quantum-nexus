@@ -1802,6 +1802,11 @@
                 const list = document.getElementById('userCardsList');
                 // Use total from backend for accurate calculation
                 const totalPassive = (data.total_passive_per_hour || 0);
+                // Update passive info display
+                const passiveInfo = document.getElementById('passiveInfo');
+                if(passiveInfo && passiveInfo.querySelector('div:last-child')) {
+                    passiveInfo.querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
+                }
                 if(data.cards && data.cards.length > 0) {
                     list.innerHTML = data.cards.filter(card => card.is_active).map(card => {
                         const rarity = card.card_type || 'common';
@@ -1825,11 +1830,8 @@
                             </div>
                         `;
                     }).join('');
-                    
-                    document.getElementById('passiveInfo').querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
                 } else {
                     list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;border:2px dashed rgba(255,255,255,0.1);grid-column:span 2;">У вас пока нет карточек<br><small style="color:#667eea;">Купите их в магазине выше!</small></div>';
-                    document.getElementById('passiveInfo').querySelector('div:last-child').textContent = '+0 🪙/час';
                 }
             });
         }

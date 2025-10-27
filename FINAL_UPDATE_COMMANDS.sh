@@ -81,3 +81,4 @@ echo "   - Бот: https://t.me/Quanexus_bot"
 echo "   - Админ-панель: https://quantum-nexus.ru/admin"
 echo ""
 
+

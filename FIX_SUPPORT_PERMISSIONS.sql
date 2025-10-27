@@ -23,3 +23,4 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 GRANT ALL PRIVILEGES ON TABLE support_tickets TO quantum;
 GRANT USAGE, SELECT ON SEQUENCE support_tickets_id_seq TO quantum;
 
+

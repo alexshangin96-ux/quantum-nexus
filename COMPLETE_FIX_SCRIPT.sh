@@ -36,3 +36,4 @@ echo ""
 echo "🌐 Проверьте:"
 echo "   Бот: https://t.me/Quanexus_bot"
 echo "   Админ: https://quantum-nexus.ru/admin"
+

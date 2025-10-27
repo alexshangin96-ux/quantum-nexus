@@ -57,3 +57,4 @@ https://quantum-nexus.ru/admin
 sudo journalctl -u quantum-nexus-web -f
 sudo tail -f /var/log/nginx/error.log
 ```
+

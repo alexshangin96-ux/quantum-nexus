@@ -25,3 +25,4 @@ sudo systemctl restart nginx
 echo ""
 echo "✅ Force update complete!"
 echo "Visit: https://quantum-nexus.ru/admin"
+

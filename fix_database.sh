@@ -47,3 +47,4 @@ echo ""
 echo "Проверьте статус:"
 echo "sudo systemctl status quantum-nexus"
 echo "sudo systemctl status quantum-nexus-web"
+

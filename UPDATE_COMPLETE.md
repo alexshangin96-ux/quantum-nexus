@@ -29,3 +29,4 @@ sudo -u postgres psql quantum_nexus -c "\dt"
 ```
 
 После этого всё должно работать!
+

@@ -26,3 +26,4 @@ echo "✅ Готово!"
 echo ""
 echo "Проверьте:"
 echo "sudo systemctl status quantum-nexus-web"
+
