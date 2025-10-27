@@ -492,13 +492,13 @@ def get_cards():
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
         
-        db = next(get_db())
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        cards = db.query(UserCard).filter_by(user_id=user.id).all()
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            cards = db.query(UserCard).filter_by(user_id=user.id).all()
         
         cards_data = []
         total_passive_per_minute = 0
@@ -513,14 +513,14 @@ def get_cards():
                 'is_active': card.is_active if hasattr(card, 'is_active') else True
             })
         
-        total_passive_per_hour = total_passive_per_minute * 60
-        
-        return jsonify({
-            'coins': user.coins,
-            'cards': cards_data,
-            'total_passive_per_minute': total_passive_per_minute,
-            'total_passive_per_hour': total_passive_per_hour
-        })
+            total_passive_per_hour = total_passive_per_minute * 60
+            
+            return jsonify({
+                'coins': user.coins,
+                'cards': cards_data,
+                'total_passive_per_minute': total_passive_per_minute,
+                'total_passive_per_hour': total_passive_per_hour
+            })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
