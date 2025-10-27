@@ -74,6 +74,28 @@ source venv/bin/activate
 python -c "from database import init_db; init_db()"
 ```
 
+## Обновление с Telegram Stars оплатой
+
+После добавления Stars оплаты:
+
+```bash
+ssh root@ваш_IP
+cd /root/quantum-nexus
+git pull origin main
+systemctl restart quantum-nexus-bot
+systemctl restart quantum-nexus-web
+```
+
+**Важно:** После обновления включите Telegram Stars в @BotFather:
+1. Откройте @BotFather
+2. Отправьте `/mybots`
+3. Выберите вашего бота
+4. Нажмите "Settings" или "⚙️ Настройки"
+5. Найдите "Payment" или "Платежи"
+6. Включите "Telegram Stars"
+
+**Проверьте имя бота** в `web_app.html` (замените `QuantumNexusGameBot` на ваше имя без @)
+
 ## Проверка работы
 
 После обновления проверьте:
@@ -82,6 +104,7 @@ python -c "from database import init_db; init_db()"
 - Веб-приложение открывается корректно
 - Покупка карточек работает без ошибок
 - Общий пассивный доход отображается корректно
+- Telegram Stars оплата работает (кнопка "Купить валюту")
 
 ## Логи для отладки
 
