@@ -1,4 +1,4 @@
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
+from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
 from models import User, MiningMachine, UserCard, Transaction
@@ -436,70 +436,6 @@ async def handle_purchase(query, data, user, db):
             await query.answer("⚠️ Недостаточно коинов!", show_alert=True)
     
     # Handle other purchases similarly...
-
-
-async def pre_checkout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle pre-checkout query for Stars payment"""
-    query = update.pre_checkout_query
-    
-    # Get user
-    user_id = query.from_user.id
-    
-    with get_db() as db:
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            await query.answer(ok=False, error_message="User not found")
-            return
-        
-        # Validate payment
-        invoice_payload = query.invoice_payload
-        # Parse payload: stars_pack_1 or stars_pack_2
-        
-        # Approve the checkout
-        await query.answer(ok=True)
-
-
-async def successful_payment_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle successful Stars payment"""
-    payment = update.message.successful_payment
-    
-    user_id = update.effective_user.id
-    
-    with get_db() as db:
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            await update.message.reply_text("❌ Ошибка: пользователь не найден")
-            return
-        
-        # Parse invoice payload to get product info
-        invoice_payload = payment.invoice_payload
-        # invoice_payload format: "stars_pack_1" or "stars_pack_2"
-        
-        if invoice_payload.startswith("stars_pack_"):
-            product_id = int(invoice_payload.split("_")[2])
-            
-            # Define product amounts
-            product_amounts = {
-                1: 1000000,  # 10 stars for 1M coins
-                2: 5000000   # 40 stars for 5M coins
-            }
-            
-            coins_to_add = product_amounts.get(product_id, 0)
-            
-            if coins_to_add > 0:
-                user.coins += coins_to_add
-                db.commit()
-                
-                await update.message.reply_text(
-                    f"✨ Покупка успешна!\n"
-                    f"💰 Добавлено: {coins_to_add:,} коинов"
-                )
-            else:
-                await update.message.reply_text("❌ Ошибка: неизвестный товар")
-        else:
-                await update.message.reply_text("❌ Ошибка: неверный payload")
 
 
 async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE, product_id: int):
