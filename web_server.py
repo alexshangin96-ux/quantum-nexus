@@ -1867,13 +1867,14 @@ def buy_vip_card():
 
 @app.route('/api/top_users', methods=['POST'])
 def get_top_users():
-    """Get top users by total earnings"""
+    """Get top 24 users by total earnings, VIPs first"""
     try:
         data = request.json
-        limit = data.get('limit', 999)
+        limit = data.get('limit', 24)
         
         with get_db() as db:
-            users = db.query(User).order_by(User.total_earned.desc()).limit(limit).all()
+            # Fetch more users to filter
+            users = db.query(User).filter(User.total_taps > 0).order_by(User.total_earned.desc()).limit(limit * 2).all()
             
             print(f"[TOP_USERS] Found {len(users)} users in database")
             
@@ -1892,16 +1893,26 @@ def get_top_users():
                 # Convert to per hour for display
                 passive_income_per_hour = int(passive_income * 60) if passive_income else 0
                 
+                vip_level = getattr(u, 'vip_level', 0) or 0
+                vip_badge = getattr(u, 'vip_badge', None) or ""
+                
                 top_users.append({
                     'username': u.username or 'Unknown',
                     'total_earned': int(u.total_earned or 0),
                     'coins': int(u.coins or 0),
                     'level': 1,  # Hardcoded, no level field in User model
-                    'vip_level': getattr(u, 'vip_level', 0) or 0,
+                    'vip_level': vip_level,
+                    'vip_badge': vip_badge,
                     'passive_income': passive_income_per_hour,
                     'quanhash': int(getattr(u, 'quanhash', 0) or 0),
                     'total_taps': int(u.total_taps or 0)
                 })
+            
+            # Sort: VIPs first by level, then by total_earned
+            top_users.sort(key=lambda x: (-x['vip_level'], -x['total_earned']))
+            
+            # Return only top 24
+            top_users = top_users[:24]
             
             print(f"[TOP_USERS] Returning {len(top_users)} users")
             return jsonify({'users': top_users})

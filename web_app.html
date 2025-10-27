@@ -1698,7 +1698,7 @@
                 fetch('/api/top_users', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({limit: 999})
+                    body: JSON.stringify({limit: 24})
                 })
                 .then(res => {
                     console.log('[TOP_LEADERS] Response status:', res.status);
@@ -1709,44 +1709,46 @@
                     const topUsers = topData.users || [];
                     console.log('[TOP_LEADERS] Users count:', topUsers.length);
                     
-                    // Sort: VIPs first, then by total_earned descending
-                    const sortedUsers = [...topUsers].sort((a, b) => {
-                        const aVip = a.vip_level || 0;
-                        const bVip = b.vip_level || 0;
-                        if (aVip !== bVip) return bVip - aVip; // VIPs first
-                        
-                        // Sort by total_earned (total coins earned)
-                        const aEarned = a.total_earned || 0;
-                        const bEarned = b.total_earned || 0;
-                        if (aEarned !== bEarned) return bEarned - aEarned;
-                        
-                        // Fallback to coins
-                        return (b.coins || 0) - (a.coins || 0);
-                    });
+                    // Data is already sorted by backend (VIPs first), just display top 24
+                    const sortedUsers = topUsers.slice(0, 24);
                     
                     let topHTML = sortedUsers.map((u, idx) => {
                         const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
                         const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
                         const isVIP = u.vip_level && u.vip_level > 0;
-                        const vipBadge = isVIP ? `<span style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:800;">👑 VIP ${u.vip_level}</span>` : '';
                         
+                        // Beautiful VIP badges with gradient colors
+                        const vipStyles = {
+                            1: {gradient: 'linear-gradient(135deg,#cd7f32,#8b4513)', icon: '🥉'},
+                            2: {gradient: 'linear-gradient(135deg,#c0c0c0,#808080)', icon: '🥈'},
+                            3: {gradient: 'linear-gradient(135deg,#ffd700,#ffed4e)', icon: '🥇'},
+                            4: {gradient: 'linear-gradient(135deg,#e5e4e2,#d4d4d4)', icon: '💎'},
+                            5: {gradient: 'linear-gradient(135deg,#b9f2ff,#00c8ff)', icon: '💠'},
+                            6: {gradient: 'linear-gradient(135deg,#ff00ff,#ff0066)', icon: '👑'}
+                        };
+                        
+                        const vipStyle = vipStyles[u.vip_level] || vipStyles[3];
                         const vipNames = {1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Platinum', 5: 'Diamond', 6: 'Absolute'};
                         const vipName = vipNames[u.vip_level] || '';
-                        const vipInfo = isVIP ? `<div style="font-size:10px;color:#ffd700;margin-top:2px;">${vipName} VIP</div>` : '';
+                        const vipBadge = isVIP ? `<div style="background:${vipStyle.gradient};color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;font-weight:900;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${vipStyle.icon} ${vipName} VIP</div>` : '';
+                        const vipInfo = '';
                         
                         const passiveIncome = (u.passive_income || 0).toLocaleString();
                         const totalEarned = (u.total_earned || 0).toLocaleString();
                         const totalTaps = (u.total_taps || 0).toLocaleString();
                         const quanhash = (u.quanhash || 0).toLocaleString();
                         
-                        return `<div style="padding:14px;background:${isVIP ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08))' : 'rgba(0,0,0,0.25)'};border-radius:12px;margin-bottom:12px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)'};">
-                            <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
-                                <div style="width:50px;height:50px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:${rankColor};${idx < 3 ? 'box-shadow:0 0 15px rgba(255,215,0,0.5);' : ''}">${medal || (idx + 1)}</div>
+                        return `<div style="padding:16px;background:${isVIP ? 'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,255,255,0.05))' : 'rgba(0,0,0,0.25)'};border-radius:16px;margin-bottom:14px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.5)' : 'rgba(255,255,255,0.1)'};transition:all 0.3s;position:relative;overflow:hidden;">
+                            ${isVIP ? `<div style="position:absolute;top:0;left:0;right:0;height:3px;background:${vipStyle.gradient};"></div>` : ''}
+                            <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+                                <div style="width:56px;height:56px;background:${isVIP ? vipStyle.gradient : 'linear-gradient(135deg,#667eea,#764ba2)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;${idx < 3 ? 'box-shadow:0 0 20px rgba(255,215,0,0.6);' : 'box-shadow:0 4px 12px rgba(0,0,0,0.3);'}">
+                                    ${medal || (idx + 1)}
+                                </div>
                                 <div style="flex:1;">
-                                    <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:3px;">${u.username}</div>
-                                    <div style="font-size:11px;color:#94a3b8;">Уровень ${u.level || 1}</div>
-                                    ${vipInfo}
-                                    ${vipBadge}
+                                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                                        <div style="font-size:18px;font-weight:900;color:#fff;">${u.username}</div>
+                                    </div>
+                                    ${isVIP ? `<div style="margin-bottom:6px;">${vipBadge}</div>` : ''}
                                 </div>
                             </div>
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);">
