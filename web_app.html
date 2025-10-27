@@ -2513,14 +2513,25 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal first
+                        // Close modal
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Open bot to send invoice - this is the ONLY way to show Stars payment
-                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+                        // Use MainButton to redirect to bot for payment
+                        tg.MainButton.setText('💎 Перейти к оплате');
+                        tg.MainButton.show();
                         
-                        // Show helpful message
-                        tg.showAlert('💡 Бот откроется для оплаты через Stars. Вернитесь в игру после оплаты.');
+                        tg.MainButton.onClick(() => {
+                            tg.MainButton.hide();
+                            // Close web app and open bot
+                            tg.close();
+                            // Open bot in a second
+                            setTimeout(() => {
+                                window.open(`https://t.me/qanexus_bot?start=buy_stars_${productId}`, '_blank');
+                            }, 1000);
+                        });
+                        
+                        // Show message
+                        tg.showAlert('💎 Нажмите кнопку внизу для оплаты через Stars');
                     }
                 });
             } catch(err) {
