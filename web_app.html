@@ -1423,6 +1423,40 @@
             const hasTop = userData.has_top_place || false;
             const hasUnique = userData.has_unique_design || false;
             
+            // Add Top Button (left) - ALWAYS for ALL users
+            let topButton = document.querySelector('.vip-top-button');
+            if (!topButton) {
+                topButton = document.createElement('div');
+                topButton.className = 'vip-top-button';
+                topButton.innerHTML = '🏆';
+                topButton.onclick = () => {
+                    openVIPTopLeaders();
+                };
+                document.body.appendChild(topButton);
+            }
+            
+            // Add Profile Icon (right) - ALWAYS for ALL users
+            let profileIcon = document.querySelector('.vip-profile-icon');
+            if (!profileIcon) {
+                profileIcon = document.createElement('div');
+                profileIcon.className = 'vip-profile-icon';
+                
+                // Try to load profile photo from localStorage
+                const savedPhoto = localStorage.getItem('vip_profile_photo');
+                if (savedPhoto) {
+                    const img = document.createElement('img');
+                    img.src = savedPhoto;
+                    profileIcon.appendChild(img);
+                } else {
+                    profileIcon.innerHTML = '👤';
+                }
+                
+                profileIcon.onclick = () => {
+                    openVIPProfileModal();
+                };
+                document.body.appendChild(profileIcon);
+            }
+            
             if (vipLevel > 0) {
                 const badgeEl = document.getElementById('vipBadge');
                 const privEl = document.getElementById('vipPrivileges');
@@ -1477,40 +1511,6 @@
                         premiumShine.className = 'vip-premium-shine';
                         document.body.appendChild(premiumShine);
                     }
-                }
-                
-                // Add Top Button (left) - ALWAYS
-                let topButton = document.querySelector('.vip-top-button');
-                if (!topButton) {
-                    topButton = document.createElement('div');
-                    topButton.className = 'vip-top-button';
-                    topButton.innerHTML = '🏆';
-                    topButton.onclick = () => {
-                        openVIPTopLeaders();
-                    };
-                    document.body.appendChild(topButton);
-                }
-                
-                // Add Profile Icon (right) - ALWAYS
-                let profileIcon = document.querySelector('.vip-profile-icon');
-                if (!profileIcon) {
-                    profileIcon = document.createElement('div');
-                    profileIcon.className = 'vip-profile-icon';
-                    
-                    // Try to load profile photo from localStorage
-                    const savedPhoto = localStorage.getItem('vip_profile_photo');
-                    if (savedPhoto) {
-                        const img = document.createElement('img');
-                        img.src = savedPhoto;
-                        profileIcon.appendChild(img);
-                    } else {
-                        profileIcon.innerHTML = '👤';
-                    }
-                    
-                    profileIcon.onclick = () => {
-                        openVIPProfileModal();
-                    };
-                    document.body.appendChild(profileIcon);
                 }
                 
                 // Add VIP particle effects
