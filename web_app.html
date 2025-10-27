@@ -2443,6 +2443,82 @@
             });
         }
         
+        function openBuyCurrency(e) {
+            e.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'buyCurrencyModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff;">⭐ Купить валюту</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
+                        <div style="font-size:13px;color:#94a3b8;line-height:1.6;text-align:center;">
+                            <strong style="color:#fff;">💎 Оплата через Telegram Stars</strong><br>
+                            <small style="color:#94a3b8;">Самый быстрый способ получить валюту</small>
+                        </div>
+                    </div>
+                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:15px;">
+                        <div style="background:linear-gradient(135deg,rgba(234,179,8,0.2),rgba(251,191,36,0.2));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                                <div>
+                                    <div style="font-size:18px;font-weight:700;color:#fff;">💰 Стартовый пакет</div>
+                                    <div style="font-size:12px;color:#94a3b8;">Получите 1,000,000 коинов</div>
+                                </div>
+                                <div style="font-size:24px;">💎</div>
+                            </div>
+                            <button onclick="buyWithStars(1, 1000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
+                                💰 Купить за 10 ⭐
+                            </button>
+                        </div>
+                        <div style="background:linear-gradient(135deg,rgba(234,179,8,0.2),rgba(251,191,36,0.2));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                                <div>
+                                    <div style="font-size:18px;font-weight:700;color:#fff;">🚀 Премиум пакет</div>
+                                    <div style="font-size:12px;color:#94a3b8;">Получите 5,000,000 коинов</div>
+                                </div>
+                                <div style="font-size:24px;">💎</div>
+                            </div>
+                            <button onclick="buyWithStars(2, 5000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
+                                💰 Купить за 40 ⭐
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function buyWithStars(productId, amount, currency) {
+            try {
+                const tg = window.Telegram?.WebApp;
+                if(!tg) {
+                    alert('⚠️ Доступно только в Telegram');
+                    return;
+                }
+                
+                const starsCount = productId === 1 ? 10 : 40;
+                
+                tg.showPopup({
+                    title: '⭐ Покупка через Stars',
+                    message: `Купить ${amount.toLocaleString()} ${currency === 'coins' ? 'коинов' : 'QuanHash'} за ${starsCount} ⭐?`,
+                    buttons: [
+                        {id: 'cancel', type: 'cancel'},
+                        {id: 'purchase', type: 'default', text: '💎 Купить'}
+                    ]
+                }, async (buttonId) => {
+                    if(buttonId === 'purchase') {
+                        // Simulate purchase - in real app would integrate with Telegram Stars API
+                        tg.showAlert('✨ Теперь доступно покупка через Telegram Stars API!');
+                    }
+                });
+            } catch(err) {
+                alert('❌ Ошибка: ' + err.message);
+            }
+        }
+        
         function openHistory(e) {
             e.preventDefault();
             const modal = document.createElement('div');
