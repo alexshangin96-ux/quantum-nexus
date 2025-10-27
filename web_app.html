@@ -3232,16 +3232,18 @@
             `;
             document.body.appendChild(modal);
             
-            // Set initial active category
-            filterCategory('starter');
+            // Set initial active category after modal is attached
+            setTimeout(() => filterCategory('starter'), 100);
         }
         
-        function filterCategory(category) {
+        window.filterCategory = function(category) {
             // Update button states
             document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event?.target?.classList.add('active');
+            if(event?.target) {
+                event.target.classList.add('active');
+            }
             
             // Filter and show products
             const products = document.querySelectorAll('#currencyProductsList > [data-category]');
