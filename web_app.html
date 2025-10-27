@@ -235,7 +235,7 @@
             font-size: 26px;
             border: 3px solid rgba(255, 255, 255, 0.4);
             cursor: pointer;
-            z-index: 1000;
+            z-index: 10000;
             box-shadow: 0 0 20px rgba(167, 139, 250, 0.6), 0 4px 15px rgba(167, 139, 250, 0.5);
             transition: all 0.3s ease;
             overflow: hidden;
@@ -272,7 +272,7 @@
             font-size: 24px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
-            z-index: 1000;
+            z-index: 10000;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
             transition: all 0.3s ease;
         }
@@ -1608,34 +1608,39 @@
                         </div>
                         
                         <div style="padding:20px;">
-                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;margin-bottom:15px;border:2px solid rgba(255,215,0,0.3);">
-                                <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:#ffd700;text-align:center;">📊 ПОЛНАЯ СТАТИСТИКА</div>
-                                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;">
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💰 Коины</div>
-                                            <div data-stat="coins" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.coins || 0)}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💎 QuanHash</div>
-                                            <div data-stat="quanhash" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.quanhash || 0)}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">⚡ Энергия</div>
-                                            <div data-stat="energy" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.energy || 0)}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">🎮 Уровень</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${userData.level || 1}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">👆 Тапов</div>
-                                            <div data-stat="total_taps" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_taps || 0)}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
-                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💵 Доход</div>
-                                            <div data-stat="total_earned" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_earned || 0)}</div>
-                                        </div>
+                            ${vipLevel == 0 ? `
+                            <button onclick="openBuyVIPModal(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:15px;box-shadow:0 4px 15px rgba(255,215,0,0.5);">👑 Купить Premium VIP</button>
+                            ` : ''}
+                            
+                            <div style="background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#fff;text-align:center;">📊 СТАТИСТИКА</div>
+                                <div style="font-size:12px;line-height:1.9;">
+                                    <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <span style="color:#94a3b8;">💰 Коины:</span>
+                                        <span data-stat="coins" style="font-weight:700;color:#fff;">${Math.floor(userData.coins || 0)}</span>
                                     </div>
+                                    <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <span style="color:#94a3b8;">💎 QuanHash:</span>
+                                        <span data-stat="quanhash" style="font-weight:700;color:#fff;">${Math.floor(userData.quanhash || 0)}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <span style="color:#94a3b8;">⚡ Энергия:</span>
+                                        <span data-stat="energy" style="font-weight:700;color:#fff;">${Math.floor(userData.energy || 0)}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <span style="color:#94a3b8;">🎮 Уровень:</span>
+                                        <span style="font-weight:700;color:#fff;">${userData.level || 1}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                                        <span style="color:#94a3b8;">👆 Всего тапов:</span>
+                                        <span data-stat="total_taps" style="font-weight:700;color:#fff;">${Math.floor(userData.total_taps || 0)}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;padding:10px;">
+                                        <span style="color:#94a3b8;">💵 Общий доход:</span>
+                                        <span data-stat="total_earned" style="font-weight:700;color:#10b981;">${Math.floor(userData.total_earned || 0)}</span>
+                                    </div>
+                                </div>
+                            </div>
                                     
                                     <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
                                         <div style="display:flex;justify-content:space-between;align-items:center;">
