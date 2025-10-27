@@ -1421,7 +1421,7 @@
                         <div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">
                             ${category === 'cards' ? '💰 Пассивный доход' : category === 'energy' ? '⚡ +Энергия' : category === 'boosts' ? '📈 Усилитель' : '🤖 Автоматизация'}
                         </div>
-                        <button onclick="buyShopItem('${item.item_type}', ${item.price})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;">
+                        <button onclick="buyShopItem('${item.id}', ${item.price})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;">
                             Купить ${item.price.toLocaleString()} 🪙
                         </button>
                     </div>
