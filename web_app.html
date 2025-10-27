@@ -2511,30 +2511,12 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Process payment directly via backend
-                        fetch('/api/buy_with_stars', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                user_id: user?.id,
-                                product_id: productId,
-                                coins_amount: amount,
-                                stars_count: starsCount
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if(data.success) {
-                                tg.showAlert('✨ Покупка успешна!');
-                                loadData();
-                                document.querySelector('#buyCurrencyModal')?.remove();
-                            } else {
-                                tg.showAlert('❌ ' + data.error);
-                            }
-                        })
-                        .catch(err => {
-                            tg.showAlert('❌ Ошибка: ' + err.message);
-                        });
+                        // Close modal and redirect to bot for invoice
+                        document.querySelector('#buyCurrencyModal')?.remove();
+                        
+                        // Open bot with product info
+                        const tgLink = `https://t.me/your_bot_username?start=buy_stars_${productId}`;
+                        tg.openTelegramLink(tgLink);
                     }
                 });
             } catch(err) {
