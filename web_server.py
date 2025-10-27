@@ -1896,11 +1896,11 @@ def get_top_users():
                     'username': u.username or 'Unknown',
                     'total_earned': int(u.total_earned or 0),
                     'coins': int(u.coins or 0),
-                    'level': u.level or 1,
+                    'level': 1,  # Hardcoded, no level field in User model
                     'vip_level': getattr(u, 'vip_level', 0) or 0,
                     'passive_income': passive_income_per_hour,
                     'quanhash': int(getattr(u, 'quanhash', 0) or 0),
-                    'total_taps': int(getattr(u, 'total_taps', 0) or 0)
+                    'total_taps': int(u.total_taps or 0)
                 })
             
             print(f"[TOP_USERS] Returning {len(top_users)} users")

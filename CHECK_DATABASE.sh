@@ -21,7 +21,6 @@ SELECT
     total_earned,
     total_taps,
     coins,
-    level,
     vip_level
 FROM users 
 ORDER BY total_earned DESC 
