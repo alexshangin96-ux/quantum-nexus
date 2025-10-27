@@ -358,15 +358,14 @@ def get_shop():
                 user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
                 user_card_counts = {}
                 for uc in user_cards:
-                    key = f"{uc.card_type}_{uc.level if hasattr(uc, 'level') else 1}"
-                    user_card_counts[key] = user_card_counts.get(key, 0) + 1
+                    user_card_counts[uc.card_type] = user_card_counts.get(uc.card_type, 0) + 1
                 
                 for i, template in enumerate(per_minute_cards):
                     card_key = f"card_min_{i}"
                     purchases = user_card_counts.get(card_key, 0)
-                    level = min(purchases + 1, 100)
+                    level = purchases + 1
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
-                    income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
+                    income = template['base_income'] * (1.10 ** (level - 1))
                     
                     # Unlock card if previous card reached level 5
                     is_locked = i > 0 and user_card_counts.get(f"card_min_{i-1}", 0) < 5
@@ -390,9 +389,9 @@ def get_shop():
                 for i, template in enumerate(per_hour_cards):
                     card_key = f"card_hour_{i}"
                     purchases = user_card_counts.get(card_key, 0)
-                    level = min(purchases + 1, 100)
+                    level = purchases + 1
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
-                    income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
+                    income = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income / 60, 2)
                     
                     # Unlock card if previous card reached level 5
@@ -510,19 +509,19 @@ def get_cards():
             
             cards = db.query(UserCard).filter_by(user_id=user.id).all()
         
-        cards_data = []
-        total_passive_per_minute = 0
-        for card in cards:
-            if card.is_active:
-                total_passive_per_minute += card.income_per_minute
-            cards_data.append({
-                'id': card.id,
-                'card_type': card.card_type,
-                'card_level': getattr(card, 'card_level', 1),
-                'income_per_minute': card.income_per_minute,
-                'is_active': card.is_active if hasattr(card, 'is_active') else True
-            })
-        
+            cards_data = []
+            total_passive_per_minute = 0
+            for card in cards:
+                if getattr(card, 'is_active', True):
+                    total_passive_per_minute += card.income_per_minute
+                cards_data.append({
+                    'id': card.id,
+                    'card_type': card.card_type,
+                    'card_level': getattr(card, 'card_level', 1),
+                    'income_per_minute': card.income_per_minute,
+                    'is_active': card.is_active if hasattr(card, 'is_active') else True
+                })
+            
             total_passive_per_hour = total_passive_per_minute * 60
             
             return jsonify({
