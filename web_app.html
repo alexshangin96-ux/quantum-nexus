@@ -1002,8 +1002,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Quantum Nexus</h1>
-            <p>Привет, <span id="username">Майнер</span>!</p>
+            <h1 id="mainTitle">Quantum Nexus</h1>
+            <p>Привет, <span id="username">Майнер</span>! <span id="vipBadge" style="display:none;"></span></p>
+            <div id="vipPrivileges" style="display:none;margin-top:5px;font-size:11px;color:#94a3b8;"></div>
         </div>
 
         <!-- Offline Income Popup -->
@@ -1214,6 +1215,58 @@
 
         let energyRegenInterval;
 
+        // VIP Status Management
+        function loadVIPStatus(userData) {
+            const vipLevel = userData.vip_level || 0;
+            const vipBadge = userData.vip_badge || '';
+            const hasPremium = userData.has_premium_support || false;
+            const hasGolden = userData.has_golden_profile || false;
+            const hasTop = userData.has_top_place || false;
+            const hasUnique = userData.has_unique_design || false;
+            
+            if (vipLevel > 0) {
+                const badgeEl = document.getElementById('vipBadge');
+                const privEl = document.getElementById('vipPrivileges');
+                
+                // VIP badge display
+                const badges = {
+                    'bronze_vip': '🥉 BRONZE VIP',
+                    'silver_vip': '🥈 SILVER VIP',
+                    'gold_vip': '🥇 GOLD VIP',
+                    'platinum_vip': '💎 PLATINUM VIP',
+                    'diamond_vip': '💠 DIAMOND VIP',
+                    'absolute_vip': '👑 ABSOLUTE VIP'
+                };
+                
+                if (badgeEl && vipBadge) {
+                    badgeEl.innerHTML = '<span style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;">' + (badges[vipBadge] || 'VIP') + '</span>';
+                    badgeEl.style.display = 'inline';
+                }
+                
+                // VIP privileges display
+                if (privEl) {
+                    const privs = [];
+                    if (hasPremium) privs.push('⭐ Premium Support');
+                    if (hasGolden) privs.push('🌟 Golden Profile');
+                    if (hasTop) privs.push('🏆 Top Place');
+                    if (hasUnique) privs.push('✨ Unique Design');
+                    
+                    if (privs.length > 0) {
+                        privEl.textContent = privs.join(' • ');
+                        privEl.style.display = 'block';
+                    }
+                }
+                
+                // Apply VIP styling to header
+                if (hasGolden && document.getElementById('mainTitle')) {
+                    document.getElementById('mainTitle').style.background = 'linear-gradient(135deg, #ffd700, #ffed4e)';
+                    document.getElementById('mainTitle').style.webkitBackgroundClip = 'text';
+                    document.getElementById('mainTitle').style.webkitTextFillColor = 'transparent';
+                    document.getElementById('mainTitle').style.filter = 'drop-shadow(0 0 20px rgba(255,215,0,0.5))';
+                }
+            }
+        }
+        
         const shopItems = {
             boosts: [
                 {name: "2x Множитель", emoji: "⚡", price: 1000, desc: "Удваивает доход с тапа", type: "multiplier_2x"},
@@ -1261,6 +1314,9 @@
                 
                 const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
                 document.getElementById('energy-bar').style.width = energyPercent + '%';
+
+                // Load VIP status and display it
+                loadVIPStatus(data);
 
                 // Show withdraw button if user has 500k+ quanhash
             })
