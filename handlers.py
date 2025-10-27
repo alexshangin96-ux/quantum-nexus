@@ -512,18 +512,14 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             51: 50000000, 52: 100000000, 53: 150000000, 54: 200000000, 55: 250000000, 56: 300000000, 57: 350000000, 58: 400000000, 59: 450000000, 60: 500000000
         }
         
-        # Define VIP products (51-60) with special privileges
+        # Define VIP products (51-56) with special privileges
         vip_products = {
-            51: {'level': 1, 'badge': 'bronze_vip', 'privileges': ['premium_support']},
-            52: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker']},
-            53: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place']},
-            54: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile']},
-            55: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design']},
-            56: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help']},
-            57: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help']},
-            58: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access']},
-            59: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access', 'vip_unlocked']},
-            60: {'level': 6, 'badge': 'absolute_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access', 'vip_unlocked', 'all_premium']}
+            51: {'level': 1, 'badge': 'bronze_vip', 'privileges': ['premium_support', 'unique_marker']},
+            52: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place']},
+            53: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design']},
+            54: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments']},
+            55: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments', 'vip_crown', 'zero_fee']},
+            56: {'level': 6, 'badge': 'absolute_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments', 'vip_crown', 'zero_fee', 'aura', 'rainbow', 'vip_machines']}
         }
         
         coins_to_add = product_coins.get(product_id, 0)
@@ -653,13 +649,13 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         48: {'title': '🔥 Огненный мегасет', 'description': '500 карт + 500M', 'stars': 19000, 'coins': 95000000},
         49: {'title': '💫 Космический комбо', 'description': '1000 карт + всё VIP', 'stars': 21000, 'coins': 105000000},
         50: {'title': '🎯 АБСОЛЮТ ВСЁ', 'description': 'ВСЁ что есть в игре!', 'stars': 24000, 'coins': 120000000},
-        # MEGA (51-60)
-        51: {'title': '🚀 Космос', 'description': '50,000,000 коинов', 'stars': 10000, 'coins': 50000000},
-        52: {'title': '⭐ Вселенная', 'description': '100,000,000 коинов', 'stars': 20000, 'coins': 100000000},
-        53: {'title': '🌌 Галактика', 'description': '150,000,000 коинов', 'stars': 30000, 'coins': 150000000},
-        54: {'title': '🌟 Созвездие', 'description': '200,000,000 коинов', 'stars': 40000, 'coins': 200000000},
-        55: {'title': '💫 Туманность', 'description': '250,000,000 коинов', 'stars': 50000, 'coins': 250000000},
-        56: {'title': '🚀 Вихрь', 'description': '300,000,000 коинов', 'stars': 60000, 'coins': 300000000},
+        # VIP STATUSES (51-60)
+        51: {'title': '🥉 Bronze VIP', 'description': '✅ Premium Support, Уникальный маркер, +20% к тапу', 'stars': 300, 'coins': 2000000},
+        52: {'title': '🥈 Silver VIP', 'description': '✅ Premium Support, Уникальный маркер, Top Place, +50% к тапу', 'stars': 600, 'coins': 5000000},
+        53: {'title': '🥇 Gold VIP', 'description': '✅ Premium Support, Golden Profile, Top Place, Unique Design, +100% к тапу, -50% энергии', 'stars': 1000, 'coins': 10000000},
+        54: {'title': '💎 Platinum VIP', 'description': '✅ Все из Gold VIP, VIP Турниры, Частицы, +150% к тапу', 'stars': 1500, 'coins': 20000000},
+        55: {'title': '💠 Diamond VIP', 'description': '✅ Все из Platinum VIP, Корона, 0% комиссия, +250% к тапу, VIP Boost 50x', 'stars': 2000, 'coins': 50000000},
+        56: {'title': '👑 Absolute VIP', 'description': '✅ Все из Diamond VIP, Аура, Радуга, +450% к тапу, VIP Машины', 'stars': 3000, 'coins': 100000000},
         57: {'title': '⭐ Пульсар', 'description': '350,000,000 коинов', 'stars': 70000, 'coins': 350000000},
         58: {'title': '🌌 Квазар', 'description': '400,000,000 коинов', 'stars': 80000, 'coins': 400000000},
         59: {'title': '🌟 Чёрная дыра', 'description': '450,000,000 коинов', 'stars': 90000, 'coins': 450000000},

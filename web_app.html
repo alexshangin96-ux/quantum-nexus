@@ -1608,9 +1608,19 @@
                         </div>
                         
                         <div style="padding:20px;">
-                            ${vipLevel == 0 ? `
-                            <button onclick="openBuyVIPModal(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:15px;box-shadow:0 4px 15px rgba(255,215,0,0.5);">👑 Купить Premium VIP</button>
-                            ` : ''}
+                            ${vipLevel >= 3 ? `
+                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,255,255,0.05));padding:12px;border-radius:12px;border:1px solid rgba(255,215,0,0.2);margin-bottom:12px;">
+                                <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
+                                <div style="font-size:11px;color:#fff;line-height:1.8;">
+                                    ${userData.has_premium_support ? '⭐ Premium Support ' : ''}
+                                    ${userData.has_golden_profile ? '🌟 Golden Profile ' : ''}
+                                    ${userData.has_top_place ? '🏆 Top Place ' : ''}
+                                    ${userData.has_unique_design ? '✨ Unique Design' : ''}
+                                </div>
+                            </div>
+                            ` : `
+                            <button onclick="openBuyVIPModal(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:15px;box-shadow:0 4px 15px rgba(255,215,0,0.5);">👑 Купить VIP</button>
+                            `}
                             
                             <div style="background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.2);">
                                 <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#fff;text-align:center;">📊 СТАТИСТИКА</div>
@@ -1649,20 +1659,6 @@
                                         </div>
                                     </div>
                             </div>
-                            
-                            ${vipLevel >= 3 ? `
-                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,255,255,0.05));padding:12px;border-radius:12px;border:1px solid rgba(255,215,0,0.2);margin-bottom:12px;">
-                                <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
-                                <div style="font-size:11px;color:#fff;line-height:1.8;">
-                                    ${userData.has_premium_support ? '⭐ Premium Support ' : ''}
-                                    ${userData.has_golden_profile ? '🌟 Golden Profile ' : ''}
-                                    ${userData.has_top_place ? '🏆 Top Place ' : ''}
-                                    ${userData.has_unique_design ? '✨ Unique Design' : ''}
-                                </div>
-                            </div>
-                            ` : `
-                            <button onclick="openBuyVIPModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:12px;">👑 Купить VIP статус</button>
-                            `}
                             
                             <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
                         </div>
