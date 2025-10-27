@@ -608,7 +608,17 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             )
             
             logger.info(f"✅ Invoice sent successfully! Message ID: {invoice_result.message_id}")
-            await update.message.reply_text(f"✅ Invoice отправлен! Проверьте сообщение выше.")
+            
+            # Send invoice link button for Mini App
+            from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+            keyboard = InlineKeyboardMarkup([[
+                InlineKeyboardButton("💰 Оплатить через Stars", url=f"https://t.me/{context.bot.username}?start=buy_stars_{product_id}")
+            ]])
+            await update.message.reply_text(
+                f"✅ Invoice отправлен!\n\n"
+                f"Нажмите кнопку ниже для оплаты:",
+                reply_markup=keyboard
+            )
             
         except Exception as e:
             logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
