@@ -1,4 +1,4 @@
-from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
 from models import User, MiningMachine, UserCard, Transaction
@@ -438,21 +438,99 @@ async def handle_purchase(query, data, user, db):
     # Handle other purchases similarly...
 
 
-async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE, product_id: int):
-    """Send Stars invoice or simulate payment"""
+async def pre_checkout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle pre-checkout query for Stars payment validation"""
+    query = update.pre_checkout_query
     
-    # Define products
+    user_id = query.from_user.id
+    
+    with get_db() as db:
+        user = db.query(User).filter_by(telegram_id=user_id).first()
+        
+        if not user:
+            await query.answer(ok=False, error_message="Пользователь не найден")
+            return
+        
+        # Validate payload
+        invoice_payload = query.invoice_payload
+        
+        if not invoice_payload.startswith("stars_"):
+            await query.answer(ok=False, error_message="Неверный invoice")
+            return
+        
+        # Approve the checkout
+        await query.answer(ok=True)
+
+
+async def successful_payment_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle successful Stars payment"""
+    payment = update.message.successful_payment
+    user_id = update.effective_user.id
+    
+    # Parse payload: stars_{user_id}_{product_id}
+    invoice_payload = payment.invoice_payload
+    
+    try:
+        parts = invoice_payload.split("_")
+        if len(parts) != 3 or parts[0] != "stars":
+            await update.message.reply_text("❌ Ошибка: неверный payload")
+            return
+        
+        user_db_id = int(parts[1])
+        product_id = int(parts[2])
+        
+        # Define product amounts
+        product_coins = {
+            1: 1000000,
+            2: 5000000
+        }
+        
+        coins_to_add = product_coins.get(product_id, 0)
+        
+        if coins_to_add == 0:
+            await update.message.reply_text("❌ Ошибка: неизвестный товар")
+            return
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(id=user_db_id, telegram_id=user_id).first()
+            
+            if not user:
+                await update.message.reply_text("❌ Ошибка: пользователь не найден")
+                return
+            
+            # Add coins
+            user.coins += coins_to_add
+            db.commit()
+            
+            # Log successful payment
+            logger.info(f"User {user_id} bought product {product_id} for {coins_to_add} coins")
+            
+            await update.message.reply_text(
+                f"✨ Покупка успешна!\n\n"
+                f"💰 Получено: {coins_to_add:,} коинов\n"
+                f"📊 Новый баланс: {user.coins:,} коинов"
+            )
+            
+    except Exception as e:
+        logger.error(f"Error processing payment: {e}")
+        await update.message.reply_text("❌ Ошибка при обработке платежа")
+
+
+async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE, product_id: int):
+    """Send Stars invoice with real Telegram Stars payment"""
+    
+    # Define products with Stars prices
     products = {
         1: {
             'title': 'Стартовый пакет',
-            'description': '1,000,000 коинов за 100 коинов в игре',
-            'price': 100,  # в игре коины
+            'description': '1,000,000 коинов',
+            'stars': 10,  # Stars
             'coins': 1000000
         },
         2: {
             'title': 'Премиум пакет',
-            'description': '5,000,000 коинов за 500 коинов в игре',
-            'price': 500,  # в игре коины
+            'description': '5,000,000 коинов',
+            'stars': 40,  # Stars
             'coins': 5000000
         }
     }
@@ -471,25 +549,18 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             await update.message.reply_text("❌ Пользователь не найден")
             return
         
-        # Проверяем баланс
-        if user.coins < product['price']:
-            await update.message.reply_text(
-                f"❌ Недостаточно коинов!\n\n"
-                f"💰 Ваш баланс: {user.coins:,}\n"
-                f"💎 Стоимость: {product['price']:,} коинов\n"
-                f"💵 Вы получите: {product['coins']:,} коинов"
-            )
-            return
+        # Send invoice with Telegram Stars
+        prices = [LabeledPrice(
+            label=f"{product['title']} - {product['description']}",
+            amount=product['stars']
+        )]
         
-        # Списываем коины и добавляем новые
-        user.coins -= product['price']
-        user.coins += product['coins']
-        
-        db.commit()
-        
-        await update.message.reply_text(
-            f"✨ Покупка успешна!\n\n"
-            f"💎 Потрачено: {product['price']:,} коинов\n"
-            f"💰 Получено: {product['coins']:,} коинов\n\n"
-            f"📊 Новый баланс: {user.coins:,} коинов"
+        await context.bot.send_invoice(
+            chat_id=update.effective_chat.id,
+            title=f"💎 {product['title']}",
+            description=product['description'],
+            payload=f"stars_{user.id}_{product_id}",
+            provider_token="",  # Empty for Stars
+            currency="XTR",  # Stars currency
+            prices=prices
         )

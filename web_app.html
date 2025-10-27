@@ -2470,7 +2470,7 @@
                                 <div style="font-size:24px;">💎</div>
                             </div>
                             <button onclick="buyWithStars(1, 1000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 100 коинов
+                                💰 Купить за 10 ⭐
                             </button>
                         </div>
                         <div style="background:linear-gradient(135deg,rgba(234,179,8,0.2),rgba(251,191,36,0.2));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.5);">
@@ -2482,7 +2482,7 @@
                                 <div style="font-size:24px;">💎</div>
                             </div>
                             <button onclick="buyWithStars(2, 5000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 500 коинов
+                                💰 Купить за 40 ⭐
                             </button>
                         </div>
                     </div>
@@ -2502,17 +2502,17 @@
                 const starsCount = productId === 1 ? 10 : 40;
                 
                 // Show confirmation popup
-                const price = productId === 1 ? 100 : 500;
+                const starsPrice = productId === 1 ? 10 : 40;
                 tg.showPopup({
-                    title: '💎 Покупка валюты',
-                    message: `Купить ${amount.toLocaleString()} коинов за ${price} коинов из баланса?`,
+                    title: '⭐ Покупка через Telegram Stars',
+                    message: `Купить ${amount.toLocaleString()} коинов за ${starsPrice} ⭐?`,
                     buttons: [
                         {id: 'cancel', type: 'cancel'},
                         {id: 'purchase', type: 'default', text: '💎 Купить'}
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal and redirect to bot for processing
+                        // Close modal and redirect to bot for invoice
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
                         // Open bot with product info
