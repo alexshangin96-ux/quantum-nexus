@@ -1889,16 +1889,31 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.auto_tap_enabled && data.energy > 0) {
+                // Check if auto tap is enabled and still valid
+                const isEnabled = data.auto_tap_enabled;
+                const hasMinEnergy = data.energy > 10; // Minimum 10 energy required
+                
+                if(isEnabled && hasMinEnergy) {
                     const speed = 1000 / (data.auto_tap_speed || 2); // taps per second
                     if(!window.autoTapInterval) {
                         window.autoTapInterval = setInterval(() => {
-                            tap();
+                            const energyElement = document.getElementById('energy-text');
+                            if(energyElement) {
+                                const energy = parseInt(energyElement.textContent.split('/')[0]);
+                                if(energy > 10) {
+                                    tap();
+                                } else {
+                                    clearInterval(window.autoTapInterval);
+                                    window.autoTapInterval = null;
+                                }
+                            }
                         }, speed);
                     }
-                } else if(window.autoTapInterval) {
-                    clearInterval(window.autoTapInterval);
-                    window.autoTapInterval = null;
+                } else {
+                    if(window.autoTapInterval) {
+                        clearInterval(window.autoTapInterval);
+                        window.autoTapInterval = null;
+                    }
                 }
             });
         }

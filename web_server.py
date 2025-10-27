@@ -207,8 +207,8 @@ def tap():
             if not user:
                 return jsonify({'success': False, 'error': 'User not found. Please start the bot first.'}), 404
             
-            # Check energy
-            if user.energy < ENERGY_COST_PER_TAP:
+            # Check energy (minimum 10 energy required)
+            if user.energy < ENERGY_COST_PER_TAP or user.energy < 10:
                 return jsonify({'success': False, 'error': 'Недостаточно энергии!'})
             
             # Calculate reward
