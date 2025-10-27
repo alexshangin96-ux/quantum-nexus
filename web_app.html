@@ -1709,7 +1709,7 @@
                     const topUsers = topData.users || [];
                     console.log('[TOP_LEADERS] Users count:', topUsers.length);
                     
-                    // Data is already sorted by backend (VIPs first), just display top 100
+                    // Data is already sorted by backend by total_earned, just display top 100
                     const sortedUsers = topUsers.slice(0, 100);
                     
                     let topHTML = sortedUsers.map((u, idx) => {
@@ -1743,7 +1743,7 @@
                         return `<div style="padding:16px;background:${isVIP ? 'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,255,255,0.05))' : 'rgba(0,0,0,0.25)'};border-radius:16px;margin-bottom:14px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.5)' : 'rgba(255,255,255,0.1)'};transition:all 0.3s;position:relative;overflow:hidden;">
                             ${isVIP ? `<div style="position:absolute;top:0;left:0;right:0;height:3px;background:${vipStyle.gradient};"></div>` : ''}
                             <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
-                                <div style="width:56px;height:56px;background:${isVIP ? vipStyle.gradient : 'linear-gradient(135deg,#667eea,#764ba2)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;${displayRank <= 3 ? 'box-shadow:0 0 20px rgba(255,215,0,0.6);' : 'box-shadow:0 4px 12px rgba(0,0,0,0.3);'}">
+                                <div style="width:56px;height:56px;background:${isVIP ? vipStyle.gradient : 'linear-gradient(135deg,#667eea,#764ba2)'};border-radius:${displayRank === 5 ? '12px' : '50%'};display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;${displayRank <= 3 ? 'box-shadow:0 0 20px rgba(255,215,0,0.6);' : 'box-shadow:0 4px 12px rgba(0,0,0,0.3);'}">
                                     ${medal || displayRank}
                                 </div>
                                 <div style="flex:1;">

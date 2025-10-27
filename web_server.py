@@ -1893,12 +1893,12 @@ def get_top_users():
                 # Convert to per hour for display
                 passive_income_per_hour = int(passive_income * 60) if passive_income else 0
                 
-                # For bots, set a stable passive income
+                # For bots, set a stable passive income (10 to 2000 per hour)
                 if hasattr(u, 'telegram_id') and u.telegram_id >= 9000000000:  # Bot user
                     # Use user's ID as seed for stable random value
                     import hashlib
                     stable_seed = int(hashlib.md5(str(u.telegram_id).encode()).hexdigest()[:8], 16) % 1000000
-                    passive_income_per_hour = stable_seed % 500000 + 10000  # Stable between 10K and 510K
+                    passive_income_per_hour = stable_seed % 1990 + 10  # Stable between 10 and 2000
                 
                 vip_level = getattr(u, 'vip_level', 0) or 0
                 vip_badge = getattr(u, 'vip_badge', None) or ""
