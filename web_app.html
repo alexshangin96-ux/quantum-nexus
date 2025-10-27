@@ -1637,14 +1637,11 @@
                                         </div>
                                     </div>
                                     
-                                    <div style="margin-top:12px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
-                                        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">📊 Активные машины</div>
-                                        <div style="font-size:14px;font-weight:700;color:#fff;">${userData.machines_count || 0} шт • +${userData.hash_rate || 0}/сек</div>
-                                    </div>
-                                    
-                                    <div style="margin-top:10px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
-                                        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">🔄 Активный буст</div>
-                                        <div style="font-size:14px;font-weight:700;color:#10b981;">x${userData.active_multiplier || 1} ${userData.multiplier_expires_at ? '(до ' + new Date(userData.multiplier_expires_at).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}) + ')' : ''}</div>
+                                    <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+                                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                                            <span style="font-size:11px;color:#94a3b8;">🔄 Буст:</span>
+                                            <span style="font-size:13px;font-weight:700;color:#10b981;">x${userData.active_multiplier || 1}</span>
+                                        </div>
                                     </div>
                             </div>
                             
