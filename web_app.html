@@ -1800,10 +1800,10 @@
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById('userCardsList');
-                let totalPassive = 0;
+                // Use total from backend for accurate calculation
+                const totalPassive = (data.total_passive_per_hour || 0);
                 if(data.cards && data.cards.length > 0) {
-                    list.innerHTML = data.cards.map(card => {
-                        totalPassive += (card.income_per_minute || 0) * 60;
+                    list.innerHTML = data.cards.filter(card => card.is_active).map(card => {
                         const rarity = card.card_type || 'common';
                         const rarityInfo = {
                             'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.1)', border:'rgba(255,255,255,0.3)'},

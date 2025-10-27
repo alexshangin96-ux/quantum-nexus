@@ -501,17 +501,23 @@ def get_cards():
         cards = db.query(UserCard).filter_by(user_id=user.id).all()
         
         cards_data = []
+        total_passive_per_minute = 0
         for card in cards:
+            if card.is_active:
+                total_passive_per_minute += card.income_per_minute
             cards_data.append({
                 'id': card.id,
                 'card_type': card.card_type,
                 'card_level': card.card_level,
-                'income_per_minute': card.income_per_minute
+                'income_per_minute': card.income_per_minute,
+                'is_active': card.is_active
             })
         
         return jsonify({
             'coins': user.coins,
-            'cards': cards_data
+            'cards': cards_data,
+            'total_passive_per_minute': total_passive_per_minute,
+            'total_passive_per_hour': total_passive_per_minute * 60
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
