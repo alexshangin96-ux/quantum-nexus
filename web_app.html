@@ -1446,17 +1446,62 @@
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-70%)';setTimeout(()=>{anim.remove();},300);},1000);
                     
                     loadData();
-                    // Reload cards shop to show updated prices and levels
-                    const category = document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('boosts') ? 'boosts' : 
-                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('energy') ? 'energy' :
-                                       document.querySelector('.shop-cat-btn[style*="linear-gradient"]').textContent.toLowerCase().includes('карточки') ? 'cards' : 'auto';
                     
-                    if(category === 'cards') {
+                    // Force immediate reload of cards shop
+                    if(document.getElementById('shopCardsList')) {
                         const activeBtn = document.querySelector('.filter-btn.active');
                         const cardCategory = activeBtn && activeBtn.textContent.includes('В минуту') ? 'per_minute' : 'per_hour';
-                        loadCardsCategory(cardCategory);
-                    } else {
-                        loadShopCategory(category);
+                        fetch('/api/shop', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: user?.id, category: 'cards'})
+                        })
+                        .then(res => res.json())
+                        .then(shopData => {
+                            const shopList = document.getElementById('shopCardsList');
+                            const cards = shopData.items.filter(item => item.type === 'card' && (cardCategory === 'all' || item.income_type === cardCategory));
+                            if(cards && cards.length > 0) {
+                                shopList.innerHTML = cards.map(card => {
+                                if(card.is_locked) {
+                                    return `
+                                    <div style="background:rgba(60,60,60,0.3);padding:12px;border-radius:12px;border:2px solid rgba(100,100,100,0.4);opacity:0.6;position:relative;">
+                                        <div style="position:absolute;top:5px;right:5px;background:rgba(239,68,68,0.8);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">🔒 Заблокировано</div>
+                                        <div style="font-size:24px;text-align:center;margin-bottom:6px;">🔒</div>
+                                        <div style="font-size:10px;font-weight:700;color:#999;text-align:center;margin-bottom:6px;">${card.name}</div>
+                                        <div style="font-size:11px;color:#666;text-align:center;margin-bottom:6px;">${card.description}</div>
+                                        <button disabled style="width:100%;padding:8px;background:rgba(100,100,100,0.5);color:#ccc;border:none;border-radius:8px;cursor:not-allowed;font-weight:700;font-size:11px;">🔒 Доступно с ур.5 предыдущей</button>
+                                    </div>
+                                    `;
+                                }
+                                const rarity = card.rarity || 'common';
+                                const rarityInfo = {
+                                    'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
+                                    'rare': {emoji:'🔵', name:'Редкая', color:'rgba(102,126,234,0.25)', border:'rgba(102,126,234,0.8)'},
+                                    'epic': {emoji:'🟣', name:'Эпическая', color:'rgba(118,75,162,0.25)', border:'rgba(118,75,162,0.8)'},
+                                    'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
+                                };
+                                const info = rarityInfo[rarity];
+                                const income = card.income_per_min || 0;
+                                const incomeType = card.income_type === 'per_minute' ? '/мин' : '/час';
+                                const level = card.level || 1;
+                                const nameParts = card.name || 'Карточка';
+                                const cardEmoji = nameParts.match(/[\u{1F600}-\u{1F9FF}]/u)?.[0] || '💳';
+                                const cardName = nameParts.replace(/[\u{1F600}-\u{1F9FF}]/u, '').trim();
+                                return `
+                                    <div style="background:${info.color};padding:12px;border-radius:12px;border:2px solid ${info.border};">
+                                        <div style="font-size:24px;text-align:center;margin-bottom:6px;">${cardEmoji}</div>
+                                        <div style="font-size:10px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;">${cardName}</div>
+                                        <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:6px;">${card.description}</div>
+                                        <div style="font-size:12px;color:#10b981;text-align:center;margin-bottom:6px;font-weight:700;">+${income.toFixed(1)} 🪙${incomeType}</div>
+                                        <div style="font-size:9px;color:#fbbf24;text-align:center;margin-bottom:8px;font-weight:600;">Lv.${level} ${info.name}</div>
+                                        <button onclick="buyShopItem('${card.id}', ${card.price || 0})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
+                                            🪙 ${(card.price || 0).toLocaleString()}
+                                        </button>
+                                    </div>
+                                `;
+                                }).join('');
+                            }
+                        });
                     }
                     
                     // Update passive income immediately
