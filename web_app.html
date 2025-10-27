@@ -1094,13 +1094,9 @@
                 <div class="btn-emoji">🎁</div>
                 <div>Ежедневные задания</div>
             </a>
-            <a href="#" class="btn btn-premium" onclick="openBuyCurrency(event)" style="background:linear-gradient(135deg,rgba(255,215,0,0.4),rgba(255,255,100,0.3),rgba(255,140,0,0.4));border:3px solid rgba(255,215,0,0.8);box-shadow:0 0 30px rgba(255,215,0,0.6), 0 0 60px rgba(255,140,0,0.4);position:relative;overflow:hidden;animation:premium-pulse 2s infinite;">
-                <div style="position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);animation:shine-btn 2s infinite;"></div>
-                <div style="position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(255,215,0,0.2),transparent);animation:rotate 4s linear infinite;"></div>
-                <div class="btn-emoji" style="filter:drop-shadow(0 0 15px rgba(255,215,0,0.8));">⭐</div>
-                <div style="font-weight:900;font-size:14px;text-shadow:0 0 15px rgba(255,215,0,0.8), 0 0 30px rgba(255,140,0,0.6);">Купить валюту</div>
-                <div style="position:absolute;top:-8px;right:-8px;background:linear-gradient(135deg,#ff0000,#ff6666);color:#fff;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:900;box-shadow:0 5px 15px rgba(255,0,0,0.6), 0 0 20px rgba(255,0,0,0.4);animation:pulse 1.5s infinite;text-shadow:0 0 10px rgba(255,255,255,0.8);">🔥 ОГРАНИЧЕННОЕ ПРЕДЛОЖЕНИЕ</div>
-                <div style="position:absolute;bottom:-8px;left:-8px;background:linear-gradient(135deg,#ffd700,#ffff00);color:#000;padding:3px 8px;border-radius:10px;font-size:9px;font-weight:900;box-shadow:0 5px 15px rgba(255,215,0,0.6);">⭐ VIP</div>
+            <a href="#" class="btn" onclick="openBuyCurrency(event)" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,140,0,0.3));border:2px solid rgba(255,215,0,0.6);box-shadow:0 4px 15px rgba(255,215,0,0.3);">
+                <div class="btn-emoji">⭐</div>
+                <div style="font-weight:700;">Купить валюту</div>
             </a>
         </div>
     </div>
@@ -2482,223 +2478,699 @@
             modal.id = 'buyCurrencyModal';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
-                    <!-- Premium Header -->
-                    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 255, 100, 0.2));padding: 20px;margin: -20px -20px 20px -20px;border-radius: 20px 20px 0 0;border-bottom: 2px solid rgba(255, 215, 0, 0.5);position: relative;overflow: hidden;">
-                        <div style="position: absolute;top: -50%;left: -50%;width: 200%;height: 200%;background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);animation: rotate 3s linear infinite;"></div>
-                        <div style="display: flex;justify-content: space-between;align-items: center;position: relative;z-index: 1;">
-                            <div>
-                                <h2 style="font-size: 26px; color: #fff;margin: 0;text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);font-weight: 900;">
-                                    ⭐ Купить валюту
-                                </h2>
-                                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7);margin-top: 5px;">💎 Telegram Stars</div>
-                            </div>
-                            <button onclick="this.closest('.modal').remove()" style="background: rgba(255, 255, 255, 0.1);border: 1px solid rgba(255, 255, 255, 0.3);border-radius: 10px;width: 36px;height: 36px;color: #fff;cursor: pointer;font-size: 18px;transition: all 0.3s;">
-                                ✕
-                            </button>
-                        </div>
+                    <!-- Simple Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 700;">⭐ Купить валюту</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 8px; width: 32px; height: 32px; color: #fff; cursor: pointer; font-size: 18px;">✕</button>
                     </div>
                     
                     <!-- Category Buttons -->
-                    <div style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 10px;margin-bottom: 20px;padding: 15px;background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,140,0,0.1));border-radius: 15px;border: 2px solid rgba(255,215,0,0.3);">
-                        <button onclick="filterCategory('starter')" class="category-btn active" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.4));border: 2px solid rgba(102, 126, 234, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            🎯 Старт
-                        </button>
-                        <button onclick="filterCategory('premium')" class="category-btn" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(251, 191, 36, 0.4));border: 2px solid rgba(234, 179, 8, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(234, 179, 8, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            🚀 Премиум
-                        </button>
-                        <button onclick="filterCategory('vip')" class="category-btn" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 255, 100, 0.4));border: 2px solid rgba(255, 215, 0, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            👑 VIP
-                        </button>
-                        <button onclick="filterCategory('limited')" class="category-btn" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.4), rgba(255, 100, 100, 0.4));border: 2px solid rgba(255, 0, 0, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(255, 0, 0, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            🔥 Акции
-                        </button>
-                        <button onclick="filterCategory('ultra')" class="category-btn" style="background: linear-gradient(135deg, rgba(128, 0, 128, 0.4), rgba(200, 100, 200, 0.4));border: 2px solid rgba(128, 0, 128, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(128, 0, 128, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            💎 Легенда
-                        </button>
-                        <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(0, 150, 255, 0.4), rgba(100, 200, 255, 0.4));border: 2px solid rgba(0, 150, 255, 0.7);padding: 14px 10px;border-radius: 12px;color: #fff;cursor: pointer;font-weight: 800;font-size: 12px;transition: all 0.3s;box-shadow: 0 4px 20px rgba(0, 150, 255, 0.4);text-shadow: 0 0 10px rgba(255,255,255,0.5);">
-                            🚀 Космос
-                        </button>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
+                        <button onclick="filterCategory('starter')" class="category-btn active" style="background: rgba(102,126,234,0.3); border: 2px solid rgba(102,126,234,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🎯 Старт</button>
+                        <button onclick="filterCategory('premium')" class="category-btn" style="background: rgba(234,179,8,0.3); border: 2px solid rgba(234,179,8,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🚀 Премиум</button>
+                        <button onclick="filterCategory('vip')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">👑 VIP</button>
+                        <button onclick="filterCategory('limited')" class="category-btn" style="background: rgba(255,0,0,0.3); border: 2px solid rgba(255,0,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🔥 Акции</button>
+                        <button onclick="filterCategory('ultra')" class="category-btn" style="background: rgba(128,0,128,0.3); border: 2px solid rgba(128,0,128,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">💎 Легенда</button>
+                        <button onclick="filterCategory('mega')" class="category-btn" style="background: rgba(0,150,255,0.3); border: 2px solid rgba(0,150,255,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🚀 Космос</button>
                     </div>
                     
-                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:15px;max-height:450px;overflow-y:auto;padding-right:8px;">
-                        <!-- CATEGORY 1: BEGINNER PACKS -->
-                        <div data-category="starter" style="display: block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(102,126,234,0.5);">🎯 СТАРТОВЫЕ НАБОРЫ</div>
+                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:8px;max-height:450px;overflow-y:auto;padding-right:5px;">
+                        <!-- CATEGORY 1: BEGINNER PACKS (10 products) -->
+                        <div data-category="starter" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🎯 СТАРТОВЫЕ НАБОРЫ</div>
                         
-                        <div data-category="starter" style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);animation:pulse 2s infinite;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;text-shadow:0 0 10px rgba(255,255,255,0.5);">💫 Первые шаги</div>
-                                    <div style="font-size:12px;color:#94a3b8;">200,000 коинов для новичка</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💫 Первые шаги</div>
+                                    <div style="font-size:9px;color:#94a3b8;">200K</div>
                                 </div>
-                                <div style="font-size:28px;animation:glow 2s infinite;">🌟</div>
+                                <div style="font-size:18px;">🌟</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_1')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 15px rgba(102,126,234,0.4);transition:all 0.3s;">
-                                💰 Купить за 50 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_1')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 50 ⭐</button>
                         </div>
                         
-                        <div data-category="starter" style="background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(118,75,162,0.3));padding:20px;border-radius:15px;border:2px solid rgba(102,126,234,0.6);box-shadow:0 0 30px rgba(102,126,234,0.3);">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">✨ Базовый набор</div>
-                                    <div style="font-size:12px;color:#94a3b8;">500,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">✨ Базовый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">500K</div>
                                 </div>
-                                <div style="font-size:28px;">💎</div>
+                                <div style="font-size:18px;">💎</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_2')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 120 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_2')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 120 ⭐</button>
                         </div>
                         
-                        <!-- CATEGORY 2: PREMIUM PACKS -->
-                        <div data-category="premium" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(234,179,8,0.5);">🚀 ПРЕМИУМ НАБОРЫ</div>
-                        
-                        <div data-category="premium" style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);position:relative;">
-                            <div style="position:absolute;top:-10px;left:-10px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 3px 10px rgba(255,0,0,0.4);">🔥 ЛУЧШАЯ ЦЕНА</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">⚡ Световой пакет</div>
-                                    <div style="font-size:12px;color:#94a3b8;">1,500,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Начало пути</div>
+                                    <div style="font-size:9px;color:#94a3b8;">800K</div>
                                 </div>
-                                <div style="font-size:28px;">⚡</div>
+                                <div style="font-size:18px;">⭐</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_3')" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff6b6b,#ee5a6f);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 20px rgba(255,0,0,0.4);">
-                                💰 Купить за 300 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_3')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 180 ⭐</button>
                         </div>
                         
-                        <div data-category="premium" style="background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(251,191,36,0.3));padding:20px;border-radius:15px;border:2px solid rgba(234,179,8,0.6);box-shadow:0 0 30px rgba(234,179,8,0.3);">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">🎯 Профессионал</div>
-                                    <div style="font-size:12px;color:#94a3b8;">3,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Приветственный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">1M</div>
                                 </div>
-                                <div style="font-size:28px;">🎯</div>
+                                <div style="font-size:18px;">💫</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_4')" style="width:100%;padding:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 600 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_4')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 240 ⭐</button>
                         </div>
                         
-                        <!-- CATEGORY 3: VIP PACKS -->
-                        <div data-category="vip" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(255,215,0,0.5);">👑 VIP КОЛЛЕКЦИИ</div>
-                        
-                        <div data-category="vip" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);position:relative;">
-                            <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#ffd700,#ffff00);color:#000;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 3px 15px rgba(255,215,0,0.6);">⭐ VIP</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">👑 Золотой статус</div>
-                                    <div style="font-size:12px;color:#94a3b8;">5,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🎁 Добро пожаловать</div>
+                                    <div style="font-size:9px;color:#94a3b8;">1.5M</div>
                                 </div>
-                                <div style="font-size:32px;">👑</div>
+                                <div style="font-size:18px;">🎁</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_5')" style="width:100%;padding:12px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 25px rgba(255,215,0,0.5);">
-                                💰 Купить за 1000 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_5')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 320 ⭐</button>
                         </div>
                         
-                        <div data-category="vip" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,255,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,215,0,0.6);box-shadow:0 0 40px rgba(255,215,0,0.4);">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">💸 Платиновый VIP</div>
-                                    <div style="font-size:12px;color:#94a3b8;">8,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💰 Стартовый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">2M</div>
                                 </div>
-                                <div style="font-size:28px;">💸</div>
+                                <div style="font-size:18px;">💰</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_6')" style="width:100%;padding:12px;background:linear-gradient(135deg,#c0c0c0,#e8e8e8);color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 1600 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_6')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 400 ⭐</button>
                         </div>
                         
-                        <!-- CATEGORY 4: LIMITED OFFERS -->
-                        <div data-category="limited" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(255,0,0,0.5);">🔥 ОГРАНИЧЕННЫЕ ПРЕДЛОЖЕНИЯ</div>
-                        
-                        <div data-category="limited" style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;animation:shake 1s infinite;">
-                            <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff0000,#ff5555);color:#fff;padding:5px 20px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 20px rgba(255,0,0,0.6);">⚡ МОМЕНТАЛЬНАЯ АКЦИЯ</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;margin-top:15px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">🔥 Файер-набор</div>
-                                    <div style="font-size:12px;color:#94a3b8;">12,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Быстрый старт</div>
+                                    <div style="font-size:9px;color:#94a3b8;">2.5M</div>
                                 </div>
-                                <div style="font-size:32px;">🔥</div>
+                                <div style="font-size:18px;">⚡</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_7')" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 25px rgba(255,0,0,0.5);">
-                                💰 Купить за 2500 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_7')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 480 ⭐</button>
                         </div>
                         
-                        <div data-category="limited" style="background:linear-gradient(135deg,rgba(255,0,0,0.3),rgba(255,100,100,0.3));padding:20px;border-radius:15px;border:2px solid rgba(255,0,0,0.6);box-shadow:0 0 40px rgba(255,0,0,0.4);position:relative;">
-                            <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;">⚡ ХОТ</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">💥 Мега взрыв</div>
-                                    <div style="font-size:12px;color:#94a3b8;">15,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🎯 Первый шаг</div>
+                                    <div style="font-size:9px;color:#94a3b8;">3M</div>
                                 </div>
-                                <div style="font-size:28px;">💥</div>
+                                <div style="font-size:18px;">🎯</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_8')" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 3200 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_8')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 560 ⭐</button>
                         </div>
                         
-                        <!-- CATEGORY 5: ULTRA PACKS -->
-                        <div data-category="ultra" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(128,0,128,0.5);">💎 УЛЬТРА НАБОРЫ</div>
-                        
-                        <div data-category="ultra" style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);position:relative;">
-                            <div style="position:absolute;top:-10px;left:-10px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 25px rgba(128,0,128,0.6);">💎 LEGENDARY</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;text-shadow:0 0 15px rgba(128,0,128,0.8);">💎 Легенда</div>
-                                    <div style="font-size:12px;color:#94a3b8;">25,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌈 Радуга</div>
+                                    <div style="font-size:9px;color:#94a3b8;">3.5M</div>
                                 </div>
-                                <div style="font-size:36px;">💎</div>
+                                <div style="font-size:18px;">🌈</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_9')" style="width:100%;padding:12px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 30px rgba(128,0,128,0.6);">
-                                💰 Купить за 5000 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_9')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 640 ⭐</button>
                         </div>
                         
-                        <div data-category="ultra" style="background:linear-gradient(135deg,rgba(128,0,128,0.3),rgba(200,100,200,0.3));padding:20px;border-radius:15px;border:2px solid rgba(128,0,128,0.6);box-shadow:0 0 50px rgba(128,0,128,0.4);">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:10px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">🌟 Мифический</div>
-                                    <div style="font-size:12px;color:#94a3b8;">35,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💫 Волшебный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">4M</div>
                                 </div>
-                                <div style="font-size:32px;">🌟</div>
+                                <div style="font-size:18px;">💫</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_10')" style="width:100%;padding:12px;background:linear-gradient(135deg,#4a0080,#6a00a0);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 7000 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_10')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 720 ⭐</button>
                         </div>
                         
-                        <!-- CATEGORY 6: MEGA PACKS -->
-                        <div data-category="mega" style="display:block;text-align:center;font-size:18px;font-weight:700;color:#fff;margin:10px 0 5px;text-shadow:0 0 20px rgba(0,200,255,0.5);">🚀 МЕГА НАБОРЫ</div>
+                        <!-- CATEGORY 2: PREMIUM PACKS (10 products) -->
+                        <div data-category="premium" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🚀 ПРЕМИУМ НАБОРЫ</div>
                         
-                        <div data-category="mega" style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);position:relative;">
-                            <div style="position:absolute;top:-10px;right:-10px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;padding:5px 15px;border-radius:20px;font-size:11px;font-weight:700;box-shadow:0 5px 25px rgba(0,200,255,0.6);">🚀 MEGA</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">🚀 Космос</div>
-                                    <div style="font-size:12px;color:#94a3b8;">50,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Световой</div>
+                                    <div style="font-size:9px;color:#94a3b8;">1.5M</div>
                                 </div>
-                                <div style="font-size:36px;">🚀</div>
+                                <div style="font-size:18px;">⚡</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_11')" style="width:100%;padding:12px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;box-shadow:0 5px 30px rgba(0,200,255,0.6);">
-                                💰 Купить за 10000 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_11')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 300 ⭐</button>
                         </div>
                         
-                        <div data-category="mega" style="background:linear-gradient(135deg,rgba(0,150,255,0.3),rgba(100,200,255,0.3));padding:20px;border-radius:15px;border:2px solid rgba(0,150,255,0.6);box-shadow:0 0 50px rgba(0,150,255,0.4);">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                                 <div>
-                                    <div style="font-size:18px;font-weight:700;color:#fff;">⭐ Вселенная</div>
-                                    <div style="font-size:12px;color:#94a3b8;">100,000,000 коинов</div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🎯 Профессионал</div>
+                                    <div style="font-size:9px;color:#94a3b8;">3M</div>
                                 </div>
-                                <div style="font-size:32px;">⭐</div>
+                                <div style="font-size:18px;">🎯</div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_12')" style="width:100%;padding:12px;background:linear-gradient(135deg,#00a0ff,#0066ff);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
-                                💰 Купить за 20000 ⭐
-                            </button>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_12')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 600 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🚀 Мощь</div>
+                                    <div style="font-size:9px;color:#94a3b8;">4.5M</div>
+                                </div>
+                                <div style="font-size:18px;">🚀</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_13')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 900 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Алмазный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">6M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_14')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 1200 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔥 Огненный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">7.5M</div>
+                                </div>
+                                <div style="font-size:18px;">🔥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_15')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 1500 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Электронный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">9M</div>
+                                </div>
+                                <div style="font-size:18px;">⚡</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_16')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 1800 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Звёздный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">10.5M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_17')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 2100 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💫 Космический</div>
+                                    <div style="font-size:9px;color:#94a3b8;">12M</div>
+                                </div>
+                                <div style="font-size:18px;">💫</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_18')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 2400 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🎁 Подарочный VIP</div>
+                                    <div style="font-size:9px;color:#94a3b8;">13.5M</div>
+                                </div>
+                                <div style="font-size:18px;">🎁</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_19')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 2700 ⭐</button>
+                        </div>
+                        
+                        <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:10px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔮 Магический</div>
+                                    <div style="font-size:9px;color:#94a3b8;">15M</div>
+                                </div>
+                                <div style="font-size:18px;">🔮</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_20')" style="width:100%;padding:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 3000 ⭐</button>
+                        </div>
+                        
+                        <!-- CATEGORY 3: VIP (10 products) -->
+                        <div data-category="vip" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">👑 VIP КОЛЛЕКЦИИ</div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">👑 Золотой статус</div>
+                                    <div style="font-size:9px;color:#94a3b8;">5M</div>
+                                </div>
+                                <div style="font-size:18px;">👑</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_21')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 1000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💸 Платиновый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">8M</div>
+                                </div>
+                                <div style="font-size:18px;">💸</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_22')" style="width:100%;padding:8px;background:linear-gradient(135deg,#c0c0c0,#e8e8e8);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 1600 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💰 Титановый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">12M</div>
+                                </div>
+                                <div style="font-size:18px;">💰</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_23')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 2400 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">👑 Императорский</div>
+                                    <div style="font-size:9px;color:#94a3b8;">16M</div>
+                                </div>
+                                <div style="font-size:18px;">👑</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_24')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 3200 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Легендарный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">20M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_25')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 4000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Королевский</div>
+                                    <div style="font-size:9px;color:#94a3b8;">25M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_26')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 5000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⭐ Мифический VIP</div>
+                                    <div style="font-size:9px;color:#94a3b8;">30M</div>
+                                </div>
+                                <div style="font-size:18px;">⭐</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_27')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 6000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🏆 Чемпионский</div>
+                                    <div style="font-size:9px;color:#94a3b8;">35M</div>
+                                </div>
+                                <div style="font-size:18px;">🏆</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_28')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 7000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">👑 Абсолютный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">40M</div>
+                                </div>
+                                <div style="font-size:18px;">👑</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_29')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 8000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Бриллиантовый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">45M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_30')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ffd700,#ffff66);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 9000 ⭐</button>
+                        </div>
+                        
+                        <!-- CATEGORY 4: LIMITED (10 products) -->
+                        <div data-category="limited" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🔥 ОГРАНИЧЕННЫЕ ПРЕДЛОЖЕНИЯ</div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔥 Файер-набор</div>
+                                    <div style="font-size:9px;color:#94a3b8;">12M</div>
+                                </div>
+                                <div style="font-size:18px;">🔥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_31')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 2500 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💥 Мега взрыв</div>
+                                    <div style="font-size:9px;color:#94a3b8;">15M</div>
+                                </div>
+                                <div style="font-size:18px;">💥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_32')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 3200 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Атомный удар</div>
+                                    <div style="font-size:9px;color:#94a3b8;">18M</div>
+                                </div>
+                                <div style="font-size:18px;">⚡</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_33')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 3900 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔥 Огненный шторм</div>
+                                    <div style="font-size:9px;color:#94a3b8;">21M</div>
+                                </div>
+                                <div style="font-size:18px;">🔥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_34')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 4600 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💥 Ядерный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">24M</div>
+                                </div>
+                                <div style="font-size:18px;">💥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_35')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 5300 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Молниеносный</div>
+                                    <div style="font-size:9px;color:#94a3b8;">27M</div>
+                                </div>
+                                <div style="font-size:18px;">⚡</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_36')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 6000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔥 Вулканический</div>
+                                    <div style="font-size:9px;color:#94a3b8;">30M</div>
+                                </div>
+                                <div style="font-size:18px;">🔥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_37')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 6700 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💥 Апокалиптический</div>
+                                    <div style="font-size:9px;color:#94a3b8;">33M</div>
+                                </div>
+                                <div style="font-size:18px;">💥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_38')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 7400 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⚡ Космический взрыв</div>
+                                    <div style="font-size:9px;color:#94a3b8;">36M</div>
+                                </div>
+                                <div style="font-size:18px;">⚡</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_39')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 8100 ⭐</button>
+                        </div>
+                        
+                        <div data-category="limited" style="background:rgba(255,0,0,0.25);padding:10px;border-radius:10px;border:1px solid rgba(255,0,0,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🔥 Финальный огонь</div>
+                                    <div style="font-size:9px;color:#94a3b8;">40M</div>
+                                </div>
+                                <div style="font-size:18px;">🔥</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_40')" style="width:100%;padding:8px;background:linear-gradient(135deg,#ff0000,#ff4444);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 9000 ⭐</button>
+                        </div>
+                        
+                        <!-- CATEGORY 5: ULTRA (10 products) -->
+                        <div data-category="ultra" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">💎 УЛЬТРА НАБОРЫ</div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Легенда</div>
+                                    <div style="font-size:9px;color:#94a3b8;">25M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_41')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 5000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Мифический</div>
+                                    <div style="font-size:9px;color:#94a3b8;">35M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_42')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 7000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💫 Бесконечность</div>
+                                    <div style="font-size:9px;color:#94a3b8;">45M</div>
+                                </div>
+                                <div style="font-size:18px;">💫</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_43')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 9000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Вечность</div>
+                                    <div style="font-size:9px;color:#94a3b8;">55M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_44')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 11000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Вселенная</div>
+                                    <div style="font-size:9px;color:#94a3b8;">65M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_45')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 13000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Абсолют</div>
+                                    <div style="font-size:9px;color:#94a3b8;">75M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_46')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 15000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Техногенезис</div>
+                                    <div style="font-size:9px;color:#94a3b8;">85M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_47')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 17000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Квантовый</div>
+                                    <div style="font-size:9px;color:#94a3b8;">95M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_48')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 19000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Феникс</div>
+                                    <div style="font-size:9px;color:#94a3b8;">105M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_49')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 21000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="ultra" style="background:rgba(128,0,128,0.25);padding:10px;border-radius:10px;border:1px solid rgba(128,0,128,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💎 Богиня</div>
+                                    <div style="font-size:9px;color:#94a3b8;">120M</div>
+                                </div>
+                                <div style="font-size:18px;">💎</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_50')" style="width:100%;padding:8px;background:linear-gradient(135deg,#800080,#a000a0);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 24000 ⭐</button>
+                        </div>
+                        
+                        <!-- CATEGORY 6: MEGA (10 products) -->
+                        <div data-category="mega" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🚀 МЕГА НАБОРЫ</div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🚀 Космос</div>
+                                    <div style="font-size:9px;color:#94a3b8;">50M</div>
+                                </div>
+                                <div style="font-size:18px;">🚀</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_51')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 10000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⭐ Вселенная</div>
+                                    <div style="font-size:9px;color:#94a3b8;">100M</div>
+                                </div>
+                                <div style="font-size:18px;">⭐</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_52')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 20000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌌 Галактика</div>
+                                    <div style="font-size:9px;color:#94a3b8;">150M</div>
+                                </div>
+                                <div style="font-size:18px;">🌌</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_53')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 30000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Созвездие</div>
+                                    <div style="font-size:9px;color:#94a3b8;">200M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_54')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 40000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">💫 Туманность</div>
+                                    <div style="font-size:9px;color:#94a3b8;">250M</div>
+                                </div>
+                                <div style="font-size:18px;">💫</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_55')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 50000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🚀 Вихрь</div>
+                                    <div style="font-size:9px;color:#94a3b8;">300M</div>
+                                </div>
+                                <div style="font-size:18px;">🚀</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_56')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 60000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⭐ Пульсар</div>
+                                    <div style="font-size:9px;color:#94a3b8;">350M</div>
+                                </div>
+                                <div style="font-size:18px;">⭐</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_57')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 70000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌌 Квазар</div>
+                                    <div style="font-size:9px;color:#94a3b8;">400M</div>
+                                </div>
+                                <div style="font-size:18px;">🌌</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_58')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 80000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">🌟 Чёрная дыра</div>
+                                    <div style="font-size:9px;color:#94a3b8;">450M</div>
+                                </div>
+                                <div style="font-size:18px;">🌟</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_59')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 90000 ⭐</button>
+                        </div>
+                        
+                        <div data-category="mega" style="background:rgba(0,150,255,0.25);padding:10px;border-radius:10px;border:1px solid rgba(0,150,255,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <div>
+                                    <div style="font-size:13px;font-weight:700;color:#fff;">⭐ Большой взрыв</div>
+                                    <div style="font-size:9px;color:#94a3b8;">500M</div>
+                                </div>
+                                <div style="font-size:18px;">⭐</div>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_60')" style="width:100%;padding:8px;background:linear-gradient(135deg,#00c8ff,#0096ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">💰 100000 ⭐</button>
                         </div>
                     </div>
                 </div>
@@ -2715,15 +3187,13 @@
             buttons.forEach(btn => {
                 const onclick = btn.getAttribute('onclick');
                 if (onclick && onclick.includes(category)) {
-                    btn.style.transform = 'scale(1.05)';
-                    btn.style.boxShadow = '0 6px 25px rgba(255, 215, 0, 0.5)';
-                    btn.style.background = btn.style.background.replace(/0\.4/g, '0.6');
-                    btn.classList.add('active');
+                    btn.style.transform = 'scale(1.03)';
+                    btn.style.opacity = '1';
+                    btn.style.border = btn.style.border.replace('2px', '3px');
                 } else {
                     btn.style.transform = 'scale(1)';
-                    btn.style.boxShadow = btn.style.boxShadow.replace(/0 6px 25px rgba\(255, 215, 0, 0\.5\)/, '').replace(/^/, '0 4px 20px rgba(100, 100, 100, 0.3)');
-                    btn.style.background = btn.style.background.replace(/0\.6/g, '0.4');
-                    btn.classList.remove('active');
+                    btn.style.opacity = '0.6';
+                    btn.style.border = btn.style.border.replace('3px', '2px');
                 }
             });
             
@@ -2732,7 +3202,6 @@
                 const itemCategory = item.getAttribute('data-category');
                 if (itemCategory === category) {
                     item.style.display = '';
-                    setTimeout(() => item.style.opacity = '1', 50);
                 } else {
                     item.style.display = 'none';
                 }
