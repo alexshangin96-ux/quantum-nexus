@@ -2512,24 +2512,17 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal first
+                        // Close modal
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Show message that bot will open
-                        tg.showAlert('Открываем бота для оплаты...');
+                        // Send command to bot via Telegram Mini App API
+                        tg.sendData(JSON.stringify({
+                            action: 'buy_stars',
+                            product_id: productId
+                        }));
                         
-                        // Use Telegram's openTelegramLink with proper method
-                        if(tg.openTelegramLink) {
-                            tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-                        } else {
-                            // Fallback: create hidden link and click
-                            const link = document.createElement('a');
-                            link.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
-                            link.target = '_blank';
-                            document.body.appendChild(link);
-                            link.click();
-                            setTimeout(() => document.body.removeChild(link), 100);
-                        }
+                        // Also try to open bot directly
+                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
                     }
                 });
             } catch(err) {
