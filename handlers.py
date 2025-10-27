@@ -463,16 +463,29 @@ async def pre_checkout_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def successful_payment_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle successful Stars payment"""
+    """Handle successful Stars payment - only called when payment is REAL"""
     payment = update.message.successful_payment
     user_id = update.effective_user.id
+    
+    # Log the payment details
+    logger.info(f"Payment received: {payment}")
+    logger.info(f"Payment invoice: {payment.invoice_payload}")
+    logger.info(f"Payment total amount: {payment.total_amount}")
+    logger.info(f"Payment currency: {payment.currency}")
     
     # Parse payload: stars_{user_id}_{product_id}
     invoice_payload = payment.invoice_payload
     
+    # Verify this is a Stars payment
+    if payment.currency != "XTR":
+        logger.error(f"Wrong currency: {payment.currency}, expected XTR")
+        await update.message.reply_text("❌ Ошибка: неверная валюта")
+        return
+    
     try:
         parts = invoice_payload.split("_")
         if len(parts) != 3 or parts[0] != "stars":
+            logger.error(f"Invalid payload format: {invoice_payload}")
             await update.message.reply_text("❌ Ошибка: неверный payload")
             return
         
@@ -488,6 +501,7 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
         coins_to_add = product_coins.get(product_id, 0)
         
         if coins_to_add == 0:
+            logger.error(f"Unknown product: {product_id}")
             await update.message.reply_text("❌ Ошибка: неизвестный товар")
             return
         
@@ -495,6 +509,7 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             user = db.query(User).filter_by(id=user_db_id, telegram_id=user_id).first()
             
             if not user:
+                logger.error(f"User not found: {user_db_id}/{user_id}")
                 await update.message.reply_text("❌ Ошибка: пользователь не найден")
                 return
             
@@ -503,16 +518,17 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             db.commit()
             
             # Log successful payment
-            logger.info(f"User {user_id} bought product {product_id} for {coins_to_add} coins")
+            logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
             
             await update.message.reply_text(
                 f"✨ Покупка успешна!\n\n"
-                f"💰 Получено: {coins_to_add:,} коинов\n"
+                f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                f"💰 Получено: {coins_to_add:,} коинов\n\n"
                 f"📊 Новый баланс: {user.coins:,} коинов"
             )
             
     except Exception as e:
-        logger.error(f"Error processing payment: {e}")
+        logger.error(f"Error processing payment: {e}", exc_info=True)
         await update.message.reply_text("❌ Ошибка при обработке платежа")
 
 
