@@ -918,7 +918,8 @@ def buy_item():
         # Ensure price is a float
         price = float(price) if price else 0
         
-        with get_db() as db:
+        db = next(get_db())
+        try:
             user = db.query(User).filter_by(telegram_id=user_id).first()
             
             if not user:
@@ -1040,8 +1041,9 @@ def buy_item():
                 # Store expiration (24 hours)
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
-        
-        return jsonify({'success': True})
+            
+            db.commit()
+            return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
