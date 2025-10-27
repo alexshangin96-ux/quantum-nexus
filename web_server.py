@@ -1464,6 +1464,41 @@ def archive_ticket():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/admin/set_vip', methods=['POST'])
+def set_vip():
+    """Set VIP status and privileges for user"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        vip_data = data.get('vip_data')
+        
+        if not user_id or not vip_data:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Update VIP fields if they exist on User model
+            if hasattr(user, 'vip_level'):
+                user.vip_level = vip_data.get('vip_level', 0)
+            if hasattr(user, 'vip_badge'):
+                user.vip_badge = vip_data.get('vip_badge', None)
+            if hasattr(user, 'has_premium_support'):
+                user.has_premium_support = vip_data.get('has_premium_support', False)
+            if hasattr(user, 'has_golden_profile'):
+                user.has_golden_profile = vip_data.get('has_golden_profile', False)
+            if hasattr(user, 'has_top_place'):
+                user.has_top_place = vip_data.get('has_top_place', False)
+            if hasattr(user, 'has_unique_design'):
+                user.has_unique_design = vip_data.get('has_unique_design', False)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/daily_tasks', methods=['POST'])
 def get_daily_tasks():
     """Get daily tasks for user"""
