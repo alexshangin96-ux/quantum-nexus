@@ -222,17 +222,17 @@
         }
         
         .vip-profile-icon {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 52px;
-            height: 52px;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, #a78bfa, #c084fc, #d946ef);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 24px;
             border: 3px solid rgba(255, 255, 255, 0.4);
             cursor: pointer;
             z-index: 10000;
@@ -259,11 +259,11 @@
         }
         
         .vip-top-button {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            width: 50px;
-            height: 50px;
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
@@ -1769,12 +1769,12 @@
         
         function openBuyVIPModal() {
             const vipPackages = [
-                {level: 1, name: 'Bronze VIP', stars: 10000, color: '#cd7f32', badge: '🥉', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '➕ 20% к тапу'], productId: 51},
-                {level: 2, name: 'Silver VIP', stars: 20000, color: '#c0c0c0', badge: '🥈', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '🏆 Top Place', '➕ 50% к тапу'], productId: 52},
-                {level: 3, name: 'Gold VIP', stars: 30000, color: '#ffd700', badge: '🥇', benefits: ['⭐ Premium Support', '🌟 Golden Profile', '🏆 Top Place', '✨ Unique Design', '➕ 100% к тапу', '⚡ 50% энергии'], productId: 53},
-                {level: 4, name: 'Platinum VIP', stars: 40000, color: '#e5e4e2', badge: '💎', benefits: ['Все из Gold VIP', '🎉 VIP Турниры', '✨ Частицы', '➕ 150% к тапу'], productId: 54},
-                {level: 5, name: 'Diamond VIP', stars: 50000, color: '#b9f2ff', badge: '💠', benefits: ['Все из Platinum VIP', '👑 Корона', '💰 0% комиссия', '➕ 250% к тапу', '💎 VIP Boost 50x'], productId: 55},
-                {level: 6, name: 'Absolute VIP', stars: 60000, color: '#ff69b4', badge: '👑', benefits: ['Все из Diamond VIP', '✨ Аура', '🌈 Радуга', '➕ 450% к тапу', '🌐 VIP Машины'], productId: 56}
+                {level: 1, name: 'Bronze VIP', stars: 300, color: '#cd7f32', badge: '🥉', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '➕ 20% к тапу'], productId: 51},
+                {level: 2, name: 'Silver VIP', stars: 600, color: '#c0c0c0', badge: '🥈', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '🏆 Top Place', '➕ 50% к тапу'], productId: 52},
+                {level: 3, name: 'Gold VIP', stars: 1000, color: '#ffd700', badge: '🥇', benefits: ['⭐ Premium Support', '🌟 Golden Profile', '🏆 Top Place', '✨ Unique Design', '➕ 100% к тапу', '⚡ 50% энергии'], productId: 53},
+                {level: 4, name: 'Platinum VIP', stars: 1500, color: '#e5e4e2', badge: '💎', benefits: ['Все из Gold VIP', '🎉 VIP Турниры', '✨ Частицы', '➕ 150% к тапу'], productId: 54},
+                {level: 5, name: 'Diamond VIP', stars: 2000, color: '#b9f2ff', badge: '💠', benefits: ['Все из Platinum VIP', '👑 Корона', '💰 0% комиссия', '➕ 250% к тапу', '💎 VIP Boost 50x'], productId: 55},
+                {level: 6, name: 'Absolute VIP', stars: 3000, color: '#ff69b4', badge: '👑', benefits: ['Все из Diamond VIP', '✨ Аура', '🌈 Радуга', '➕ 450% к тапу', '🌐 VIP Машины'], productId: 56}
             ];
             
             let vipHTML = vipPackages.map(pkg => `
