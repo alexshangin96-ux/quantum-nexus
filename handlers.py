@@ -565,18 +565,32 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             await update.message.reply_text("❌ Пользователь не найден")
             return
         
-        # Send invoice with Telegram Stars
-        prices = [LabeledPrice(
-            label=f"{product['title']} - {product['description']}",
-            amount=product['stars']
-        )]
-        
-        await context.bot.send_invoice(
-            chat_id=update.effective_chat.id,
-            title=f"💎 {product['title']}",
-            description=product['description'],
-            payload=f"stars_{user.id}_{product_id}",
-            provider_token="",  # Empty for Stars
-            currency="XTR",  # Stars currency
-            prices=prices
-        )
+        try:
+            # Send invoice with Telegram Stars
+            prices = [LabeledPrice(
+                label=f"{product['title']} - {product['description']}",
+                amount=product['stars']
+            )]
+            
+            logger.info(f"Attempting to send Stars invoice to user {user_id} for product {product_id}")
+            
+            await context.bot.send_invoice(
+                chat_id=update.effective_chat.id,
+                title=f"💎 {product['title']}",
+                description=product['description'],
+                payload=f"stars_{user.id}_{product_id}",
+                provider_token="",  # Empty for Stars
+                currency="XTR",  # Stars currency
+                prices=prices
+            )
+            
+            logger.info(f"Stars invoice sent successfully to user {user_id}")
+            
+        except Exception as e:
+            logger.error(f"Failed to send Stars invoice: {e}", exc_info=True)
+            await update.message.reply_text(
+                f"❌ Ошибка при отправке invoice:\n\n"
+                f"{str(e)}\n\n"
+                f"💡 Возможно, Telegram Stars недоступны в вашем регионе.\n"
+                f"Попробуйте позже или используйте внутриигровые коины."
+            )
