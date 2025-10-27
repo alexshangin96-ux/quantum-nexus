@@ -16,18 +16,24 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command"""
     user = update.effective_user
     
-    # Check for special commands BEFORE creating user
+    # Check for special commands BEFORE doing anything else
     if context.args and context.args[0]:
         arg = context.args[0]
         
         # Check if it's a buy_stars command FIRST
         if arg.startswith('buy_stars_'):
+            logger.info(f"Received buy_stars command: {arg}")
             try:
                 product_id = int(arg.split('_')[2])
+                logger.info(f"Processing buy_stars for product {product_id}")
                 await send_stars_invoice(update, context, product_id)
+                logger.info(f"send_stars_invoice completed for product {product_id}")
                 return  # Don't show main menu, just send invoice
             except (ValueError, IndexError) as e:
                 logger.error(f"Invalid buy_stars parameter: {arg}, error: {e}")
+    
+    # If we got here, it's a normal /start command
+    logger.info(f"Processing normal /start for user {user.id}")
     
     with get_db() as db:
         # Check if user exists
