@@ -192,7 +192,13 @@ def get_user_data():
                 'passive_hash_per_hour': passive_hash_per_hour,
                 'auto_tap_enabled': getattr(user, 'auto_tap_enabled', False),
                 'auto_tap_level': getattr(user, 'auto_tap_level', 0),
-                'auto_tap_speed': getattr(user, 'auto_tap_speed', 2.0)
+                'auto_tap_speed': getattr(user, 'auto_tap_speed', 2.0),
+                'vip_level': getattr(user, 'vip_level', 0),
+                'vip_badge': getattr(user, 'vip_badge', None),
+                'has_premium_support': getattr(user, 'has_premium_support', False),
+                'has_golden_profile': getattr(user, 'has_golden_profile', False),
+                'has_top_place': getattr(user, 'has_top_place', False),
+                'has_unique_design': getattr(user, 'has_unique_design', False)
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -217,19 +223,42 @@ def tap():
             if user.energy < ENERGY_COST_PER_TAP:
                 return jsonify({'success': False, 'error': 'Недостаточно энергии!'})
             
-            # Calculate reward
-            reward = BASE_TAP_REWARD * user.active_multiplier
+            # Calculate VIP bonus multiplier
+            vip_level = getattr(user, 'vip_level', 0)
+            vip_multiplier = 1.0
+            
+            # Apply VIP bonuses
+            if vip_level >= 1:
+                vip_multiplier += 0.2  # 20% bonus for Bronze
+            if vip_level >= 2:
+                vip_multiplier += 0.3  # 50% total bonus for Silver
+            if vip_level >= 3:
+                vip_multiplier += 0.5  # 100% total bonus for Gold
+            if vip_level >= 4:
+                vip_multiplier += 0.5  # 150% total bonus for Platinum
+            if vip_level >= 5:
+                vip_multiplier += 1.0  # 250% total bonus for Diamond
+            if vip_level >= 6:
+                vip_multiplier += 2.0  # 450% total bonus for Absolute VIP
+            
+            # Calculate reward with VIP bonus
+            reward = BASE_TAP_REWARD * user.active_multiplier * vip_multiplier
+            
+            # VIP users get lower energy cost
+            energy_cost = ENERGY_COST_PER_TAP
+            if vip_level >= 3:
+                energy_cost = max(0.5, energy_cost * 0.5)  # 50% energy cost for Gold+
             
             # Update user
             user.coins += reward
-            user.energy -= ENERGY_COST_PER_TAP
+            user.energy -= energy_cost
             user.total_taps += 1
             user.total_earned += reward
             user.last_active = datetime.utcnow()
             
             db.commit()
             
-            return jsonify({'success': True, 'reward': int(reward)})
+            return jsonify({'success': True, 'reward': int(reward), 'vip_bonus': vip_multiplier})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
