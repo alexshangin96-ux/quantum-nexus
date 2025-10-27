@@ -2500,6 +2500,8 @@
                 }
                 
                 const starsPrice = productId === 1 ? 10 : 40;
+                const stars = starsPrice;
+                const coins = productId === 1 ? 1000000 : 5000000;
                 
                 // Show confirmation popup
                 tg.showPopup({
@@ -2511,11 +2513,42 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal
+                        // Close modal first
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Try to open bot to send invoice
-                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+                        // Show invoice payment UI directly
+                        tg.showInvoice({
+                            url: `https://t.me/qanexus_bot/invoice/stars_pack_${productId}`,
+                            closingBehavior: 'save_invoice_and_close'
+                        }, (status) => {
+                            if(status === 'paid') {
+                                // Call backend to confirm and add coins
+                                fetch('/api/confirm_stars_payment', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                        user_id: user?.id,
+                                        product_id: productId,
+                                        stars_amount: stars,
+                                        coins_amount: coins
+                                    })
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if(data.success) {
+                                        tg.showAlert('✨ Покупка успешна! Коины добавлены.');
+                                        loadData();
+                                    } else {
+                                        tg.showAlert('❌ Ошибка: ' + data.error);
+                                    }
+                                })
+                                .catch(err => {
+                                    tg.showAlert('❌ Ошибка: ' + err.message);
+                                });
+                            } else {
+                                tg.showAlert('ℹ️ Оплата отменена');
+                            }
+                        });
                     }
                 });
             } catch(err) {
