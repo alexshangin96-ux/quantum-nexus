@@ -1447,10 +1447,11 @@
                     
                     loadData();
                     
-                    // Force immediate reload of cards shop
+                    // Force immediate reload of cards shop - preserve current category
                     if(document.getElementById('shopCardsList')) {
-                        const activeBtn = document.querySelector('.filter-btn.active');
-                        const cardCategory = activeBtn && activeBtn.textContent.includes('В минуту') ? 'per_minute' : 'per_hour';
+                        const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
+                        const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 
+                                          (activeBtn && activeBtn.textContent.includes('В минуту') ? 'per_minute' : 'per_hour');
                         fetch('/api/shop', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -1459,7 +1460,8 @@
                         .then(res => res.json())
                         .then(shopData => {
                             const shopList = document.getElementById('shopCardsList');
-                            const cards = shopData.items.filter(item => item.type === 'card' && (cardCategory === 'all' || item.income_type === cardCategory));
+                            const filterCategory = cardCategory || 'per_hour';
+                            const cards = shopData.items.filter(item => item.type === 'card' && (filterCategory === 'all' || item.income_type === filterCategory));
                             if(cards && cards.length > 0) {
                                 shopList.innerHTML = cards.map(card => {
                                 if(card.is_locked) {
@@ -1757,12 +1759,12 @@
                     </div>
                     
                     <div id="cardsShopSection" style="margin-bottom:25px;">
-                        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;">
-                            <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;">🛒 Магазин карточек</span>
+                        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;grid-column:1/-1;">
+                            <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;width:100%;text-align:center;">🛒 Магазин карточек</span>
                         </div>
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
-                            <button class="shop-cat-btn" onclick="loadCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ В час (Основные)</button>
-                            <button class="shop-cat-btn" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
+                            <button class="filter-btn shop-cat-btn" data-category="per_hour" onclick="loadCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ В час (Основные)</button>
+                            <button class="filter-btn shop-cat-btn" data-category="per_minute" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
                         </div>
                         <div id="shopCardsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
                     </div>
