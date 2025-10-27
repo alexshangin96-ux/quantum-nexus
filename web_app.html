@@ -30,6 +30,22 @@
         * {
             -webkit-tap-highlight-color: transparent !important;
             -webkit-focus-ring-color: transparent !important;
+            -webkit-touch-callout: none !important;
+        }
+        
+        button:focus,
+        button:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+        
+        .tap-button:focus,
+        .tap-button:active,
+        .tap-button:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
         }
 
         body::before {
