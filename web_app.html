@@ -2493,17 +2493,23 @@
         
         function confirmStarsPayment(productId) {
             const tg = window.Telegram?.WebApp;
-            // Close modal and open bot
             const modal = document.querySelector('#buyCurrencyModal');
             if(modal) modal.remove();
             
-            // Open bot to send invoice
-            if(tg && tg.openTelegramLink) {
-                tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-            } else {
-                // Fallback
-                window.location.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
-            }
+            // Try ALL possible methods
+            const botUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+            
+            // Method 1: tg.openTelegramLink
+            try { tg.openTelegramLink(botUrl); } catch(e) { console.log('Method 1 failed:', e); }
+            
+            // Method 2: window.location
+            setTimeout(() => { try { window.location.href = botUrl; } catch(e) { console.log('Method 2 failed:', e); } }, 100);
+            
+            // Method 3: window.open
+            setTimeout(() => { try { window.open(botUrl, '_blank'); } catch(e) { console.log('Method 3 failed:', e); } }, 200);
+            
+            // Method 4: Close app first, then open
+            setTimeout(() => { try { tg.close(); setTimeout(() => window.location.href = botUrl, 100); } catch(e) { console.log('Method 4 failed:', e); } }, 300);
         }
         
         function goToStarsPayment(productId) {
