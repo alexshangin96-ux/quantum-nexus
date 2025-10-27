@@ -1610,32 +1610,42 @@
                         <div style="padding:20px;">
                             <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;margin-bottom:15px;border:2px solid rgba(255,215,0,0.3);">
                                 <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:#ffd700;text-align:center;">📊 ПОЛНАЯ СТАТИСТИКА</div>
-                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.coins || 0).toLocaleString()}</div>
+                                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;">
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💰 Коины</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.coins || 0)}</div>
+                                        </div>
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💎 QuanHash</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.quanhash || 0)}</div>
+                                        </div>
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">⚡ Энергия</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.energy || 0)}</div>
+                                        </div>
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">🎮 Уровень</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${userData.level || 1}</div>
+                                        </div>
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">👆 Тапов</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_taps || 0)}</div>
+                                        </div>
+                                        <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
+                                            <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💵 Доход</div>
+                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_earned || 0)}</div>
+                                        </div>
                                     </div>
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💎 QuanHash</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.quanhash || 0).toLocaleString()}</div>
+                                    
+                                    <div style="margin-top:12px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
+                                        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">📊 Активные машины</div>
+                                        <div style="font-size:14px;font-weight:700;color:#fff;">${userData.machines_count || 0} шт • +${userData.hash_rate || 0}/сек</div>
                                     </div>
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${Math.floor(userData.energy || 0)}</div>
+                                    
+                                    <div style="margin-top:10px;padding:12px;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
+                                        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">🔄 Активный буст</div>
+                                        <div style="font-size:14px;font-weight:700;color:#10b981;">x${userData.active_multiplier || 1} ${userData.multiplier_expires_at ? '(до ' + new Date(userData.multiplier_expires_at).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}) + ')' : ''}</div>
                                     </div>
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">🎮 Уровень</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${userData.level || 1}</div>
-                                    </div>
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">👆 Всего тапов</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.total_taps || 0).toLocaleString()}</div>
-                                    </div>
-                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💰 Заработано</div>
-                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.total_earned || 0).toLocaleString()}</div>
-                                    </div>
-                                </div>
                             </div>
                             
                             ${vipLevel >= 3 ? `

@@ -1870,7 +1870,7 @@ def get_top_users():
     """Get top users by total earnings"""
     try:
         data = request.json
-        limit = data.get('limit', 10)
+        limit = data.get('limit', 999)
         
         with get_db() as db:
             users = db.query(User).order_by(User.total_earned.desc()).limit(limit).all()
@@ -1879,8 +1879,10 @@ def get_top_users():
             for u in users:
                 top_users.append({
                     'username': u.username or 'Unknown',
-                    'total_coins': int(u.total_earned or 0),
-                    'level': u.level or 1
+                    'total_coins': int(u.total_earned or 0),  # Total earned
+                    'coins': int(u.coins or 0),  # Current coins
+                    'level': u.level or 1,
+                    'vip_level': getattr(u, 'vip_level', 0) or 0
                 })
             
             return jsonify({'users': top_users})
