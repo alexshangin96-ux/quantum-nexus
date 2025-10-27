@@ -3228,3 +3228,28 @@
                         </div>
                         
                     </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Set initial active category
+            filterCategory('starter');
+        }
+        
+        function filterCategory(category) {
+            // Update button states
+            document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event?.target?.classList.add('active');
+            
+            // Filter and show products
+            const products = document.querySelectorAll('#currencyProductsList > [data-category]');
+            products.forEach(product => {
+                if(product.dataset.category === category) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
