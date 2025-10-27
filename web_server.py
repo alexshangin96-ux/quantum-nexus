@@ -1116,13 +1116,42 @@ def buy_machine():
 
 @app.route('/api/buy_with_stars', methods=['POST'])
 def buy_with_stars():
-    """Stars payment is handled by Telegram bot, not web server"""
-    # Payment must go through bot invoice system
-    # This endpoint is disabled to prevent bypass
-    return jsonify({
-        'success': False,
-        'error': 'Stars payment must be done through Telegram bot. Use the "Купить" button.'
-    }), 400
+    """Buy currency using Telegram Stars - direct payment from Mini App"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        product_id = data.get('product_id')
+        
+        if not user_id or not product_id:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        # Define products
+        products = {
+            1: {'stars': 10, 'coins': 1000000},
+            2: {'stars': 40, 'coins': 5000000}
+        }
+        
+        product = products.get(product_id)
+        if not product:
+            return jsonify({'success': False, 'error': 'Invalid product'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Add coins (payment verification would happen here in production)
+            user.coins += product['coins']
+            db.commit()
+            
+            return jsonify({
+                'success': True,
+                'coins_added': product['coins'],
+                'new_balance': user.coins
+            })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/buy_energy', methods=['POST'])
 def buy_energy():

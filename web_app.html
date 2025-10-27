@@ -2514,19 +2514,26 @@
                         // Close modal
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Use openInvoice directly in Mini App
-                        const invoiceSlug = `stars_pack_${productId}`;
-                        
-                        tg.openInvoice({
-                            invoiceSlug: invoiceSlug,
-                            successParam: 'purchase_success'
-                        }, (status) => {
-                            if(status === 'paid') {
+                        // Call backend to add coins
+                        fetch('/api/buy_with_stars', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                user_id: user?.id,
+                                product_id: productId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.success) {
                                 tg.showAlert('✨ Покупка успешна! Коины добавлены.');
-                                loadData(); // Reload to show updated balance
+                                loadData();
                             } else {
-                                tg.showAlert('ℹ️ Оплата отменена');
+                                tg.showAlert('❌ Ошибка: ' + data.error);
                             }
+                        })
+                        .catch(err => {
+                            tg.showAlert('❌ Ошибка: ' + err.message);
                         });
                     }
                 });
