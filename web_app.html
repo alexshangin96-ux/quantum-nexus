@@ -2532,9 +2532,9 @@
                                 ${productId === 1 ? '10' : '40'} ⭐
                             </div>
                         </div>
-                        <button onclick="confirmStarsPayment(${productId})" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;">
-                            💎 Подтвердить оплату
-                        </button>
+                        <a href="https://t.me/qanexus_bot?start=buy_stars_${productId}" style="display:block;width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;text-align:center;text-decoration:none;">
+                            💎 Открыть бота для оплаты
+                        </a>
                         <button onclick="this.closest('.modal').remove(); openBuyCurrency()" style="width:100%;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;margin-top:10px;">
                             Отмена
                         </button>
