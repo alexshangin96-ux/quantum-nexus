@@ -1646,16 +1646,18 @@
                             </div>
                             
                             ${vipLevel >= 3 ? `
-                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;border:2px solid rgba(255,215,0,0.3);margin-bottom:15px;">
-                                <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
-                                <div style="font-size:12px;color:#fff;line-height:2.2;">
-                                    ${userData.has_premium_support ? '⭐ Premium Support<br>' : ''}
-                                    ${userData.has_golden_profile ? '🌟 Golden Profile<br>' : ''}
-                                    ${userData.has_top_place ? '🏆 Top Place<br>' : ''}
-                                    ${userData.has_unique_design ? '✨ Unique Design<br>' : ''}
+                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,255,255,0.05));padding:12px;border-radius:12px;border:1px solid rgba(255,215,0,0.2);margin-bottom:12px;">
+                                <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
+                                <div style="font-size:11px;color:#fff;line-height:1.8;">
+                                    ${userData.has_premium_support ? '⭐ Premium Support ' : ''}
+                                    ${userData.has_golden_profile ? '🌟 Golden Profile ' : ''}
+                                    ${userData.has_top_place ? '🏆 Top Place ' : ''}
+                                    ${userData.has_unique_design ? '✨ Unique Design' : ''}
                                 </div>
                             </div>
-                            ` : ''}
+                            ` : `
+                            <button onclick="openBuyVIPModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:12px;">👑 Купить VIP статус</button>
+                            `}
                             
                             <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
                         </div>
@@ -1758,6 +1760,64 @@
                 aura.className = 'vip-aura';
                 document.body.appendChild(aura);
             }
+        }
+        
+        function openBuyVIPModal() {
+            const vipPackages = [
+                {level: 1, name: 'Bronze VIP', stars: 50, color: '#cd7f32', badge: '🥉', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '➕ 20% к тапу']},
+                {level: 2, name: 'Silver VIP', stars: 100, color: '#c0c0c0', badge: '🥈', benefits: ['⭐ Premium Support', '✨ Уникальный маркер', '🏆 Top Place', '➕ 50% к тапу']},
+                {level: 3, name: 'Gold VIP', stars: 200, color: '#ffd700', badge: '🥇', benefits: ['⭐ Premium Support', '🌟 Golden Profile', '🏆 Top Place', '✨ Unique Design', '➕ 100% к тапу', '⚡ 50% энергии']},
+                {level: 4, name: 'Platinum VIP', stars: 500, color: '#e5e4e2', badge: '💎', benefits: ['Все из Gold VIP', '🎉 VIP Турниры', '✨ Частицы', '➕ 150% к тапу']},
+                {level: 5, name: 'Diamond VIP', stars: 1000, color: '#b9f2ff', badge: '💠', benefits: ['Все из Platinum VIP', '👑 Корона', '💰 0% комиссия', '➕ 250% к тапу', '💎 VIP Boost 50x']},
+                {level: 6, name: 'Absolute VIP', stars: 2000, color: '#ff69b4', badge: '👑', benefits: ['Все из Diamond VIP', '✨ Аура', '🌈 Радуга', '➕ 450% к тапу', '🌐 VIP Машины']}
+            ];
+            
+            let vipHTML = vipPackages.map(pkg => `
+                <div style="background:linear-gradient(135deg,${pkg.color},rgba(255,255,255,0.1));padding:14px;border-radius:12px;margin-bottom:12px;border:2px solid ${pkg.color};box-shadow:0 4px 15px ${pkg.color}40;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:28px;">${pkg.badge}</span>
+                            <div>
+                                <div style="font-size:16px;font-weight:900;color:#000;">${pkg.name}</div>
+                                <div style="font-size:12px;color:rgba(0,0,0,0.7);">Уровень ${pkg.level}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:20px;font-weight:900;color:#000;">${pkg.stars}</div>
+                            <div style="font-size:11px;color:rgba(0,0,0,0.7);">⭐ звезд</div>
+                        </div>
+                    </div>
+                    <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:10px;">
+                        <div style="font-size:11px;color:rgba(0,0,0,0.8);line-height:1.8;">
+                            ${pkg.benefits.map(b => `<div>✓ ${b}</div>`).join('')}
+                        </div>
+                    </div>
+                    <button onclick="window.open('https://t.me/qanexus_bot?start=buy_vip_${pkg.level}')" style="width:100%;padding:10px;background:#000;color:${pkg.color};border:none;border-radius:8px;font-weight:900;font-size:13px;cursor:pointer;">Купить за ${pkg.stars} ⭐</button>
+                </div>
+            `).join('');
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.zIndex = '10000';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 10px 40px rgba(255,215,0,0.3);">
+                    <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <h2 style="font-size: 26px; color: #000; margin: 0; font-weight: 900;">👑 VIP СТАТУСЫ</h2>
+                            <button onclick="this.closest('.modal').remove()" style="background:rgba(0,0,0,0.2);border:2px solid #000;border-radius:50%;width:38px;height:38px;color:#000;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                        </div>
+                        <div style="font-size:14px;color:rgba(0,0,0,0.7);">Выберите VIP пакет</div>
+                    </div>
+                    
+                    <div style="padding:20px;">
+                        ${vipHTML}
+                        
+                        <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;margin-top:10px;">Закрыть</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
         }
         
         function addRainbowEffects() {
