@@ -1726,6 +1726,45 @@
             `;
             document.body.appendChild(modal);
             
+            // Load shop cards first
+            fetch('/api/shop', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(shopData => {
+                const shopList = document.getElementById('shopCardsList');
+                const cards = shopData.items.filter(item => item.type === 'card');
+                if(cards && cards.length > 0) {
+                    shopList.innerHTML = cards.map(card => {
+                        const rarity = card.name.toLowerCase().includes('legendary') ? 'legendary' : 
+                                      card.name.toLowerCase().includes('epic') ? 'epic' :
+                                      card.name.toLowerCase().includes('rare') ? 'rare' : 'common';
+                        const rarityInfo = {
+                            'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
+                            'rare': {emoji:'🔵', name:'Редкая', color:'rgba(102,126,234,0.25)', border:'rgba(102,126,234,0.8)'},
+                            'epic': {emoji:'🟣', name:'Эпическая', color:'rgba(118,75,162,0.25)', border:'rgba(118,75,162,0.8)'},
+                            'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
+                        };
+                        const info = rarityInfo[rarity];
+                        const income = card.income || 0;
+                        return `
+                            <div style="background:${info.color};padding:12px;border-radius:12px;border:2px solid ${info.border};">
+                                <div style="font-size:22px;text-align:center;margin-bottom:8px;">${info.emoji}</div>
+                                <div style="font-size:12px;font-weight:700;color:#fff;text-align:center;margin-bottom:8px;">${info.name}</div>
+                                <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:10px;">+${income} 🪙/мин</div>
+                                <button onclick="buyShopItem(${card.id},'${card.currency}',${card.price || card.coin_price || card.hash_price || 0});this.closest('.modal').remove();" style="width:100%;padding:8px;background:linear-gradient(135deg,${card.currency==='hash'?'#667eea':'#10b981'},${card.currency==='hash'?'#764ba2':'#059669'});color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
+                                    ${card.currency==='hash'?'💎':'🪙'} ${(card.price || card.coin_price || card.hash_price || 0).toLocaleString()}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
+                }
+            });
+            
             fetch('/api/cards', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -1739,24 +1778,30 @@
                     list.innerHTML = data.cards.map(card => {
                         totalPassive += (card.income_per_minute || 0) * 60;
                         const rarity = card.card_type || 'common';
-                        const rarityColors = {
-                            'common': 'rgba(255,255,255,0.1)',
-                            'rare': 'rgba(102,126,234,0.2)',
-                            'epic': 'rgba(118,75,162,0.2)',
-                            'legendary': 'rgba(234,179,8,0.2)'
+                        const rarityInfo = {
+                            'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.1)', border:'rgba(255,255,255,0.3)'},
+                            'rare': {emoji:'🔵', name:'Редкая', color:'rgba(102,126,234,0.2)', border:'rgba(102,126,234,0.6)'},
+                            'epic': {emoji:'🟣', name:'Эпическая', color:'rgba(118,75,162,0.2)', border:'rgba(118,75,162,0.6)'},
+                            'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.2)', border:'rgba(234,179,8,0.8)'}
                         };
+                        const info = rarityInfo[rarity] || rarityInfo['common'];
                         return `
-                            <div style="background:${rarityColors[rarity]};padding:15px;border-radius:12px;border:2px solid ${rarity === 'legendary' ? '#eab308' : (rarity === 'epic' ? '#764ba2' : (rarity === 'rare' ? '#667eea' : 'rgba(255,255,255,0.3)'))};">
-                                <div style="font-weight:700;margin-bottom:5px;text-transform:capitalize;">${rarity} карточка</div>
-                                <div style="font-size:12px;color:#94a3b8;">💰 +${(card.income_per_minute || 0) * 60} 🪙/час</div>
-                                ${card.is_active ? '<div style="color:#10b981;font-size:12px;margin-top:5px;">✅ Активна</div>' : '<div style="color:#ef4444;font-size:12px;margin-top:5px;">❌ Неактивна</div>'}
+                            <div style="background:${info.color};padding:15px;border-radius:12px;border:2px solid ${info.border};">
+                                <div style="font-size:24px;text-align:center;margin-bottom:10px;">${info.emoji}</div>
+                                <div style="font-weight:700;margin-bottom:8px;text-align:center;color:#fff;">${info.name}</div>
+                                <div style="font-size:13px;color:#94a3b8;text-align:center;margin-bottom:10px;">💰 +${(card.income_per_minute || 0) * 60} 🪙/час</div>
+                                <div style="text-align:center;padding:6px;background:${card.is_active ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'};border-radius:8px;">
+                                    <span style="color:${card.is_active ? '#10b981' : '#ef4444'};font-size:11px;font-weight:700;">
+                                        ${card.is_active ? '✅ Активна' : '❌ Неактивна'}
+                                    </span>
+                                </div>
                             </div>
                         `;
                     }).join('');
                     
                     document.getElementById('passiveInfo').querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
                 } else {
-                    list.innerHTML = '<p style="text-align:center;opacity:0.7;grid-column:1/-1;">У вас нет карточек. Купите их в магазине!</p>';
+                    list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;border:2px dashed rgba(255,255,255,0.1);grid-column:span 2;">У вас пока нет карточек<br><small style="color:#667eea;">Купите их в магазине выше!</small></div>';
                     document.getElementById('passiveInfo').querySelector('div:last-child').textContent = '+0 🪙/час';
                 }
             });
