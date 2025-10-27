@@ -1744,7 +1744,7 @@
                             ${isVIP ? `<div style="position:absolute;top:0;left:0;right:0;height:3px;background:${vipStyle.gradient};"></div>` : ''}
                             <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
                                 <div style="width:56px;height:56px;background:${isVIP ? vipStyle.gradient : 'linear-gradient(135deg,#667eea,#764ba2)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;${displayRank <= 3 ? 'box-shadow:0 0 20px rgba(255,215,0,0.6);' : 'box-shadow:0 4px 12px rgba(0,0,0,0.3);'}">
-                                    ${displayRank === 5 ? '👤' : (medal || displayRank)}
+                                    ${medal || displayRank}
                                 </div>
                                 <div style="flex:1;">
                                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
