@@ -363,7 +363,7 @@ def get_shop():
                 for i, template in enumerate(per_minute_cards):
                     card_key = f"card_min_{i}"
                     purchases = user_card_counts.get(card_key, 0)
-                    level = purchases + 1
+                    level = min(purchases + 1, 300)
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
@@ -389,7 +389,7 @@ def get_shop():
                 for i, template in enumerate(per_hour_cards):
                     card_key = f"card_hour_{i}"
                     purchases = user_card_counts.get(card_key, 0)
-                    level = purchases + 1
+                    level = min(purchases + 1, 300)
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income / 60, 2)
