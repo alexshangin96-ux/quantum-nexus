@@ -2472,8 +2472,13 @@
         let currentCategory = 'all';
         
         function openBuyCurrency(e) {
-            e.preventDefault();
-            tg.HapticFeedback.impactOccurred('light');
+            try {
+                e.preventDefault();
+            } catch(err) {}
+            try {
+                tg.HapticFeedback.impactOccurred('light');
+            } catch(err) {}
+            
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'buyCurrencyModal';
