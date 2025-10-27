@@ -2473,11 +2473,12 @@
         
         function openBuyCurrency(e) {
             e.preventDefault();
+            tg.HapticFeedback.impactOccurred('light');
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'buyCurrencyModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
+                <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
                     <!-- Simple Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 700;">⭐ Купить валюту</h2>
@@ -2494,7 +2495,7 @@
                         <button onclick="filterCategory('mega')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">👑 VIP функции</button>
                     </div>
                     
-                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:8px;max-height:450px;overflow-y:auto;padding-right:5px;">
+                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;padding-right:5px;">
                         <div data-category="starter" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🎯 СТАРТОВЫЕ НАБОРЫ</div>
 
                         <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:12px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
