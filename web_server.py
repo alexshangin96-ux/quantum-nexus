@@ -1867,10 +1867,10 @@ def buy_vip_card():
 
 @app.route('/api/top_users', methods=['POST'])
 def get_top_users():
-    """Get top 24 users by total earnings, VIPs first"""
+    """Get top 100 users by total earnings, VIPs first"""
     try:
         data = request.json
-        limit = data.get('limit', 24)
+        limit = data.get('limit', 100)
         
         with get_db() as db:
             # Fetch more users to filter
@@ -1911,8 +1911,8 @@ def get_top_users():
             # Sort: VIPs first by level, then by total_earned
             top_users.sort(key=lambda x: (-x['vip_level'], -x['total_earned']))
             
-            # Return only top 24
-            top_users = top_users[:24]
+            # Return only top 100
+            top_users = top_users[:100]
             
             print(f"[TOP_USERS] Returning {len(top_users)} users")
             return jsonify({'users': top_users})

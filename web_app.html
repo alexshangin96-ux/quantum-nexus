@@ -1698,7 +1698,7 @@
                 fetch('/api/top_users', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({limit: 24})
+                    body: JSON.stringify({limit: 100})
                 })
                 .then(res => {
                     console.log('[TOP_LEADERS] Response status:', res.status);
@@ -1709,12 +1709,12 @@
                     const topUsers = topData.users || [];
                     console.log('[TOP_LEADERS] Users count:', topUsers.length);
                     
-                    // Data is already sorted by backend (VIPs first), just display top 24
-                    const sortedUsers = topUsers.slice(0, 24);
+                    // Data is already sorted by backend (VIPs first), just display top 100
+                    const sortedUsers = topUsers.slice(0, 100);
                     
                     let topHTML = sortedUsers.map((u, idx) => {
                         const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
-                        const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
+                        const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : (idx < 10 ? '#667eea' : '#94a3b8');
                         const isVIP = u.vip_level && u.vip_level > 0;
                         
                         // Beautiful VIP badges with gradient colors
