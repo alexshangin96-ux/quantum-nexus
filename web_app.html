@@ -2513,10 +2513,12 @@
         }
         
         function goToStarsPayment(productId) {
-            // Don't close modal - keep it open
-            // Show invoice right in the modal area
+            console.log('goToStarsPayment called with productId:', productId);
             const modal = document.querySelector('#buyCurrencyModal');
+            console.log('Modal found:', modal);
+            
             if(modal) {
+                console.log('Replacing modal content...');
                 // Replace modal content with invoice UI
                 modal.innerHTML = `
                     <div class="modal-content" style="max-width: 400px;">
@@ -2540,6 +2542,9 @@
                         </button>
                     </div>
                 `;
+                console.log('Modal content replaced');
+            } else {
+                console.error('Modal not found!');
             }
         }
         
