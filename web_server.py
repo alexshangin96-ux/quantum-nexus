@@ -1877,12 +1877,20 @@ def get_top_users():
             
             top_users = []
             for u in users:
+                # Calculate passive income from cards
+                passive_income = 0
+                for card in getattr(u, 'cards', []):
+                    passive_income += getattr(card, 'income', 0) or 0
+                
                 top_users.append({
                     'username': u.username or 'Unknown',
-                    'total_coins': int(u.total_earned or 0),  # Total earned
-                    'coins': int(u.coins or 0),  # Current coins
+                    'total_earned': int(u.total_earned or 0),
+                    'coins': int(u.coins or 0),
                     'level': u.level or 1,
-                    'vip_level': getattr(u, 'vip_level', 0) or 0
+                    'vip_level': getattr(u, 'vip_level', 0) or 0,
+                    'passive_income': int(passive_income),
+                    'quanhash': int(getattr(u, 'quanhash', 0) or 0),
+                    'total_taps': int(getattr(u, 'total_taps', 0) or 0)
                 })
             
             return jsonify({'users': top_users})
