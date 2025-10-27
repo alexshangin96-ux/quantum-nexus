@@ -1973,6 +1973,76 @@
             `;
             document.body.appendChild(modal);
             loadMiningCategory('starter');
+            
+            // Check VIP level and add VIP section if applicable
+            setTimeout(() => {
+                checkAndShowVIPMachines();
+            }, 100);
+        }
+        
+        function checkAndShowVIPMachines() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const vipLevel = data.vip_level || 0;
+                const shopDiv = document.getElementById('miningShop');
+                
+                if (vipLevel >= 5 && shopDiv && !shopDiv.querySelector('.vip-machines-section')) {
+                    const vipSection = document.createElement('div');
+                    vipSection.className = 'vip-machines-section';
+                    vipSection.innerHTML = `
+                        <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:12px;border-radius:12px;margin-bottom:15px;border:2px solid #ffd700;">
+                            <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                                <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:5px;">⚡ Quantum Miners Pro</div>
+                                <div style="font-size:11px;color:rgba(0,0,0,0.7);margin-bottom:8px;">500 QuanHash/час • Эксклюзивная производительность</div>
+                                <div style="font-size:10px;color:#000;margin-bottom:8px;">✅ Только для Diamond VIP и выше</div>
+                                <button onclick="buyVipMiningMachine('quantum_pro', 50000000)" style="width:100%;padding:10px;background:#000;color:#ffd700;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 50M 🪙</button>
+                            </div>
+                        </div>
+                        ${vipLevel >= 6 ? `
+                        <div style="background:linear-gradient(135deg,#c084fc,#a78bfa);padding:12px;border-radius:12px;margin-bottom:15px;border:2px solid #c084fc;">
+                            <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;">💎 Absolute Hash Machine</div>
+                                <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:8px;">1000 QuanHash/час • Максимальная мощность</div>
+                                <div style="font-size:10px;color:#c084fc;margin-bottom:8px;">✅ Только для Absolute VIP</div>
+                                <button onclick="buyVipMiningMachine('absolute_pro', 100000000)" style="width:100%;padding:10px;background:#fff;color:#a78bfa;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 100M 🪙</button>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    if (shopDiv) {
+                        shopDiv.insertBefore(vipSection, shopDiv.firstChild);
+                    }
+                }
+            });
+        }
+        
+        function buyVipMiningMachine(machineType, price) {
+            fetch('/api/buy_vip_machine', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id,
+                    machine_type: machineType,
+                    price: price
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert('✅ VIP машина куплена!');
+                    loadData();
+                    document.querySelector('.modal').remove();
+                    openMining({preventDefault:()=>{}});
+                } else {
+                    tg.showAlert('❌ ' + data.error);
+                }
+            })
+            .catch(err => tg.showAlert('❌ Ошибка покупки'));
         }
         
         function loadMiningCategory(category) {
