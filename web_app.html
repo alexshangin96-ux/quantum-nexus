@@ -3237,21 +3237,25 @@
         }
         
         window.filterCategory = function(category) {
-            // Update button states
-            document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            if(event?.target) {
-                event.target.classList.add('active');
-            }
-            
-            // Filter and show products
-            const products = document.querySelectorAll('#currencyProductsList > [data-category]');
-            products.forEach(product => {
-                if(product.dataset.category === category) {
-                    product.style.display = 'block';
-                } else {
-                    product.style.display = 'none';
+            try {
+                // Update button states
+                document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                if(event?.target) {
+                    event.target.classList.add('active');
                 }
-            });
+                
+                // Filter and show products
+                const products = document.querySelectorAll('#currencyProductsList [data-category]');
+                products.forEach(product => {
+                    if(product.dataset.category === category) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            } catch(err) {
+                console.error('filterCategory error:', err);
+            }
         }
