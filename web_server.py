@@ -367,6 +367,10 @@ def get_shop():
                     level = min(purchases + 1, 100)
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
+                    
+                    # Unlock card if previous card reached level 5
+                    is_locked = i > 0 and user_card_counts.get(f"card_min_{i-1}", 0) < 5
+                    
                     items.append({
                         'id': card_key,
                         'name': template['name'],
@@ -379,7 +383,8 @@ def get_shop():
                         'income_per_min': income,
                         'income_type': 'per_minute',
                         'type': 'card',
-                        'currency': 'coins'
+                        'currency': 'coins',
+                        'is_locked': is_locked
                     })
                 
                 for i, template in enumerate(per_hour_cards):
@@ -389,6 +394,10 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = int(template['base_income'] * (1.10 ** (level - 1)) * 100) / 100
                     income_per_min = round(income / 60, 2)
+                    
+                    # Unlock card if previous card reached level 5
+                    is_locked = i > 0 and user_card_counts.get(f"card_hour_{i-1}", 0) < 5
+                    
                     items.append({
                         'id': card_key,
                         'name': template['name'],
@@ -401,7 +410,8 @@ def get_shop():
                         'income_per_min': income_per_min,
                         'income_type': 'per_hour',
                         'type': 'card',
-                        'currency': 'coins'
+                        'currency': 'coins',
+                        'is_locked': is_locked
                     })
             else:  # auto
                 # Get user's purchased auto-bots count
