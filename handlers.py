@@ -539,6 +539,8 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
 async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE, product_id: int):
     """Send Stars invoice with real Telegram Stars payment"""
     
+    logger.info(f"=== send_stars_invoice called with product_id={product_id} ===")
+    
     # Define products with Stars prices
     products = {
         1: {
@@ -557,17 +559,24 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
     
     product = products.get(product_id)
     if not product:
+        logger.error(f"Invalid product_id: {product_id}")
         await update.message.reply_text("❌ Неверный товар")
         return
     
+    logger.info(f"Product found: {product}")
+    
     user_id = update.effective_user.id
+    logger.info(f"User ID: {user_id}")
     
     with get_db() as db:
         user = db.query(User).filter_by(telegram_id=user_id).first()
         
         if not user:
+            logger.error(f"User {user_id} not found in database")
             await update.message.reply_text("❌ Пользователь не найден")
             return
+        
+        logger.info(f"User found: {user.username}, DB ID: {user.id}")
         
         try:
             # Send invoice with Telegram Stars
@@ -576,7 +585,9 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 amount=product['stars']
             )]
             
-            logger.info(f"Attempting to send Stars invoice to user {user_id} for product {product_id}")
+            logger.info(f"Creating invoice with title: {product['title']}")
+            logger.info(f"Stars amount: {product['stars']}")
+            logger.info(f"Chat ID: {update.effective_chat.id}")
             
             # For Telegram Stars, set provider_token to None
             invoice_result = await context.bot.send_invoice(
@@ -590,20 +601,17 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
                 start_parameter=f"buy_stars_{product_id}"  # Add start parameter
             )
             
-            logger.info(f"Invoice sent: {invoice_result.message_id}")
-            
-            logger.info(f"Stars invoice sent successfully to user {user_id}")
+            logger.info(f"✅ Invoice sent successfully! Message ID: {invoice_result.message_id}")
+            await update.message.reply_text(f"✅ Invoice отправлен! Проверьте сообщение выше.")
             
         except Exception as e:
-            logger.error(f"Failed to send Stars invoice: {e}", exc_info=True)
+            logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
             
             # If Stars are not available, show alternative
             await update.message.reply_text(
-                f"❌ Telegram Stars недоступны в вашем регионе.\n\n"
-                f"💡 Для покупки используйте внутриигровые коины:\n\n"
-                f"📦 1. Обратитесь к администратору\n"
-                f"📦 2. Или играйте и зарабатывайте коины\n"
-                f"📦 3. Telegram Stars работают только в:\n"
+                f"❌ Ошибка: {str(e)}\n\n"
+                f"💡 Telegram Stars недоступны в вашем регионе.\n\n"
+                f"📦 Telegram Stars работают только в:\n"
                 f"   • США\n"
                 f"   • Япония\n"
                 f"   • Южная Корея\n"
