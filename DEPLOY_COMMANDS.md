@@ -6,18 +6,33 @@
 ```bash
 ssh root@ваш_IP
 cd /root/quantum-nexus
+git reset --hard origin/main
 git pull origin main
-cp admin.html /var/www/quantum-nexus/
+cp web_app.html /var/www/quantum-nexus/
 systemctl restart quantum-nexus-web
 systemctl status quantum-nexus-web
 ```
 
-### Вариант 2: Использовать готовый скрипт
+### Вариант 2: Если есть конфликты с локальными файлами
 ```bash
 ssh root@ваш_IP
 cd /root/quantum-nexus
-chmod +x UPDATE_SERVER.sh
-./UPDATE_SERVER.sh
+git stash  # Сохранить локальные изменения
+git pull origin main
+cp web_app.html /var/www/quantum-nexus/
+systemctl restart quantum-nexus-web
+systemctl status quantum-nexus-web
+```
+
+### Вариант 3: Принудительное обновление (останавливает конфликты)
+```bash
+ssh root@ваш_IP
+cd /root/quantum-nexus
+git fetch origin
+git reset --hard origin/main
+cp web_app.html /var/www/quantum-nexus/
+systemctl restart quantum-nexus-web
+systemctl status quantum-nexus-web
 ```
 
 ## Полное обновление (если нужно пересобрать всё)
@@ -28,6 +43,9 @@ ssh root@ваш_IP
 # Перейти в директорию проекта
 cd /root/quantum-nexus
 
+# Сбросить все локальные изменения
+git reset --hard origin/main
+
 # Получить последние изменения
 git pull origin main
 
@@ -36,7 +54,6 @@ source venv/bin/activate
 pip install -r requirements.txt --upgrade
 
 # Скопировать файлы
-cp admin.html /var/www/quantum-nexus/
 cp web_app.html /var/www/quantum-nexus/
 
 # Перезапустить сервисы
@@ -63,6 +80,8 @@ python -c "from database import init_db; init_db()"
 - Админ-панель: https://quantum-nexus.ru/admin
 - Бот отвечает на команды в Telegram
 - Веб-приложение открывается корректно
+- Покупка карточек работает без ошибок
+- Общий пассивный доход отображается корректно
 
 ## Логи для отладки
 
@@ -77,4 +96,3 @@ journalctl -u quantum-nexus-web -f
 tail -f /var/log/nginx/error.log
 tail -f /var/log/nginx/access.log
 ```
-
