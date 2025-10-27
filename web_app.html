@@ -1690,68 +1690,118 @@
         }
         
         function openVIPTopLeaders() {
-            fetch('/api/top_users', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({limit: 999})
-            })
-            .then(res => res.json())
-            .then(topData => {
-                const topUsers = topData.users || [];
-                // Sort: VIPs first, then by total_coins descending
-                const sortedUsers = [...topUsers].sort((a, b) => {
-                    const aVip = a.vip_level || 0;
-                    const bVip = b.vip_level || 0;
-                    if (aVip !== bVip) return bVip - aVip; // VIPs first
-                    return (b.total_coins || 0) - (a.total_coins || 0);
-                });
-                
-                let topHTML = sortedUsers.map((u, idx) => {
-                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
-                    const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
-                    const isVIP = u.vip_level && u.vip_level > 0;
-                    const vipBadge = isVIP ? `<span style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:800;">👑 VIP ${u.vip_level}</span>` : '';
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.zIndex = '10000';
+            
+            function loadTopData() {
+                fetch('/api/top_users', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({limit: 999})
+                })
+                .then(res => res.json())
+                .then(topData => {
+                    const topUsers = topData.users || [];
+                    // Sort: VIPs first, then by total_coins descending
+                    const sortedUsers = [...topUsers].sort((a, b) => {
+                        const aVip = a.vip_level || 0;
+                        const bVip = b.vip_level || 0;
+                        if (aVip !== bVip) return bVip - aVip; // VIPs first
+                        return (b.total_coins || 0) - (a.total_coins || 0);
+                    });
                     
-                    return `<div style="padding:14px;background:${isVIP ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08))' : 'rgba(0,0,0,0.25)'};border-radius:12px;margin-bottom:10px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)'};">
-                        <div style="display:flex;align-items:center;gap:14px;">
-                            <div style="width:45px;height:45px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:${rankColor};${idx < 3 ? 'box-shadow:0 0 15px rgba(255,215,0,0.5);' : ''}">${medal || (idx + 1)}</div>
-                            <div style="flex:1;">
-                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">${u.username} ${vipBadge}</div>
-                                <div style="font-size:12px;color:#94a3b8;">Уровень ${u.level || 1} • ${u.total_coins ? (u.total_coins).toLocaleString() : 0} 🪙</div>
+                    let topHTML = sortedUsers.map((u, idx) => {
+                        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                        const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
+                        const isVIP = u.vip_level && u.vip_level > 0;
+                        const vipBadge = isVIP ? `<span style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:800;">👑 VIP ${u.vip_level}</span>` : '';
+                        
+                        const vipNames = {1: 'Bronze', 2: 'Silver', 3: 'Gold', 4: 'Platinum', 5: 'Diamond', 6: 'Absolute'};
+                        const vipName = vipNames[u.vip_level] || '';
+                        const vipInfo = isVIP ? `<div style="font-size:10px;color:#ffd700;margin-top:2px;">${vipName} VIP</div>` : '';
+                        
+                        const passiveIncome = (u.passive_income || 0).toLocaleString();
+                        const totalEarned = (u.total_earned || 0).toLocaleString();
+                        const totalTaps = (u.total_taps || 0).toLocaleString();
+                        const quanhash = (u.quanhash || 0).toLocaleString();
+                        
+                        return `<div style="padding:14px;background:${isVIP ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08))' : 'rgba(0,0,0,0.25)'};border-radius:12px;margin-bottom:12px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.1)'};">
+                            <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+                                <div style="width:50px;height:50px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:${rankColor};${idx < 3 ? 'box-shadow:0 0 15px rgba(255,215,0,0.5);' : ''}">${medal || (idx + 1)}</div>
+                                <div style="flex:1;">
+                                    <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:3px;">${u.username}</div>
+                                    <div style="font-size:11px;color:#94a3b8;">Уровень ${u.level || 1}</div>
+                                    ${vipInfo}
+                                    ${vipBadge}
+                                </div>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="font-size:16px;font-weight:900;color:#ffd700;">${u.coins ? (u.coins).toLocaleString() : 0}</div>
-                                <div style="font-size:11px;color:#94a3b8;">накоплено</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1);">
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">💰 Коины</div>
+                                    <div style="font-size:14px;font-weight:800;color:#ffd700;">${u.coins ? (u.coins).toLocaleString() : 0}</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">💎 QuanHash</div>
+                                    <div style="font-size:14px;font-weight:800;color:#10b981;">${quanhash}</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">📈 Пассивный доход</div>
+                                    <div style="font-size:14px;font-weight:800;color:#f093fb;">+${passiveIncome}/час</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">💵 Всего заработано</div>
+                                    <div style="font-size:14px;font-weight:800;color:#10b981;">${totalEarned}</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">👆 Всего тапов</div>
+                                    <div style="font-size:14px;font-weight:800;color:#94a3b8;">${totalTaps}</div>
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3);padding:8px;border-radius:8px;">
+                                    <div style="font-size:10px;color:#94a3b8;margin-bottom:3px;">🏆 Рейтинг</div>
+                                    <div style="font-size:14px;font-weight:800;color:#667eea;">${totalEarned} 🪙</div>
+                                </div>
                             </div>
+                        </div>`;
+                    }).join('');
+                    
+                    const contentDiv = modal.querySelector('#topLeadersContent');
+                    if (contentDiv) {
+                        contentDiv.innerHTML = topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading top users:', err);
+                });
+            }
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(102,126,234,0.4);">
+                    <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП ЛИДЕРЫ</h2>
+                            <button onclick="this.closest('.modal').remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval);" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
                         </div>
-                    </div>`;
-                }).join('');
-                
-                const modal = document.createElement('div');
-                modal.className = 'modal active';
-                modal.style.zIndex = '10000';
-                modal.innerHTML = `
-                    <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(102,126,234,0.4);">
-                        <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                                <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП ЛИДЕРЫ</h2>
-                                <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
-                            </div>
-                            <div style="font-size:13px;color:rgba(255,255,255,0.8);">Лучшие игроки Quantum Nexus</div>
+                        <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Лучшие игроки Quantum Nexus (Автообновление)</div>
+                    </div>
+                    
+                    <div style="padding:20px;">
+                        <div id="topLeadersContent" style="max-height:550px;overflow-y:auto;">
+                            <div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Загрузка...</div>
                         </div>
                         
-                        <div style="padding:20px;">
-                            <div style="max-height:550px;overflow-y:auto;">
-                                ${topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст</div>'}
-                            </div>
-                            
-                            <button onclick="this.closest('.modal').remove()" style="width:100%;margin-top:15px;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
-                        </div>
+                        <button onclick="this.closest('.modal').remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval);" style="width:100%;margin-top:15px;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
                     </div>
-                `;
-                document.body.appendChild(modal);
-                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
-            });
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) { modal.remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval); }};
+            
+            // Load data immediately
+            loadTopData();
+            
+            // Auto-refresh every 2.5 seconds
+            window.topLeadersInterval = setInterval(loadTopData, 2500);
         }
         
         function addVIPAura() {
