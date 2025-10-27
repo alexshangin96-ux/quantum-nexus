@@ -1722,6 +1722,74 @@
             `;
             document.body.appendChild(modal);
             loadShopCategory('boosts');
+            
+            // Add VIP section after loading
+            setTimeout(() => {
+                showVIPShopSection();
+            }, 100);
+        }
+        
+        function showVIPShopSection() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const vipLevel = data.vip_level || 0;
+                const listDiv = document.getElementById('shopItemsList');
+                
+                if (vipLevel >= 3 && listDiv && !listDiv.querySelector('.vip-boosts-section')) {
+                    const vipSection = document.createElement('div');
+                    vipSection.className = 'vip-boosts-section';
+                    vipSection.innerHTML = `
+                        <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:12px;border-radius:12px;margin-bottom:15px;border:2px solid #ffd700;">
+                            <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                                <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:5px;">👑 VIP BOOST 20x</div>
+                                <div style="font-size:11px;color:rgba(0,0,0,0.7);margin-bottom:8px;">x20 доход на 1 час • Только для VIP</div>
+                                <div style="font-size:10px;color:#000;margin-bottom:8px;">✅ Требуется Gold VIP+</div>
+                                <button onclick="buyVIPBoost('vip_boost_20x', 5000000)" style="width:100%;padding:10px;background:#000;color:#ffd700;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 5M 🪙</button>
+                            </div>
+                        </div>
+                        ${vipLevel >= 5 ? `
+                        <div style="background:linear-gradient(135deg,#c084fc,#a78bfa);padding:12px;border-radius:12px;margin-bottom:15px;border:2px solid #c084fc;">
+                            <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+                                <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;">💎 DIAMOND BOOST 50x</div>
+                                <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:8px;">x50 доход на 24 часа</div>
+                                <div style="font-size:10px;color:#c084fc;margin-bottom:8px;">✅ Только для Diamond VIP</div>
+                                <button onclick="buyVIPBoost('diamond_boost_50x', 20000000)" style="width:100%;padding:10px;background:#fff;color:#a78bfa;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 20M 🪙</button>
+                            </div>
+                        </div>
+                        ` : ''}
+                    `;
+                    if (listDiv) {
+                        listDiv.insertBefore(vipSection, listDiv.firstChild);
+                    }
+                }
+            });
+        }
+        
+        function buyVIPBoost(boostType, price) {
+            fetch('/api/buy_vip_boost', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id,
+                    boost_type: boostType,
+                    price: price
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert('✅ VIP буст активирован!');
+                    loadData();
+                } else {
+                    tg.showAlert('❌ ' + data.error);
+                }
+            })
+            .catch(err => tg.showAlert('❌ Ошибка покупки'));
         }
         
         function loadShopCategory(category) {

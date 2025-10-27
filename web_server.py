@@ -1767,5 +1767,50 @@ def buy_vip_machine():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/buy_vip_boost', methods=['POST'])
+def buy_vip_boost():
+    """Buy VIP exclusive boost"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        boost_type = data.get('boost_type')
+        
+        if not user_id or not boost_type:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            vip_level = getattr(user, 'vip_level', 0)
+            
+            boost_data = {
+                'vip_boost_20x': {'price': 5000000, 'multiplier': 20, 'duration': 3600, 'min_level': 3},
+                'diamond_boost_50x': {'price': 20000000, 'multiplier': 50, 'duration': 86400, 'min_level': 5}
+            }
+            
+            boost_info = boost_data.get(boost_type)
+            if not boost_info:
+                return jsonify({'success': False, 'error': 'Unknown boost'}), 400
+            
+            if vip_level < boost_info['min_level']:
+                return jsonify({'success': False, 'error': f'Требуется VIP уровень {boost_info["min_level"]}'}), 403
+            
+            if user.coins < boost_info['price']:
+                return jsonify({'success': False, 'error': 'Недостаточно коинов'}), 400
+            
+            # Apply boost
+            user.active_multiplier = boost_info['multiplier']
+            user.multiplier_expires_at = datetime.utcnow() + timedelta(seconds=boost_info['duration'])
+            user.coins -= boost_info['price']
+            
+            db.commit()
+            
+            return jsonify({'success': True, 'message': f'VIP буст x{boost_info["multiplier"]} активирован!'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
