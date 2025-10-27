@@ -333,20 +333,18 @@
         function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>{if(b.textContent.includes(['👥','💸','💬','📁'][['users','withdrawals','questions','archive'].indexOf(t)]))b.classList.add('active');});loadTab(t);}
         function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
         let withdrawalCount = 0;
+        let searchTimeout = null;
+        
         function initPanel(){
             const saved=localStorage.getItem('active_tab');
             if(saved)loadTab(saved);
             else{loadTab('stats');loadStats();}
-            setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}});},5000);
-            setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;});},3000);
+            // Check for unread questions and withdrawals count periodically
+            setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}}).catch(()=>{});},5000);
+            setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;}).catch(()=>{});},3000);
+            // Update top stats periodically (but not the entire content)
             setInterval(()=>{
-                const activeTab = localStorage.getItem('active_tab');
                 if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){
-                    if(activeTab === 'users') refreshUsersOnly();
-                    else if(activeTab === 'withdrawals') refreshWithdrawalsOnly();
-                    else if(activeTab === 'questions') refreshQuestionsOnly();
-                    else if(activeTab === 'archive') refreshArchiveOnly();
-                    else if(activeTab === 'stats') refreshStatsOnly();
                     refreshTopStats();
                 }
             },10000);
@@ -355,17 +353,16 @@
         function refreshUsersOnly(){
             const searchInput = document.getElementById('userSearch');
             const searchTerm = searchInput ? searchInput.value : '';
-            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
-                if(d.users&&d.users.length>0){
-                    window.allUsers=d.users;
-                    const c=document.getElementById('content');
-                    if(!c) return;
-                    const filteredUsers = searchTerm?d.users.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):d.users;
-                    c.innerHTML='';
-                    const ul=document.createElement('div');
-                    filteredUsers.forEach(u=>{
-                        const card=document.createElement('div');card.className='user-card';
-                        card.innerHTML=`<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
+            if(!window.allUsers) return;
+            const c = document.getElementById('content');
+            if(!c) return;
+            const filteredUsers = searchTerm?window.allUsers.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):window.allUsers;
+            c.innerHTML = '';
+            const ul = document.createElement('div');
+            filteredUsers.forEach(u=>{
+                const card = document.createElement('div'); 
+                card.className = 'user-card';
+                card.innerHTML = `<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
 <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
 <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
@@ -383,12 +380,11 @@
 </div>
 <div class="actions-grid">
 <button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
-                        ul.appendChild(card);
-                    });
-                    c.appendChild(ul);
-                }
+                ul.appendChild(card);
             });
+            c.appendChild(ul);
         }
         
         function refreshWithdrawalsOnly(){
@@ -485,17 +481,56 @@
             }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки статистики</div>');
         }
         
-        function loadUsers(){
-            const c=document.getElementById('content');
-            c.innerHTML='<div class="loading">Загрузка...</div>';
-            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
-                if(d.users&&d.users.length>0){
-                    window.allUsers=d.users;
-                    c.innerHTML='<input type="text" placeholder="🔍 Поиск..." style="width:100%;padding:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(99,102,241,0.2);border-radius:10px;color:#fff;margin-bottom:16px;">';
-                    const ul=document.createElement('div');
-                    d.users.forEach(u=>{
-                        const card=document.createElement('div');card.className='user-card';
-                        card.innerHTML=`<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
+        let currentFilter = 'all';
+        
+        function filterUsersByCategory(category){
+            currentFilter = category;
+            filterUsers();
+        }
+        
+        function filterUsers(){
+            const searchInput = document.getElementById('userSearch');
+            const searchTerm = searchInput ? searchInput.value : '';
+            if(!window.allUsers) return;
+            const c = document.getElementById('content');
+            if(!c) return;
+            
+            let filteredUsers = window.allUsers;
+            
+            // Apply search filter
+            if(searchTerm){
+                filteredUsers = filteredUsers.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm));
+            }
+            
+            // Apply category filter
+            if(currentFilter === 'vip'){
+                filteredUsers = filteredUsers.filter(u => (u.vip_level || 0) > 0);
+            } else if(currentFilter === 'banned'){
+                filteredUsers = filteredUsers.filter(u => u.is_banned);
+            } else if(currentFilter === 'frozen'){
+                filteredUsers = filteredUsers.filter(u => u.is_frozen);
+            } else if(currentFilter === 'active'){
+                filteredUsers = filteredUsers.filter(u => !u.is_banned && !u.is_frozen);
+            }
+            
+            // Clear existing cards
+            const userCardsContainer = c.querySelector('#userCardsContainer');
+            if(!userCardsContainer) return;
+            
+            // Update active tab button
+            document.querySelectorAll('.user-filter-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.user-filter-btn[data-filter="${currentFilter}"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            // Render filtered users
+            userCardsContainer.innerHTML = '';
+            let visibleCount = 0;
+            
+            filteredUsers.forEach(u => {
+                visibleCount++;
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
 <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
 <div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
@@ -515,9 +550,44 @@
 <button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
-                        ul.appendChild(card);
-                    });
-                    c.appendChild(ul);
+                userCardsContainer.appendChild(card);
+            });
+            
+            // Update count display
+            const countEl = c.querySelector('#filterCount');
+            if(countEl) countEl.textContent = `Найдено: ${visibleCount}`;
+            
+            // Show "not found" message if no results
+            if(visibleCount === 0 && (searchTerm || currentFilter !== 'all')){
+                const notice = document.createElement('div');
+                notice.style.cssText = 'padding:30px;text-align:center;color:#94a3b8;font-size:16px;font-weight:700;';
+                notice.textContent = '❌ Ничего не найдено';
+                userCardsContainer.appendChild(notice);
+            }
+        }
+        
+        function loadUsers(){
+            const c=document.getElementById('content');
+            c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
+                if(d.users&&d.users.length>0){
+                    window.allUsers=d.users;
+                    c.innerHTML=`
+<div style="margin-bottom:20px;">
+<input type="text" id="userSearch" placeholder="🔍 Поиск по имени или ID..." style="width:100%;padding:14px 18px;background:rgba(0,0,0,0.3);border:2px solid rgba(99,102,241,0.2);border-radius:12px;color:#fff;font-size:15px;margin-bottom:16px;outline:none;transition:all 0.3s;" onfocus="this.style.borderColor='#667eea';this.style.boxShadow='0 0 20px rgba(102,126,234,0.3)'" onblur="this.style.borderColor='rgba(99,102,241,0.2)';this.style.boxShadow='none'" oninput="clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>filterUsers(),300)">
+<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+<button class="user-filter-btn active" data-filter="all" onclick="filterUsersByCategory('all')" style="padding:10px 20px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(99,102,241,0.3);">👥 Все</button>
+<button class="user-filter-btn" data-filter="active" onclick="filterUsersByCategory('active')" style="padding:10px 20px;background:rgba(99,102,241,0.2);color:#fff;border:2px solid rgba(99,102,241,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">✅ Активные</button>
+<button class="user-filter-btn" data-filter="vip" onclick="filterUsersByCategory('vip')" style="padding:10px 20px;background:rgba(255,215,0,0.1);color:#ffd700;border:2px solid rgba(255,215,0,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">👑 VIP</button>
+<button class="user-filter-btn" data-filter="banned" onclick="filterUsersByCategory('banned')" style="padding:10px 20px;background:rgba(239,68,68,0.1);color:#ef4444;border:2px solid rgba(239,68,68,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">🔒 Заблокированные</button>
+<button class="user-filter-btn" data-filter="frozen" onclick="filterUsersByCategory('frozen')" style="padding:10px 20px;background:rgba(6,182,212,0.1);color:#06b6d4;border:2px solid rgba(6,182,212,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">❄️ Замороженные</button>
+</div>
+<div id="filterCount" style="font-size:12px;color:#94a3b8;font-weight:700;margin-bottom:12px;">Найдено: ${d.users.length}</div>
+</div>
+<div id="userCardsContainer"></div>`;
+                    
+                    // Render all users initially
+                    filterUsers();
                 }else{c.innerHTML='<div class="loading">Нет пользователей</div>';}
             });
         }
