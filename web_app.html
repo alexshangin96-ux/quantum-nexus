@@ -2495,11 +2495,18 @@
             // Close modal
             document.querySelector('#buyCurrencyModal')?.remove();
             
-            // Show message
-            tg.showAlert('💎 Переходим к оплате через бота...', () => {
-                // Open bot to send invoice
+            // Show message and open bot
+            tg.showAlert('💎 Открываем бота для оплаты...');
+            
+            // Try multiple methods to open bot
+            setTimeout(() => {
                 tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
-            });
+            }, 500);
+            
+            // Also try direct link
+            setTimeout(() => {
+                window.location.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+            }, 1000);
         }
         
         async function buyWithStars(productId, amount, currency) {
