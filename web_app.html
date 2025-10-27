@@ -2516,39 +2516,11 @@
                         // Close modal first
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Show invoice payment UI directly
-                        tg.showInvoice({
-                            url: `https://t.me/qanexus_bot/invoice/stars_pack_${productId}`,
-                            closingBehavior: 'save_invoice_and_close'
-                        }, (status) => {
-                            if(status === 'paid') {
-                                // Call backend to confirm and add coins
-                                fetch('/api/confirm_stars_payment', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify({
-                                        user_id: user?.id,
-                                        product_id: productId,
-                                        stars_amount: stars,
-                                        coins_amount: coins
-                                    })
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    if(data.success) {
-                                        tg.showAlert('✨ Покупка успешна! Коины добавлены.');
-                                        loadData();
-                                    } else {
-                                        tg.showAlert('❌ Ошибка: ' + data.error);
-                                    }
-                                })
-                                .catch(err => {
-                                    tg.showAlert('❌ Ошибка: ' + err.message);
-                                });
-                            } else {
-                                tg.showAlert('ℹ️ Оплата отменена');
-                            }
-                        });
+                        // Open bot to send invoice - this is the ONLY way to show Stars payment
+                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+                        
+                        // Show helpful message
+                        tg.showAlert('💡 Бот откроется для оплаты через Stars. Вернитесь в игру после оплаты.');
                     }
                 });
             } catch(err) {
