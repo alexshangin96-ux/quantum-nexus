@@ -1479,42 +1479,38 @@
                     }
                 }
                 
-                // Add Top Button (left)
-                if (vipLevel >= 3) {
-                    let topButton = document.querySelector('.vip-top-button');
-                    if (!topButton) {
-                        topButton = document.createElement('div');
-                        topButton.className = 'vip-top-button';
-                        topButton.innerHTML = '🏆';
-                        topButton.onclick = () => {
-                            openVIPTopLeaders();
-                        };
-                        document.body.appendChild(topButton);
-                    }
+                // Add Top Button (left) - ALWAYS
+                let topButton = document.querySelector('.vip-top-button');
+                if (!topButton) {
+                    topButton = document.createElement('div');
+                    topButton.className = 'vip-top-button';
+                    topButton.innerHTML = '🏆';
+                    topButton.onclick = () => {
+                        openVIPTopLeaders();
+                    };
+                    document.body.appendChild(topButton);
                 }
                 
-                // Add Profile Icon (right)
-                if (vipLevel >= 3) {
-                    let profileIcon = document.querySelector('.vip-profile-icon');
-                    if (!profileIcon) {
-                        profileIcon = document.createElement('div');
-                        profileIcon.className = 'vip-profile-icon';
-                        
-                        // Try to load profile photo from localStorage
-                        const savedPhoto = localStorage.getItem('vip_profile_photo');
-                        if (savedPhoto) {
-                            const img = document.createElement('img');
-                            img.src = savedPhoto;
-                            profileIcon.appendChild(img);
-                        } else {
-                            profileIcon.innerHTML = '👤';
-                        }
-                        
-                        profileIcon.onclick = () => {
-                            openVIPProfileModal();
-                        };
-                        document.body.appendChild(profileIcon);
+                // Add Profile Icon (right) - ALWAYS
+                let profileIcon = document.querySelector('.vip-profile-icon');
+                if (!profileIcon) {
+                    profileIcon = document.createElement('div');
+                    profileIcon.className = 'vip-profile-icon';
+                    
+                    // Try to load profile photo from localStorage
+                    const savedPhoto = localStorage.getItem('vip_profile_photo');
+                    if (savedPhoto) {
+                        const img = document.createElement('img');
+                        img.src = savedPhoto;
+                        profileIcon.appendChild(img);
+                    } else {
+                        profileIcon.innerHTML = '👤';
                     }
+                    
+                    profileIcon.onclick = () => {
+                        openVIPProfileModal();
+                    };
+                    document.body.appendChild(profileIcon);
                 }
                 
                 // Add VIP particle effects
