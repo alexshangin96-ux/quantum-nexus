@@ -1393,24 +1393,65 @@
                     document.getElementById('mainTitle').style.filter = 'drop-shadow(0 0 20px rgba(255,215,0,0.5))';
                 }
                 
-                // Add VIP background effect
+                // Add VIP premium background effect
                 if (vipLevel >= 3) {
                     let bgExists = document.querySelector('.vip-golden-bg');
                     if (!bgExists) {
                         const goldenBg = document.createElement('div');
                         goldenBg.className = 'vip-golden-bg';
                         document.body.appendChild(goldenBg);
+                        
+                        // Add premium shine effect
+                        const premiumShine = document.createElement('div');
+                        premiumShine.className = 'vip-premium-shine';
+                        document.body.appendChild(premiumShine);
+                    }
+                }
+                
+                // Add Top Leaders panel
+                if (vipLevel >= 3) {
+                    let leadersPanel = document.querySelector('.vip-top-leaders');
+                    if (!leadersPanel) {
+                        leadersPanel = document.createElement('div');
+                        leadersPanel.className = 'vip-top-leaders';
+                        leadersPanel.innerHTML = `
+                            <div style="font-size:12px;font-weight:800;color:#ffd700;margin-bottom:8px;text-align:center;border-bottom:1px solid rgba(255,215,0,0.3);padding-bottom:8px;">🏆 ТОП ЛИДЕРЫ</div>
+                            <div style="font-size:10px;color:#fff;line-height:1.8;">
+                                <div style="color:#ffd700;">1. 👑 Король майнинга<br><span style="color:#94a3b8;">1,234M 🪙</span></div>
+                                <div style="color:#c0c0c0;">2. 🌟 Звезда квантума<br><span style="color:#94a3b8;">987M 🪙</span></div>
+                                <div style="color:#cd7f32;">3. 🔥 Майнер топов<br><span style="color:#94a3b8;">654M 🪙</span></div>
+                            </div>
+                        `;
+                        document.body.appendChild(leadersPanel);
+                    }
+                }
+                
+                // Add Profile Icon
+                if (vipLevel >= 3) {
+                    let profileIcon = document.querySelector('.vip-profile-icon');
+                    if (!profileIcon) {
+                        profileIcon = document.createElement('div');
+                        profileIcon.className = 'vip-profile-icon';
+                        profileIcon.innerHTML = '👑';
+                        profileIcon.onclick = () => {
+                            fetch('/api/user_data', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({user_id: user?.id})
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                const vipInfo = `VIP Уровень: ${data.vip_level || 0}\n\nПривилегии:\n${data.has_premium_support ? '⭐ Premium Support\n' : ''}${data.has_golden_profile ? '🌟 Golden Profile\n' : ''}${data.has_top_place ? '🏆 Top Place\n' : ''}${data.has_unique_design ? '✨ Unique Design\n' : ''}`;
+                                tg.showAlert(vipInfo);
+                            });
+                        };
+                        document.body.appendChild(profileIcon);
                     }
                 }
                 
                 // Add VIP particle effects
                 if (vipLevel >= 4) {
                     startVIPParticles();
-                }
-                
-                // Add Crown effect for VIP level 5+
-                if (vipLevel >= 5) {
-                    addVIPCrown();
                 }
                 
                 // Add Aura effect for VIP level 6
@@ -1454,15 +1495,6 @@
             // Will be integrated into main interface
         }
         
-        function addVIPCrown() {
-            let crown = document.querySelector('.vip-crown');
-            if (!crown) {
-                crown = document.createElement('div');
-                crown.className = 'vip-crown';
-                crown.innerHTML = '👑';
-                document.body.appendChild(crown);
-            }
-        }
         
         function addVIPAura() {
             let aura = document.querySelector('.vip-aura');
