@@ -1613,15 +1613,15 @@
                                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;">
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💰 Коины</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.coins || 0)}</div>
+                                            <div data-stat="coins" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.coins || 0)}</div>
                                         </div>
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💎 QuanHash</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.quanhash || 0)}</div>
+                                            <div data-stat="quanhash" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.quanhash || 0)}</div>
                                         </div>
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">⚡ Энергия</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.energy || 0)}</div>
+                                            <div data-stat="energy" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.energy || 0)}</div>
                                         </div>
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">🎮 Уровень</div>
@@ -1629,11 +1629,11 @@
                                         </div>
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">👆 Тапов</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_taps || 0)}</div>
+                                            <div data-stat="total_taps" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_taps || 0)}</div>
                                         </div>
                                         <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.1);">
                                             <div style="font-size:10px;color:#94a3b8;margin-bottom:4px;">💵 Доход</div>
-                                            <div style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_earned || 0)}</div>
+                                            <div data-stat="total_earned" style="font-size:15px;font-weight:800;color:#fff;">${Math.floor(userData.total_earned || 0)}</div>
                                         </div>
                                     </div>
                                     
