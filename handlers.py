@@ -505,7 +505,10 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
         # Define product amounts
         product_coins = {
             1: 1000000,
-            2: 5000000
+            2: 5000000,
+            3: 500000,
+            4: 10000000,
+            5: 50000000
         }
         
         coins_to_add = product_coins.get(product_id, 0)
@@ -560,6 +563,24 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             'description': '5,000,000 коинов',
             'stars': 40,  # Stars
             'coins': 5000000
+        },
+        3: {
+            'title': '⚡ Бонусный набор',
+            'description': '500,000 коинов',
+            'stars': 15,  # Stars
+            'coins': 500000
+        },
+        4: {
+            'title': '👑 VIP набор',
+            'description': '10,000,000 коинов',
+            'stars': 100,  # Stars
+            'coins': 10000000
+        },
+        5: {
+            'title': '💎 Легендарный пакет',
+            'description': '50,000,000 коинов',
+            'stars': 500,  # Stars
+            'coins': 50000000
         }
     }
     
@@ -608,6 +629,7 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             )
             
             logger.info(f"✅ Invoice sent successfully! Message ID: {invoice_result.message_id}")
+            # Invoice already displayed to user, no need for extra message
             
         except Exception as e:
             logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
