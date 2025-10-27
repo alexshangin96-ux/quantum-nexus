@@ -629,7 +629,8 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             )
             
             logger.info(f"✅ Invoice sent successfully! Message ID: {invoice_result.message_id}")
-            # Invoice already displayed to user, no need for extra message
+            # Invoice is displayed by Telegram automatically, no extra message needed
+            return  # Exit function without sending extra message
             
         except Exception as e:
             logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
