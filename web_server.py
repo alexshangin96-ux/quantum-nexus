@@ -1875,13 +1875,19 @@ def get_top_users():
         with get_db() as db:
             users = db.query(User).order_by(User.total_earned.desc()).limit(limit).all()
             
+            print(f"[TOP_USERS] Found {len(users)} users in database")
+            
             top_users = []
             for u in users:
                 # Calculate passive income from cards
                 passive_income = 0
-                for card in getattr(u, 'cards', []):
-                    if card and card.is_active:
-                        passive_income += getattr(card, 'income_per_minute', 0) or 0
+                try:
+                    cards = u.cards if hasattr(u, 'cards') else []
+                    for card in cards:
+                        if card and getattr(card, 'is_active', True):
+                            passive_income += getattr(card, 'income_per_minute', 0) or 0
+                except Exception as e:
+                    print(f"[TOP_USERS] Error calculating passive income: {e}")
                 
                 # Convert to per hour for display
                 passive_income_per_hour = int(passive_income * 60) if passive_income else 0
@@ -1897,8 +1903,12 @@ def get_top_users():
                     'total_taps': int(getattr(u, 'total_taps', 0) or 0)
                 })
             
+            print(f"[TOP_USERS] Returning {len(top_users)} users")
             return jsonify({'users': top_users})
     except Exception as e:
+        print(f"[TOP_USERS] Error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
