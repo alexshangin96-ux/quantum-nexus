@@ -2511,45 +2511,11 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal temporarily
+                        // Close modal
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Create invoice link to send to bot
-                        const invoiceUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
-                        
-                        // Send invoice request to bot via backend
-                        fetch('/api/create_invoice', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                user_id: user?.id,
-                                product_id: productId
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if(data.success && data.invoice_slug) {
-                                // Use openInvoice with the slug from backend
-                                tg.openInvoice({
-                                    invoiceSlug: data.invoice_slug,
-                                    successParam: 'purchase_success'
-                                }, (status) => {
-                                    if(status === 'paid') {
-                                        tg.showAlert('✨ Покупка успешна! Коины добавлены.');
-                                        loadData();
-                                    } else if(status === 'failed') {
-                                        tg.showAlert('❌ Оплата не прошла');
-                                    } else {
-                                        tg.showAlert('ℹ️ Оплата отменена');
-                                    }
-                                });
-                            } else {
-                                tg.showAlert('❌ Не удалось создать invoice');
-                            }
-                        })
-                        .catch(err => {
-                            tg.showAlert('❌ Ошибка: ' + err.message);
-                        });
+                        // Try to open bot to send invoice
+                        tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
                     }
                 });
             } catch(err) {

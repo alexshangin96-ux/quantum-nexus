@@ -1114,26 +1114,6 @@ def buy_machine():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/create_invoice', methods=['POST'])
-def create_invoice():
-    """Create invoice for Stars payment"""
-    try:
-        data = request.json
-        user_id = data.get('user_id')
-        product_id = data.get('product_id')
-        
-        if not user_id or not product_id:
-            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
-        
-        # Return invoice slug that matches what bot sends
-        invoice_slug = f"stars_pack_{product_id}"
-        
-        return jsonify({
-            'success': True,
-            'invoice_slug': invoice_slug
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/buy_energy', methods=['POST'])
 def buy_energy():
