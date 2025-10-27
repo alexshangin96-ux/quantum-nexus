@@ -1708,6 +1708,10 @@
                         <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;">
                             <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;">🛒 Магазин карточек</span>
                         </div>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button class="shop-cat-btn" onclick="loadCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ В час (Основные)</button>
+                            <button class="shop-cat-btn" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
+                        </div>
                         <div id="shopCardsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
                     </div>
                     
@@ -1726,18 +1730,32 @@
             `;
             document.body.appendChild(modal);
             
-            // Load shop cards first
-            fetch('/api/shop', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
-            })
-            .then(res => res.json())
-            .then(shopData => {
-                const shopList = document.getElementById('shopCardsList');
-                const cards = shopData.items.filter(item => item.type === 'card');
-                if(cards && cards.length > 0) {
-                    shopList.innerHTML = cards.map(card => {
+            // Load cards function
+            window.loadCardsCategory = function(category) {
+                document.querySelectorAll('#cardsShopSection .shop-cat-btn').forEach(btn => {
+                    if(btn.textContent.toLowerCase().includes(category === 'per_hour' ? 'час' : 'минуту')) {
+                        btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'rgba(255,255,255,0.1)';
+                        btn.style.border = '1px solid rgba(255,255,255,0.3)';
+                    }
+                });
+                loadCardsList(category);
+            };
+            
+            function loadCardsList(category) {
+                fetch('/api/shop', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user?.id, category: 'cards'})
+                })
+                .then(res => res.json())
+                .then(shopData => {
+                    const shopList = document.getElementById('shopCardsList');
+                    const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
+                    if(cards && cards.length > 0) {
+                        shopList.innerHTML = cards.map(card => {
                         const rarity = card.rarity || 'common';
                         const rarityInfo = {
                             'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
@@ -1765,10 +1783,14 @@
                             </div>
                         `;
                     }).join('');
-                } else {
-                    shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
-                }
-            });
+                    } else {
+                        shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
+                    }
+                });
+            }
+            
+            // Load per_hour cards by default
+            loadCardsList('per_hour');
             
             fetch('/api/cards', {
                 method: 'POST',
