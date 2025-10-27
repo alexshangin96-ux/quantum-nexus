@@ -508,16 +508,18 @@ def get_cards():
             cards_data.append({
                 'id': card.id,
                 'card_type': card.card_type,
-                'card_level': card.card_level,
+                'card_level': getattr(card, 'card_level', 1),
                 'income_per_minute': card.income_per_minute,
-                'is_active': card.is_active
+                'is_active': card.is_active if hasattr(card, 'is_active') else True
             })
+        
+        total_passive_per_hour = total_passive_per_minute * 60
         
         return jsonify({
             'coins': user.coins,
             'cards': cards_data,
             'total_passive_per_minute': total_passive_per_minute,
-            'total_passive_per_hour': total_passive_per_minute * 60
+            'total_passive_per_hour': total_passive_per_hour
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -918,8 +920,7 @@ def buy_item():
         # Ensure price is a float
         price = float(price) if price else 0
         
-        db = next(get_db())
-        try:
+        with get_db() as db:
             user = db.query(User).filter_by(telegram_id=user_id).first()
             
             if not user:
@@ -1042,10 +1043,8 @@ def buy_item():
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
             
-                db.commit()
-                return jsonify({'success': True})
-        finally:
-            db.close()
+            db.commit()
+            return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
