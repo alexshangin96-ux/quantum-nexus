@@ -9,7 +9,7 @@ from flask_cors import CORS
 from database import get_db
 from models import User, MiningMachine, UserCard, Withdrawal, SupportTicket
 from utils import calculate_offline_income
-from datetime import datetime
+from datetime import datetime, timedelta
 from config import BASE_TAP_REWARD, ENERGY_COST_PER_TAP, MAX_ENERGY
 import os
 
@@ -181,6 +181,20 @@ def get_user_data():
             if not user.last_hash_update:
                 user.last_hash_update = current_time
             
+            # Check for active multiplier
+            active_multiplier = getattr(user, 'active_multiplier', 1.0)
+            multiplier_expires_at = getattr(user, 'multiplier_expires_at', None)
+            boost_expires_at = 0
+            if multiplier_expires_at:
+                boost_expires_at = int(multiplier_expires_at.timestamp() * 1000) if hasattr(multiplier_expires_at, 'timestamp') else 0
+            
+            # Get username
+            username = getattr(user, 'username', 'Unknown')
+            if username and isinstance(username, str):
+                username = username[:50]  # Limit length
+            else:
+                username = 'Unknown'
+            
             return jsonify({
                 'coins': user.coins,
                 'quanhash': user.quanhash,
@@ -198,7 +212,10 @@ def get_user_data():
                 'has_premium_support': getattr(user, 'has_premium_support', False),
                 'has_golden_profile': getattr(user, 'has_golden_profile', False),
                 'has_top_place': getattr(user, 'has_top_place', False),
-                'has_unique_design': getattr(user, 'has_unique_design', False)
+                'has_unique_design': getattr(user, 'has_unique_design', False),
+                'active_multiplier': active_multiplier,
+                'boost_expires_at': boost_expires_at,
+                'username': username
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1928,6 +1945,35 @@ def get_top_users():
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/toggle_autobot', methods=['POST'])
+def toggle_autobot():
+    """Toggle autobot on/off"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Toggle auto_tap_enabled
+            current_state = getattr(user, 'auto_tap_enabled', False)
+            user.auto_tap_enabled = not current_state
+            
+            db.commit()
+            
+            return jsonify({
+                'success': True,
+                'auto_tap_enabled': user.auto_tap_enabled
+            })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

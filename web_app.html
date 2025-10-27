@@ -2089,35 +2089,17 @@
             
             if (!autobotSection || !autobotTime || !autobotToggleBtn) return;
             
-            const hasAutobot = userData.has_autobot;
-            const autobotExpiry = userData.autobot_expires_at || 0;
-            const now = Date.now();
-            const remainingMs = autobotExpiry > now ? autobotExpiry - now : 0;
+            const hasAutobot = userData.auto_tap_enabled || false;
             
-            if (hasAutobot && remainingMs > 0) {
+            if (hasAutobot) {
                 autobotSection.style.display = 'block';
                 
-                const formatTime = (ms) => {
-                    const hours = Math.floor(ms / 3600000);
-                    const minutes = Math.floor((ms % 3600000) / 60000);
-                    const seconds = Math.floor((ms % 60000) / 1000);
-                    return `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-                };
+                const autobotLevel = userData.auto_tap_level || 0;
+                const autobotSpeed = userData.auto_tap_speed || 2.0;
                 
-                autobotTime.textContent = `Осталось: ${formatTime(remainingMs)}`;
+                autobotTime.textContent = `Уровень: ${autobotLevel} | Скорость: ${autobotSpeed} тап/с`;
                 autobotToggleBtn.textContent = '❌ Выключить';
                 autobotToggleBtn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-                
-                // Update countdown every second
-                const autobotInterval = setInterval(() => {
-                    const newRemainingMs = (userData.autobot_expires_at || 0) - Date.now();
-                    if (newRemainingMs <= 0) {
-                        clearInterval(autobotInterval);
-                        autobotSection.style.display = 'none';
-                        return;
-                    }
-                    autobotTime.textContent = `Осталось: ${formatTime(newRemainingMs)}`;
-                }, 1000);
             } else {
                 autobotSection.style.display = 'none';
             }
