@@ -1425,7 +1425,33 @@
                         el.classList.add('vip-glow-box');
                     });
                 }
+                
+                // Show VIP sections if user has appropriate level
+                if (vipLevel >= 5) {
+                    showVIPMiningSection();
+                }
+                
+                if (vipLevel >= 4) {
+                    showVIPEventsSection();
+                }
             }
+        }
+        
+        function showVIPMiningSection() {
+            // This will be called when VIP user opens mining modal
+            const miningModal = document.getElementById('miningModal2');
+            if (miningModal && !miningModal.querySelector('#vipMiningSection')) {
+                const vipSection = document.createElement('div');
+                vipSection.innerHTML = document.getElementById('vipMiningSection')?.innerHTML || '';
+                if (miningModal.querySelector('.machinesList')) {
+                    miningModal.querySelector('.machinesList').appendChild(vipSection);
+                }
+            }
+        }
+        
+        function showVIPEventsSection() {
+            // VIP events accessible from menu
+            // Will be integrated into main interface
         }
         
         function addVIPCrown() {

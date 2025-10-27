@@ -1702,5 +1702,70 @@ def get_transaction_history():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/buy_vip_machine', methods=['POST'])
+def buy_vip_machine():
+    """Buy VIP exclusive mining machine"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        machine_type = data.get('machine_type')
+        
+        if not user_id or not machine_type:
+            return jsonify({'success': False, 'error': 'Missing parameters'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Check VIP level
+            vip_level = getattr(user, 'vip_level', 0)
+            
+            prices = {
+                'quantum_pro': 50000000,
+                'absolute_pro': 100000000
+            }
+            
+            required_levels = {
+                'quantum_pro': 5,
+                'absolute_pro': 6
+            }
+            
+            price = prices.get(machine_type, 0)
+            required_level = required_levels.get(machine_type, 999)
+            
+            if vip_level < required_level:
+                return jsonify({'success': False, 'error': f'Требуется VIP уровень {required_level}'}), 403
+            
+            if user.coins < price:
+                return jsonify({'success': False, 'error': 'Недостаточно коинов'}), 400
+            
+            # Create VIP machine
+            from models import MiningMachine
+            
+            hash_rates = {
+                'quantum_pro': 500.0,
+                'absolute_pro': 1000.0
+            }
+            
+            vip_machine = MiningMachine(
+                user_id=user.id,
+                level=100,
+                name=machine_type,
+                hash_rate=hash_rates.get(machine_type, 100.0),
+                power_consumption=0.0,
+                efficiency=2.0,
+                machine_type='vip'
+            )
+            
+            user.coins -= price
+            db.add(vip_machine)
+            db.commit()
+            
+            return jsonify({'success': True, 'message': 'VIP машина куплена!'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

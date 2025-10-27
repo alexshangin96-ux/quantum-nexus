@@ -1,37 +1,28 @@
 #!/bin/bash
-
-# Скрипт для обновления Quantum Nexus на сервере
+# Скрипт обновления Quantum Nexus на сервере Selectel
 
 echo "🚀 Начинаем обновление Quantum Nexus..."
 
-# 1. Обновить код
-echo "📥 Обновляю код из GitHub..."
-cd /root/quantum-nexus
-git pull origin main
+# Переходим в директорию проекта
+cd /root/quantum-nexus || { echo "❌ Директория не найдена!"; exit 1; }
 
-# 2. Обновить файлы
-echo "📋 Копирую файлы..."
-cp web_app.html /var/www/quantum-nexus/
-cp admin.html /var/www/quantum-nexus/
-cp web_server.py /root/quantum-nexus/
-cp models.py /root/quantum-nexus/
+# Получаем последние изменения из GitHub
+echo "📥 Получаем последние изменения..."
+git pull origin main || { echo "❌ Ошибка получения изменений!"; exit 1; }
 
-# 3. Обновить базу данных
-echo "🗄️ Обновляю базу данных..."
-sudo -u postgres psql -d quantum_nexus -c "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_passive_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"
-sudo -u postgres psql -d quantum_nexus -c "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_hash_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP;"
+# Копируем обновленный файл админ-панели
+echo "📋 Копируем админ-панель..."
+cp admin.html /var/www/quantum-nexus/ || { echo "❌ Ошибка копирования!"; exit 1; }
 
-# 4. Перезапустить сервисы
-echo "🔄 Перезапускаю сервисы..."
-sudo systemctl restart quantum-nexus
-sudo systemctl restart quantum-nexus-web
-sudo systemctl restart nginx
+# Перезапускаем веб-сервер
+echo "🔄 Перезапускаем веб-сервер..."
+systemctl restart quantum-nexus-web || { echo "❌ Ошибка перезапуска!"; exit 1; }
 
-# 5. Проверить статус
-echo "✅ Проверяю статус..."
-sudo systemctl status quantum-nexus --no-pager -l
-sudo systemctl status quantum-nexus-web --no-pager -l
-sudo systemctl status nginx --no-pager -l
+# Проверяем статус
+echo "✅ Проверяем статус..."
+sleep 2
+systemctl status quantum-nexus-web
 
-echo "🎉 Обновление завершено!"
-
+echo ""
+echo "✨ Обновление завершено успешно!"
+echo "📊 Админ-панель: https://quantum-nexus.ru/admin"
