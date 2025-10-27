@@ -1915,8 +1915,8 @@ def get_top_users():
                     'total_taps': int(u.total_taps or 0)
                 })
             
-            # Sort: VIPs first by level, then by total_earned
-            top_users.sort(key=lambda x: (-x['vip_level'], -x['total_earned']))
+            # Sort ONLY by total_earned (coins earned), ignore VIP for ranking
+            top_users.sort(key=lambda x: -x['total_earned'])
             
             # Return only top 100
             top_users = top_users[:100]

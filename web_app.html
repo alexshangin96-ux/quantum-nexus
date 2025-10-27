@@ -1769,6 +1769,12 @@
                                     <div style="font-size:14px;font-weight:800;color:#94a3b8;">${totalTaps}</div>
                                 </div>
                             </div>
+                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.05));padding:12px;border-radius:12px;margin-top:12px;border:2px solid ${isVIP ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.2)'};">
+                                <div style="display:flex;align-items:center;justify-content:space-between;">
+                                    <div style="font-size:12px;color:#94a3b8;font-weight:700;">💵 ВСЕГО ЗАРАБОТАНО КОИНОВ</div>
+                                    <div style="font-size:20px;font-weight:900;color:#ffd700;text-shadow:0 0 10px rgba(255,215,0,0.5);">${totalEarned}</div>
+                                </div>
+                            </div>
                         </div>`;
                     }).join('');
                     
@@ -1794,10 +1800,10 @@
                 <div class="modal-content" style="max-width: 450px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(102,126,234,0.4);">
                     <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                            <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП ЛИДЕРЫ</h2>
+                            <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП 100 ЗА 24 ЧАСА</h2>
                             <button onclick="this.closest('.modal').remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval);" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
                         </div>
-                        <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Лучшие игроки Quantum Nexus (Автообновление)</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.9);font-weight:600;">⏱️ Обновляется каждые 2.5 сек • 🎯 Рейтинг по заработанным коинам</div>
                     </div>
                     
                     <div style="padding:20px;">
