@@ -2469,7 +2469,7 @@
                                 </div>
                                 <div style="font-size:24px;">💎</div>
                             </div>
-                            <button onclick="buyWithStars(1, 1000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
+                            <button onclick="goToStarsPayment(1)" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
                                 💰 Купить за 10 ⭐
                             </button>
                         </div>
@@ -2481,7 +2481,7 @@
                                 </div>
                                 <div style="font-size:24px;">💎</div>
                             </div>
-                            <button onclick="buyWithStars(2, 5000000, 'coins')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
+                            <button onclick="goToStarsPayment(2)" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;margin-top:10px;">
                                 💰 Купить за 40 ⭐
                             </button>
                         </div>
@@ -2489,6 +2489,17 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+        
+        function goToStarsPayment(productId) {
+            // Close modal
+            document.querySelector('#buyCurrencyModal')?.remove();
+            
+            // Show message
+            tg.showAlert('💎 Переходим к оплате через бота...', () => {
+                // Open bot to send invoice
+                tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+            });
         }
         
         async function buyWithStars(productId, amount, currency) {
