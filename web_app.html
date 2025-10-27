@@ -224,10 +224,41 @@
         .vip-profile-icon {
             position: fixed;
             top: 10px;
-            left: 160px;
-            width: 45px;
-            height: 45px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .vip-profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .vip-profile-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .vip-top-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -236,13 +267,13 @@
             border: 3px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             transition: all 0.3s ease;
         }
         
-        .vip-profile-icon:hover {
-            transform: scale(1.08);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        .vip-top-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
         @keyframes vip-gradient {
@@ -1460,13 +1491,37 @@
                     }
                 }
                 
-                // Add Profile Icon
+                // Add Top Button (left)
+                if (vipLevel >= 3) {
+                    let topButton = document.querySelector('.vip-top-button');
+                    if (!topButton) {
+                        topButton = document.createElement('div');
+                        topButton.className = 'vip-top-button';
+                        topButton.innerHTML = '🏆';
+                        topButton.onclick = () => {
+                            openVIPTopLeaders();
+                        };
+                        document.body.appendChild(topButton);
+                    }
+                }
+                
+                // Add Profile Icon (right)
                 if (vipLevel >= 3) {
                     let profileIcon = document.querySelector('.vip-profile-icon');
                     if (!profileIcon) {
                         profileIcon = document.createElement('div');
                         profileIcon.className = 'vip-profile-icon';
-                        profileIcon.innerHTML = '👤';
+                        
+                        // Try to load profile photo from localStorage
+                        const savedPhoto = localStorage.getItem('vip_profile_photo');
+                        if (savedPhoto) {
+                            const img = document.createElement('img');
+                            img.src = savedPhoto;
+                            profileIcon.appendChild(img);
+                        } else {
+                            profileIcon.innerHTML = '👤';
+                        }
+                        
                         profileIcon.onclick = () => {
                             openVIPProfileModal();
                         };
@@ -1528,98 +1583,164 @@
             })
             .then(res => res.json())
             .then(userData => {
-                fetch('/api/top_users', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({limit: 10})
-                })
-                .then(res => res.json())
-                .then(topData => {
-                    const vipLevel = userData.vip_level || 0;
-                    const badges = {
-                        'bronze_vip': '🥉 BRONZE VIP',
-                        'silver_vip': '🥈 SILVER VIP',
-                        'gold_vip': '🥇 GOLD VIP',
-                        'platinum_vip': '💎 PLATINUM VIP',
-                        'diamond_vip': '💠 DIAMOND VIP',
-                        'absolute_vip': '👑 ABSOLUTE VIP'
-                    };
-                    
-                    const topUsers = topData.users || [];
-                    let topHTML = topUsers.map((u, idx) => {
-                        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '  ';
-                        const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
-                        return `<div style="display:flex;justify-content:space-between;padding:8px;background:rgba(255,255,255,0.05);border-radius:8px;margin-bottom:5px;">
-                            <span style="color:${rankColor};font-weight:700;width:30px;">${medal} ${idx + 1}</span>
-                            <span style="flex:1;color:#fff;text-align:left;margin-left:10px;">${u.username}</span>
-                            <span style="color:#94a3b8;">${u.total_coins || 0}</span>
-                        </div>`;
-                    }).join('');
-                    
-                    const modal = document.createElement('div');
-                    modal.className = 'modal active';
-                    modal.style.zIndex = '10000';
-                    modal.innerHTML = `
-                        <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(255,215,0,0.4);">
-                            <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                                    <h2 style="font-size: 22px; color: #000; margin: 0; font-weight: 900;">👑 VIP ПРОФИЛЬ</h2>
-                                    <button onclick="this.closest('.modal').remove()" style="background:rgba(0,0,0,0.2);border:2px solid #000;border-radius:50%;width:32px;height:32px;color:#000;cursor:pointer;font-size:18px;font-weight:800;">✕</button>
-                                </div>
-                                <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;color:#000;">
-                                    <div style="font-size:16px;font-weight:900;">${badges[userData.vip_badge || ''] || 'VIP'} ${vipLevel > 0 ? `(Уровень ${vipLevel})` : ''}</div>
+                const vipLevel = userData.vip_level || 0;
+                const badges = {
+                    'bronze_vip': '🥉 BRONZE VIP',
+                    'silver_vip': '🥈 SILVER VIP',
+                    'gold_vip': '🥇 GOLD VIP',
+                    'platinum_vip': '💎 PLATINUM VIP',
+                    'diamond_vip': '💠 DIAMOND VIP',
+                    'absolute_vip': '👑 ABSOLUTE VIP'
+                };
+                
+                const savedPhoto = localStorage.getItem('vip_profile_photo') || '';
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10000';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(255,215,0,0.4);">
+                        <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900;">👑 МОЙ ПРОФИЛЬ</h2>
+                                <button onclick="this.closest('.modal').remove()" style="background:rgba(0,0,0,0.2);border:2px solid #000;border-radius:50%;width:36px;height:36px;color:#000;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                            </div>
+                            
+                            <div style="position:relative;width:100px;height:100px;margin:0 auto 15px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffed4e);padding:4px;cursor:pointer;" onclick="document.getElementById('photoInput').click()">
+                                <img id="profilePhoto" src="${savedPhoto || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2ZmZDcwMCIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfjI08L3RleHQ+PC9zdmc+'} style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                                <div style="position:absolute;bottom:2px;right:2px;width:30px;height:30px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;">📷</div>
+                            </div>
+                            <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+                            
+                            <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;color:#000;margin-bottom:10px;">
+                                <div style="font-size:18px;font-weight:900;">${badges[userData.vip_badge || ''] || 'VIP'} ${vipLevel > 0 ? `(Уровень ${vipLevel})` : ''}</div>
+                                <div style="font-size:13px;margin-top:5px;opacity:0.8;">${userData.username || 'Майнер'}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding:20px;">
+                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;margin-bottom:15px;border:2px solid rgba(255,215,0,0.3);">
+                                <div style="font-size:15px;font-weight:700;margin-bottom:12px;color:#ffd700;text-align:center;">📊 ПОЛНАЯ СТАТИСТИКА</div>
+                                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.coins || 0).toLocaleString()}</div>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💎 QuanHash</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.quanhash || 0).toLocaleString()}</div>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${Math.floor(userData.energy || 0)}</div>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">🎮 Уровень</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${userData.level || 1}</div>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">👆 Всего тапов</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.total_taps || 0).toLocaleString()}</div>
+                                    </div>
+                                    <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
+                                        <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💰 Заработано</div>
+                                        <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.total_earned || 0).toLocaleString()}</div>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div style="padding:20px;">
-                                <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;margin-bottom:15px;border:2px solid rgba(255,215,0,0.3);">
-                                    <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#ffd700;text-align:center;">📊 ВАША СТАТИСТИКА</div>
-                                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-                                        <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                            <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💰 Всего коинов</div>
-                                            <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.coins || 0).toLocaleString()}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                            <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">💎 QuanHash</div>
-                                            <div style="font-size:18px;font-weight:900;color:#ffd700;">${(userData.quanhash || 0).toLocaleString()}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                            <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div>
-                                            <div style="font-size:18px;font-weight:900;color:#ffd700;">${Math.floor(userData.energy || 0)}</div>
-                                        </div>
-                                        <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;text-align:center;">
-                                            <div style="font-size:11px;color:#94a3b8;margin-bottom:5px;">🎮 Уровень</div>
-                                            <div style="font-size:18px;font-weight:900;color:#ffd700;">${userData.level || 1}</div>
-                                        </div>
-                                    </div>
+                            ${vipLevel >= 3 ? `
+                            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;border:2px solid rgba(255,215,0,0.3);margin-bottom:15px;">
+                                <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
+                                <div style="font-size:12px;color:#fff;line-height:2.2;">
+                                    ${userData.has_premium_support ? '⭐ Premium Support<br>' : ''}
+                                    ${userData.has_golden_profile ? '🌟 Golden Profile<br>' : ''}
+                                    ${userData.has_top_place ? '🏆 Top Place<br>' : ''}
+                                    ${userData.has_unique_design ? '✨ Unique Design<br>' : ''}
                                 </div>
-                                
-                                <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:15px;border:2px solid rgba(102,126,234,0.3);">
-                                    <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:#667eea;text-align:center;">🏆 РЕЙТИНГ УЧАСТНИКОВ</div>
-                                    <div style="max-height:300px;overflow-y:auto;">
-                                        ${topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:20px;">Рейтинг загружается...</div>'}
-                                    </div>
-                                </div>
-                                
-                                ${vipLevel >= 3 ? `
-                                <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));padding:15px;border-radius:15px;border:2px solid rgba(255,215,0,0.3);">
-                                    <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#ffd700;">✨ VIP ПРИВИЛЕГИИ</div>
-                                    <div style="font-size:12px;color:#fff;line-height:2;">
-                                        ${userData.has_premium_support ? '⭐ Premium Support<br>' : ''}
-                                        ${userData.has_golden_profile ? '🌟 Golden Profile<br>' : ''}
-                                        ${userData.has_top_place ? '🏆 Top Place<br>' : ''}
-                                        ${userData.has_unique_design ? '✨ Unique Design<br>' : ''}
-                                    </div>
-                                </div>
-                                ` : ''}
-                                
-                                <button onclick="this.closest('.modal').remove()" style="width:100%;margin-top:15px;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
+                            </div>
+                            ` : ''}
+                            
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+            });
+        }
+        
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const photoUrl = e.target.result;
+                    localStorage.setItem('vip_profile_photo', photoUrl);
+                    document.getElementById('profilePhoto').src = photoUrl;
+                    const icon = document.querySelector('.vip-profile-icon');
+                    if (icon) {
+                        icon.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = photoUrl;
+                        icon.appendChild(img);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function openVIPTopLeaders() {
+            fetch('/api/top_users', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({limit: 20})
+            })
+            .then(res => res.json())
+            .then(topData => {
+                const topUsers = topData.users || [];
+                let topHTML = topUsers.map((u, idx) => {
+                    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '  ';
+                    const rankColor = idx === 0 ? '#ffd700' : idx === 1 ? '#c0c0c0' : idx === 2 ? '#cd7f32' : '#94a3b8';
+                    return `<div style="padding:12px;background:rgba(0,0,0,0.3);border-radius:12px;margin-bottom:10px;border:2px solid rgba(255,255,255,0.1);">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                            <div style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:${rankColor};">${medal}</div>
+                            <div style="flex:1;">
+                                <div style="font-size:14px;font-weight:700;color:#fff;">${u.username}</div>
+                                <div style="font-size:11px;color:#94a3b8;">Уровень ${u.level || 1}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:16px;font-weight:900;color:#ffd700;">${(u.total_coins || 0).toLocaleString()}</div>
+                                <div style="font-size:11px;color:#94a3b8;">🪙 коинов</div>
                             </div>
                         </div>
-                    `;
-                    document.body.appendChild(modal);
-                    modal.onclick = (e) => {if(e.target === modal) modal.remove();};
-                });
+                    </div>`;
+                }).join('');
+                
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10000';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 20px;border: 2px solid rgba(102,126,234,0.4);">
+                        <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                                <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП ЛИДЕРЫ</h2>
+                                <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                            </div>
+                            <div style="font-size:13px;color:rgba(255,255,255,0.8);">Лучшие игроки Quantum Nexus</div>
+                        </div>
+                        
+                        <div style="padding:20px;">
+                            <div style="max-height:550px;overflow-y:auto;">
+                                ${topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст</div>'}
+                            </div>
+                            
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;margin-top:15px;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
             });
         }
         
