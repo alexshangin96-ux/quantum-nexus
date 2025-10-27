@@ -1,41 +1,22 @@
 #!/bin/bash
-# ============================================================
-# ПОЛНОЕ ОБНОВЛЕНИЕ QUANTUM NEXUS - ВСЕ 11 ИСПРАВЛЕНИЙ
-# ============================================================
+# Финальное обновление с исправленными бустами и автоботом
 
-echo "🚀 Начинаем полное обновление Quantum Nexus..."
-echo ""
+echo "🚀 Финальное обновление..."
 
-cd /root/quantum-nexus
+cd ~/quantum-nexus
+
+# Обновить код
 git pull origin main
 
-cp web_app.html /var/www/quantum-nexus/
-cp admin.html /var/www/quantum-nexus/
-cp web_server.py /root/quantum-nexus/
-cp handlers.py /root/quantum-nexus/
-cp models.py /root/quantum-nexus/
+# Скопировать обновленный web_app.html
+sudo cp web_app.html /var/www/quantum-nexus/
 
-sudo systemctl restart quantum-nexus
-sudo systemctl restart quantum-nexus-web
-sudo systemctl restart nginx
+# Перезапустить веб-сервер
+sudo systemctl restart quantum-web-server
+sudo systemctl status quantum-web-server
 
-echo "✅ ОБНОВЛЕНИЕ ЗАВЕРШЕНО!"
-echo ""
-echo "📝 ЧТО ИСПРАВЛЕНО:"
-echo "  ✅ Реферальная ссылка (Quanexus_bot)"
-echo "  ✅ Пассивный доход - обе валюты"
-echo "  ✅ Уровневая система в магазине"
-echo "  ✅ Карточки на главном экране"
-echo "  ✅ Бусты при покупке работают"
-echo "  ✅ Автотапы работают (24 часа)"
-echo "  ✅ Энергия при покупке"
-echo "  ✅ Описание позиций в магазине"
-echo "  ✅ Ежедневные задания - реальный прогресс"
-echo "  ✅ Поддержка - отправка в админку"
-echo "  ✅ Кнопка тапа - большая иконка, нежная анимация"
-echo ""
-echo "🌐 Проверьте:"
-echo "   Бот: https://t.me/Quanexus_bot"
-echo "   Админ: https://quantum-nexus.ru/admin"
+# Перезапустить бота
+sudo systemctl restart quantum-bot
+sudo systemctl status quantum-bot
 
-
+echo "✅ Обновление завершено!"
