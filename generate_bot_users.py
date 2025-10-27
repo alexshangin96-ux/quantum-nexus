@@ -63,6 +63,12 @@ def generate_bot_users():
             print("Too many users in database, skipping generation")
             return
         
+        # Check if bots already exist (check for high telegram_ids)
+        bot_count = db.query(User).filter(User.telegram_id >= 9000000000).count()
+        if bot_count >= 137:
+            print(f"Already have {bot_count} bots, skipping generation")
+            return
+        
         # Generate usernames and ensure uniqueness
         usernames = set()
         while len(usernames) < 137:
