@@ -1714,7 +1714,14 @@
                         const aVip = a.vip_level || 0;
                         const bVip = b.vip_level || 0;
                         if (aVip !== bVip) return bVip - aVip; // VIPs first
-                        return (b.total_earned || 0) - (a.total_earned || 0);
+                        
+                        // Sort by total_earned (total coins earned)
+                        const aEarned = a.total_earned || 0;
+                        const bEarned = b.total_earned || 0;
+                        if (aEarned !== bEarned) return bEarned - aEarned;
+                        
+                        // Fallback to coins
+                        return (b.coins || 0) - (a.coins || 0);
                     });
                     
                     let topHTML = sortedUsers.map((u, idx) => {
@@ -1773,7 +1780,11 @@
                     
                     const contentDiv = modal.querySelector('#topLeadersContent');
                     if (contentDiv) {
-                        contentDiv.innerHTML = topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст</div>';
+                        if (topUsers.length > 0) {
+                            contentDiv.innerHTML = topHTML;
+                        } else {
+                            contentDiv.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст<br><span style="font-size:12px;opacity:0.7;">В базе нет пользователей с данными</span></div>';
+                        }
                     }
                 })
                 .catch(err => {
