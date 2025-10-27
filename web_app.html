@@ -2492,9 +2492,18 @@
         }
         
         function confirmStarsPayment(productId) {
+            const tg = window.Telegram?.WebApp;
             // Close modal and open bot
-            document.querySelector('#buyCurrencyModal')?.remove();
-            tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+            const modal = document.querySelector('#buyCurrencyModal');
+            if(modal) modal.remove();
+            
+            // Open bot to send invoice
+            if(tg && tg.openTelegramLink) {
+                tg.openTelegramLink(`https://t.me/qanexus_bot?start=buy_stars_${productId}`);
+            } else {
+                // Fallback
+                window.location.href = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+            }
         }
         
         function goToStarsPayment(productId) {
