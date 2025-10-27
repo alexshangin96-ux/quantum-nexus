@@ -2008,17 +2008,35 @@
                                 const energy = parseInt(energyElement.textContent.split('/')[0]);
                                 // Auto-tap stops at 10 energy, manual taps can go to 0
                                 if(energy > 10) {
-                                    // Call tap through API directly with auto-flag (silent, no visual feedback)
+                                    // Call tap with auto flag but show animation
                                     fetch('/api/tap', {
                                         method: 'POST',
                                         headers: {'Content-Type': 'application/json'},
-                                        body: JSON.stringify({user_id: user?.id, is_auto: true}),
-                                        // Disable all visual feedback for auto-tap
-                                        referrerPolicy: 'no-referrer'
+                                        body: JSON.stringify({user_id: user?.id, is_auto: true})
                                     })
                                     .then(res => res.json())
                                     .then(data => {
                                         if(data.success) {
+                                            // Show coin animation for auto-tap too
+                                            const button = document.querySelector('.tap-button');
+                                            if(button){
+                                                const rect = button.getBoundingClientRect();
+                                                const centerX = rect.left + rect.width / 2;
+                                                const centerY = rect.top + rect.height / 2;
+                                                
+                                                const coinAnimation = document.createElement('div');
+                                                coinAnimation.className = 'coin-animation';
+                                                coinAnimation.textContent = '+' + data.reward;
+                                                coinAnimation.style.left = centerX + 'px';
+                                                coinAnimation.style.top = centerY + 'px';
+                                                coinAnimation.style.transform = 'translate(-50%, -50%)';
+                                                document.body.appendChild(coinAnimation);
+                                                setTimeout(() => { 
+                                                    if(document.body.contains(coinAnimation)) {
+                                                        document.body.removeChild(coinAnimation); 
+                                                    }
+                                                }, 2000);
+                                            }
                                             loadData();
                                         }
                                     });
