@@ -512,6 +512,20 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             51: 50000000, 52: 100000000, 53: 150000000, 54: 200000000, 55: 250000000, 56: 300000000, 57: 350000000, 58: 400000000, 59: 450000000, 60: 500000000
         }
         
+        # Define VIP products (51-60) with special privileges
+        vip_products = {
+            51: {'level': 1, 'badge': 'bronze_vip', 'privileges': ['premium_support']},
+            52: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker']},
+            53: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place']},
+            54: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile']},
+            55: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design']},
+            56: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help']},
+            57: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help']},
+            58: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access']},
+            59: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access', 'vip_unlocked']},
+            60: {'level': 6, 'badge': 'absolute_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place', 'golden_profile', 'unique_design', 'priority_help', 'exclusive_access', 'vip_unlocked', 'all_premium']}
+        }
+        
         coins_to_add = product_coins.get(product_id, 0)
         
         if coins_to_add == 0:
@@ -529,6 +543,36 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             
             # Add coins
             user.coins += coins_to_add
+            
+            # Apply VIP privileges for products 51-60
+            vip_message = ""
+            if product_id in vip_products:
+                vip_info = vip_products[product_id]
+                
+                # Update VIP level
+                user.vip_level = max(user.vip_level, vip_info['level'])
+                user.vip_badge = vip_info['badge']
+                
+                # Apply privileges
+                if 'premium_support' in vip_info['privileges']:
+                    user.has_premium_support = True
+                    
+                if 'unique_marker' in vip_info['privileges']:
+                    user.vip_unique_marker = vip_info['badge'].upper()
+                    
+                if 'top_place' in vip_info['privileges']:
+                    user.has_top_place = True
+                    
+                if 'golden_profile' in vip_info['privileges']:
+                    user.has_golden_profile = True
+                    
+                if 'unique_design' in vip_info['privileges']:
+                    user.has_unique_design = True
+                
+                vip_message = f"\n\n👑 VIP-статус получен!\n🎖️ Значок: {vip_info['badge'].replace('_', ' ').upper()}\n✨ Привилегии:\n"
+                for priv in vip_info['privileges']:
+                    vip_message += f"  • {priv.replace('_', ' ').title()}\n"
+            
             db.commit()
             
             # Log successful payment
@@ -537,8 +581,9 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             await update.message.reply_text(
                 f"✨ Покупка успешна!\n\n"
                 f"💎 Оплачено: {payment.total_amount} ⭐\n"
-                f"💰 Получено: {coins_to_add:,} коинов\n\n"
+                f"💰 Получено: {coins_to_add:,} коинов\n"
                 f"📊 Новый баланс: {user.coins:,} коинов"
+                + vip_message
             )
             
     except Exception as e:

@@ -41,6 +41,15 @@ class User(Base):
     is_frozen = Column(Boolean, default=False)
     ban_reason = Column(String(255), nullable=True)
     
+    # VIP Status
+    vip_level = Column(Integer, default=0)  # 0=none, 1=bronze, 2=silver, 3=gold, 4=platinum, 5=diamond
+    vip_badge = Column(String(50), nullable=True)  # unique_badge, top_place, premium_profile, etc.
+    vip_unique_marker = Column(String(50), nullable=True)  # unique marker text
+    has_premium_support = Column(Boolean, default=False)
+    has_golden_profile = Column(Boolean, default=False)
+    has_top_place = Column(Boolean, default=False)
+    has_unique_design = Column(Boolean, default=False)
+    
     # Auto-tap
     auto_tap_enabled = Column(Boolean, default=False)
     auto_tap_level = Column(Integer, default=0)
