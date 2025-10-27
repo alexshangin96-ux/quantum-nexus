@@ -146,6 +146,62 @@
             50% { filter: drop-shadow(0 0 20px rgba(118, 75, 162, 0.8)); }
         }
         
+        /* VIP Styles */
+        .vip-container {
+            position: relative;
+        }
+        
+        .vip-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes vip-float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .vip-golden-bg {
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            background-size: 400% 400%;
+            animation: vip-gradient 5s ease infinite;
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes vip-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .vip-sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+            animation: vip-sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes vip-sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
@@ -1264,7 +1320,50 @@
                     document.getElementById('mainTitle').style.webkitTextFillColor = 'transparent';
                     document.getElementById('mainTitle').style.filter = 'drop-shadow(0 0 20px rgba(255,215,0,0.5))';
                 }
+                
+                // Add VIP background effect
+                if (vipLevel >= 3) {
+                    let bgExists = document.querySelector('.vip-golden-bg');
+                    if (!bgExists) {
+                        const goldenBg = document.createElement('div');
+                        goldenBg.className = 'vip-golden-bg';
+                        document.body.appendChild(goldenBg);
+                    }
+                }
+                
+                // Add VIP particle effects
+                if (vipLevel >= 4) {
+                    startVIPParticles();
+                }
             }
+        }
+        
+        function startVIPParticles() {
+            // Remove existing particles
+            const existing = document.querySelector('.vip-particles');
+            if (existing) existing.remove();
+            
+            const particles = document.createElement('div');
+            particles.className = 'vip-particles';
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    if (!particles.parentNode) return;
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.width = Math.random() * 6 + 2 + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.background = '#ffd700';
+                    particle.style.borderRadius = '50%';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = '100%';
+                    particle.style.boxShadow = '0 0 10px #ffd700, 0 0 20px #ffed4e';
+                    particle.style.animation = `vip-float ${10 + Math.random() * 10}s linear infinite`;
+                    particles.appendChild(particle);
+                }, i * 200);
+            }
+            
+            document.body.appendChild(particles);
         }
         
         const shopItems = {
