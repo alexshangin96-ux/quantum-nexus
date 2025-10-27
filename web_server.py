@@ -1114,9 +1114,9 @@ def buy_machine():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/buy_with_stars', methods=['POST'])
-def buy_with_stars():
-    """Buy currency using Telegram Stars - direct payment from Mini App"""
+@app.route('/api/create_invoice', methods=['POST'])
+def create_invoice():
+    """Create invoice for Stars payment"""
     try:
         data = request.json
         user_id = data.get('user_id')
@@ -1125,31 +1125,13 @@ def buy_with_stars():
         if not user_id or not product_id:
             return jsonify({'success': False, 'error': 'Missing parameters'}), 400
         
-        # Define products
-        products = {
-            1: {'stars': 10, 'coins': 1000000},
-            2: {'stars': 40, 'coins': 5000000}
-        }
+        # Return invoice slug that matches what bot sends
+        invoice_slug = f"stars_pack_{product_id}"
         
-        product = products.get(product_id)
-        if not product:
-            return jsonify({'success': False, 'error': 'Invalid product'}), 400
-        
-        with get_db() as db:
-            user = db.query(User).filter_by(telegram_id=user_id).first()
-            
-            if not user:
-                return jsonify({'success': False, 'error': 'User not found'}), 404
-            
-            # Add coins (payment verification would happen here in production)
-            user.coins += product['coins']
-            db.commit()
-            
-            return jsonify({
-                'success': True,
-                'coins_added': product['coins'],
-                'new_balance': user.coins
-            })
+        return jsonify({
+            'success': True,
+            'invoice_slug': invoice_slug
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

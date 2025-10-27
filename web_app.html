@@ -2511,11 +2511,14 @@
                     ]
                 }, async (buttonId) => {
                     if(buttonId === 'purchase') {
-                        // Close modal
+                        // Close modal temporarily
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Call backend to add coins
-                        fetch('/api/buy_with_stars', {
+                        // Create invoice link to send to bot
+                        const invoiceUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+                        
+                        // Send invoice request to bot via backend
+                        fetch('/api/create_invoice', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
@@ -2525,11 +2528,23 @@
                         })
                         .then(res => res.json())
                         .then(data => {
-                            if(data.success) {
-                                tg.showAlert('✨ Покупка успешна! Коины добавлены.');
-                                loadData();
+                            if(data.success && data.invoice_slug) {
+                                // Use openInvoice with the slug from backend
+                                tg.openInvoice({
+                                    invoiceSlug: data.invoice_slug,
+                                    successParam: 'purchase_success'
+                                }, (status) => {
+                                    if(status === 'paid') {
+                                        tg.showAlert('✨ Покупка успешна! Коины добавлены.');
+                                        loadData();
+                                    } else if(status === 'failed') {
+                                        tg.showAlert('❌ Оплата не прошла');
+                                    } else {
+                                        tg.showAlert('ℹ️ Оплата отменена');
+                                    }
+                                });
                             } else {
-                                tg.showAlert('❌ Ошибка: ' + data.error);
+                                tg.showAlert('❌ Не удалось создать invoice');
                             }
                         })
                         .catch(err => {
