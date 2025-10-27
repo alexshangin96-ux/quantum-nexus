@@ -2514,8 +2514,8 @@
                         // Close modal and redirect to bot for invoice
                         document.querySelector('#buyCurrencyModal')?.remove();
                         
-                        // Open bot with product info
-                        const tgLink = `https://t.me/your_bot_username?start=buy_stars_${productId}`;
+                        // Open bot with product info (replace with your actual bot username)
+                        const tgLink = `https://t.me/QuantumNexusGameBot?start=buy_stars_${productId}`;
                         tg.openTelegramLink(tgLink);
                     }
                 });
