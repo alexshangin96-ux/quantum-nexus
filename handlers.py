@@ -16,6 +16,19 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command"""
     user = update.effective_user
     
+    # Check for special commands BEFORE creating user
+    if context.args and context.args[0]:
+        arg = context.args[0]
+        
+        # Check if it's a buy_stars command FIRST
+        if arg.startswith('buy_stars_'):
+            try:
+                product_id = int(arg.split('_')[2])
+                await send_stars_invoice(update, context, product_id)
+                return  # Don't show main menu, just send invoice
+            except (ValueError, IndexError) as e:
+                logger.error(f"Invalid buy_stars parameter: {arg}, error: {e}")
+    
     with get_db() as db:
         # Check if user exists
         db_user = db.query(User).filter_by(telegram_id=user.id).first()
@@ -30,18 +43,9 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
             db.add(db_user)
             db.flush()  # Get the ID
             
-            # Check for special commands or purchases
+            # Check for referral
             if context.args and context.args[0]:
                 arg = context.args[0]
-                
-                # Check if it's a buy_stars command
-                if arg.startswith('buy_stars_'):
-                    try:
-                        product_id = int(arg.split('_')[2])
-                        await send_stars_invoice(update, context, product_id)
-                        return
-                    except (ValueError, IndexError):
-                        pass
                 
                 # Check for referral - use telegram_id as referral code
                 referral_value = arg
