@@ -370,11 +370,11 @@
         .stats {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(26, 29, 46, 0.9) 100%);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 16px;
             border: 1px solid rgba(102, 126, 234, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
         }
@@ -427,27 +427,27 @@
         .stat-compact-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .stat-item-compact {
             background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 8px;
             text-align: center;
             border: 1px solid rgba(102, 126, 234, 0.3);
         }
 
         .stat-main-value {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 900;
             color: #fff;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .stat-passive-value {
-            font-size: 11px;
+            font-size: 10px;
             color: #4ade80;
             margin-bottom: 6px;
             font-weight: 600;
@@ -1232,15 +1232,22 @@
                     <div class="stat-label-small">💎 QuanHash</div>
                 </div>
             </div>
-            <div class="energy-bar-container">
-                <div class="stat-row">
-                    <span class="stat-label">⚡ Энергия</span>
-                    <span class="stat-value" id="energy-text">0/1000</span>
+            <div class="energy-bar-container" style="margin-bottom: 8px;">
+                <div class="stat-row" style="margin-bottom: 4px;">
+                    <span class="stat-label" style="font-size: 11px;">⚡ Энергия</span>
+                    <span class="stat-value" id="energy-text" style="font-size: 14px;">0/1000</span>
                 </div>
-                <div class="energy-bar">
-                    <div class="energy-fill" id="energy-bar" style="width: 0%"></div>
+                <div class="energy-bar" style="height: 6px;">
+                    <div class="energy-fill" id="energy-bar" style="width: 0%; height: 100%;"></div>
                 </div>
-                <div class="energy-regen">+1/сек</div>
+                <div class="energy-regen" style="font-size: 9px;">+1/сек</div>
+            </div>
+            
+            <!-- Autobot toggle button -->
+            <div id="autobotToggleSection" style="display: none; margin-top: 8px;">
+                <button id="autobotToggleBtn" onclick="toggleAutobot()" style="width: 100%; padding: 8px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(16,185,129,0.3);">
+                    🤖 Автобот: Включить
+                </button>
             </div>
         </div>
 
@@ -1942,10 +1949,57 @@
 
                 // Load VIP status and display it
                 loadVIPStatus(data);
+                
+                // Update autobot toggle button
+                updateAutobotToggle(data);
 
                 // Show withdraw button if user has 500k+ quanhash
             })
             .catch(err => console.error('Error:', err));
+        }
+        
+        function updateAutobotToggle(data) {
+            const autobotToggleSection = document.getElementById('autobotToggleSection');
+            const autobotToggleBtn = document.getElementById('autobotToggleBtn');
+            
+            if (!autobotToggleSection || !autobotToggleBtn) return;
+            
+            const hasAutobot = data.auto_tap_enabled || false;
+            const autobotLevel = data.auto_tap_level || 0;
+            const autobotSpeed = data.auto_tap_speed || 2.0;
+            
+            if (autobotLevel > 0) {
+                autobotToggleSection.style.display = 'block';
+                if (hasAutobot) {
+                    autobotToggleBtn.textContent = `🤖 Автобот: Выключить (${autobotSpeed} тап/с)`;
+                    autobotToggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                } else {
+                    autobotToggleBtn.textContent = `🤖 Автобот: Включить (${autobotSpeed} тап/с)`;
+                    autobotToggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                }
+            } else {
+                autobotToggleSection.style.display = 'none';
+            }
+        }
+        
+        function toggleAutobot() {
+            fetch('/api/toggle_autobot', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    loadData(); // Reload to update display
+                } else {
+                    tg.showAlert('❌ ' + (data.error || 'Ошибка'));
+                }
+            })
+            .catch(err => {
+                console.error('Error toggling autobot:', err);
+                tg.showAlert('❌ Ошибка переключения автобота');
+            });
         }
 
         function checkOfflineIncome() {
