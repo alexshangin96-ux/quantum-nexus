@@ -1187,29 +1187,44 @@ def buy_shop_item():
             user.coins -= price
             
             if category == 'tap_boost':
-                # Increase tap reward (store in active_multiplier or create new field)
-                user.active_multiplier = max(getattr(user, 'active_multiplier', 1), level)
+                # Tap boost items: bonus = number of extra taps
+                energy_bonus_map = {
+                    1: 1, 2: 2, 3: 3, 4: 4, 5: 6, 6: 9, 7: 13, 8: 19, 9: 26, 10: 36,
+                    11: 51, 12: 71, 13: 101, 14: 141, 15: 201, 16: 281, 17: 401, 18: 581, 19: 801, 20: 1201
+                }
+                bonus = energy_bonus_map.get(level, level)
+                # Store tap boost in a custom way - we'll use multiplier field
+                user.active_multiplier = max(getattr(user, 'active_multiplier', 1), bonus)
             elif category == 'energy_buy':
                 # Restore energy
-                item_data = window.shopData['energy_buy']['items'][level - 1] if 'window' in dir() else None
-                energy_to_restore = 50 * level  # Default formula
-                if item_data:
-                    energy_to_restore = item_data['bonus']
+                energy_map = {
+                    1: 50, 2: 100, 3: 200, 4: 300, 5: 500, 6: 800, 7: 1200, 8: 1800, 9: 2500, 10: 3500,
+                    11: 5000, 12: 7500, 13: 10000, 14: 15000, 15: 25000, 16: 40000, 17: 65000, 18: 100000, 19: 150000, 20: 250000
+                }
+                energy_to_restore = energy_map.get(level, 50 * level)
                 user.energy = min(user.energy + energy_to_restore, user.max_energy)
             elif category == 'energy_expand':
                 # Expand max energy
-                item_data = window.shopData['energy_expand']['items'][level - 1] if 'window' in dir() else None
-                energy_to_add = 200 * level  # Default formula
-                if item_data:
-                    energy_to_add = item_data['bonus']
+                expand_map = {
+                    1: 200, 2: 300, 3: 500, 4: 800, 5: 1200, 6: 1800, 7: 2500, 8: 3500, 9: 5000, 10: 7500,
+                    11: 12000, 12: 20000, 13: 35000, 14: 60000, 15: 100000, 16: 180000, 17: 300000, 18: 500000, 19: 850000, 20: 1500000
+                }
+                energy_to_add = expand_map.get(level, 200 * level)
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
             elif category == 'autobot':
                 # Activate autobot
-                item_data = window.shopData['autobot']['items'][level - 1] if 'window' in dir() else None
+                duration_map = {
+                    1: 30, 2: 60, 3: 120, 4: 240, 5: 480, 6: 720, 7: 1440, 8: 2880, 9: 4320, 10: 7200,
+                    11: 10080, 12: 14400, 13: 20160, 14: 28800, 15: 43200, 16: 64800, 17: 86400, 18: 129600, 19: 172800, 20: 259200
+                }
+                speed_map = {
+                    1: 1, 2: 1.5, 3: 2, 4: 2.5, 5: 3, 6: 3.5, 7: 4, 8: 4.5, 9: 5, 10: 5.5,
+                    11: 6, 12: 6.5, 13: 7, 14: 7.5, 15: 8, 16: 8.5, 17: 9, 18: 9.5, 19: 10, 20: 10
+                }
                 from datetime import timedelta
-                duration_minutes = item_data['duration'] if item_data else 30
-                speed = item_data['speed'] if item_data else 2.0
+                duration_minutes = duration_map.get(level, 30)
+                speed = speed_map.get(level, 2.0)
                 user.auto_tap_enabled = True
                 user.auto_tap_level = level
                 user.auto_tap_speed = speed
