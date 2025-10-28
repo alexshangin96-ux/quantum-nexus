@@ -1593,7 +1593,7 @@
                     <div class="modal-content" style="max-width: 400px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
                         <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-                                <h2 style="font-size: 26px; color: #fff; margin: 0; font-weight: 900;">👑 МОЙ ПРОФИЛЬ</h2>
+                                <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">👑 ${userData.username || 'Майнер'}</h2>
                                 <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:38px;height:38px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
                             </div>
                             
@@ -1653,21 +1653,121 @@
                                     </div>
                                 </div>
                             </div>
-                                    
-                                    <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;">
-                                            <span style="font-size:11px;color:#94a3b8;">🔄 Буст:</span>
-                                            <span style="font-size:13px;font-weight:700;color:#10b981;">x${userData.active_multiplier || 1}</span>
-                                        </div>
-                                    </div>
+                            
+                            <!-- My Purchases Button -->
+                            <div id="myPurchasesBtn" style="margin-top:15px;cursor:pointer;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;text-align:center;font-weight:800;font-size:15px;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(16,185,129,0.3);" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                                🛍️ Мои покупки
                             </div>
                             
-                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;">Закрыть</button>
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;margin-top:10px;">Закрыть</button>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(modal);
                 modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+                
+                // Add click handler for My Purchases button
+                const purchasesBtn = document.getElementById('myPurchasesBtn');
+                if (purchasesBtn) {
+                    purchasesBtn.addEventListener('click', () => {
+                        openMyPurchases(userData);
+                    });
+                }
+            });
+        }
+        
+        function openMyPurchases(userData) {
+            // Close profile modal first
+            document.querySelectorAll('.modal.active').forEach(m => m.remove());
+            
+            // Fetch detailed purchase data
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10001';
+                
+                // Get current time for time remaining calculations
+                const now = new Date();
+                
+                let purchasesContent = `
+                    <div style="background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);max-width:450px;max-height:85vh;overflow-y:auto;">
+                        <div style="background:linear-gradient(135deg,#10b981,#059669);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
+                            <h2 style="font-size:22px;color:#fff;margin:0;font-weight:900;">🛍️ МОИ ПОКУПКИ</h2>
+                            <button onclick="this.closest('.modal').remove()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:18px;font-weight:800;">✕</button>
+                        </div>
+                        <div style="padding:20px;">
+                `;
+                
+                // Active Boosts
+                if (data.active_multiplier > 1 || (data.boost_expires_at && new Date(data.boost_expires_at) > now)) {
+                    purchasesContent += `
+                        <div style="margin-bottom:16px;">
+                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(118,75,162,0.2);border-radius:8px;">📈 АКТИВНЫЕ БУСТЫ</div>
+                    `;
+                    
+                    if (data.active_multiplier > 1 && data.boost_expires_at) {
+                        const expiresAt = new Date(data.boost_expires_at);
+                        const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+                        const hours = Math.floor(remaining / 3600);
+                        const minutes = Math.floor((remaining % 3600) / 60);
+                        const seconds = remaining % 60;
+                        
+                        purchasesContent += `
+                            <div style="background:rgba(118,75,162,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(118,75,162,0.5);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                    <span style="color:#fff;font-weight:700;font-size:13px;">🔥 Доход x${data.active_multiplier}</span>
+                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">+${(data.active_multiplier - 1) * 100}%</span>
+                                </div>
+                                <div style="color:#94a3b8;font-size:11px;font-weight:600;">⏱️ Осталось: ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    purchasesContent += `</div>`;
+                }
+                
+                // Autobot status
+                if (data.auto_tap_level > 0 && data.auto_tap_expires_at) {
+                    const expiresAt = new Date(data.auto_tap_expires_at);
+                    if (expiresAt > now) {
+                        const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
+                        const days = Math.floor(remaining / 86400);
+                        const hours = Math.floor((remaining % 86400) / 3600);
+                        const minutes = Math.floor((remaining % 3600) / 60);
+                        
+                        purchasesContent += `
+                            <div style="margin-bottom:16px;">
+                                <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(16,185,129,0.2);border-radius:8px;">🤖 АВТОБОТ</div>
+                                <div style="background:rgba(16,185,129,0.3);padding:12px;border-radius:10px;border:1px solid rgba(16,185,129,0.5);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">Уровень ${data.auto_tap_level} | Скорость ${data.auto_tap_speed}/сек</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">${data.auto_tap_enabled ? '🟢 Активен' : '⚪ Остановлен'}</span>
+                                    </div>
+                                    <div style="color:#94a3b8;font-size:11px;font-weight:600;">⏱️ Осталось: ${days}д ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                purchasesContent += `
+                        </div>
+                    </div>
+                `;
+                
+                modal.innerHTML = purchasesContent;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+            })
+            .catch(err => {
+                console.error('Error loading purchases:', err);
+                tg.showAlert('❌ Ошибка загрузки покупок');
             });
         }
         
