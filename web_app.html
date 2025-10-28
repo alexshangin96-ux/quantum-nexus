@@ -1430,15 +1430,19 @@
         tg.ready();
         tg.expand();
 
-        const user = tg.initDataUnsafe?.user;
+        // Make user available globally
+        window.user = tg.initDataUnsafe?.user;
         
         // Debug: Log user data
-        console.log('Telegram User:', user);
-        console.log('User ID:', user?.id);
+        console.log('Telegram User:', window.user);
+        console.log('User ID:', window.user?.id);
         
-        if (user) {
-            document.getElementById('username').textContent = user.first_name || 'Майнер';
-            console.log('Username set to:', user.first_name);
+        if (window.user) {
+            const usernameEl = document.getElementById('username');
+            if (usernameEl) {
+                usernameEl.textContent = window.user.first_name || 'Майнер';
+            }
+            console.log('Username set to:', window.user.first_name);
         } else {
             console.error('No user data from Telegram!');
         }
@@ -1598,7 +1602,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(userData => {
@@ -1991,7 +1995,7 @@
 
         function loadData() {
             // Check if user is available
-            if (!user?.id) {
+            if (!window.user?.id) {
                 console.error('Cannot load data: no user ID');
                 return;
             }
@@ -1999,7 +2003,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user.id})
+                body: JSON.stringify({user_id: window.user.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2141,7 +2145,7 @@
             fetch('/api/toggle_autobot', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2156,7 +2160,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(userData => {
@@ -2217,7 +2221,7 @@
             fetch('/api/offline_income', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2266,7 +2270,7 @@
                     fetch('/api/user_data', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({user_id: user?.id})
+                        body: JSON.stringify({user_id: window.user?.id})
                     })
                     .then(res => res.json())
                     .then(data => {
@@ -2317,7 +2321,7 @@
             fetch('/api/tap', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2380,7 +2384,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2699,7 +2703,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -2915,7 +2919,7 @@
                 fetch('/api/user_data', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({user_id: user?.id})
+                    body: JSON.stringify({user_id: window.user?.id})
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -3029,7 +3033,7 @@
             fetch('/api/cards', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3060,7 +3064,7 @@
             fetch('/api/stats', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3096,7 +3100,7 @@
             fetch('/api/referrals', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3124,7 +3128,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3184,7 +3188,7 @@
             fetch('/api/history', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3295,7 +3299,7 @@
             fetch('/api/user_support', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3316,7 +3320,7 @@
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3517,13 +3521,13 @@
             fetch('/api/mark_tickets_read', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             });
             
             fetch('/api/user_support', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3585,7 +3589,7 @@
             fetch('/api/daily_tasks', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: window.user?.id})
             })
             .then(res => res.json())
             .then(data => {
@@ -3598,7 +3602,7 @@
                         fetch('/api/user_data', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({user_id: user?.id})
+                            body: JSON.stringify({user_id: window.user?.id})
                         })
                         .then(res => res.json())
                         .then(userData => {
