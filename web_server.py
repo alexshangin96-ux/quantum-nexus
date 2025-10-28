@@ -314,6 +314,18 @@ def tap():
             # Calculate reward with VIP bonus
             reward = BASE_TAP_REWARD * user.active_multiplier * vip_multiplier
             
+            # Apply tap boost (active_multiplier > 1 means tap boost is active)
+            tap_boost = 1
+            if user.active_multiplier > 1:
+                # If active_multiplier is very high, it's a tap boost, not income boost
+                if user.active_multiplier > 10:  # Tap boost (e.g., 51, 71, 101, etc.)
+                    tap_boost = int(user.active_multiplier)
+                    # Reset to normal income multiplier
+                    user.active_multiplier = 1.0
+                else:
+                    # Normal income multiplier
+                    tap_boost = 1
+            
             # VIP users get lower energy cost
             energy_cost = ENERGY_COST_PER_TAP
             if vip_level >= 3:
@@ -322,7 +334,7 @@ def tap():
             # Update user
             user.coins += reward
             user.energy -= energy_cost
-            user.total_taps += 1
+            user.total_taps += tap_boost  # Apply tap boost to total taps
             user.total_earned += reward
             user.last_active = datetime.utcnow()
             
@@ -472,8 +484,8 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
-                    # Unlock card if previous card reached level 5
-                    is_locked = i > 0 and user_card_counts.get(f"card_min_{i-1}", 0) < 5
+                    # Remove locking - all cards are available
+                    is_locked = False
                     
                     items.append({
                         'id': card_key,
@@ -499,8 +511,8 @@ def get_shop():
                     income = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income / 60, 2)
                     
-                    # Unlock card if previous card reached level 5
-                    is_locked = i > 0 and user_card_counts.get(f"card_hour_{i-1}", 0) < 5
+                    # Remove locking - all cards are available
+                    is_locked = False
                     
                     items.append({
                         'id': card_key,
@@ -1188,12 +1200,12 @@ def buy_shop_item():
             
             if category == 'tap_boost':
                 # Tap boost items: bonus = number of extra taps
-                energy_bonus_map = {
+                tap_boost_map = {
                     1: 1, 2: 2, 3: 3, 4: 4, 5: 6, 6: 9, 7: 13, 8: 19, 9: 26, 10: 36,
                     11: 51, 12: 71, 13: 101, 14: 141, 15: 201, 16: 281, 17: 401, 18: 581, 19: 801, 20: 1201
                 }
-                bonus = energy_bonus_map.get(level, level)
-                # Store tap boost in a custom way - we'll use multiplier field
+                bonus = tap_boost_map.get(level, level)
+                # Store tap boost as a high multiplier value (will be detected in tap function)
                 user.active_multiplier = max(getattr(user, 'active_multiplier', 1), bonus)
             elif category == 'energy_buy':
                 # Restore energy
