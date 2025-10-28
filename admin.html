@@ -841,7 +841,25 @@
             modifyUser(uid,'freeze',duration+','+flags);
             document.getElementById('freezeModal').remove();
         }
-        function resetUser(uid){if(confirm('Сбросить аккаунт? Действие необратимо!'))modifyUser(uid,'reset',0);}
+        function resetUser(uid){
+            if(confirm('⚠️ ПОЛНОЕ ОБНУЛЕНИЕ АККАУНТА!\n\nЭто удалит ВСЕ:\n• Коины и QuanHash\n• Карточки и машины\n• Бусты и усилители\n• Историю выводов\n• Поддержку\n\nДействие НЕОБРАТИМО!\n\nПродолжить?')){
+                fetch('/api/admin/reset_user', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: uid})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if(data.success) {
+                        showNotification('✅ Аккаунт полностью обнулен!');
+                        loadUsers();
+                    } else {
+                        showNotification('❌ Ошибка: ' + data.error);
+                    }
+                })
+                .catch(() => showNotification('❌ Ошибка обнуления'));
+            }
+        }
         function setReferrer(uid){
             const modal = document.createElement('div');
             modal.className = 'modal active';

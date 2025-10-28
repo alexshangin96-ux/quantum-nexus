@@ -481,8 +481,8 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
-                    # Unlock card if previous card reached level 5
-                    is_locked = i > 0 and user_card_counts.get(f"card_min_{i-1}", 0) < 5
+                    # Remove locking - all cards are available
+                    is_locked = False
                     
                     items.append({
                         'id': card_key,
@@ -2127,6 +2127,58 @@ def toggle_autobot():
                 'success': True,
                 'auto_tap_enabled': user.auto_tap_enabled
             })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/reset_user', methods=['POST'])
+def reset_user():
+    """Complete user reset - remove all progress"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Reset all user data to initial state
+            user.coins = 0
+            user.quanhash = 0
+            user.energy = 1000
+            user.max_energy = 1000
+            user.total_taps = 0
+            user.total_earned = 0
+            user.total_mined = 0
+            user.active_multiplier = 1.0
+            user.multiplier_expires_at = None
+            user.auto_tap_enabled = False
+            user.auto_tap_level = 0
+            user.auto_tap_speed = 2.0
+            user.auto_tap_expires_at = None
+            user.last_active = datetime.utcnow()
+            user.last_passive_update = datetime.utcnow()
+            user.last_hash_update = datetime.utcnow()
+            
+            # Remove all user cards
+            db.query(UserCard).filter_by(user_id=user.id).delete()
+            
+            # Remove all user machines
+            db.query(MiningMachine).filter_by(user_id=user.id).delete()
+            
+            # Remove all user withdrawals
+            db.query(Withdrawal).filter_by(user_id=user.id).delete()
+            
+            # Remove all user support tickets
+            db.query(SupportTicket).filter_by(user_id=user.id).delete()
+            
+            db.commit()
+            
+            return jsonify({'success': True, 'message': 'Пользователь полностью обнулен'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
