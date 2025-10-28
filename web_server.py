@@ -1209,8 +1209,8 @@ def buy_shop_item():
             elif category == 'energy_buy':
                 # Increase energy regeneration rate
                 regen_boost_map = {
-                    1: 0.5, 2: 1.0, 3: 1.5, 4: 2.0, 5: 2.5, 6: 3.0, 7: 3.5, 8: 4.0, 9: 4.5, 10: 5.0,
-                    11: 6.0, 12: 7.0, 13: 8.0, 14: 9.0, 15: 10.0, 16: 12.0, 17: 15.0, 18: 20.0, 19: 25.0, 20: 30.0
+                    1: 0.2, 2: 0.4, 3: 0.6, 4: 0.8, 5: 1.0, 6: 1.2, 7: 1.4, 8: 1.6, 9: 1.8, 10: 2.0,
+                    11: 3.0, 12: 4.5, 13: 6.0, 14: 8.0, 15: 10.0
                 }
                 regen_boost = regen_boost_map.get(level, 0.5 * level)
                 current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
@@ -1218,8 +1218,8 @@ def buy_shop_item():
             elif category == 'energy_expand':
                 # Expand max energy
                 expand_map = {
-                    1: 200, 2: 300, 3: 500, 4: 800, 5: 1200, 6: 1800, 7: 2500, 8: 3500, 9: 5000, 10: 7500,
-                    11: 12000, 12: 20000, 13: 35000, 14: 60000, 15: 100000, 16: 180000, 17: 300000, 18: 500000, 19: 850000, 20: 1500000
+                    1: 100, 2: 150, 3: 250, 4: 400, 5: 600, 6: 900, 7: 1250, 8: 1750, 9: 2500, 10: 3750,
+                    11: 7500, 12: 12500, 13: 20000, 14: 37500, 15: 75000
                 }
                 energy_to_add = expand_map.get(level, 200 * level)
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
@@ -1227,12 +1227,12 @@ def buy_shop_item():
             elif category == 'autobot':
                 # Create new autobot (no time accumulation)
                 duration_map = {
-                    1: 30, 2: 60, 3: 120, 4: 240, 5: 480, 6: 720, 7: 1440, 8: 2880, 9: 4320, 10: 7200,
-                    11: 10080, 12: 14400, 13: 20160, 14: 28800, 15: 43200, 16: 64800, 17: 86400, 18: 129600, 19: 172800, 20: 259200
+                    1: 15, 2: 30, 3: 60, 4: 120, 5: 240, 6: 360, 7: 720, 8: 1440, 9: 2880, 10: 4320,
+                    11: 7200, 12: 10080, 13: 14400, 14: 20160, 15: 28800
                 }
                 speed_map = {
                     1: 1, 2: 1.5, 3: 2, 4: 2.5, 5: 3, 6: 3.5, 7: 4, 8: 4.5, 9: 5, 10: 5.5,
-                    11: 6, 12: 6.5, 13: 7, 14: 7.5, 15: 8, 16: 8.5, 17: 9, 18: 9.5, 19: 10, 20: 10
+                    11: 6, 12: 6.5, 13: 7, 14: 7.5, 15: 8
                 }
                 from datetime import timedelta
                 duration_minutes = duration_map.get(level, 30)
@@ -1284,24 +1284,24 @@ def buy_with_stars():
                 user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':
                 regen_boost_map = {
-                    1: 0.5, 2: 1.0, 3: 1.5, 4: 2.0, 5: 2.5, 6: 3.0, 7: 3.5, 8: 4.0, 9: 4.5, 10: 5.0,
-                    11: 8.0, 12: 12.0, 13: 18.0, 14: 25.0, 15: 35.0
+                    1: 0.2, 2: 0.4, 3: 0.6, 4: 0.8, 5: 1.0, 6: 1.2, 7: 1.4, 8: 1.6, 9: 1.8, 10: 2.0,
+                    11: 3.0, 12: 4.5, 13: 6.0, 14: 8.0, 15: 10.0
                 }
                 regen_boost = regen_boost_map.get(level, 0.5 * level)
                 current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
                 user.energy_regen_rate = current_regen_rate + regen_boost
             elif category == 'energy_expand':
                 expand_map = {
-                    1: 200, 2: 300, 3: 500, 4: 800, 5: 1200, 6: 1800, 7: 2500, 8: 3500, 9: 5000, 10: 7500,
-                    11: 15000, 12: 25000, 13: 40000, 14: 75000, 15: 150000
+                    1: 100, 2: 150, 3: 250, 4: 400, 5: 600, 6: 900, 7: 1250, 8: 1750, 9: 2500, 10: 3750,
+                    11: 7500, 12: 12500, 13: 20000, 14: 37500, 15: 75000
                 }
                 energy_to_add = expand_map.get(level, 200 * level)
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
             elif category == 'autobot':
                 duration_map = {
-                    1: 30, 2: 60, 3: 120, 4: 240, 5: 480, 6: 720, 7: 1440, 8: 2880, 9: 4320, 10: 7200,
-                    11: 10080, 12: 14400, 13: 20160, 14: 28800, 15: 43200
+                    1: 15, 2: 30, 3: 60, 4: 120, 5: 240, 6: 360, 7: 720, 8: 1440, 9: 2880, 10: 4320,
+                    11: 7200, 12: 10080, 13: 14400, 14: 20160, 15: 28800
                 }
                 speed_map = {
                     1: 1, 2: 1.5, 3: 2, 4: 2.5, 5: 3, 6: 3.5, 7: 4, 8: 4.5, 9: 5, 10: 5.5,
