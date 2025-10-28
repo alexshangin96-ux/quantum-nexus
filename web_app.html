@@ -1232,19 +1232,35 @@
                     <div class="stat-label-small">💎 QuanHash</div>
                 </div>
             </div>
-            <div class="energy-bar-container" style="margin-bottom: 8px;">
-                <div class="energy-bar-wrapper" style="position: relative; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px;">
-                    <!-- Energy label inside progress bar -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 0 10px rgba(240,147,251,0.8); white-space: nowrap;">
-                        ⚡ Энергия: <span id="energy-text" style="font-size: 14px; color: #f093fb;">0/1000</span>
+            <div class="energy-bar-container" style="margin-bottom: 12px;">
+                <div class="energy-bar-wrapper" style="position: relative; background: linear-gradient(135deg, rgba(10,10,30,0.9), rgba(20,10,40,0.9)); border: 2px solid rgba(240,147,251,0.3); border-radius: 14px; padding: 14px; box-shadow: 0 0 20px rgba(240,147,251,0.2);">
+                    <!-- Energy header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div style="font-size: 12px; font-weight: 700; color: #f093fb; text-shadow: 0 0 10px rgba(240,147,251,0.6); display: flex; align-items: center; gap: 6px;">
+                            ⚡ Энергия
+                        </div>
+                        <div id="energy-text" style="font-size: 14px; font-weight: 800; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.8);">0/1000</div>
                     </div>
-                    <!-- Progress bar -->
-                    <div class="energy-bar" style="height: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);">
-                        <div class="energy-fill" id="energy-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f093fb 0%, #c471ed 50%, #a78bfa 100%); box-shadow: 0 0 15px rgba(240,147,251,0.6); transition: width 0.3s ease;"></div>
+                    
+                    <!-- Progress bar full width -->
+                    <div class="energy-bar" style="width: 100%; height: 16px; background: rgba(0,0,0,0.4); border-radius: 10px; overflow: hidden; position: relative; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5); border: 1px solid rgba(240,147,251,0.2);">
+                        <div class="energy-fill" id="energy-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f093fb 0%, #c471ed 50%, #8b5cf6 100%); box-shadow: 0 0 30px rgba(240,147,251,0.8), inset 0 0 20px rgba(240,147,251,0.3); transition: width 0.4s ease; position: relative;">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shine 3s infinite;"></div>
+                        </div>
+                        <!-- Current percentage overlay -->
+                        <div id="energy-percent" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(240,147,251,0.9); pointer-events: none;">0%</div>
                     </div>
+                    
                     <!-- Regen info -->
-                    <div class="energy-regen" style="font-size: 9px; color: #4ade80; text-align: center; margin-top: 4px; font-weight: 600;">+1/сек</div>
+                    <div class="energy-regen" style="font-size: 9px; color: #4ade80; text-align: center; margin-top: 8px; font-weight: 700; text-shadow: 0 0 10px rgba(74,222,128,0.6);">+1/сек</div>
                 </div>
+                
+                <style>
+                    @keyframes shine {
+                        0% { transform: translateX(-100%); }
+                        100% { transform: translateX(200%); }
+                    }
+                </style>
             </div>
             
             <!-- Autobot toggle button -->
@@ -1949,7 +1965,14 @@
                 document.getElementById('passiveHash').textContent = `+${passiveHash.toLocaleString()}/час`;
                 
                 const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
-                document.getElementById('energy-bar').style.width = energyPercent + '%';
+                const fillBar = document.getElementById('energy-bar-fill');
+                const percentText = document.getElementById('energy-percent');
+                if (fillBar) {
+                    fillBar.style.width = energyPercent + '%';
+                }
+                if (percentText) {
+                    percentText.textContent = Math.round(energyPercent) + '%';
+                }
 
                 // Load VIP status and display it
                 loadVIPStatus(data);
@@ -2021,19 +2044,6 @@
         }
         
         function toggleAutobot() {
-            // Update button immediately for better responsiveness
-            const autobotToggleBtn = document.getElementById('autobotToggleBtn');
-            const currentText = autobotToggleBtn.textContent;
-            
-            // Toggle button state immediately
-            if (currentText.includes('Выключить')) {
-                autobotToggleBtn.innerHTML = currentText.replace('Выключить', 'Включить');
-                autobotToggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            } else {
-                autobotToggleBtn.innerHTML = currentText.replace('Включить', 'Выключить');
-                autobotToggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-            }
-            
             // Send request to server
             fetch('/api/toggle_autobot', {
                 method: 'POST',
@@ -2043,17 +2053,15 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Update autobot state in UI
+                    // Update autobot state in UI immediately
                     updateAutobotToggle(data);
-                } else {
-                    // Revert on error
-                    if (currentText.includes('Включить')) {
-                        autobotToggleBtn.innerHTML = currentText.replace('Выключить', 'Включить');
-                        autobotToggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    } else {
-                        autobotToggleBtn.innerHTML = currentText.replace('Включить', 'Выключить');
-                        autobotToggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                    // Restart auto-tap to apply changes
+                    if (window.autoTapInterval) {
+                        clearInterval(window.autoTapInterval);
+                        window.autoTapInterval = null;
                     }
+                    startAutoTap();
+                } else {
                     tg.showAlert('❌ ' + (data.error || 'Ошибка'));
                 }
             })
@@ -2138,7 +2146,14 @@
                     const newEnergy = Math.min(energy + 1, maxEnergy);
                     document.getElementById('energy-text').textContent = `${newEnergy}/${maxEnergy}`;
                     const energyPercent = Math.min(100, Math.max(0, (newEnergy / maxEnergy) * 100));
-                    document.getElementById('energy-bar').style.width = energyPercent + '%';
+                    const fillBar = document.getElementById('energy-bar-fill');
+                    const percentText = document.getElementById('energy-percent');
+                    if (fillBar) {
+                        fillBar.style.width = energyPercent + '%';
+                    }
+                    if (percentText) {
+                        percentText.textContent = Math.round(energyPercent) + '%';
+                    }
                     
                     fetch('/api/update_energy', {
                         method: 'POST',
