@@ -1162,6 +1162,64 @@ def buy_item():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/buy_shop_item', methods=['POST'])
+def buy_shop_item():
+    """Buy item from new comprehensive shop"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        category = data.get('category')
+        level = data.get('level')
+        price = data.get('price')
+        
+        if not user_id or not category or not level or not price:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            if user.coins < price:
+                return jsonify({'success': False, 'error': 'Недостаточно коинов'})
+            
+            user.coins -= price
+            
+            if category == 'tap_boost':
+                # Increase tap reward (store in active_multiplier or create new field)
+                user.active_multiplier = max(getattr(user, 'active_multiplier', 1), level)
+            elif category == 'energy_buy':
+                # Restore energy
+                item_data = window.shopData['energy_buy']['items'][level - 1] if 'window' in dir() else None
+                energy_to_restore = 50 * level  # Default formula
+                if item_data:
+                    energy_to_restore = item_data['bonus']
+                user.energy = min(user.energy + energy_to_restore, user.max_energy)
+            elif category == 'energy_expand':
+                # Expand max energy
+                item_data = window.shopData['energy_expand']['items'][level - 1] if 'window' in dir() else None
+                energy_to_add = 200 * level  # Default formula
+                if item_data:
+                    energy_to_add = item_data['bonus']
+                user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
+                user.energy = min(user.energy, user.max_energy)
+            elif category == 'autobot':
+                # Activate autobot
+                item_data = window.shopData['autobot']['items'][level - 1] if 'window' in dir() else None
+                from datetime import timedelta
+                duration_minutes = item_data['duration'] if item_data else 30
+                speed = item_data['speed'] if item_data else 2.0
+                user.auto_tap_enabled = True
+                user.auto_tap_level = level
+                user.auto_tap_speed = speed
+                user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+            
+            db.commit()
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/api/buy_machine', methods=['POST'])
 def buy_machine():
