@@ -314,11 +314,12 @@ def tap():
             # Calculate reward with VIP bonus and tap boost
             reward = BASE_TAP_REWARD * vip_multiplier
             
-            # Apply tap boost (active_multiplier >= 1 means tap boost is active)
+            # Apply tap boost (active_multiplier > 1 means tap boost is active)
             tap_boost = 1
-            if user.active_multiplier >= 1:
-                # All multipliers >= 1 are tap boosts (1, 2, 3, etc.)
-                tap_boost = int(user.active_multiplier)
+            if user.active_multiplier > 1:
+                # All multipliers > 1 are tap boosts (2, 3, 4, etc.)
+                # Subtract 1 to get actual tap boost (2 = +1 tap, 3 = +2 taps, etc.)
+                tap_boost = int(user.active_multiplier) - 1
                 # Apply tap boost to reward (more taps = more coins)
                 reward = reward * tap_boost
                 # DON'T reset multiplier - keep tap boost active
@@ -1204,9 +1205,9 @@ def buy_shop_item():
                 bonus = tap_boost_map.get(level, level)
                 # Add to existing tap boost (sum all tap boosts)
                 current_multiplier = getattr(user, 'active_multiplier', 1)
-                # If current multiplier is 1 (normal) or > 10 (already has tap boost), add the bonus
+                # If current multiplier is 1 (normal), set to bonus + 1 (to distinguish from base)
                 if current_multiplier == 1:  # Normal multiplier, first tap boost
-                    user.active_multiplier = bonus
+                    user.active_multiplier = bonus + 1  # +1 to distinguish from base value
                 else:  # Already has tap boost, add to it
                     user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':

@@ -1647,7 +1647,7 @@
                                         <span style="color:#94a3b8;">👆 Всего тапов:</span>
                                         <span data-stat="total_taps" style="font-weight:700;color:#fff;">${Math.floor(userData.total_taps || 0)}</span>
                                     </div>
-                                    ${userData.active_multiplier >= 1 ? `
+                                    ${userData.active_multiplier > 1 ? `
                                     <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
                                         <span style="color:#94a3b8;">⚡ Усилитель тапа:</span>
                                         <span style="font-weight:700;color:#fbbf24;">+${userData.active_multiplier - 1} тапов</span>
