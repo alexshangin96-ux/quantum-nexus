@@ -2601,7 +2601,7 @@
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
                     <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
                         <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
-                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:18px;font-weight:800;">✕</button>
+                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:15px;right:15px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
@@ -2615,7 +2615,7 @@
                             <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
                                 <!-- Premium Button -->
                                 <button id="vipButton" onclick="openVIPModal('tap_boost')" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
-                                    <span style="font-size:16px;margin-right:6px;">⭐</span>
+                                    <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
                                     <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
                                     <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
                                 </button>
@@ -2702,17 +2702,17 @@
             modal.id = 'vipModal';
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 450px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(255,215,0,0.95), rgba(255,237,78,0.95)); border-radius: 24px; border: 3px solid #ffd700; box-shadow: 0 15px 50px rgba(255,215,0,0.6);">
-                    <div style="background: linear-gradient(135deg, #000, #1a1a1a); padding: 20px 60px 20px 20px; border-radius: 20px 20px 0 0; text-align: center; position: relative;">
-                        <h2 style="font-size: 24px; color: #ffd700; margin: 0; font-weight: 900; text-shadow: 0 0 10px rgba(255,215,0,0.5);">${vipItems.name}</h2>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 8px;">Эксклюзивные функции за Telegram Stars</div>
-                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,215,0,0.2); border: 2px solid #ffd700; border-radius: 50%; width: 35px; height: 35px; color: #ffd700; cursor: pointer; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center;">✕</button>
+                <div class="modal-content" style="max-width: 450px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,237,78,0.12), rgba(255,215,0,0.08)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.3); box-shadow: 0 20px 60px rgba(255,215,0,0.2); backdrop-filter: blur(10px);">
+                    <div style="background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.8)); padding: 24px 60px 24px 24px; border-radius: 22px 22px 0 0; text-align: center; position: relative; backdrop-filter: blur(5px);">
+                        <h2 style="font-size: 22px; color: #ffd700; margin: 0; font-weight: 800; text-shadow: 0 2px 8px rgba(255,215,0,0.3);">${vipItems.name}</h2>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 500;">Эксклюзивные функции за Telegram Stars</div>
+                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 18px; right: 18px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); border-radius: 50%; width: 32px; height: 32px; color: #ffd700; cursor: pointer; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,215,0,0.25)'" onmouseout="this.style.background='rgba(255,215,0,0.15)'">✕</button>
                     </div>
                     
                     <div style="padding: 20px;">
                         <div style="display: grid; gap: 12px;">
                             ${vipItems.items.map(item => `
-                                <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 2px solid rgba(255,215,0,0.4); position: relative;">
+                                <div style="background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,237,78,0.08)); padding: 18px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.2); position: relative; backdrop-filter: blur(5px);">
                                     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
                                         <span style="font-size: 24px;">${item.name.split(' ')[0]}</span>
                                         <div style="flex: 1;">
@@ -2733,10 +2733,10 @@
                                     ` : ''}
                                     
                                     <button onclick="buyWithStars('${category}', ${item.level}, ${item.price})" 
-                                            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 2px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 14px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(255,215,0,0.4);"
-                                            onmousedown="this.style.transform='scale(0.95)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.6)'"
-                                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'"
-                                            onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'">
+                                            style="width: 100%; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.8), rgba(255,237,78,0.9), rgba(255,215,0,0.8)); color: #000; border: 1px solid rgba(255,215,0,0.6); border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(255,215,0,0.2); backdrop-filter: blur(5px);"
+                                            onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 8px 25px rgba(255,215,0,0.3)'"
+                                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.2)'"
+                                            onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.2)'">
                                         Купить за ${item.price} ⭐ Telegram Stars
                                     </button>
                                 </div>
@@ -2859,8 +2859,8 @@
                                    item.level <= 15 ? rarityColors[10] : 
                                    item.level <= 19 ? rarityColors[15] : rarityColors[20];
                 
-                // Calculate price and bonus based on user level
-                const stats = item.basePrice ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
+                // Calculate price and bonus based on user level (only for regular items, not VIP)
+                const stats = item.basePrice && !item.premium ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
                 
                 return `
                     <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
