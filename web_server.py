@@ -311,8 +311,8 @@ def tap():
             if vip_level >= 6:
                 vip_multiplier += 2.0  # 450% total bonus for Absolute VIP
             
-            # Calculate reward with VIP bonus
-            reward = BASE_TAP_REWARD * user.active_multiplier * vip_multiplier
+            # Calculate reward with VIP bonus (don't use active_multiplier for reward)
+            reward = BASE_TAP_REWARD * vip_multiplier
             
             # Apply tap boost (active_multiplier > 1 means tap boost is active)
             tap_boost = 1
@@ -479,8 +479,8 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
-                    # Remove locking - all cards are available
-                    is_locked = False
+                    # Unlock card if previous card reached level 5
+                    is_locked = i > 0 and user_card_counts.get(f"card_min_{i-1}", 0) < 5
                     
                     items.append({
                         'id': card_key,
@@ -506,8 +506,8 @@ def get_shop():
                     income = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income / 60, 2)
                     
-                    # Remove locking - all cards are available
-                    is_locked = False
+                    # Unlock card if previous card reached level 5
+                    is_locked = i > 0 and user_card_counts.get(f"card_hour_{i-1}", 0) < 5
                     
                     items.append({
                         'id': card_key,

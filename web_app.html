@@ -2748,7 +2748,17 @@
                             const cards = shopData.items.filter(item => item.type === 'card' && (filterCategory === 'all' || item.income_type === filterCategory));
                             if(cards && cards.length > 0) {
                                 shopList.innerHTML = cards.map(card => {
-                                // Remove locking - all cards are available
+                                if(card.is_locked) {
+                                    return `
+                                    <div style="background:rgba(60,60,60,0.3);padding:12px;border-radius:12px;border:2px solid rgba(100,100,100,0.4);opacity:0.6;position:relative;">
+                                        <div style="position:absolute;top:5px;right:5px;background:rgba(239,68,68,0.8);color:#fff;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">🔒 Заблокировано</div>
+                                        <div style="font-size:24px;text-align:center;margin-bottom:6px;">🔒</div>
+                                        <div style="font-size:10px;font-weight:700;color:#999;text-align:center;margin-bottom:6px;">${card.name}</div>
+                                        <div style="font-size:11px;color:#666;text-align:center;margin-bottom:6px;">${card.description}</div>
+                                        <button disabled style="width:100%;padding:8px;background:rgba(100,100,100,0.5);color:#ccc;border:none;border-radius:8px;cursor:not-allowed;font-weight:700;font-size:11px;">🔒 Доступно с ур.5 предыдущей</button>
+                                    </div>
+                                    `;
+                                }
                                 const rarity = card.rarity || 'common';
                                 const rarityInfo = {
                                     'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
