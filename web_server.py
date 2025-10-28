@@ -320,8 +320,7 @@ def tap():
                 # If active_multiplier is very high, it's a tap boost, not income boost
                 if user.active_multiplier > 10:  # Tap boost (e.g., 51, 71, 101, etc.)
                     tap_boost = int(user.active_multiplier)
-                    # Reset to normal income multiplier
-                    user.active_multiplier = 1.0
+                    # DON'T reset multiplier - keep tap boost active
                 else:
                     # Normal income multiplier
                     tap_boost = 1
@@ -1206,7 +1205,7 @@ def buy_shop_item():
                 }
                 bonus = tap_boost_map.get(level, level)
                 # Store tap boost as a high multiplier value (will be detected in tap function)
-                user.active_multiplier = max(getattr(user, 'active_multiplier', 1), bonus)
+                user.active_multiplier = bonus
             elif category == 'energy_buy':
                 # Restore energy
                 energy_map = {
