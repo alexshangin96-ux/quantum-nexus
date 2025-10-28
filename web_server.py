@@ -314,10 +314,10 @@ def tap():
             # Calculate reward with VIP bonus and tap boost
             reward = BASE_TAP_REWARD * vip_multiplier
             
-            # Apply tap boost (active_multiplier > 1 means tap boost is active)
+            # Apply tap boost (active_multiplier >= 1 means tap boost is active)
             tap_boost = 1
-            if user.active_multiplier > 1:
-                # All multipliers > 1 are tap boosts (1, 2, 3, etc.)
+            if user.active_multiplier >= 1:
+                # All multipliers >= 1 are tap boosts (1, 2, 3, etc.)
                 tap_boost = int(user.active_multiplier)
                 # Apply tap boost to reward (more taps = more coins)
                 reward = reward * tap_boost
