@@ -173,6 +173,15 @@ def get_user_data():
             # Calculate time since last update
             current_time = datetime.utcnow()
             
+            # Energy regeneration while offline (1 per second)
+            if user.last_active:
+                offline_seconds = (current_time - user.last_active).total_seconds()
+                # Regenerate energy (1 per second, max to max_energy)
+                if offline_seconds > 1:  # Only if offline for more than 1 second
+                    energy_regen = min(int(offline_seconds), user.max_energy - user.energy)
+                    if energy_regen > 0:
+                        user.energy = min(user.energy + energy_regen, user.max_energy)
+            
             # Update passive coins if user has cards
             if passive_coins_per_hour > 0 and user.last_passive_update:
                 time_diff = (current_time - user.last_passive_update).total_seconds()
