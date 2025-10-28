@@ -54,6 +54,7 @@ class User(Base):
     auto_tap_enabled = Column(Boolean, default=False)
     auto_tap_level = Column(Integer, default=0)
     auto_tap_speed = Column(Float, default=2.0)  # taps per second
+    auto_tap_expires_at = Column(DateTime, nullable=True)  # When autobot expires
     
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)

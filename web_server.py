@@ -221,6 +221,7 @@ def get_user_data():
                 'auto_tap_enabled': getattr(user, 'auto_tap_enabled', False),
                 'auto_tap_level': getattr(user, 'auto_tap_level', 0),
                 'auto_tap_speed': getattr(user, 'auto_tap_speed', 2.0),
+                'auto_tap_expires_at': int(user.auto_tap_expires_at.timestamp() * 1000) if hasattr(user, 'auto_tap_expires_at') and user.auto_tap_expires_at else 0,
                 'vip_level': getattr(user, 'vip_level', 0),
                 'vip_badge': getattr(user, 'vip_badge', None),
                 'has_premium_support': getattr(user, 'has_premium_support', False),
@@ -1975,6 +1976,17 @@ def toggle_autobot():
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Check if autobot is expired
+            auto_tap_expires_at = getattr(user, 'auto_tap_expires_at', None)
+            if auto_tap_expires_at and auto_tap_expires_at < datetime.utcnow():
+                # Autobot expired
+                user.auto_tap_enabled = False
+                db.commit()
+                return jsonify({
+                    'success': False,
+                    'error': 'Срок действия автобота истёк'
+                })
             
             # Toggle auto_tap_enabled
             current_state = getattr(user, 'auto_tap_enabled', False)

@@ -1967,18 +1967,49 @@
             const hasAutobot = data.auto_tap_enabled || false;
             const autobotLevel = data.auto_tap_level || 0;
             const autobotSpeed = data.auto_tap_speed || 2.0;
+            const autobotExpiresAt = data.auto_tap_expires_at || 0;
             
-            if (autobotLevel > 0) {
+            if (autobotLevel > 0 && autobotExpiresAt > Date.now()) {
                 autobotToggleSection.style.display = 'block';
+                
+                // Calculate remaining time
+                const remainingMs = autobotExpiresAt - Date.now();
+                const hours = Math.floor(remainingMs / 3600000);
+                const minutes = Math.floor((remainingMs % 3600000) / 60000);
+                const seconds = Math.floor((remainingMs % 60000) / 1000);
+                const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                
                 if (hasAutobot) {
-                    autobotToggleBtn.textContent = `🤖 Автобот: Выключить (${autobotSpeed} тап/с)`;
+                    autobotToggleBtn.innerHTML = `🤖 Выключить | ⏱️ Осталось: ${timeText}`;
                     autobotToggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
                 } else {
-                    autobotToggleBtn.textContent = `🤖 Автобот: Включить (${autobotSpeed} тап/с)`;
+                    autobotToggleBtn.innerHTML = `🤖 Включить | ⏱️ Осталось: ${timeText}`;
                     autobotToggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
                 }
+                
+                // Update countdown
+                if (window.autobotInterval) clearInterval(window.autobotInterval);
+                window.autobotInterval = setInterval(() => {
+                    const newRemainingMs = autobotExpiresAt - Date.now();
+                    if (newRemainingMs <= 0) {
+                        autobotToggleSection.style.display = 'none';
+                        clearInterval(window.autobotInterval);
+                        return;
+                    }
+                    const hours = Math.floor(newRemainingMs / 3600000);
+                    const minutes = Math.floor((newRemainingMs % 3600000) / 60000);
+                    const seconds = Math.floor((newRemainingMs % 60000) / 1000);
+                    const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                    
+                    if (hasAutobot) {
+                        autobotToggleBtn.innerHTML = `🤖 Выключить | ⏱️ Осталось: ${timeText}`;
+                    } else {
+                        autobotToggleBtn.innerHTML = `🤖 Включить | ⏱️ Осталось: ${timeText}`;
+                    }
+                }, 1000);
             } else {
                 autobotToggleSection.style.display = 'none';
+                if (window.autobotInterval) clearInterval(window.autobotInterval);
             }
         }
         
