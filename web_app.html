@@ -2904,6 +2904,7 @@
             
             // Add VIP button after regular items
             const vipItems = vipData[category];
+            console.log('VIP check:', category, vipItems);
             if (vipItems) {
                 list.innerHTML += `
                     <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,237,78,0.15)); border: 2px solid rgba(255,215,0,0.4); border-radius: 16px; position: relative; overflow: hidden;">
@@ -2937,6 +2938,9 @@
                         </button>
                     </div>
                 `;
+                console.log('VIP button added for category:', category);
+            } else {
+                console.log('No VIP data for category:', category);
             }
             
             // Update autobot buttons if autobot category is loaded
