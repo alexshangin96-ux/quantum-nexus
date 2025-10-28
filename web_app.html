@@ -1200,9 +1200,17 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <div class="header" style="position: relative;">
+            <div style="position: absolute; top: 20px; left: 20px; z-index: 1000;">
+                <div class="vip-top-button" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);" onclick="openVIPTopLeaders();">🏆</div>
+            </div>
+            
             <h1 id="mainTitle">Quantum Nexus</h1>
-            <p>Привет, <span id="username">Майнер</span>! <span id="vipBadge" style="display:none;"></span></p>
+            
+            <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+                <div class="vip-profile-icon" style="width: 40px; height: 40px; background: linear-gradient(135deg, #a78bfa, #c084fc); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; box-shadow: 0 4px 15px rgba(167, 139, 250, 0.5);" onclick="openVIPProfileModal();">👤</div>
+            </div>
+            
             <div id="vipPrivileges" style="display:none;margin-top:5px;font-size:11px;color:#94a3b8;"></div>
         </div>
 
@@ -1427,39 +1435,7 @@
             const hasTop = userData.has_top_place || false;
             const hasUnique = userData.has_unique_design || false;
             
-            // Add Top Button (left) - ALWAYS for ALL users
-            let topButton = document.querySelector('.vip-top-button');
-            if (!topButton) {
-                topButton = document.createElement('div');
-                topButton.className = 'vip-top-button';
-                topButton.innerHTML = '🏆';
-                topButton.onclick = () => {
-                    openVIPTopLeaders();
-                };
-                document.body.appendChild(topButton);
-            }
-            
-            // Add Profile Icon (right) - ALWAYS for ALL users
-            let profileIcon = document.querySelector('.vip-profile-icon');
-            if (!profileIcon) {
-                profileIcon = document.createElement('div');
-                profileIcon.className = 'vip-profile-icon';
-                
-                // Try to load profile photo from localStorage
-                const savedPhoto = localStorage.getItem('vip_profile_photo');
-                if (savedPhoto) {
-                    const img = document.createElement('img');
-                    img.src = savedPhoto;
-                    profileIcon.appendChild(img);
-                } else {
-                    profileIcon.innerHTML = '👤';
-                }
-                
-                profileIcon.onclick = () => {
-                    openVIPProfileModal();
-                };
-                document.body.appendChild(profileIcon);
-            }
+            // Buttons are now in the header, no need to add them dynamically
             
             if (vipLevel > 0) {
                 const badgeEl = document.getElementById('vipBadge');
