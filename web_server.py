@@ -1204,8 +1204,12 @@ def buy_shop_item():
                     11: 51, 12: 71, 13: 101, 14: 141, 15: 201, 16: 281, 17: 401, 18: 581, 19: 801, 20: 1201
                 }
                 bonus = tap_boost_map.get(level, level)
-                # Store tap boost as a high multiplier value (will be detected in tap function)
-                user.active_multiplier = bonus
+                # Add to existing tap boost (sum all tap boosts)
+                current_multiplier = getattr(user, 'active_multiplier', 1)
+                if current_multiplier > 10:  # Already has tap boost
+                    user.active_multiplier = current_multiplier + bonus
+                else:  # First tap boost or normal multiplier
+                    user.active_multiplier = bonus
             elif category == 'energy_buy':
                 # Restore energy
                 energy_map = {
