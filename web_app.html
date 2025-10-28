@@ -1233,40 +1233,33 @@
                 </div>
             </div>
             <div class="energy-bar-container" style="margin-bottom: 16px;">
-                <div class="energy-bar-wrapper" style="position: relative; background: linear-gradient(135deg, rgba(15,10,35,0.95), rgba(25,10,45,0.98)); border: 3px solid rgba(240,147,251,0.5); border-radius: 20px; padding: 18px 14px; box-shadow: 0 0 50px rgba(240,147,251,0.4), 0 8px 32px rgba(0,0,0,0.6), inset 0 2px 10px rgba(240,147,251,0.2); width: 100%;">
+                <div class="energy-bar-wrapper" style="position: relative; background: linear-gradient(135deg, rgba(15,15,30,0.92), rgba(20,20,35,0.95)); border: 2px solid rgba(118,75,162,0.4); border-radius: 18px; padding: 16px 12px; box-shadow: 0 0 30px rgba(118,75,162,0.3), 0 4px 20px rgba(0,0,0,0.5); width: 100%;">
                     <!-- Ultra-wide progress bar with everything inside -->
-                    <div class="energy-bar" style="width: 100%; height: 48px; background: rgba(0,0,0,0.6); border-radius: 16px; overflow: visible; position: relative; box-shadow: inset 0 4px 20px rgba(0,0,0,0.8), 0 0 20px rgba(240,147,251,0.3); border: 2px solid rgba(240,147,251,0.4);">
-                        <!-- Energy fill with ultra-smooth gradient -->
-                        <div class="energy-fill" id="energy-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f093fb 0%, #c471ed 35%, #8b5cf6 70%, #7c3aed 100%); box-shadow: 0 0 60px rgba(240,147,251,1), inset 0 0 50px rgba(240,147,251,0.5), 0 4px 20px rgba(140,92,246,0.8); position: absolute; top: 0; left: 0; transition: width 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-radius: 14px;">
-                            <!-- Multi-layer shine effect -->
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%); animation: ultraShine 2.5s infinite; border-radius: 14px;"></div>
-                            <!-- Glow pulses -->
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(240,147,251,0.4), transparent); animation: pulse 2s infinite; border-radius: 14px;"></div>
+                    <div class="energy-bar" style="width: 100%; height: 44px; background: rgba(0,0,0,0.4); border-radius: 14px; overflow: visible; position: relative; box-shadow: inset 0 2px 10px rgba(0,0,0,0.7), 0 0 10px rgba(118,75,162,0.2); border: 1px solid rgba(118,75,162,0.3);">
+                        <!-- Energy fill with tap button colors (soft purple gradient) -->
+                        <div class="energy-fill" id="energy-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #8b5cf6 100%); box-shadow: 0 0 30px rgba(102,126,234,0.6), inset 0 0 20px rgba(118,75,162,0.3), 0 2px 10px rgba(102,126,234,0.4); position: absolute; top: 0; left: 0; transition: width 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-radius: 12px;">
+                            <!-- Soft shine effect -->
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%); animation: softShine 3s infinite; border-radius: 12px;"></div>
                         </div>
                         
-                        <!-- Label: Energy - Value - Percentage with better typography -->
-                        <div style="position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; pointer-events: none; z-index: 10;">
-                            <div style="font-size: 14px; font-weight: 900; color: #f093fb; text-shadow: 0 0 20px rgba(240,147,251,1), 0 0 50px rgba(240,147,251,0.8), 0 2px 10px rgba(0,0,0,0.8); letter-spacing: 0.5px;">⚡ Энергия</div>
-                            <div id="energy-text" style="font-size: 16px; font-weight: 900; color: #fff; text-shadow: 0 0 25px rgba(255,255,255,1), 0 0 60px rgba(255,255,255,1), 0 2px 15px rgba(0,0,0,1); letter-spacing: 1px; font-variant-numeric: tabular-nums;">0/1000</div>
-                            <div id="energy-percent" style="font-size: 14px; font-weight: 900; color: #4ade80; text-shadow: 0 0 20px rgba(74,222,128,1), 0 0 50px rgba(74,222,128,0.8), 0 2px 10px rgba(0,0,0,0.8); letter-spacing: 0.5px;">0%</div>
+                        <!-- Label: Energy - Value - Percentage with soft readable text -->
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; pointer-events: none; z-index: 10;">
+                            <div style="font-size: 13px; font-weight: 700; color: #a78bfa; text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(167,139,250,0.5); letter-spacing: 0.3px;">⚡ Энергия</div>
+                            <div id="energy-text" style="font-size: 15px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 15px rgba(255,255,255,0.6); letter-spacing: 0.5px; font-variant-numeric: tabular-nums;">0/1000</div>
+                            <div id="energy-percent" style="font-size: 13px; font-weight: 700; color: #86efac; text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 10px rgba(134,239,172,0.5); letter-spacing: 0.3px;">0%</div>
                         </div>
-                        
-                        <!-- Regen info at bottom with glow -->
-                        <div class="energy-regen" style="position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #4ade80; font-weight: 900; text-shadow: 0 0 15px rgba(74,222,128,1), 0 0 30px rgba(74,222,128,0.8); white-space: nowrap; letter-spacing: 0.5px;">+1/сек</div>
                     </div>
+                    
+                    <!-- Regen info nicely positioned under the bar -->
+                    <div class="energy-regen" style="text-align: center; margin-top: 10px; font-size: 10px; color: #86efac; font-weight: 700; text-shadow: 0 0 8px rgba(134,239,172,0.6); letter-spacing: 0.5px;">Восстановление: +1/сек</div>
                 </div>
                 
                 <style>
-                    @keyframes ultraShine {
-                        0% { transform: translateX(-200%); opacity: 0; }
-                        10% { opacity: 1; }
-                        50% { opacity: 1; }
-                        90% { opacity: 0.8; }
-                        100% { transform: translateX(400%); opacity: 0; }
-                    }
-                    @keyframes pulse {
-                        0%, 100% { opacity: 0.6; transform: scale(1); }
-                        50% { opacity: 1; transform: scale(1.05); }
+                    @keyframes softShine {
+                        0% { transform: translateX(-150%); opacity: 0; }
+                        20% { opacity: 0.4; }
+                        80% { opacity: 0.4; }
+                        100% { transform: translateX(350%); opacity: 0; }
                     }
                 </style>
             </div>
@@ -2006,11 +1999,10 @@
             
             // Keep button ALWAYS visible if user has autobot (level > 0 and not expired)
             if (autobotLevel > 0 && autobotExpiresAt > Date.now()) {
-                if (autobotToggleSection.style.display === 'none' || !autobotToggleSection.style.display) {
-                    autobotToggleSection.style.display = 'block';
-                }
+                // Always show button, never hide it
+                autobotToggleSection.style.display = 'block';
                 
-                // Store current state
+                // Store current state globally
                 window.autobotEnabled = hasAutobot;
                 window.autobotExpiresAt = autobotExpiresAt;
                 
@@ -2021,23 +2013,19 @@
                 const seconds = Math.floor((remainingMs % 60000) / 1000);
                 const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                 
-                // Update button smoothly with animation
+                // Update button text smoothly WITHOUT changing display
                 if (hasAutobot) {
                     autobotToggleBtn.innerHTML = `🤖 Выключить | ⏱️ Осталось: ${timeText}`;
                     autobotToggleBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
-                    autobotToggleBtn.style.opacity = '1';
-                    autobotToggleBtn.style.transform = 'scale(1)';
                 } else {
                     autobotToggleBtn.innerHTML = `🤖 Включить | ⏱️ Осталось: ${timeText}`;
                     autobotToggleBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                    autobotToggleBtn.style.opacity = '1';
-                    autobotToggleBtn.style.transform = 'scale(1)';
                 }
                 
-                // Update countdown every second - only update timer, stop when disabled
+                // Update countdown only if enabled, otherwise show static time
                 if (window.autobotInterval) clearInterval(window.autobotInterval);
                 window.autobotInterval = setInterval(() => {
-                    const currentEnabled = window.autobotEnabled;
+                    // Always update the expiration time from the global variable
                     const expiresAt = window.autobotExpiresAt;
                     
                     if (!expiresAt || expiresAt <= Date.now()) {
@@ -2053,7 +2041,10 @@
                     const seconds = Math.floor((newRemainingMs % 60000) / 1000);
                     const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                     
-                    if (currentEnabled) {
+                    // Check current enabled state
+                    const isEnabled = window.autobotEnabled;
+                    
+                    if (isEnabled) {
                         autobotToggleBtn.innerHTML = `🤖 Выключить | ⏱️ Осталось: ${timeText}`;
                     } else {
                         autobotToggleBtn.innerHTML = `🤖 Включить | ⏱️ Осталось: ${timeText}`;
@@ -2066,6 +2057,8 @@
         }
         
         function toggleAutobot() {
+            const autobotToggleBtn = document.getElementById('autobotToggleBtn');
+            
             // Send request to server
             fetch('/api/toggle_autobot', {
                 method: 'POST',
@@ -2075,8 +2068,12 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    // Update autobot state in UI immediately
+                    // Update global state immediately
+                    window.autobotEnabled = data.auto_tap_enabled || false;
+                    
+                    // Update autobot state in UI without calling loadData
                     updateAutobotToggle(data);
+                    
                     // Restart auto-tap to apply changes
                     if (window.autoTapInterval) {
                         clearInterval(window.autoTapInterval);
