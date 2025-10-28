@@ -1322,6 +1322,69 @@ def buy_with_stars():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/process_star_purchase', methods=['POST'])
+def process_star_purchase():
+    """Process star purchase after payment confirmation"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        product_id = data.get('product_id')
+        category = data.get('category')
+        level = data.get('level')
+        
+        if not user_id or not product_id:
+            return jsonify({'success': False, 'error': 'Missing parameters'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Apply the purchase based on category and level
+            if category == 'tap_boost':
+                tap_boost_map = {
+                    11: 51, 12: 71, 13: 101, 14: 141, 15: 201
+                }
+                bonus = tap_boost_map.get(level, 51)
+                current_multiplier = getattr(user, 'active_multiplier', 1)
+                user.active_multiplier = current_multiplier + bonus
+            elif category == 'energy_buy':
+                regen_boost_map = {
+                    11: 3.0, 12: 4.5, 13: 6.0, 14: 8.0, 15: 10.0
+                }
+                regen_boost = regen_boost_map.get(level, 3.0)
+                current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
+                user.energy_regen_rate = current_regen_rate + regen_boost
+            elif category == 'energy_expand':
+                expand_map = {
+                    11: 7500, 12: 12500, 13: 20000, 14: 37500, 15: 75000
+                }
+                energy_to_add = expand_map.get(level, 7500)
+                user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
+                user.energy = min(user.energy, user.max_energy)
+            elif category == 'autobot':
+                duration_map = {
+                    11: 7200, 12: 10080, 13: 14400, 14: 20160, 15: 28800
+                }
+                speed_map = {
+                    11: 6, 12: 6.5, 13: 7, 14: 7.5, 15: 8
+                }
+                from datetime import timedelta
+                duration_minutes = duration_map.get(level, 7200)
+                speed = speed_map.get(level, 6.0)
+                
+                user.auto_tap_enabled = True
+                user.auto_tap_level = level
+                user.auto_tap_speed = speed
+                user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+            
+            db.commit()
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/buy_machine', methods=['POST'])
 def buy_machine():
     """Buy mining machine"""

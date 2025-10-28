@@ -2707,15 +2707,26 @@
         }
         
         function buyWithStars(category, level, price) {
-            // Create a unique product ID for Telegram payment
-            const productId = `shop_${category}_${level}`;
+            // Map shop items to existing product IDs (51-56 are VIP, 1-10 are currency)
+            const productIdMap = {
+                'tap_boost': {11: 1, 12: 2, 13: 3, 14: 4, 15: 5},
+                'energy_buy': {11: 6, 12: 7, 13: 8, 14: 9, 15: 10},
+                'energy_expand': {11: 1, 12: 2, 13: 3, 14: 4, 15: 5},
+                'autobot': {11: 6, 12: 7, 13: 8, 14: 9, 15: 10}
+            };
+            
+            const productId = productIdMap[category]?.[level] || 1;
             
             // Open Telegram payment (same as in currency purchase)
             const paymentUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
             window.open(paymentUrl, '_blank');
             
-            // Show confirmation message
-            tg.showAlert(`💫 Открывается покупка за ${price} Telegram Stars!\n\nПерейдите в бот для завершения оплаты.`);
+            // Show beautiful VIP confirmation message
+            const anim = document.createElement('div');
+            anim.style.cssText='position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(255,215,0,0.95),rgba(255,237,78,0.95));padding:25px 50px;border-radius:25px;font-size:26px;box-shadow:0 15px 50px rgba(255,215,0,0.7);color:#000;font-weight:800;display:flex;align-items:center;gap:20px;border:3px solid rgba(255,215,0,0.8);"><span style="font-size:40px;">⭐</span><div><div style="font-size:28px;margin-bottom:8px;">VIP Покупка</div><div style="font-size:20px;opacity:0.8;">Открывается оплата за ' + price + ' ⭐ Telegram Stars</div></div></div>';
+            document.body.appendChild(anim);
+            setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-70%)';setTimeout(()=>{anim.remove();},300);},2000);
         }
         
         function loadShopCategory(category) {
@@ -2752,9 +2763,11 @@
                                    item.level <= 19 ? rarityColors[15] : rarityColors[20];
                 
                 return `
-                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
+                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
                         ${isLocked ? `
                             <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.8);color:#fff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;">🔒</div>
+                        ` : item.premium ? `
+                            <div style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 8px rgba(255,215,0,0.4);">⭐ VIP</div>
                         ` : ''}
                         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                             <span style="font-size:20px;">${item.name.split(' ')[0]}</span>
@@ -2792,19 +2805,19 @@
                         `}
                         ${category === 'autobot' ? `
                             <button id="autobot-btn-${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:none;border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;"
-                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='0 2px 8px rgba(102,126,234,0.4)'}"
-                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='none'}"
-                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='none'}">
-                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить ${item.price} Telegram Stars` : `Купить за ${item.price.toLocaleString()} 🪙`}
+                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
+                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
+                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
+                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
+                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить за ${item.price} ⭐ Telegram Stars` : `Купить за ${item.price.toLocaleString()} 🪙`}
                             </button>
                         ` : `
                             <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:none;border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;"
-                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='0 2px 8px rgba(102,126,234,0.4)'}"
-                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='none'}"
-                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='none'}">
-                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить ${item.price} Telegram Stars` : `Купить за ${item.price.toLocaleString()} 🪙`}
+                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
+                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
+                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
+                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
+                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить за ${item.price} ⭐ Telegram Stars` : `Купить за ${item.price.toLocaleString()} 🪙`}
                             </button>
                         `}
                     </div>
