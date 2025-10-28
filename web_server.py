@@ -220,22 +220,30 @@ def get_user_data():
             
             # Get purchased cards and machines
             user_cards = []
-            for card in user.cards:
-                if card.is_active:
-                    user_cards.append({
-                        'name': card.card_name or 'Unknown Card',
-                        'income': card.income_per_minute or 0,
-                        'type': 'permanent'
-                    })
+            try:
+                for card in user.cards:
+                    if hasattr(card, 'is_active') and card.is_active:
+                        user_cards.append({
+                            'name': getattr(card, 'name', 'Unknown Card'),
+                            'income': getattr(card, 'income_per_minute', 0) or 0,
+                            'type': 'permanent'
+                        })
+            except Exception as e:
+                print(f"Error getting cards: {e}")
+                user_cards = []
             
             user_machines = []
-            for machine in user.machines:
-                if machine.is_active:
-                    user_machines.append({
-                        'name': machine.machine_name or 'Unknown Machine',
-                        'hash_rate': machine.hash_rate or 0,
-                        'type': 'permanent'
-                    })
+            try:
+                for machine in user.machines:
+                    if hasattr(machine, 'is_active') and machine.is_active:
+                        user_machines.append({
+                            'name': getattr(machine, 'name', 'Unknown Machine'),
+                            'hash_rate': getattr(machine, 'hash_rate', 0) or 0,
+                            'type': 'permanent'
+                        })
+            except Exception as e:
+                print(f"Error getting machines: {e}")
+                user_machines = []
             
             return jsonify({
                 'coins': user.coins,
