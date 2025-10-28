@@ -115,19 +115,22 @@ def get_user_data():
         
         # Try to get user_id from init_data if not provided
         if not user_id:
-            init_data = request.headers.get('X-Telegram-Init-Data')
+            # Try multiple headers that Telegram might send
+            init_data = request.headers.get('X-Telegram-Init-Data') or request.headers.get('Telegram-Init-Data') or request.headers.get('X-Init-Data')
             if init_data:
+                print(f"[DEBUG] Found init_data header: {init_data[:100]}")
                 # Try to extract user_id from init_data
                 import urllib.parse
                 init_params = urllib.parse.parse_qs(init_data)
+                print(f"[DEBUG] Parsed params keys: {list(init_params.keys())}")
                 if 'user' in init_params:
                     import json
                     try:
                         user_data = json.loads(init_params['user'][0])
                         user_id = user_data.get('id')
                         print(f"Extracted user_id from init_data: {user_id}")
-                    except:
-                        print(f"Failed to parse init_data user")
+                    except Exception as e:
+                        print(f"Failed to parse init_data user: {e}")
         
         print(f"[USER_DATA] Request with user_id: {user_id}")
         
