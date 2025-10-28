@@ -1251,7 +1251,7 @@
                     </div>
                     
                     <!-- Regen info nicely positioned under the bar -->
-                    <div class="energy-regen" style="text-align: center; margin-top: 12px; font-size: 12px; color: #86efac; font-weight: 800; text-shadow: 0 0 10px rgba(134,239,172,0.7); letter-spacing: 0.5px;">Восстановление: +1/сек</div>
+                    <div class="energy-regen" id="energy-regen-text" style="text-align: center; margin-top: 12px; font-size: 12px; color: #86efac; font-weight: 800; text-shadow: 0 0 10px rgba(134,239,172,0.7); letter-spacing: 0.5px;">Восстановление: +1/сек</div>
                 </div>
                 
                 <style>
@@ -2167,6 +2167,7 @@
                 const quanhash = Math.floor(data.quanhash || 0);
                 const energy = parseInt(data.energy || 0);
                 const maxEnergy = parseInt(data.max_energy || 1000);
+                const energyRegenRate = parseFloat(data.energy_regen_rate || 1.0);
                 const passiveCoins = Math.floor(data.passive_coins_per_hour || 0);
                 const passiveHash = Math.floor(data.passive_hash_per_hour || 0);
                 
@@ -2184,6 +2185,12 @@
                 }
                 if (percentText) {
                     percentText.textContent = Math.round(energyPercent) + '%';
+                }
+
+                // Update energy regeneration rate display
+                const energyRegenText = document.getElementById('energy-regen-text');
+                if (energyRegenText) {
+                    energyRegenText.textContent = `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
                 }
 
                 // Load VIP status and display it
@@ -2369,29 +2376,52 @@
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             
             let lastEnergy = 0;
+            let energyRegenRate = 1.0; // Default rate
+            let energyAccumulator = 0; // For fractional energy regeneration
+            
+            // Get current regeneration rate from the display
+            const regenText = document.getElementById('energy-regen-text');
+            if (regenText) {
+                const match = regenText.textContent.match(/\+(\d+\.?\d*)\/сек/);
+                if (match) {
+                    energyRegenRate = parseFloat(match[1]);
+                }
+            }
+            
             energyRegenInterval = setInterval(() => {
                 const energyText = document.getElementById('energy-text').textContent;
                 const [energy, maxEnergy] = energyText.split('/').map(e => parseInt(e));
                 
-                if (energy < maxEnergy && energy !== lastEnergy) {
-                    lastEnergy = energy;
-                    const newEnergy = Math.min(energy + 1, maxEnergy);
-                    document.getElementById('energy-text').textContent = `${newEnergy}/${maxEnergy}`;
-                    const energyPercent = Math.min(100, Math.max(0, (newEnergy / maxEnergy) * 100));
-                    const fillBar = document.getElementById('energy-bar-fill');
-                    const percentText = document.getElementById('energy-percent');
-                    if (fillBar) {
-                        fillBar.style.width = energyPercent + '%';
-                    }
-                    if (percentText) {
-                        percentText.textContent = Math.round(energyPercent) + '%';
-                    }
+                if (energy < maxEnergy) {
+                    // Accumulate fractional energy
+                    energyAccumulator += energyRegenRate;
                     
-                    fetch('/api/update_energy', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({user_id: user?.id, energy: newEnergy})
-                    });
+                    // Only update when we have at least 1 energy to add
+                    if (energyAccumulator >= 1) {
+                        const energyToAdd = Math.floor(energyAccumulator);
+                        energyAccumulator -= energyToAdd; // Keep the remainder
+                        
+                        const newEnergy = Math.min(energy + energyToAdd, maxEnergy);
+                        if (newEnergy !== lastEnergy) {
+                            lastEnergy = newEnergy;
+                            document.getElementById('energy-text').textContent = `${newEnergy}/${maxEnergy}`;
+                            const energyPercent = Math.min(100, Math.max(0, (newEnergy / maxEnergy) * 100));
+                            const fillBar = document.getElementById('energy-bar-fill');
+                            const percentText = document.getElementById('energy-percent');
+                            if (fillBar) {
+                                fillBar.style.width = energyPercent + '%';
+                            }
+                            if (percentText) {
+                                percentText.textContent = Math.round(energyPercent) + '%';
+                            }
+                            
+                            fetch('/api/update_energy', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({user_id: user?.id, energy: newEnergy})
+                            });
+                        }
+                    }
                 }
             }, 1000);
         }
@@ -2479,29 +2509,29 @@
                     ]
                 },
                 'energy_buy': {
-                    name: '⚡ Покупка Энергии',
+                    name: '⚡ Ускорение Восстановления',
                     emoji: '⚡',
                     items: [
-                        {level: 1, name: '🔋 Мини Батарея', desc: 'Восстановить 50 энергии', bonus: 50, price: 500, duration: null},
-                        {level: 2, name: '⚡ Световая', desc: 'Восстановить 100 энергии', bonus: 100, price: 900, duration: null},
-                        {level: 3, name: '💫 Звездная', desc: 'Восстановить 200 энергии', bonus: 200, price: 1600, duration: null},
-                        {level: 4, name: '🌟 Золотая', desc: 'Восстановить 300 энергии', bonus: 300, price: 2200, duration: null},
-                        {level: 5, name: '💎 Бриллиантовая', desc: 'Восстановить 500 энергии', bonus: 500, price: 3500, duration: null},
-                        {level: 6, name: '🔥 Огненная', desc: 'Восстановить 800 энергии', bonus: 800, price: 5500, duration: null},
-                        {level: 7, name: '❄️ Ледяная', desc: 'Восстановить 1200 энергии', bonus: 1200, price: 8500, duration: null},
-                        {level: 8, name: '🌊 Морская', desc: 'Восстановить 1800 энергии', bonus: 1800, price: 12000, duration: null},
-                        {level: 9, name: '⚡ Молниеносная', desc: 'Восстановить 2500 энергии', bonus: 2500, price: 18000, duration: null},
-                        {level: 10, name: '🌙 Лунная', desc: 'Восстановить 3500 энергии', bonus: 3500, price: 25000, duration: null},
-                        {level: 11, name: '☀️ Солнечная', desc: 'Восстановить 5000 энергии', bonus: 5000, price: 35000, duration: null},
-                        {level: 12, name: '🌌 Галактическая', desc: 'Восстановить 7500 энергии', bonus: 7500, price: 50000, duration: null},
-                        {level: 13, name: '💫 Новая Ера', desc: 'Восстановить 10000 энергии', bonus: 10000, price: 70000, duration: null},
-                        {level: 14, name: '⚛️ Квантовая', desc: 'Восстановить 15000 энергии', bonus: 15000, price: 100000, duration: null},
-                        {level: 15, name: '🌠 Небесная', desc: 'Восстановить 25000 энергии', bonus: 25000, price: 150000, duration: null},
-                        {level: 16, name: '🌋 Планетарная', desc: 'Восстановить 40000 энергии', bonus: 40000, price: 250000, duration: null},
-                        {level: 17, name: '🌟 Звездная Душа', desc: 'Восстановить 65000 энергии', bonus: 65000, price: 400000, duration: null},
-                        {level: 18, name: '🌊 Вселенская', desc: 'Восстановить 100000 энергии', bonus: 100000, price: 650000, duration: null},
-                        {level: 19, name: '⚡ Энергия Богов', desc: 'Восстановить 150000 энергии', bonus: 150000, price: 1000000, duration: null},
-                        {level: 20, name: '🌌 Космическая Мощь', desc: 'Восстановить 250000 энергии', bonus: 250000, price: 1800000, duration: null}
+                        {level: 1, name: '🔋 Мини Генератор', desc: '+0.5 энергии/сек', bonus: 0.5, price: 1000, duration: null},
+                        {level: 2, name: '⚡ Световой', desc: '+1.0 энергии/сек', bonus: 1.0, price: 2500, duration: null},
+                        {level: 3, name: '💫 Звездный', desc: '+1.5 энергии/сек', bonus: 1.5, price: 5000, duration: null},
+                        {level: 4, name: '🌟 Золотой', desc: '+2.0 энергии/сек', bonus: 2.0, price: 10000, duration: null},
+                        {level: 5, name: '💎 Бриллиантовый', desc: '+2.5 энергии/сек', bonus: 2.5, price: 20000, duration: null},
+                        {level: 6, name: '🔥 Огненный', desc: '+3.0 энергии/сек', bonus: 3.0, price: 40000, duration: null},
+                        {level: 7, name: '❄️ Ледяной', desc: '+3.5 энергии/сек', bonus: 3.5, price: 75000, duration: null},
+                        {level: 8, name: '🌊 Морской', desc: '+4.0 энергии/сек', bonus: 4.0, price: 150000, duration: null},
+                        {level: 9, name: '⚡ Молниеносный', desc: '+4.5 энергии/сек', bonus: 4.5, price: 300000, duration: null},
+                        {level: 10, name: '🌙 Лунный', desc: '+5.0 энергии/сек', bonus: 5.0, price: 600000, duration: null},
+                        {level: 11, name: '☀️ Солнечный', desc: '+6.0 энергии/сек', bonus: 6.0, price: 1200000, duration: null},
+                        {level: 12, name: '🌌 Галактический', desc: '+7.0 энергии/сек', bonus: 7.0, price: 2500000, duration: null},
+                        {level: 13, name: '💫 Новая Ера', desc: '+8.0 энергии/сек', bonus: 8.0, price: 5000000, duration: null},
+                        {level: 14, name: '⚛️ Квантовый', desc: '+9.0 энергии/сек', bonus: 9.0, price: 10000000, duration: null},
+                        {level: 15, name: '🌠 Небесный', desc: '+10.0 энергии/сек', bonus: 10.0, price: 20000000, duration: null},
+                        {level: 16, name: '🌋 Планетарный', desc: '+12.0 энергии/сек', bonus: 12.0, price: 40000000, duration: null},
+                        {level: 17, name: '🌟 Звездная Душа', desc: '+15.0 энергии/сек', bonus: 15.0, price: 80000000, duration: null},
+                        {level: 18, name: '🌊 Вселенский', desc: '+20.0 энергии/сек', bonus: 20.0, price: 160000000, duration: null},
+                        {level: 19, name: '⚡ Энергия Богов', desc: '+25.0 энергии/сек', bonus: 25.0, price: 320000000, duration: null},
+                        {level: 20, name: '🌌 Космическая Мощь', desc: '+30.0 энергии/сек', bonus: 30.0, price: 640000000, duration: null}
                     ]
                 },
                 'energy_expand': {

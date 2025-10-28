@@ -176,9 +176,10 @@ def get_user_data():
             # Energy regeneration (1 per second, always)
             if user.last_active:
                 offline_seconds = (current_time - user.last_active).total_seconds()
-                # Regenerate energy (1 per second, max to max_energy)
+                # Regenerate energy based on user's regeneration rate
                 if offline_seconds > 0:  # Always regenerate if time passed
-                    energy_regen = min(int(offline_seconds), user.max_energy - user.energy)
+                    energy_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
+                    energy_regen = min(int(offline_seconds * energy_regen_rate), user.max_energy - user.energy)
                     if energy_regen > 0:
                         user.energy = min(user.energy + energy_regen, user.max_energy)
             
@@ -250,6 +251,7 @@ def get_user_data():
                 'quanhash': user.quanhash,
                 'energy': user.energy,
                 'max_energy': user.max_energy,
+                'energy_regen_rate': getattr(user, 'energy_regen_rate', 1.0),
                 'total_taps': user.total_taps,
                 'total_earned': user.total_earned,
                 'passive_coins_per_hour': passive_coins_per_hour,
@@ -1207,13 +1209,14 @@ def buy_shop_item():
                 # Always add bonus to current multiplier
                 user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':
-                # Restore energy
-                energy_map = {
-                    1: 50, 2: 100, 3: 200, 4: 300, 5: 500, 6: 800, 7: 1200, 8: 1800, 9: 2500, 10: 3500,
-                    11: 5000, 12: 7500, 13: 10000, 14: 15000, 15: 25000, 16: 40000, 17: 65000, 18: 100000, 19: 150000, 20: 250000
+                # Increase energy regeneration rate
+                regen_boost_map = {
+                    1: 0.5, 2: 1.0, 3: 1.5, 4: 2.0, 5: 2.5, 6: 3.0, 7: 3.5, 8: 4.0, 9: 4.5, 10: 5.0,
+                    11: 6.0, 12: 7.0, 13: 8.0, 14: 9.0, 15: 10.0, 16: 12.0, 17: 15.0, 18: 20.0, 19: 25.0, 20: 30.0
                 }
-                energy_to_restore = energy_map.get(level, 50 * level)
-                user.energy = min(user.energy + energy_to_restore, user.max_energy)
+                regen_boost = regen_boost_map.get(level, 0.5 * level)
+                current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
+                user.energy_regen_rate = current_regen_rate + regen_boost
             elif category == 'energy_expand':
                 # Expand max energy
                 expand_map = {

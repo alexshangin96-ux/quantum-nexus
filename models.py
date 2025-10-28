@@ -20,6 +20,7 @@ class User(Base):
     # Energy
     energy = Column(Integer, default=1000)
     max_energy = Column(Integer, default=1000)
+    energy_regen_rate = Column(Float, default=1.0)  # Energy regeneration per second
     
     # Statistics
     total_taps = Column(Integer, default=0)
