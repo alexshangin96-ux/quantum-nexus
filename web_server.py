@@ -173,11 +173,11 @@ def get_user_data():
             # Calculate time since last update
             current_time = datetime.utcnow()
             
-            # Energy regeneration while offline (1 per second)
+            # Energy regeneration (1 per second, always)
             if user.last_active:
                 offline_seconds = (current_time - user.last_active).total_seconds()
                 # Regenerate energy (1 per second, max to max_energy)
-                if offline_seconds > 1:  # Only if offline for more than 1 second
+                if offline_seconds > 0:  # Always regenerate if time passed
                     energy_regen = min(int(offline_seconds), user.max_energy - user.energy)
                     if energy_regen > 0:
                         user.energy = min(user.energy + energy_regen, user.max_energy)
@@ -311,7 +311,7 @@ def tap():
             if vip_level >= 6:
                 vip_multiplier += 2.0  # 450% total bonus for Absolute VIP
             
-            # Calculate reward with VIP bonus (don't use active_multiplier for reward)
+            # Calculate reward with VIP bonus and tap boost
             reward = BASE_TAP_REWARD * vip_multiplier
             
             # Apply tap boost (active_multiplier > 1 means tap boost is active)
@@ -319,6 +319,8 @@ def tap():
             if user.active_multiplier > 1:
                 # All multipliers > 1 are tap boosts (1, 2, 3, etc.)
                 tap_boost = int(user.active_multiplier)
+                # Apply tap boost to reward (more taps = more coins)
+                reward = reward * tap_boost
                 # DON'T reset multiplier - keep tap boost active
             
             # VIP users get lower energy cost
@@ -1241,6 +1243,10 @@ def buy_shop_item():
                 user.auto_tap_level = level
                 user.auto_tap_speed = speed
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+            elif category == 'card':
+                # Buy card - use existing card purchase logic
+                # This will be handled by the existing /api/buy endpoint
+                return jsonify({'success': False, 'error': 'Use /api/buy for cards'})
             
             db.commit()
             return jsonify({'success': True})

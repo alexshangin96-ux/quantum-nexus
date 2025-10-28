@@ -2780,7 +2780,7 @@
                                         <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:6px;">${card.description}</div>
                                         <div style="font-size:12px;color:#10b981;text-align:center;margin-bottom:6px;font-weight:700;">+${income.toFixed(1)} 🪙${incomeType}</div>
                                         <div style="font-size:9px;color:#fbbf24;text-align:center;margin-bottom:8px;font-weight:600;">Lv.${level} ${info.name}</div>
-                                        <button onclick="buyShopItem('${card.id}', ${card.price || 0})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
+                                        <button onclick="buyShopItem('card', 1, ${card.price || 0})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
                                             🪙 ${(card.price || 0).toLocaleString()}
                                         </button>
                                     </div>
