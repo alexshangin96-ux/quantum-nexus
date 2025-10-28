@@ -218,6 +218,25 @@ def get_user_data():
             else:
                 username = 'Unknown'
             
+            # Get purchased cards and machines
+            user_cards = []
+            for card in user.cards:
+                if card.is_active:
+                    user_cards.append({
+                        'name': card.card_name or 'Unknown Card',
+                        'income': card.income_per_minute or 0,
+                        'type': 'permanent'
+                    })
+            
+            user_machines = []
+            for machine in user.machines:
+                if machine.is_active:
+                    user_machines.append({
+                        'name': machine.machine_name or 'Unknown Machine',
+                        'hash_rate': machine.hash_rate or 0,
+                        'type': 'permanent'
+                    })
+            
             return jsonify({
                 'coins': user.coins,
                 'quanhash': user.quanhash,
@@ -239,7 +258,9 @@ def get_user_data():
                 'has_unique_design': getattr(user, 'has_unique_design', False),
                 'active_multiplier': active_multiplier,
                 'boost_expires_at': boost_expires_at,
-                'username': username
+                'username': username,
+                'cards': user_cards,
+                'machines': user_machines
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
