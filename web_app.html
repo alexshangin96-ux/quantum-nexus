@@ -1779,48 +1779,70 @@
                     }
                 }
                 
-                // Display purchased cards
+                // Group and display purchased cards
                 if (data.cards && data.cards.length > 0) {
-                    purchasesContent += `
-                        <div style="margin-bottom:16px;">
-                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(59,130,246,0.2);border-radius:8px;">💳 МОИ КАРТОЧКИ</div>
-                    `;
-                    
+                    const cardGroups = {};
                     data.cards.forEach(card => {
-                        purchasesContent += `
-                            <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                    <span style="color:#fff;font-weight:700;font-size:13px;">${card.name}</span>
-                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">+${card.income}/мин</span>
-                                </div>
-                                <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная карточка</div>
-                            </div>
-                        `;
+                        if (!cardGroups[card.name]) {
+                            cardGroups[card.name] = { count: 0, income: card.income || 0 };
+                        }
+                        cardGroups[card.name].count++;
                     });
                     
-                    purchasesContent += `</div>`;
+                    const cardsList = Object.entries(cardGroups);
+                    if (cardsList.length > 0) {
+                        purchasesContent += `
+                            <div style="margin-bottom:16px;">
+                                <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(59,130,246,0.2);border-radius:8px;">💳 МОИ КАРТОЧКИ</div>
+                        `;
+                        
+                        cardsList.forEach(([name, info]) => {
+                            purchasesContent += `
+                                <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} ${info.count > 1 ? `x${info.count}` : ''}</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(info.income * info.count)}/мин</span>
+                                    </div>
+                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная карточка</div>
+                                </div>
+                            `;
+                        });
+                        
+                        purchasesContent += `</div>`;
+                    }
                 }
                 
-                // Display purchased machines
+                // Group and display purchased machines
                 if (data.machines && data.machines.length > 0) {
-                    purchasesContent += `
-                        <div style="margin-bottom:16px;">
-                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(168,85,247,0.2);border-radius:8px;">🏭 МОИ МАЙНИНГИ</div>
-                    `;
-                    
+                    const machineGroups = {};
                     data.machines.forEach(machine => {
-                        purchasesContent += `
-                            <div style="background:rgba(168,85,247,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(168,85,247,0.5);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                    <span style="color:#fff;font-weight:700;font-size:13px;">${machine.name}</span>
-                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">+${machine.hash_rate}/сек</span>
-                                </div>
-                                <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная майнинг-ферма</div>
-                            </div>
-                        `;
+                        if (!machineGroups[machine.name]) {
+                            machineGroups[machine.name] = { count: 0, hash_rate: machine.hash_rate || 0 };
+                        }
+                        machineGroups[machine.name].count++;
                     });
                     
-                    purchasesContent += `</div>`;
+                    const machinesList = Object.entries(machineGroups);
+                    if (machinesList.length > 0) {
+                        purchasesContent += `
+                            <div style="margin-bottom:16px;">
+                                <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(168,85,247,0.2);border-radius:8px;">🏭 МОИ МАЙНИНГИ</div>
+                        `;
+                        
+                        machinesList.forEach(([name, info]) => {
+                            purchasesContent += `
+                                <div style="background:rgba(168,85,247,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(168,85,247,0.5);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} ${info.count > 1 ? `x${info.count}` : ''}</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(info.hash_rate * info.count)}/сек</span>
+                                    </div>
+                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная майнинг-ферма</div>
+                                </div>
+                            `;
+                        });
+                        
+                        purchasesContent += `</div>`;
+                    }
                 }
                 
                 purchasesContent += `
