@@ -2810,6 +2810,21 @@
                     </div>
                 `;
             }).join('');
+            
+            // Update autobot buttons if autobot category is loaded
+            if (category === 'autobot') {
+                // Fetch current user data to update autobot buttons
+                fetch('/api/user_data', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: window.user?.id})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    updateAutobotShopButtons(data);
+                })
+                .catch(err => console.error('Error loading user data for autobots:', err));
+            }
         }
         
         function buyShopItem(category, level, price) {
@@ -3719,25 +3734,29 @@
                                     .then(res => res.json())
                                     .then(data => {
                                         if(data.success) {
-                                            // Show coin animation for auto-tap too
-                                            const button = document.querySelector('.tap-button');
-                                            if(button){
-                                                const rect = button.getBoundingClientRect();
-                                                const centerX = rect.left + rect.width / 2;
-                                                const centerY = rect.top + rect.height / 2;
-                                                
-                                                const coinAnimation = document.createElement('div');
-                                                coinAnimation.className = 'coin-animation';
-                                                coinAnimation.textContent = '+' + data.reward;
-                                                coinAnimation.style.left = centerX + 'px';
-                                                coinAnimation.style.top = centerY + 'px';
-                                                coinAnimation.style.transform = 'translate(-50%, -50%)';
-                                                document.body.appendChild(coinAnimation);
-                                                setTimeout(() => { 
-                                                    if(document.body.contains(coinAnimation)) {
-                                                        document.body.removeChild(coinAnimation); 
-                                                    }
-                                                }, 2000);
+                                            // Only show animation if no modal is open
+                                            const hasOpenModal = document.querySelector('.modal.active');
+                                            if (!hasOpenModal) {
+                                                const button = document.querySelector('.tap-button');
+                                                if(button){
+                                                    const rect = button.getBoundingClientRect();
+                                                    const centerX = rect.left + rect.width / 2;
+                                                    const centerY = rect.top + rect.height / 2;
+                                                    
+                                                    const coinAnimation = document.createElement('div');
+                                                    coinAnimation.className = 'coin-animation';
+                                                    coinAnimation.textContent = '+' + data.reward;
+                                                    coinAnimation.style.left = centerX + 'px';
+                                                    coinAnimation.style.top = centerY + 'px';
+                                                    coinAnimation.style.transform = 'translate(-50%, -50%)';
+                                                    coinAnimation.style.zIndex = '1000'; // Lower than modals
+                                                    document.body.appendChild(coinAnimation);
+                                                    setTimeout(() => { 
+                                                        if(document.body.contains(coinAnimation)) {
+                                                            document.body.removeChild(coinAnimation); 
+                                                        }
+                                                    }, 2000);
+                                                }
                                             }
                                             loadData();
                                         }
