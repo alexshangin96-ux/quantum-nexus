@@ -113,12 +113,23 @@ def get_user_data():
         data = request.json
         user_id = data.get('user_id')
         
+        # Try to get user_id from init_data if not provided
         if not user_id:
-            # Try to get initData from request
             init_data = request.headers.get('X-Telegram-Init-Data')
             if init_data:
-                # For now, skip validation, just log
-                print(f"Init data received: {init_data[:50]}...")
+                # Try to extract user_id from init_data
+                import urllib.parse
+                init_params = urllib.parse.parse_qs(init_data)
+                if 'user' in init_params:
+                    import json
+                    try:
+                        user_data = json.loads(init_params['user'][0])
+                        user_id = user_data.get('id')
+                        print(f"Extracted user_id from init_data: {user_id}")
+                    except:
+                        print(f"Failed to parse init_data user")
+        
+        print(f"[USER_DATA] Request with user_id: {user_id}")
         
         if not user_id:
             return jsonify({'coins': 0, 'quanhash': 0, 'energy': 1000, 'max_energy': 1000, 'total_taps': 0, 'total_earned': 0, 'username': 'Unknown'}), 200
