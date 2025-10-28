@@ -1225,7 +1225,7 @@ def buy_shop_item():
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
             elif category == 'autobot':
-                # Add time to existing autobot or create new one
+                # Create new autobot (no time accumulation)
                 duration_map = {
                     1: 30, 2: 60, 3: 120, 4: 240, 5: 480, 6: 720, 7: 1440, 8: 2880, 9: 4320, 10: 7200,
                     11: 10080, 12: 14400, 13: 20160, 14: 28800, 15: 43200, 16: 64800, 17: 86400, 18: 129600, 19: 172800, 20: 259200
@@ -1238,21 +1238,11 @@ def buy_shop_item():
                 duration_minutes = duration_map.get(level, 30)
                 speed = speed_map.get(level, 2.0)
                 
-                # Check if user already has an active autobot
-                current_time = datetime.utcnow()
-                if user.auto_tap_expires_at and user.auto_tap_expires_at > current_time:
-                    # Add time to existing autobot
-                    user.auto_tap_expires_at += timedelta(minutes=duration_minutes)
-                    # Update to higher level if new level is higher
-                    if level > user.auto_tap_level:
-                        user.auto_tap_level = level
-                        user.auto_tap_speed = speed
-                else:
-                    # Create new autobot
-                    user.auto_tap_enabled = True
-                    user.auto_tap_level = level
-                    user.auto_tap_speed = speed
-                    user.auto_tap_expires_at = current_time + timedelta(minutes=duration_minutes)
+                # Create new autobot (always replace existing)
+                user.auto_tap_enabled = True
+                user.auto_tap_level = level
+                user.auto_tap_speed = speed
+                user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
             elif category == 'card':
                 # Buy card - use existing card purchase logic
                 # This will be handled by the existing /api/buy endpoint
