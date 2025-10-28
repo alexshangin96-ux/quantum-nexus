@@ -318,8 +318,13 @@ def tap():
                 reward = reward * tap_boost
                 # DON'T reset multiplier - keep tap boost active
             
-            # VIP users get lower energy cost
+            # Calculate energy cost based on tap boost
             energy_cost = ENERGY_COST_PER_TAP
+            if user.active_multiplier > 1:
+                # More tap boost = more energy cost
+                energy_cost = energy_cost * (user.active_multiplier * 0.5)  # 50% increase per tap boost level
+            
+            # VIP users get lower energy cost
             if vip_level >= 3:
                 energy_cost = max(0.5, energy_cost * 0.5)  # 50% energy cost for Gold+
             
@@ -1220,7 +1225,7 @@ def buy_shop_item():
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
             elif category == 'autobot':
-                # Activate autobot
+                # Add time to existing autobot or create new one
                 duration_map = {
                     1: 30, 2: 60, 3: 120, 4: 240, 5: 480, 6: 720, 7: 1440, 8: 2880, 9: 4320, 10: 7200,
                     11: 10080, 12: 14400, 13: 20160, 14: 28800, 15: 43200, 16: 64800, 17: 86400, 18: 129600, 19: 172800, 20: 259200
@@ -1232,10 +1237,22 @@ def buy_shop_item():
                 from datetime import timedelta
                 duration_minutes = duration_map.get(level, 30)
                 speed = speed_map.get(level, 2.0)
-                user.auto_tap_enabled = True
-                user.auto_tap_level = level
-                user.auto_tap_speed = speed
-                user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+                
+                # Check if user already has an active autobot
+                current_time = datetime.utcnow()
+                if user.auto_tap_expires_at and user.auto_tap_expires_at > current_time:
+                    # Add time to existing autobot
+                    user.auto_tap_expires_at += timedelta(minutes=duration_minutes)
+                    # Update to higher level if new level is higher
+                    if level > user.auto_tap_level:
+                        user.auto_tap_level = level
+                        user.auto_tap_speed = speed
+                else:
+                    # Create new autobot
+                    user.auto_tap_enabled = True
+                    user.auto_tap_level = level
+                    user.auto_tap_speed = speed
+                    user.auto_tap_expires_at = current_time + timedelta(minutes=duration_minutes)
             elif category == 'card':
                 # Buy card - use existing card purchase logic
                 # This will be handled by the existing /api/buy endpoint
