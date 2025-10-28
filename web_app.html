@@ -2610,6 +2610,16 @@
                             <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">📈 Расширение</button>
                             <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">🤖 Автобот</button>
                         </div>
+                        <!-- VIP Button Row -->
+                        <div id="vipButtonRow" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <div style="grid-column:1/-1;padding:12px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));border:2px solid rgba(255,215,0,0.5);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.2);">
+                                <div style="position:absolute;top:6px;right:6px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:800;box-shadow:0 2px 6px rgba(255,215,0,0.4);">⭐ VIP</div>
+                                <button id="vipButton" onclick="openVIPModal('tap_boost')" style="width:100%;padding:10px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:10px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);" onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                    <span style="font-size:16px;margin-right:6px;">⭐</span>
+                                    Купить VIP функции за Telegram Stars
+                                </button>
+                            </div>
+                        </div>
                         <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
                     </div>
                 </div>
@@ -2902,29 +2912,10 @@
                 `;
             }).join('');
             
-            // Add VIP button after regular items (for all categories)
-            const vipItems = vipData[category];
-            console.log('VIP check:', category, vipItems);
-            if (vipItems) {
-                list.innerHTML += `
-                    <div style="grid-column: 1 / -1; margin-top: 15px; padding: 16px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,237,78,0.15)); border: 2px solid rgba(255,215,0,0.5); border-radius: 16px; position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(255,215,0,0.2);">
-                        <!-- VIP Badge -->
-                        <div style="position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; box-shadow: 0 2px 8px rgba(255,215,0,0.4);">⭐ VIP</div>
-                        
-                        <!-- VIP Button -->
-                        <button onclick="openVIPModal('${category}')" 
-                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 2px solid #ffd700; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 16px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(255,215,0,0.4); text-shadow: 0 1px 2px rgba(0,0,0,0.2);"
-                                onmousedown="this.style.transform='scale(0.96)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.6)'"
-                                onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'"
-                                onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'">
-                            <span style="font-size: 18px; margin-right: 8px;">⭐</span>
-                            Купить VIP функции за Telegram Stars
-                        </button>
-                    </div>
-                `;
-                console.log('VIP button added for category:', category);
-            } else {
-                console.log('No VIP data for category:', category);
+            // Update VIP button for current category
+            const vipButton = document.getElementById('vipButton');
+            if (vipButton) {
+                vipButton.setAttribute('onclick', `openVIPModal('${category}')`);
             }
             
             // Update autobot buttons if autobot category is loaded
