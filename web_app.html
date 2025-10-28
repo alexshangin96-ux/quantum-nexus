@@ -2542,12 +2542,6 @@
                         {level: 8, name: '💫 Небесный', desc: '+18 кликов за тап', bonus: 19, price: 800000, currency: 'coins', locked: false},
                         {level: 9, name: '⚛️ Квантовый', desc: '+25 кликов за тап', bonus: 26, price: 2000000, currency: 'coins', locked: false},
                         {level: 10, name: '🌌 Галактический', desc: '+35 кликов за тап', bonus: 36, price: 5000000, currency: 'coins', locked: false},
-                        // 5 позиций за звезды (премиум)
-                        {level: 11, name: '🌠 Звездный Шторм', desc: '+50 кликов за тап', bonus: 51, price: 50, currency: 'stars', locked: false, premium: true},
-                        {level: 12, name: '🌑 Черная Дыра', desc: '+70 кликов за тап', bonus: 71, price: 100, currency: 'stars', locked: false, premium: true},
-                        {level: 13, name: '✨ Абсолют', desc: '+100 кликов за тап', bonus: 101, price: 200, currency: 'stars', locked: false, premium: true},
-                        {level: 14, name: '👑 Имперский', desc: '+140 кликов за тап', bonus: 141, price: 350, currency: 'stars', locked: false, premium: true},
-                        {level: 15, name: '🌟 Легендарный', desc: '+200 кликов за тап', bonus: 201, price: 500, currency: 'stars', locked: false, premium: true}
                     ]
                 },
                 'energy_buy': {
@@ -2565,12 +2559,6 @@
                         {level: 8, name: '🌊 Морской', desc: '+1.6 энергии/сек', bonus: 1.6, price: 160000, currency: 'coins', locked: false},
                         {level: 9, name: '⚡ Молниеносный', desc: '+1.8 энергии/сек', bonus: 1.8, price: 320000, currency: 'coins', locked: false},
                         {level: 10, name: '🌙 Лунный', desc: '+2.0 энергии/сек', bonus: 2.0, price: 640000, currency: 'coins', locked: false},
-                        // 5 позиций за звезды (премиум)
-                        {level: 11, name: '☀️ Солнечный', desc: '+3.0 энергии/сек', bonus: 3.0, price: 40, currency: 'stars', locked: false, premium: true},
-                        {level: 12, name: '🌌 Галактический', desc: '+4.5 энергии/сек', bonus: 4.5, price: 80, currency: 'stars', locked: false, premium: true},
-                        {level: 13, name: '💫 Новая Ера', desc: '+6.0 энергии/сек', bonus: 6.0, price: 150, currency: 'stars', locked: false, premium: true},
-                        {level: 14, name: '⚛️ Квантовый', desc: '+8.0 энергии/сек', bonus: 8.0, price: 250, currency: 'stars', locked: false, premium: true},
-                        {level: 15, name: '🌠 Небесный', desc: '+10.0 энергии/сек', bonus: 10.0, price: 400, currency: 'stars', locked: false, premium: true}
                     ]
                 },
                 'energy_expand': {
@@ -2588,35 +2576,67 @@
                         {level: 8, name: '🔥 Огненный', desc: 'Расширить максимум на 1750', bonus: 1750, price: 320000, currency: 'coins', locked: false},
                         {level: 9, name: '❄️ Ледяной', desc: 'Расширить максимум на 2500', bonus: 2500, price: 640000, currency: 'coins', locked: false},
                         {level: 10, name: '💫 Космический', desc: 'Расширить максимум на 3750', bonus: 3750, price: 1280000, currency: 'coins', locked: false},
-                        // 5 позиций за звезды (премиум)
-                        {level: 11, name: '🌌 Галактический', desc: 'Расширить максимум на 7500', bonus: 7500, price: 60, currency: 'stars', locked: false, premium: true},
-                        {level: 12, name: '⚛️ Квантовый', desc: 'Расширить максимум на 12500', bonus: 12500, price: 120, currency: 'stars', locked: false, premium: true},
-                        {level: 13, name: '🌠 Звездный', desc: 'Расширить максимум на 20000', bonus: 20000, price: 200, currency: 'stars', locked: false, premium: true},
-                        {level: 14, name: '🌑 Абсолютный', desc: 'Расширить максимум на 37500', bonus: 37500, price: 350, currency: 'stars', locked: false, premium: true},
-                        {level: 15, name: '👑 Имперский', desc: 'Расширить максимум на 75000', bonus: 75000, price: 500, currency: 'stars', locked: false, premium: true}
                     ]
                 },
                 'autobot': {
                     name: '🤖 Автобот',
                     emoji: '🤖',
                     items: [
-                        // 10 позиций за коины
+                        // 10 позиций за коины (всегда 1 тап/сек)
                         {level: 1, name: '🔩 Базовый Бот', desc: 'Автотап 15 минут', speed: 1, duration: 15, price: 2000, currency: 'coins', locked: false},
-                        {level: 2, name: '⚙️ Надежный Бот', desc: 'Автотап 30 минут', speed: 1.5, duration: 30, price: 5000, currency: 'coins', locked: false},
-                        {level: 3, name: '💫 Звездный Бот', desc: 'Автотап 1 час', speed: 2, duration: 60, price: 10000, currency: 'coins', locked: false},
-                        {level: 4, name: '🚀 Ракетный Бот', desc: 'Автотап 2 часа', speed: 2.5, duration: 120, price: 20000, currency: 'coins', locked: false},
-                        {level: 5, name: '🌟 Супер Бот', desc: 'Автотап 4 часа', speed: 3, duration: 240, price: 40000, currency: 'coins', locked: false},
-                        {level: 6, name: '🔥 Огненный Бот', desc: 'Автотап 6 часов', speed: 3.5, duration: 360, price: 80000, currency: 'coins', locked: false},
-                        {level: 7, name: '⚡ Молниеносный Бот', desc: 'Автотап 12 часов', speed: 4, duration: 720, price: 160000, currency: 'coins', locked: false},
-                        {level: 8, name: '🌌 Галактический Бот', desc: 'Автотап 1 день', speed: 4.5, duration: 1440, price: 320000, currency: 'coins', locked: false},
-                        {level: 9, name: '💎 Бриллиантовый Бот', desc: 'Автотап 2 дня', speed: 5, duration: 2880, price: 640000, currency: 'coins', locked: false},
-                        {level: 10, name: '👑 Королевский Бот', desc: 'Автотап 3 дня', speed: 5.5, duration: 4320, price: 1280000, currency: 'coins', locked: false},
-                        // 5 позиций за звезды (премиум)
-                        {level: 11, name: '🌊 Океанский Бот', desc: 'Автотап 5 дней', speed: 6, duration: 7200, price: 30, currency: 'stars', locked: false, premium: true},
-                        {level: 12, name: '⚛️ Квантовый Бот', desc: 'Автотап 7 дней', speed: 6.5, duration: 10080, price: 60, currency: 'stars', locked: false, premium: true},
-                        {level: 13, name: '🌠 Небесный Бот', desc: 'Автотап 10 дней', speed: 7, duration: 14400, price: 120, currency: 'stars', locked: false, premium: true},
-                        {level: 14, name: '🌋 Вулканический Бот', desc: 'Автотап 14 дней', speed: 7.5, duration: 20160, price: 200, currency: 'stars', locked: false, premium: true},
-                        {level: 15, name: '🌟 Звездная Власть', desc: 'Автотап 20 дней', speed: 8, duration: 28800, price: 300, currency: 'stars', locked: false, premium: true}
+                        {level: 2, name: '⚙️ Надежный Бот', desc: 'Автотап 30 минут', speed: 1, duration: 30, price: 5000, currency: 'coins', locked: false},
+                        {level: 3, name: '💫 Звездный Бот', desc: 'Автотап 1 час', speed: 1, duration: 60, price: 10000, currency: 'coins', locked: false},
+                        {level: 4, name: '🚀 Ракетный Бот', desc: 'Автотап 2 часа', speed: 1, duration: 120, price: 20000, currency: 'coins', locked: false},
+                        {level: 5, name: '🌟 Супер Бот', desc: 'Автотап 4 часа', speed: 1, duration: 240, price: 40000, currency: 'coins', locked: false},
+                        {level: 6, name: '🔥 Огненный Бот', desc: 'Автотап 6 часов', speed: 1, duration: 360, price: 80000, currency: 'coins', locked: false},
+                        {level: 7, name: '⚡ Молниеносный Бот', desc: 'Автотап 12 часов', speed: 1, duration: 720, price: 160000, currency: 'coins', locked: false},
+                        {level: 8, name: '🌌 Галактический Бот', desc: 'Автотап 1 день', speed: 1, duration: 1440, price: 320000, currency: 'coins', locked: false},
+                        {level: 9, name: '💎 Бриллиантовый Бот', desc: 'Автотап 2 дня', speed: 1, duration: 2880, price: 640000, currency: 'coins', locked: false},
+                        {level: 10, name: '👑 Королевский Бот', desc: 'Автотап 3 дня', speed: 1, duration: 4320, price: 1280000, currency: 'coins', locked: false},
+                    ]
+                }
+            };
+            
+            // VIP данные для каждой категории
+            const vipData = {
+                'tap_boost': {
+                    name: '💪 VIP Усилители Тапа',
+                    items: [
+                        {level: 11, name: '🌠 Звездный Шторм', desc: '+50 кликов за тап', bonus: 51, price: 50},
+                        {level: 12, name: '🌑 Черная Дыра', desc: '+70 кликов за тап', bonus: 71, price: 100},
+                        {level: 13, name: '✨ Абсолют', desc: '+100 кликов за тап', bonus: 101, price: 200},
+                        {level: 14, name: '👑 Имперский', desc: '+140 кликов за тап', bonus: 141, price: 350},
+                        {level: 15, name: '🌟 Легендарный', desc: '+200 кликов за тап', bonus: 201, price: 500}
+                    ]
+                },
+                'energy_buy': {
+                    name: '⚡ VIP Ускорение Восстановления',
+                    items: [
+                        {level: 11, name: '☀️ Солнечный', desc: '+3.0 энергии/сек', bonus: 3.0, price: 40},
+                        {level: 12, name: '🌌 Галактический', desc: '+4.5 энергии/сек', bonus: 4.5, price: 80},
+                        {level: 13, name: '💫 Новая Ера', desc: '+6.0 энергии/сек', bonus: 6.0, price: 150},
+                        {level: 14, name: '⚛️ Квантовый', desc: '+8.0 энергии/сек', bonus: 8.0, price: 250},
+                        {level: 15, name: '🌠 Небесный', desc: '+10.0 энергии/сек', bonus: 10.0, price: 400}
+                    ]
+                },
+                'energy_expand': {
+                    name: '📈 VIP Расширение Энергии',
+                    items: [
+                        {level: 11, name: '🌌 Галактический', desc: 'Расширить максимум на 7500', bonus: 7500, price: 60},
+                        {level: 12, name: '⚛️ Квантовый', desc: 'Расширить максимум на 12500', bonus: 12500, price: 120},
+                        {level: 13, name: '🌠 Звездный', desc: 'Расширить максимум на 20000', bonus: 20000, price: 200},
+                        {level: 14, name: '🌑 Абсолютный', desc: 'Расширить максимум на 37500', bonus: 37500, price: 350},
+                        {level: 15, name: '👑 Имперский', desc: 'Расширить максимум на 75000', bonus: 75000, price: 500}
+                    ]
+                },
+                'autobot': {
+                    name: '🤖 VIP Автоботы',
+                    items: [
+                        {level: 11, name: '🌊 Океанский Бот', desc: 'Автотап 5 дней', speed: 6, duration: 7200, price: 30},
+                        {level: 12, name: '⚛️ Квантовый Бот', desc: 'Автотап 7 дней', speed: 6.5, duration: 10080, price: 60},
+                        {level: 13, name: '🌠 Небесный Бот', desc: 'Автотап 10 дней', speed: 7, duration: 14400, price: 120},
+                        {level: 14, name: '🌋 Вулканический Бот', desc: 'Автотап 14 дней', speed: 7.5, duration: 20160, price: 200},
+                        {level: 15, name: '🌟 Звездная Власть', desc: 'Автотап 20 дней', speed: 8, duration: 28800, price: 300}
                     ]
                 }
             };
@@ -2706,6 +2726,62 @@
             .catch(err => tg.showAlert('❌ Ошибка покупки'));
         }
         
+        function openVIPModal(category) {
+            const vipItems = vipData[category];
+            if (!vipItems) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'vipModal';
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(255,215,0,0.95), rgba(255,237,78,0.95)); border-radius: 24px; border: 3px solid #ffd700; box-shadow: 0 15px 50px rgba(255,215,0,0.6);">
+                    <div style="background: linear-gradient(135deg, #000, #1a1a1a); padding: 20px; border-radius: 20px 20px 0 0; text-align: center; position: relative;">
+                        <h2 style="font-size: 24px; color: #ffd700; margin: 0; font-weight: 900; text-shadow: 0 0 10px rgba(255,215,0,0.5);">${vipItems.name}</h2>
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 8px;">Эксклюзивные функции за Telegram Stars</div>
+                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,215,0,0.2); border: 2px solid #ffd700; border-radius: 50%; width: 40px; height: 40px; color: #ffd700; cursor: pointer; font-size: 20px; font-weight: 800;">✕</button>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <div style="display: grid; gap: 12px;">
+                            ${vipItems.items.map(item => `
+                                <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 2px solid rgba(255,215,0,0.4); position: relative;">
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                        <span style="font-size: 24px;">${item.name.split(' ')[0]}</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 800; font-size: 16px; color: #fff;">${item.name.split(' ').slice(1).join(' ')}</div>
+                                            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;">${item.desc}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    ${category === 'autobot' ? `
+                                        <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⏱️ Длительность:</span>
+                                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${item.duration < 60 ? item.duration + ' минут' : Math.floor(item.duration / 60) + ' часов'}</span>
+                                        </div>
+                                        <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⚡ Скорость:</span>
+                                            <span style="color: #4ade80; font-size: 12px; font-weight: 800;">${item.speed} тапов/сек</span>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <button onclick="buyWithStars('${category}', ${item.level}, ${item.price})" 
+                                            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 2px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 14px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(255,215,0,0.4);"
+                                            onmousedown="this.style.transform='scale(0.95)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.6)'"
+                                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'"
+                                            onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(255,215,0,0.4)'">
+                                        Купить за ${item.price} ⭐ Telegram Stars
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
         function buyWithStars(category, level, price) {
             // Map shop items to existing product IDs (51-56 are VIP, 1-10 are currency)
             const productIdMap = {
@@ -2793,14 +2869,16 @@
                             </div>
                         ` : `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <span style="color:#10b981;font-size:12px;font-weight:700;">⏱️ Длительность:</span>
                                     <span style="color:#fff;font-size:12px;font-weight:800;">${item.duration < 60 ? item.duration + ' минут' : Math.floor(item.duration / 60) + ' часов'}</span>
                                 </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                ${item.speed > 1 ? `
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
                                     <span style="color:#10b981;font-size:12px;font-weight:700;">⚡ Скорость:</span>
                                     <span style="color:#4ade80;font-size:12px;font-weight:800;">${item.speed} тапов/сек</span>
                                 </div>
+                                ` : ''}
                             </div>
                         `}
                         ${category === 'autobot' ? `
@@ -2823,6 +2901,43 @@
                     </div>
                 `;
             }).join('');
+            
+            // Add VIP button after regular items
+            const vipItems = vipData[category];
+            if (vipItems) {
+                list.innerHTML += `
+                    <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,237,78,0.15)); border: 2px solid rgba(255,215,0,0.4); border-radius: 16px; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; box-shadow: 0 4px 12px rgba(255,215,0,0.4);">⭐ VIP</div>
+                        
+                        <div style="text-align: center; margin-bottom: 16px;">
+                            <div style="font-size: 18px; font-weight: 800; color: #ffd700; margin-bottom: 8px;">${vipItems.name}</div>
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.7);">Эксклюзивные функции за Telegram Stars</div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+                            ${vipItems.items.map(item => `
+                                <div style="background: rgba(255,215,0,0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,215,0,0.3);">
+                                    <div style="font-size: 14px; font-weight: 700; color: #ffd700; margin-bottom: 4px;">${item.name.split(' ')[0]}</div>
+                                    <div style="font-size: 10px; color: #fff; margin-bottom: 2px;">${item.name.split(' ').slice(1).join(' ')}</div>
+                                    <div style="font-size: 9px; color: rgba(255,255,255,0.6);">${item.desc}</div>
+                                    ${category === 'autobot' ? `
+                                        <div style="font-size: 8px; color: #4ade80; margin-top: 2px;">${item.speed} тапов/сек</div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <button onclick="openVIPModal('${category}')" 
+                                style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 2px solid #ffd700; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 16px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(255,215,0,0.4);"
+                                onmousedown="this.style.transform='scale(0.95)'; this.style.boxShadow='0 8px 25px rgba(255,215,0,0.6)'"
+                                onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.4)'"
+                                onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.4)'">
+                            <span style="font-size: 20px; margin-right: 8px;">⭐</span>
+                            Купить VIP функции за Telegram Stars
+                        </button>
+                    </div>
+                `;
+            }
             
             // Update autobot buttons if autobot category is loaded
             if (category === 'autobot') {
