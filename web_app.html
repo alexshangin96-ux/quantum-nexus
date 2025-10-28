@@ -2266,10 +2266,11 @@
         
         function updateAutobotShopButtons(data) {
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
+            const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
             
             // Check if autobot is active
-            if (autobotExpiresAt > currentTime) {
+            if (autobotExpiresAt > currentTime && autobotLevel > 0) {
                 const remainingMs = autobotExpiresAt - currentTime;
                 const hours = Math.floor(remainingMs / 3600000);
                 const minutes = Math.floor((remainingMs % 3600000) / 60000);
@@ -2281,9 +2282,16 @@
                     const btn = document.getElementById(`autobot-btn-${i}`);
                     if (btn) {
                         btn.disabled = true;
-                        btn.style.background = 'rgba(239,68,68,0.6)';
+                        btn.style.background = 'rgba(148,163,184,0.3)';
                         btn.style.cursor = 'not-allowed';
-                        btn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                        
+                        // Show countdown only on the purchased button
+                        if (i === autobotLevel) {
+                            btn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                            btn.style.background = 'rgba(239,68,68,0.6)';
+                        } else {
+                            btn.innerHTML = '🔒 Недоступно';
+                        }
                     }
                 }
                 
@@ -2313,12 +2321,10 @@
                     const seconds = Math.floor((remainingMs % 60000) / 1000);
                     const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                     
-                    // Update all button texts
-                    for (let i = 1; i <= 20; i++) {
-                        const btn = document.getElementById(`autobot-btn-${i}`);
-                        if (btn) {
-                            btn.innerHTML = `⏱️ Осталось: ${timeText}`;
-                        }
+                    // Update only the purchased button with countdown
+                    const purchasedBtn = document.getElementById(`autobot-btn-${autobotLevel}`);
+                    if (purchasedBtn) {
+                        purchasedBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
                     }
                 }, 1000);
             } else {
@@ -2483,25 +2489,30 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    const button = document.querySelector('.tap-button');
-                    if(button){
-                        const rect = button.getBoundingClientRect();
-                        const centerX = rect.left + rect.width / 2;
-                        const centerY = rect.top + rect.height / 2;
-                        
-                        const coinAnimation = document.createElement('div');
-                        coinAnimation.className = 'coin-animation';
-                        coinAnimation.textContent = '+' + data.reward;
-                        // Position from center of button
-                        coinAnimation.style.left = centerX + 'px';
-                        coinAnimation.style.top = centerY + 'px';
-                        coinAnimation.style.transform = 'translate(-50%, -50%)';
-                        document.body.appendChild(coinAnimation);
-                        setTimeout(() => { 
-                            if(document.body.contains(coinAnimation)) {
-                                document.body.removeChild(coinAnimation); 
-                            }
-                        }, 2000);
+                    // Only show animation if no modal is open
+                    const hasOpenModal = document.querySelector('.modal.active');
+                    if (!hasOpenModal) {
+                        const button = document.querySelector('.tap-button');
+                        if(button){
+                            const rect = button.getBoundingClientRect();
+                            const centerX = rect.left + rect.width / 2;
+                            const centerY = rect.top + rect.height / 2;
+                            
+                            const coinAnimation = document.createElement('div');
+                            coinAnimation.className = 'coin-animation';
+                            coinAnimation.textContent = '+' + data.reward;
+                            // Position from center of button
+                            coinAnimation.style.left = centerX + 'px';
+                            coinAnimation.style.top = centerY + 'px';
+                            coinAnimation.style.transform = 'translate(-50%, -50%)';
+                            coinAnimation.style.zIndex = '1000'; // Lower than modals
+                            document.body.appendChild(coinAnimation);
+                            setTimeout(() => { 
+                                if(document.body.contains(coinAnimation)) {
+                                    document.body.removeChild(coinAnimation); 
+                                }
+                            }, 2000);
+                        }
                     }
                     loadData();
                 }
