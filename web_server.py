@@ -173,15 +173,8 @@ def get_user_data():
             # Calculate time since last update
             current_time = datetime.utcnow()
             
-            # Energy regeneration (1 per second, always)
-            if user.last_active:
-                offline_seconds = (current_time - user.last_active).total_seconds()
-                # Regenerate energy based on user's regeneration rate
-                if offline_seconds > 0:  # Always regenerate if time passed
-                    energy_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
-                    energy_regen = min(int(offline_seconds * energy_regen_rate), user.max_energy - user.energy)
-                    if energy_regen > 0:
-                        user.energy = min(user.energy + energy_regen, user.max_energy)
+            # Energy regeneration is now handled by the frontend
+            # No server-side regeneration to avoid conflicts
             
             # Update passive coins if user has cards
             if passive_coins_per_hour > 0 and user.last_passive_update:

@@ -2192,6 +2192,11 @@
                 if (energyRegenText) {
                     energyRegenText.textContent = `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
                 }
+                
+                // Update energy regeneration rate in the running interval
+                if (window.energyRegenRate !== undefined) {
+                    window.energyRegenRate = energyRegenRate;
+                }
 
                 // Load VIP status and display it
                 loadVIPStatus(data);
@@ -2376,15 +2381,16 @@
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             
             let lastEnergy = 0;
-            let energyRegenRate = 1.0; // Default rate
+            window.energyRegenRate = 1.0; // Default rate, stored globally
             let energyAccumulator = 0; // For fractional energy regeneration
+            let lastUpdateTime = Date.now();
             
             // Get current regeneration rate from the display
             const regenText = document.getElementById('energy-regen-text');
             if (regenText) {
                 const match = regenText.textContent.match(/\+(\d+\.?\d*)\/сек/);
                 if (match) {
-                    energyRegenRate = parseFloat(match[1]);
+                    window.energyRegenRate = parseFloat(match[1]);
                 }
             }
             
@@ -2393,8 +2399,12 @@
                 const [energy, maxEnergy] = energyText.split('/').map(e => parseInt(e));
                 
                 if (energy < maxEnergy) {
-                    // Accumulate fractional energy
-                    energyAccumulator += energyRegenRate;
+                    const now = Date.now();
+                    const deltaTime = (now - lastUpdateTime) / 1000; // Convert to seconds
+                    lastUpdateTime = now;
+                    
+                    // Accumulate energy based on time passed
+                    energyAccumulator += window.energyRegenRate * deltaTime;
                     
                     // Only update when we have at least 1 energy to add
                     if (energyAccumulator >= 1) {
@@ -2415,6 +2425,7 @@
                                 percentText.textContent = Math.round(energyPercent) + '%';
                             }
                             
+                            // Update server only when energy actually changes
                             fetch('/api/update_energy', {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/json'},
@@ -2423,7 +2434,7 @@
                         }
                     }
                 }
-            }, 1000);
+            }, 100); // Update every 100ms for smoother animation
         }
 
         function tap() {
@@ -2907,7 +2918,6 @@
                     tg.showAlert('✅ Покупка успешна!');
                     loadData();
                     renderShop();
-                    startEnergyRegen(); // Restart energy regen
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
                 }
@@ -2929,7 +2939,6 @@
                     tg.showAlert('✅ Энергия куплена!');
                     loadData();
                     renderShop();
-                    startEnergyRegen(); // Restart energy regen
                 } else {
                     tg.showAlert('⚠️ ' + data.error);
                 }
