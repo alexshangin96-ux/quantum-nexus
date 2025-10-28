@@ -317,13 +317,9 @@ def tap():
             # Apply tap boost (active_multiplier > 1 means tap boost is active)
             tap_boost = 1
             if user.active_multiplier > 1:
-                # If active_multiplier is very high, it's a tap boost, not income boost
-                if user.active_multiplier > 10:  # Tap boost (e.g., 51, 71, 101, etc.)
-                    tap_boost = int(user.active_multiplier)
-                    # DON'T reset multiplier - keep tap boost active
-                else:
-                    # Normal income multiplier
-                    tap_boost = 1
+                # All multipliers > 1 are tap boosts (1, 2, 3, etc.)
+                tap_boost = int(user.active_multiplier)
+                # DON'T reset multiplier - keep tap boost active
             
             # VIP users get lower energy cost
             energy_cost = ENERGY_COST_PER_TAP
@@ -1206,10 +1202,11 @@ def buy_shop_item():
                 bonus = tap_boost_map.get(level, level)
                 # Add to existing tap boost (sum all tap boosts)
                 current_multiplier = getattr(user, 'active_multiplier', 1)
-                if current_multiplier > 10:  # Already has tap boost
-                    user.active_multiplier = current_multiplier + bonus
-                else:  # First tap boost or normal multiplier
+                # If current multiplier is 1 (normal) or > 10 (already has tap boost), add the bonus
+                if current_multiplier == 1:  # Normal multiplier, first tap boost
                     user.active_multiplier = bonus
+                else:  # Already has tap boost, add to it
+                    user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':
                 # Restore energy
                 energy_map = {
