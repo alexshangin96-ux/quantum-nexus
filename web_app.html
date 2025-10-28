@@ -1431,8 +1431,16 @@
         tg.expand();
 
         const user = tg.initDataUnsafe?.user;
+        
+        // Debug: Log user data
+        console.log('Telegram User:', user);
+        console.log('User ID:', user?.id);
+        
         if (user) {
             document.getElementById('username').textContent = user.first_name || 'Майнер';
+            console.log('Username set to:', user.first_name);
+        } else {
+            console.error('No user data from Telegram!');
         }
 
         let energyRegenInterval;
@@ -1982,10 +1990,16 @@
         };
 
         function loadData() {
+            // Check if user is available
+            if (!user?.id) {
+                console.error('Cannot load data: no user ID');
+                return;
+            }
+            
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
+                body: JSON.stringify({user_id: user.id})
             })
             .then(res => res.json())
             .then(data => {
