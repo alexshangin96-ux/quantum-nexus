@@ -2686,70 +2686,55 @@
             modal.className = 'modal active';
             modal.id = 'shopModal2';
             
-            // Multilevel shop system - EACH position separately from 0 to 50 levels
+            // Multilevel shop system - EACH item starts at level 0 and grows to 50
             const shopData = {
                 'tap_boost': {
                     name: '💪 Усилитель Тапа',
                     emoji: '💪',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 0; level <= 50; level++) {
-                            const effect = calculateTapBoostEffect(level);
-                            const price = calculateTapBoostPrice(level);
-                            items.push({
-                                level: level,
-                                name: '💪 Усилитель Тапа',
-                                desc: 'Увеличивает количество кликов за тап',
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false},
+                        {level: 0, name: '💪 Усилитель Тапа', desc: 'Увеличивает количество кликов за тап', currency: 'coins', locked: false}
+                    ]
                 },
                 'energy_buy': {
                     name: '⚡ Добавление Энергии',
                     emoji: '⚡',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 0; level <= 50; level++) {
-                            const effect = calculateEnergyEffect(level);
-                            const price = calculateEnergyPrice(level);
-                            items.push({
-                                level: level,
-                                name: '⚡ Добавление Энергии',
-                                desc: 'Добавляет энергию в секунду',
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false},
+                        {level: 0, name: '⚡ Добавление Энергии', desc: 'Добавляет энергию в секунду', currency: 'coins', locked: false}
+                    ]
                 },
                 'energy_expand': {
                     name: '📈 Расширение Энергии',
                     emoji: '📈',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 0; level <= 50; level++) {
-                            const effect = calculateExpandEffect(level);
-                            const price = calculateExpandPrice(level);
-                            items.push({
-                                level: level,
-                                name: '📈 Расширение Энергии',
-                                desc: 'Расширяет максимальный запас энергии',
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false},
+                        {level: 0, name: '📈 Расширение Энергии', desc: 'Расширяет максимальный запас энергии', currency: 'coins', locked: false}
+                    ]
                 },
                 'autobot': {
                     name: '🤖 Автобот',
@@ -3048,10 +3033,29 @@
                 }
             }
             
-            // All items are already generated with their levels 0-50
-            
-            list.innerHTML = items.map(item => {
+            // Calculate price and effect for each item based on its current level
+            list.innerHTML = items.map((item, index) => {
                 const isLocked = false; // Remove locking - all items are available
+                
+                // Calculate current effect and next level price based on current level
+                let currentEffect = 0;
+                let nextLevelPrice = 0;
+                let nextLevelEffect = 0;
+                
+                if (category === 'tap_boost') {
+                    currentEffect = item.level > 0 ? calculateTapBoostEffect(item.level) : 0;
+                    nextLevelPrice = calculateTapBoostPrice(item.level + 1);
+                    nextLevelEffect = calculateTapBoostEffect(item.level + 1);
+                } else if (category === 'energy_buy') {
+                    currentEffect = item.level > 0 ? calculateEnergyEffect(item.level) : 0;
+                    nextLevelPrice = calculateEnergyPrice(item.level + 1);
+                    nextLevelEffect = calculateEnergyEffect(item.level + 1);
+                } else if (category === 'energy_expand') {
+                    currentEffect = item.level > 0 ? calculateExpandEffect(item.level) : 0;
+                    nextLevelPrice = calculateExpandPrice(item.level + 1);
+                    nextLevelEffect = calculateExpandEffect(item.level + 1);
+                }
+                
                 const rarityColors = {
                     0: 'rgba(148,163,184,0.3)', // gray
                     5: 'rgba(59,130,246,0.3)', // blue
@@ -3076,8 +3080,8 @@
                                    item.level <= 45 ? rarityColors[40] :
                                    item.level <= 50 ? rarityColors[45] : rarityColors[50];
                 
-                // Use direct price and bonus from item (calculated by formulas)
-                const stats = {price: item.price, bonus: item.bonus};
+                // Use calculated price and bonus for next level
+                const stats = {price: nextLevelPrice, bonus: nextLevelEffect};
                 
                 return `
                     <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
@@ -3090,25 +3094,30 @@
                             <span style="font-size:20px;">${item.name.split(' ')[0]}</span>
                             <div style="flex:1;">
                                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-                                    <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')}</div>
+                                    <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')} #${index + 1}</div>
                                     <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${item.level}</div>
                                 </div>
                                 <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
+                                ${item.level > 0 ? `
+                                    <div style="font-size:10px;color:#4ade80;margin-top:2px;">
+                                        Текущий эффект: +${currentEffect}${category === 'energy_buy' ? ' энергии/сек' : category === 'energy_expand' ? ' максимум' : ' кликов'}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
                             <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Эффект:</span>
+                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Следующий уровень:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} кликов</span>
                             </div>
                         ` : category === 'energy_buy' ? `
                             <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Эффект:</span>
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Следующий уровень:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
                             </div>
                         ` : category === 'energy_expand' ? `
                             <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Эффект:</span>
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Следующий уровень:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
                             </div>
                         ` : `
@@ -3134,7 +3143,7 @@
                                 ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `<span>Купить за ${item.price}</span><span style="font-size:14px;">⭐</span><span>Stars</span>` : `<span>Купить за ${stats.price.toLocaleString()}</span><span style="font-size:14px;">🪙</span>`}
                             </button>
                         ` : `
-                            <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
+                            <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${stats.price}, ${index})`}" 
                                     style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;align-items:center;justify-content:center;gap:4px;"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.98)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 12px rgba(255,215,0,0.4)' : '0 3px 8px rgba(102,126,234,0.4)'}'}"
                                     onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'}'}"
@@ -3168,7 +3177,7 @@
             }
         }
         
-        function buyShopItem(category, level, price) {
+        function buyShopItem(category, level, price, itemIndex) {
             // Use direct price from the item (calculated by formulas)
             const actualPrice = price;
             fetch('/api/buy_shop_item', {
@@ -3178,16 +3187,26 @@
                     user_id: window.user?.id || window.userData?.id, 
                     category: category, 
                     level: level, 
-                    price: actualPrice
+                    price: actualPrice,
+                    item_index: itemIndex
                 })
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
+                    // Update item level locally
+                    if (category === 'tap_boost' || category === 'energy_buy' || category === 'energy_expand') {
+                        // Find the item in shopData and increase its level
+                        const shopData = window.shopData || {};
+                        if (shopData[category] && shopData[category].items && shopData[category].items[itemIndex]) {
+                            shopData[category].items[itemIndex].level++;
+                        }
+                    }
+                    
                     // Compact success notification for Telegram
                     const anim = document.createElement('div');
                     anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Куплено!</div>';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Уровень повышен!</div>';
                     document.body.appendChild(anim);
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
