@@ -2686,7 +2686,7 @@
             modal.className = 'modal active';
             modal.id = 'shopModal2';
             
-            // Multilevel shop system - ALL items with levels 0-50
+            // Multilevel shop system - EACH position separately from 0 to 50 levels
             const shopData = {
                 'tap_boost': {
                     name: '💪 Усилитель Тапа',
@@ -2698,7 +2698,7 @@
                             const price = calculateTapBoostPrice(level);
                             items.push({
                                 level: level,
-                                name: generateTapBoostName(level),
+                                name: '💪 Усилитель Тапа',
                                 desc: 'Увеличивает количество кликов за тап',
                                 bonus: effect,
                                 price: price,
@@ -2719,7 +2719,7 @@
                             const price = calculateEnergyPrice(level);
                             items.push({
                                 level: level,
-                                name: generateEnergyName(level),
+                                name: '⚡ Добавление Энергии',
                                 desc: 'Добавляет энергию в секунду',
                                 bonus: effect,
                                 price: price,
@@ -2740,7 +2740,7 @@
                             const price = calculateExpandPrice(level);
                             items.push({
                                 level: level,
-                                name: generateExpandName(level),
+                                name: '📈 Расширение Энергии',
                                 desc: 'Расширяет максимальный запас энергии',
                                 bonus: effect,
                                 price: price,
