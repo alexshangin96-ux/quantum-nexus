@@ -2803,8 +2803,12 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            // Merge VIP data with regular shop data
-            window.shopData = { ...shopData, ...vipData }; // Store globally
+            // Store regular shop data first, then add VIP data
+            window.shopData = shopData; // Store regular shop data
+            // Add VIP data for VIP categories only
+            window.shopData['tap_boost_vip'] = vipData['tap_boost'];
+            window.shopData['energy_buy_vip'] = vipData['energy_buy'];
+            window.shopData['energy_expand_vip'] = vipData['energy_expand'];
             
             // Load user's shop levels from database
             loadShopLevels();
@@ -2876,7 +2880,8 @@
         }
         
         function openVIPModal(category) {
-            const vipItems = vipData[category];
+            const vipCategory = category + '_vip';
+            const vipItems = window.shopData[vipCategory];
             if (!vipItems) return;
             
             const modal = document.createElement('div');
