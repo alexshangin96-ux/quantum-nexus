@@ -512,22 +512,19 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             51: 50000000, 52: 100000000, 53: 150000000, 54: 200000000, 55: 250000000, 56: 300000000, 57: 350000000, 58: 400000000, 59: 450000000, 60: 500000000
         }
         
-        # Define VIP products (51-56) with special privileges
+        # Define VIP products (21-30) with special effects
         vip_products = {
-            51: {'level': 1, 'badge': 'bronze_vip', 'privileges': ['premium_support', 'unique_marker']},
-            52: {'level': 2, 'badge': 'silver_vip', 'privileges': ['premium_support', 'unique_marker', 'top_place']},
-            53: {'level': 3, 'badge': 'gold_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design']},
-            54: {'level': 4, 'badge': 'platinum_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments']},
-            55: {'level': 5, 'badge': 'diamond_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments', 'vip_crown', 'zero_fee']},
-            56: {'level': 6, 'badge': 'absolute_vip', 'privileges': ['premium_support', 'golden_profile', 'top_place', 'unique_design', 'vip_tournaments', 'vip_crown', 'zero_fee', 'aura', 'rainbow', 'vip_machines']}
+            21: {'type': 'tap_boost', 'effect': 51, 'name': 'Звездный Шторм'},
+            22: {'type': 'tap_boost', 'effect': 71, 'name': 'Черная Дыра'},
+            23: {'type': 'tap_boost', 'effect': 101, 'name': 'Абсолют'},
+            24: {'type': 'tap_boost', 'effect': 141, 'name': 'Имперский'},
+            25: {'type': 'tap_boost', 'effect': 201, 'name': 'Легендарный'},
+            26: {'type': 'energy_buy', 'effect': 3.0, 'name': 'Солнечная Корона'},
+            27: {'type': 'energy_buy', 'effect': 4.5, 'name': 'Галактический Ядро'},
+            28: {'type': 'energy_buy', 'effect': 6.0, 'name': 'Новая Ера'},
+            29: {'type': 'energy_buy', 'effect': 8.0, 'name': 'Квантовый Реактор'},
+            30: {'type': 'energy_buy', 'effect': 10.0, 'name': 'Небесный Портал'}
         }
-        
-        coins_to_add = product_coins.get(product_id, 0)
-        
-        if coins_to_add == 0:
-            logger.error(f"Unknown product: {product_id}")
-            await update.message.reply_text("❌ Ошибка: неизвестный товар")
-            return
         
         with get_db() as db:
             user = db.query(User).filter_by(id=user_db_id, telegram_id=user_id).first()
@@ -537,50 +534,66 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                 await update.message.reply_text("❌ Ошибка: пользователь не найден")
                 return
             
-            # Add coins
-            user.coins += coins_to_add
-            
-            # Apply VIP privileges for products 51-60
+            # Handle VIP products (21-30)
             vip_message = ""
             if product_id in vip_products:
                 vip_info = vip_products[product_id]
                 
-                # Update VIP level
-                user.vip_level = max(user.vip_level, vip_info['level'])
-                user.vip_badge = vip_info['badge']
+                if vip_info['type'] == 'tap_boost':
+                    # Add tap boost effect
+                    user.active_multiplier += vip_info['effect']
+                    vip_message = f"\n\n⚡ VIP Бустер активирован!\n💪 {vip_info['name']}: +{vip_info['effect']} коинов за тап"
+                    
+                elif vip_info['type'] == 'energy_buy':
+                    # Add energy regeneration
+                    user.energy_regen_rate += vip_info['effect']
+                    vip_message = f"\n\n🔋 VIP Генератор активирован!\n⚡ {vip_info['name']}: +{vip_info['effect']} энергии в секунду"
+                    
+                elif vip_info['type'] == 'energy_expand':
+                    # Add max energy
+                    user.max_energy += vip_info['effect']
+                    user.energy = min(user.energy, user.max_energy)
+                    vip_message = f"\n\n🔋 VIP Батарея активирована!\n📈 {vip_info['name']}: +{vip_info['effect']} максимальной энергии"
+                    
+                elif vip_info['type'] == 'autobot':
+                    # Add autobot (implement based on your autobot system)
+                    vip_message = f"\n\n🤖 VIP Бот активирован!\n⚡ {vip_info['name']}: автотап на {vip_info['duration']} минут"
+            else:
+                # Handle regular coin products (1-20, 31-60)
+                coins_to_add = product_coins.get(product_id, 0)
+                if coins_to_add == 0:
+                    logger.error(f"Unknown product: {product_id}")
+                    await update.message.reply_text("❌ Ошибка: неизвестный товар")
+                    return
                 
-                # Apply privileges
-                if 'premium_support' in vip_info['privileges']:
-                    user.has_premium_support = True
-                    
-                if 'unique_marker' in vip_info['privileges']:
-                    user.vip_unique_marker = vip_info['badge'].upper()
-                    
-                if 'top_place' in vip_info['privileges']:
-                    user.has_top_place = True
-                    
-                if 'golden_profile' in vip_info['privileges']:
-                    user.has_golden_profile = True
-                    
-                if 'unique_design' in vip_info['privileges']:
-                    user.has_unique_design = True
-                
-                vip_message = f"\n\n👑 VIP-статус получен!\n🎖️ Значок: {vip_info['badge'].replace('_', ' ').upper()}\n✨ Привилегии:\n"
-                for priv in vip_info['privileges']:
-                    vip_message += f"  • {priv.replace('_', ' ').title()}\n"
+                user.coins += coins_to_add
+                vip_message = f"\n\n💰 Получено: {coins_to_add:,} коинов"
             
             db.commit()
             
             # Log successful payment
-            logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
+            if product_id in vip_products:
+                logger.info(f"✅ VIP Stars payment successful! User {user_id} bought VIP product {product_id}: {vip_products[product_id]['name']}")
+            else:
+                coins_to_add = product_coins.get(product_id, 0)
+                logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
             
-            await update.message.reply_text(
-                f"✨ Покупка успешна!\n\n"
-                f"💎 Оплачено: {payment.total_amount} ⭐\n"
-                f"💰 Получено: {coins_to_add:,} коинов\n"
-                f"📊 Новый баланс: {user.coins:,} коинов"
-                + vip_message
-            )
+            if product_id in vip_products:
+                await update.message.reply_text(
+                    f"✨ VIP Покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
+            else:
+                coins_to_add = product_coins.get(product_id, 0)
+                await update.message.reply_text(
+                    f"✨ Покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"💰 Получено: {coins_to_add:,} коинов\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
             
     except Exception as e:
         logger.error(f"Error processing payment: {e}", exc_info=True)
@@ -617,16 +630,16 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         19: {'title': '🎁 Подарочный VIP', 'description': '13,500,000 коинов', 'stars': 2700, 'coins': 13500000},
         20: {'title': '🔮 Магический', 'description': '15,000,000 коинов', 'stars': 3000, 'coins': 15000000},
         # VIP → PREMIUM FUNCTIONS (21-30)
-        21: {'title': '💎 VIP стартовый', 'description': '5M коинов для начала', 'stars': 1000, 'coins': 5000000},
-        22: {'title': '🚀 VIP ускорение', 'description': '8M коинов + приоритет', 'stars': 1600, 'coins': 8000000},
-        23: {'title': '👑 VIP статус', 'description': '12M коинов + бонус', 'stars': 2400, 'coins': 12000000},
-        24: {'title': '⚡ VIP турбо', 'description': '16M коинов + эксклюзив', 'stars': 3200, 'coins': 16000000},
-        25: {'title': '💎 VIP королевство', 'description': '20M коинов + все бонусы', 'stars': 4000, 'coins': 20000000},
-        26: {'title': '🔓 VIP безлимит', 'description': '25M коинов + максимальный бонус', 'stars': 5000, 'coins': 25000000},
-        27: {'title': '🏆 VIP чемпион', 'description': '30M коинов + топ-бонус', 'stars': 6000, 'coins': 30000000},
-        28: {'title': '🌟 VIP легенда', 'description': '35M коинов + легендарный бонус', 'stars': 7000, 'coins': 35000000},
-        29: {'title': '💎 VIP алмаз', 'description': '40M коинов + все VIP бонусы', 'stars': 8000, 'coins': 40000000},
-        30: {'title': '👑 VIP император', 'description': '45M коинов + максимальные премиум бонусы', 'stars': 9000, 'coins': 45000000},
+        21: {'title': '🌠 Звездный Шторм', 'description': 'VIP бустер, увеличивающий майнинг на +51 коин за тап. Использует энергию звездных вспышек для сверхмощного майнинга.', 'stars': 100, 'coins': 0},
+        22: {'title': '🌑 Черная Дыра', 'description': 'Эксклюзивный бустер, дающий +71 коин за тап. Поглощает энергию пространства-времени для невероятной производительности.', 'stars': 200, 'coins': 0},
+        23: {'title': '✨ Абсолют', 'description': 'Легендарный VIP бустер, увеличивающий майнинг на +101 коин за тап. Абсолютная власть над криптовалютными алгоритмами.', 'stars': 350, 'coins': 0},
+        24: {'title': '👑 Имперский', 'description': 'Императорский бустер, дающий +141 коин за тап. Технология, достойная крипто-императоров и блокчейн-королей.', 'stars': 500, 'coins': 0},
+        25: {'title': '🌟 Легендарный', 'description': 'Мифический VIP бустер, увеличивающий майнинг на +201 коин за тап. Легендарная технология из древних крипто-цивилизаций.', 'stars': 750, 'coins': 0},
+        26: {'title': '☀️ Солнечная Корона', 'description': 'VIP генератор, восстанавливающий +3.0 энергии в секунду. Использует энергию солнечной короны для сверхбыстрой подзарядки.', 'stars': 120, 'coins': 0},
+        27: {'title': '🌌 Галактический Ядро', 'description': 'Эксклюзивный генератор, дающий +4.5 энергии в секунду. Извлекает энергию из ядра галактики через квантовые туннели.', 'stars': 200, 'coins': 0},
+        28: {'title': '💫 Новая Ера', 'description': 'Революционный генератор, восстанавливающий +6.0 энергии в секунду. Технология новой эры криптовалютного будущего.', 'stars': 300, 'coins': 0},
+        29: {'title': '⚛️ Квантовый Реактор', 'description': 'Легендарный генератор, дающий +8.0 энергии в секунду. Использует квантовые флуктуации для неограниченной энергии.', 'stars': 450, 'coins': 0},
+        30: {'title': '🌠 Небесный Портал', 'description': 'Мифический генератор, восстанавливающий +10.0 энергии в секунду. Подключается к энергетическим порталам небесных сфер.', 'stars': 600, 'coins': 0},
         # LIMITED → QUANHASH PACKS (31-40)
         31: {'title': '🔮 Starter Hash', 'description': '1,000 QuanHash', 'stars': 2500, 'coins': 12000000},
         32: {'title': '💎 Basic Hash', 'description': '5,000 QuanHash', 'stars': 3200, 'coins': 15000000},
