@@ -1215,10 +1215,14 @@ def buy_shop_item():
             
             if category == 'tap_boost':
                 # Calculate the INCREMENT effect (what should be added)
-                # Current effect at level-1, new effect at level, difference is what we add
-                current_effect = int(base_effect * (1.2 ** (level - 1))) if level > 1 else 0
-                new_effect = int(base_effect * (1.2 ** level))
-                bonus = new_effect - current_effect  # This is the increment
+                if base_effect == 1:
+                    # Первая позиция всегда дает +1 прирост
+                    bonus = 1
+                else:
+                    # Для остальных позиций используем формулу
+                    current_effect = int(base_effect * (1.2 ** (level - 1))) if level > 1 else 0
+                    new_effect = int(base_effect * (1.2 ** level))
+                    bonus = new_effect - current_effect  # This is the increment
                 
                 # Add to existing tap boost (sum all tap boosts)
                 current_multiplier = getattr(user, 'active_multiplier', 1)
