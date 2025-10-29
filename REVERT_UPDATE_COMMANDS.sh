@@ -27,3 +27,4 @@ sudo journalctl -u quantum-bot -n 20 --no-pager
 
 echo "✅ Откат выполнен!"
 
+

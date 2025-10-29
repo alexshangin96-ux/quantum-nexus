@@ -15,3 +15,4 @@ systemctl restart quantum-nexus-web
 
 echo "=== Готово! ==="
 
+

@@ -48,3 +48,4 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS last_hash_update TIMESTAMP DEFAULT CU
 ```
 
 
+

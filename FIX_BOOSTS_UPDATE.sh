@@ -22,3 +22,4 @@ sudo journalctl -u quantum-web-server -n 30 --no-pager
 
 echo "✅ Обновление выполнено!"
 
+

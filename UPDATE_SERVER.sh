@@ -26,3 +26,4 @@ systemctl status quantum-nexus-web
 echo ""
 echo "✨ Обновление завершено успешно!"
 echo "📊 Админ-панель: https://quantum-nexus.ru/admin"
+

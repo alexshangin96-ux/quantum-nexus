@@ -39,3 +39,4 @@ systemctl status quantum-nexus-web.service
 После выполнения СКИНЬТЕ вывод команд 1-5
 Это покажет в чём проблема
 
+

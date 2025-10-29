@@ -2844,6 +2844,11 @@
             
             // Find user's current level for this category
             let userLevel = 0;
+            // TODO: Get user level from userData or API
+            // For now, we'll use a simple calculation based on user's coins
+            if (window.userData && window.userData.coins) {
+                userLevel = Math.floor(Math.log10(window.userData.coins + 1)) || 0;
+            }
             
             list.innerHTML = items.map(item => {
                 const isLocked = false; // Remove locking - all items are available

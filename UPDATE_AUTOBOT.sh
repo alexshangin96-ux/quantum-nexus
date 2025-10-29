@@ -21,3 +21,4 @@ sudo systemctl restart quantum-nexus.service
 
 echo "✅ Обновление завершено!"
 
+

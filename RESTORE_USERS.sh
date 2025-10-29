@@ -32,3 +32,4 @@ sudo systemctl status quantum-nexus --no-pager | head -20
 
 echo "=== ПРОВЕРКА ЗАВЕРШЕНА ==="
 
+
