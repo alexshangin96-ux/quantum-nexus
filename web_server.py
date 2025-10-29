@@ -2263,10 +2263,11 @@ def toggle_autobot():
 
 @app.route('/api/admin/reset_user', methods=['POST'])
 def reset_user():
-    """Complete user reset - remove all progress"""
+    """User reset with different types"""
     try:
         data = request.json
         user_id = data.get('user_id')
+        reset_type = data.get('reset_type', 'full')  # 'full' or 'soft'
         
         if not user_id:
             return jsonify({'success': False, 'error': 'User ID required'}), 400
@@ -2277,49 +2278,90 @@ def reset_user():
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'}), 404
             
-            # Reset all user data to initial state
-            user.coins = 0
-            user.quanhash = 0
-            user.energy = 100  # Начальная энергия
-            user.max_energy = 100  # Начальный максимум энергии
-            user.energy_regen_rate = 1.0  # Скорость восстановления энергии
-            user.total_taps = 0
-            user.total_earned = 0
-            user.total_mined = 0
-            user.active_multiplier = 1.0
-            user.multiplier_expires_at = None
-            user.auto_tap_enabled = False
-            user.auto_tap_level = 0
-            user.auto_tap_speed = 1.0
-            user.auto_tap_expires_at = None
-            user.auto_tap_item_id = None
-            user.last_active = datetime.utcnow()
-            user.last_passive_update = datetime.utcnow()
-            user.last_hash_update = datetime.utcnow()
-            
-            # Reset VIP status
-            user.vip_level = 0
-            user.vip_badge = None
-            user.has_premium_support = False
-            user.has_golden_profile = False
-            user.has_top_place = False
-            user.has_unique_design = False
-            
-            # Remove all user cards
-            db.query(UserCard).filter_by(user_id=user.id).delete()
-            
-            # Remove all user machines
-            db.query(MiningMachine).filter_by(user_id=user.id).delete()
-            
-            # Remove all user withdrawals
-            db.query(Withdrawal).filter_by(user_id=user.id).delete()
-            
-            # Remove all user support tickets
-            db.query(SupportTicket).filter_by(user_id=user.id).delete()
+            if reset_type == 'full':
+                # ПОЛНЫЙ СБРОС - все данные обнуляются
+                user.coins = 0
+                user.quanhash = 0
+                user.energy = 100  # Начальная энергия
+                user.max_energy = 100  # Начальный максимум энергии
+                user.energy_regen_rate = 1.0  # Скорость восстановления энергии
+                user.total_taps = 0
+                user.total_earned = 0
+                user.total_mined = 0
+                user.active_multiplier = 1.0
+                user.multiplier_expires_at = None
+                user.auto_tap_enabled = False
+                user.auto_tap_level = 0
+                user.auto_tap_speed = 1.0
+                user.auto_tap_expires_at = None
+                user.auto_tap_item_id = None
+                user.last_active = datetime.utcnow()
+                user.last_passive_update = datetime.utcnow()
+                user.last_hash_update = datetime.utcnow()
+                
+                # Reset VIP status
+                user.vip_level = 0
+                user.vip_badge = None
+                user.has_premium_support = False
+                user.has_golden_profile = False
+                user.has_top_place = False
+                user.has_unique_design = False
+                
+                # Remove all user cards
+                db.query(UserCard).filter_by(user_id=user.id).delete()
+                
+                # Remove all user machines
+                db.query(MiningMachine).filter_by(user_id=user.id).delete()
+                
+                # Remove all user withdrawals
+                db.query(Withdrawal).filter_by(user_id=user.id).delete()
+                
+                # Remove all user support tickets
+                db.query(SupportTicket).filter_by(user_id=user.id).delete()
+                
+                message = 'Пользователь полностью обнулен'
+                
+            elif reset_type == 'soft':
+                # МЯГКИЙ СБРОС - только прогресс, но сохраняем базовые ресурсы
+                user.total_taps = 0
+                user.total_earned = 0
+                user.total_mined = 0
+                user.active_multiplier = 1.0
+                user.multiplier_expires_at = None
+                user.auto_tap_enabled = False
+                user.auto_tap_level = 0
+                user.auto_tap_speed = 1.0
+                user.auto_tap_expires_at = None
+                user.auto_tap_item_id = None
+                user.last_active = datetime.utcnow()
+                user.last_passive_update = datetime.utcnow()
+                user.last_hash_update = datetime.utcnow()
+                
+                # Reset VIP status
+                user.vip_level = 0
+                user.vip_badge = None
+                user.has_premium_support = False
+                user.has_golden_profile = False
+                user.has_top_place = False
+                user.has_unique_design = False
+                
+                # Remove all user cards
+                db.query(UserCard).filter_by(user_id=user.id).delete()
+                
+                # Remove all user machines
+                db.query(MiningMachine).filter_by(user_id=user.id).delete()
+                
+                # Remove all user withdrawals
+                db.query(Withdrawal).filter_by(user_id=user.id).delete()
+                
+                # Remove all user support tickets
+                db.query(SupportTicket).filter_by(user_id=user.id).delete()
+                
+                message = 'Прогресс пользователя сброшен (ресурсы сохранены)'
             
             db.commit()
             
-            return jsonify({'success': True, 'message': 'Пользователь полностью обнулен'})
+            return jsonify({'success': True, 'message': message})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
