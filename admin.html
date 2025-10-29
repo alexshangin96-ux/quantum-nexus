@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚛️ Quantum Nexus Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e8eaf6; min-height: 100vh; padding: 20px;
+            overflow-x: hidden;
+        }
+        :root {
+            --primary: #6366f1; --secondary: #8b5cf6; --accent: #a78bfa;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --dark: rgba(15, 23, 42, 0.9); --card: rgba(30, 41, 59, 0.8);
+        }
+        
+        .login-container {
+            max-width: 400px; margin: 80px auto;
+            background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 20px;
+            padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .login-title { font-size: 32px; text-align: center; margin-bottom: 30px; color: #fff; }
+        .form-group { margin-bottom: 20px; }
+        .form-group input {
+            width: 100%; padding: 14px 18px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; color: #fff;
+            font-size: 15px; transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .btn {
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; font-weight: 700; font-size: 16px; cursor: pointer;
+            transition: all 0.3s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
+        
+        .header {
+            background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px;
+            padding: 20px 28px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 24px; margin: 0; color: #fff; }
+        .header-right { display: flex; gap: 10px; }
+        .header-btn {
+            padding: 8px 16px; background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;
+            color: #fff; cursor: pointer; font-weight: 600; font-size: 13px;
+            transition: all 0.3s;
+        }
+        .header-btn:hover { background: rgba(99, 102, 241, 0.3); transform: translateY(-2px); }
+        
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px;
+            padding: 20px; text-align: center; transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px); border-color: var(--primary);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.3);
+        }
+        .stat-icon { font-size: 36px; margin-bottom: 10px; }
+        .stat-label { font-size: 11px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; font-weight: 700; }
+        .stat-value { font-size: 28px; font-weight: 800; color: #fff; }
+        
+        .tabs-container {
+            background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 16px;
+            padding: 8px; margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 11px 20px; background: transparent; border: none; border-radius: 12px;
+            color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 13px;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover { background: rgba(139, 92, 246, 0.1); color: #fff; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: #fff; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        
+        .content-area {
+            background: var(--card); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 20px;
+            padding: 26px; min-height: 700px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .actions-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px; margin-top: 12px;
+        }
+        .action-btn {
+            padding: 12px 16px; border-radius: 11px; border: 1px solid;
+            cursor: pointer; font-weight: 700; font-size: 12px; transition: all 0.3s;
+        }
+        .action-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .btn-edit { background: linear-gradient(135deg, #6366f1, #818cf8); color: #fff; border-color: #6366f1; }
+        .btn-manage { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: #fff; border-color: #8b5cf6; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #f87171); color: #fff; border-color: #ef4444; }
+        .btn-success { background: linear-gradient(135deg, #10b981, #34d399); color: #fff; border-color: #10b981; }
+        
+        .user-card {
+            background: var(--card); border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px; padding: 20px; margin-bottom: 14px;
+            transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .user-card:hover {
+            transform: translateX(6px); border-color: var(--primary);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.3);
+        }
+        .user-header { display: flex; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(99, 102, 241, 0.2); }
+        .user-info h3 { font-size: 18px; margin-bottom: 5px; color: #fff; }
+        .user-id { font-size: 12px; color: #94a3b8; }
+        
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            z-index: 100000; align-items: center; justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card); border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px; padding: 28px; max-width: 450px; width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .modal-title { font-size: 20px; margin-bottom: 18px; color: #fff; font-weight: 800; }
+        .modal-input {
+            width: 100%; padding: 14px; background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 11px;
+            color: white; font-size: 15px; margin-bottom: 18px;
+        }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal { flex: 1; padding: 12px; border: none; border-radius: 11px; cursor: pointer; font-weight: 700; }
+        
+        .hidden { display: none !important; }
+        .loading { text-align: center; padding: 50px 20px; color: #94a3b8; font-size: 16px; }
+        .notification {
+            position: fixed; top: 20px; right: 20px; background: var(--card);
+            border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 14px; padding: 14px 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 99999; max-width: 320px; font-weight: 700;
+        }
+        
+        .settings-grid, .security-grid, .tools-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;
+        }
+        .setting-card, .security-card, .tool-card {
+            background: var(--card); border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 14px; padding: 20px; transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .setting-card:hover, .security-card:hover, .tool-card:hover {
+            transform: translateY(-4px); border-color: var(--primary);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.3);
+        }
+        .card-title { font-size: 16px; margin-bottom: 10px; color: #fff; font-weight: 800; }
+        .card-desc { font-size: 12px; color: #94a3b8; margin-bottom: 14px; }
+        .card-actions { display: flex; gap: 8px; }
+        .text-primary { color: #6366f1; }
+        .text-secondary { color: #8b5cf6; }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="login-container">
+        <div class="login-title">⚛️ Quantum Nexus</div>
+        <div class="form-group">
+            <input type="text" id="login" placeholder="Логин" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Пароль" autocomplete="current-password">
+        </div>
+        <button class="btn" id="loginBtn" type="button">🚀 Войти</button>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+        <div class="header">
+            <div><h1>⚛️ Quantum Nexus - Admin Control</h1></div>
+            <div class="header-right">
+                <button class="header-btn" onclick="refreshAll()">🔄</button>
+                <button class="header-btn" onclick="exportData()">📥</button>
+                <button class="header-btn" onclick="logout()">🚪</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" id="totalUsers">👥<div class="stat-label">Пользователи</div><div class="stat-value">0</div></div>
+            <div class="stat-card" id="totalRevenue">💰<div class="stat-label">Доход</div><div class="stat-value">0</div></div>
+            <div class="stat-card" id="totalActivity">⚡<div class="stat-label">Активность</div><div class="stat-value">0</div></div>
+            <div class="stat-card" id="totalWithdrawals">💸<div class="stat-label">Заявки</div><div class="stat-value">0</div></div>
+        </div>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('users')">👥 Пользователи</button>
+            <button class="tab-btn" onclick="switchTab('withdrawals')">💸 Выводы<span id="withdrawalsBadge" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-left:10px;display:none;box-shadow:0 4px 12px rgba(245,158,11,0.4);"></span></button>
+            <button class="tab-btn" onclick="switchTab('questions')">
+                💬 Вопросы 
+                <span id="questionsBadge" style="display:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:2px 6px;border-radius:8px;font-size:10px;font-weight:700;margin-left:5px;">0</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('archive')">📁 Архив</button>
+            <button class="tab-btn" onclick="switchTab('stats')">📊 Статистика</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Настройки</button>
+            <button class="tab-btn" onclick="switchTab('security')">🔒 Безопасность</button>
+            <button class="tab-btn" onclick="switchTab('tools')">🛠️ Инструменты</button>
+        </div>
+
+        <div class="content-area" id="content"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <div class="modal" id="quickEditModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Редактирование</h2>
+            <input type="number" class="modal-input" id="modalInput" placeholder="Введите значение">
+            <div class="modal-actions">
+                <button class="btn-modal" style="background:rgba(99,102,241,0.2);color:#fff;" onclick="closeModal()">Отмена</button>
+                <button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" onclick="confirmQuickEdit()">Применить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_LOGIN='smartfixnsk'; const ADMIN_PASSWORD='Maga1996';
+        let quickEditData=null, logs=[], currentUser=null;
+        
+        function login(){
+            console.log('Login function called');
+            const loginInput=document.getElementById('login');
+            const passInput=document.getElementById('password');
+            
+            if(!loginInput||!passInput){
+                alert('Ошибка: элементы формы не найдены');
+                console.error('Login or password input not found');
+                return false;
+            }
+            
+            const l=loginInput.value.trim();
+            const p=passInput.value.trim();
+            
+            console.log('Login attempt:', l, 'Password length:', p.length);
+            
+            if(!l){
+                alert('❌ Введите логин');
+                loginInput.focus();
+                return false;
+            }
+            
+            if(!p){
+                alert('❌ Введите пароль');
+                passInput.focus();
+                return false;
+            }
+            
+            if(l!==ADMIN_LOGIN){
+                alert('❌ Неверный логин');
+                loginInput.focus();
+                return false;
+            }
+            
+            if(p!==ADMIN_PASSWORD){
+                alert('❌ Неверный пароль');
+                passInput.focus();
+                return false;
+            }
+            
+            console.log('Login successful');
+            localStorage.setItem('admin_logged_in','true');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            initPanel();
+            return true;
+        }
+        
+        window.addEventListener('load',function(){
+            const loginBtn=document.getElementById('loginBtn');
+            const passInput=document.getElementById('password');
+            const loginInput=document.getElementById('login');
+            
+            if(loginBtn){
+                loginBtn.addEventListener('click',function(e){
+                    e.preventDefault();
+                    login();
+                });
+                console.log('Login button handler attached on window load');
+            }
+            
+            if(passInput){
+                passInput.addEventListener('keypress',function(e){
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        login();
+                    }
+                });
+            }
+            
+            if(loginInput){
+                loginInput.addEventListener('keypress',function(e){
+                    if(e.key==='Enter'){
+                        e.preventDefault();
+                        passInput.focus();
+                    }
+                });
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded',function(){
+            const loginBtn=document.getElementById('loginBtn');
+            if(loginBtn&&!loginBtn.hasAttribute('data-listener')){
+                loginBtn.addEventListener('click',function(e){
+                    e.preventDefault();
+                    login();
+                });
+                loginBtn.setAttribute('data-listener','true');
+                console.log('Login button handler attached on DOMContentLoaded');
+            }
+        });
+        
+        function logout(){localStorage.removeItem('admin_logged_in');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('adminPanel').classList.add('hidden');}
+        function refreshAll(){loadUsers();showNotification('🔄 Обновлено');}
+        function exportData(){const data=JSON.stringify(window.allUsers||[],null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='users_export.json';a.click();}
+        function showNotification(m){const n=document.createElement('div');n.className='notification';n.textContent=m;document.body.appendChild(n);setTimeout(()=>document.body.removeChild(n),3000);}
+        function switchTab(t){localStorage.setItem('active_tab',t);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>{if(b.textContent.includes(['👥','💸','💬','📁'][['users','withdrawals','questions','archive'].indexOf(t)]))b.classList.add('active');});loadTab(t);}
+        function loadTab(t){const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';if(t==='users')loadUsers();else if(t==='withdrawals')loadWithdrawals();else if(t==='questions')loadQuestions();else if(t==='archive')loadArchive();else if(t==='stats')loadStats();else if(t==='settings')loadSettings();else if(t==='security')loadSecurity();else if(t==='tools')loadTools();}
+        let withdrawalCount = 0;
+        let searchTimeout = null;
+        
+        function initPanel(){
+            const saved=localStorage.getItem('active_tab');
+            if(saved)loadTab(saved);
+            else{loadTab('stats');loadStats();}
+            // Check for unread questions and withdrawals count periodically
+            setInterval(()=>{fetch('/api/admin/unread_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('questionsBadge');if(d.unread_count>0){badgeEl.textContent=d.unread_count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}}).catch(()=>{});},5000);
+            setInterval(()=>{fetch('/api/admin/withdrawal_count').then(r=>r.json()).then(d=>{const badgeEl=document.getElementById('withdrawalsBadge');if(d.count>0&&d.count!==withdrawalCount){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';if(localStorage.getItem('active_tab')!=='withdrawals'){showNotification('💸 Новая заявка на вывод!');}}else if(d.count>0){badgeEl.textContent=d.count;badgeEl.style.display='inline-block';}else{badgeEl.style.display='none';}withdrawalCount=d.count;}).catch(()=>{});},3000);
+            // Update top stats periodically (but not the entire content)
+            setInterval(()=>{
+                if(document.getElementById('adminPanel')&&!document.getElementById('adminPanel').classList.contains('hidden')){
+                    refreshTopStats();
+                }
+            },10000);
+        }
+        
+        function refreshUsersOnly(){
+            const searchInput = document.getElementById('userSearch');
+            const searchTerm = searchInput ? searchInput.value : '';
+            if(!window.allUsers) return;
+            const c = document.getElementById('content');
+            if(!c) return;
+            const filteredUsers = searchTerm?window.allUsers.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm)):window.allUsers;
+            c.innerHTML = '';
+            const ul = document.createElement('div');
+            filteredUsers.forEach(u=>{
+                const card = document.createElement('div'); 
+                card.className = 'user-card';
+                card.innerHTML = `<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.energy||0)}/${Math.floor(u.max_energy||0)}</div></div>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${Math.floor(u.coins||0)})">💰 Изменить коины</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${Math.floor(u.quanhash||0)})">💎 Изменить Hash</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${Math.floor(u.energy||0)})">⚡ Изменить энергию</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
+<button class="action-btn ${u.is_frozen?'btn-success':'btn-manage'}" onclick="toggleFreeze(${u.telegram_id},${u.is_frozen})">${u.is_frozen?'🔥 Разморозить':'❄️ Заморозить'}</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
+</div>`;
+                ul.appendChild(card);
+            });
+            c.appendChild(ul);
+        }
+        
+        function refreshWithdrawalsOnly(){
+            fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c || !c.innerHTML.includes('user-card')) return;
+                if(d.requests&&d.requests.length>0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💸 Заявки на вывод ('+d.requests.length+')</h2>';
+                    d.requests.forEach(r=>{
+                        const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.telegram_id);
+                        const div=document.createElement('div');div.className='user-card';
+                        const statusColor = r.status==='completed'?'rgba(16,185,129,0.2)':r.status==='rejected'?'rgba(239,68,68,0.2)':'rgba(245,158,11,0.2)';
+                        const statusIcon = r.status==='completed'?'✅':r.status==='rejected'?'❌':'⏳';
+                        const statusText = r.status==='completed'?'Выполнено':r.status==='rejected'?'Отклонено':'Ожидает';
+                        const html='<div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-weight:800;font-size:20px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="padding:10px 20px;background:'+statusColor+';border-radius:12px;color:#fff;font-weight:700;font-size:14px;border:2px solid rgba(255,255,255,0.1);">'+statusIcon+' '+statusText+'</div></div></div><div style="background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;margin-bottom:16px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;"><div><div style="font-size:12px;color:#94a3b8;">Пользователь:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Telegram ID:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(r.telegram_id||r.user_id)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Коины:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">QuanHash:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:16px;padding:16px;background:rgba(102,126,234,0.15);border-radius:12px;border:2px solid rgba(102,126,234,0.3);"><div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">Сумма вывода:</div><div style="font-size:28px;font-weight:900;color:#667eea;line-height:1.2;">💎 '+(r.amount||0).toLocaleString()+' QuanHash</div><div style="font-size:16px;color:#94a3b8;margin-top:8px;">≈ $'+(parseFloat(r.usdt_amount||0)).toFixed(2)+' USDT</div></div><div style="margin-top:16px;"><div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Адрес BEP20:</div><div style="background:rgba(102,126,234,0.2);padding:16px;border-radius:12px;border:2px solid rgba(102,126,234,0.4);display:flex;align-items:center;gap:12px;"><div style="flex:1;font-family:monospace;font-size:13px;color:#fff;word-break:break-all;font-weight:600;">'+(r.address||'N/A')+'</div><button onclick="copyAddress(\''+(r.address||'')+'\')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(102,126,234,0.4);transition:all 0.3s;">📋 Копировать</button></div></div></div>';
+                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="confirmWithdrawal(this,\'approved\')">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="confirmWithdrawal(this,\'rejected\')">❌ Отклонить</button></div>':'';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет заявок на вывод</div>';}
+            });
+        }
+        
+        function refreshQuestionsOnly(){
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                const activeTickets = (d.tickets || []).filter(t => t.status !== 'resolved');
+                c.innerHTML = '<h2 style="color:#fff;font-size:20px;margin-bottom:20px;display:flex;align-items:center;">💬 Вопросы от пользователей ('+activeTickets.length+')</h2>';
+                activeTickets.forEach(t=>{
+                    const div=document.createElement('div');div.className='user-card';
+                    const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                    const actions=t.status==='pending'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="answerQuestion('+t.id+')">📝 Ответить</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':t.status==='answered'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);" onclick="archiveTicket('+t.id+')">📁 Архивировать</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':'<div style="padding:10px;background:rgba(99,102,241,0.2);border-radius:10px;color:#6366f1;text-align:center;font-weight:700;">📁 В архиве</div>';
+                    div.innerHTML=html+actions;
+                    c.appendChild(div);
+                });
+            });
+        }
+        
+        function refreshArchiveOnly(){
+            fetch('/api/admin/archive').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                const archivedTickets = d.tickets || [];
+                c.innerHTML = '<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📁 Архивированные заявки ('+archivedTickets.length+')</h2>';
+                archivedTickets.forEach(t=>{
+                    const div=document.createElement('div');div.className='user-card';
+                    div.innerHTML='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div><div style="background:rgba(99,102,241,0.1);padding:10px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Ответ:</div><div style="font-size:14px;color:#fff;margin-top:4px;">'+t.answer+'</div></div>';
+                    c.appendChild(div);
+                });
+            });
+        }
+        
+        function refreshStatsOnly(){
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                const c = document.getElementById('content');
+                if(!c) return;
+                c.innerHTML = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:30px;"><div class="stat-card"><div class="stat-label">Всего пользователей</div><div class="stat-value">'+(d.total_users||0)+'</div></div><div class="stat-card"><div class="stat-label">Всего тапов</div><div class="stat-value">'+(d.total_taps||0).toLocaleString()+'</div></div><div class="stat-card"><div class="stat-label">Общий доход</div><div class="stat-value">'+(d.total_revenue||0).toLocaleString()+'</div></div><div class="stat-card"><div class="stat-label">Заявки на вывод</div><div class="stat-value">'+(d.pending_withdrawals||0)+'</div></div></div>';
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalTaps').querySelector('.stat-value').textContent=(d.total_taps||0).toLocaleString();
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=(d.total_revenue||0).toLocaleString();
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+            });
+        }
+        
+        function refreshTopStats(){
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalTaps').querySelector('.stat-value').textContent=(d.total_taps||0).toLocaleString();
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=(d.total_revenue||0).toLocaleString();
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+            });
+        }
+        
+        function loadStats(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+                document.getElementById('totalUsers').querySelector('.stat-value').textContent=d.total_users||0;
+                document.getElementById('totalRevenue').querySelector('.stat-value').textContent=d.total_revenue||0;
+                document.getElementById('totalActivity').querySelector('.stat-value').textContent=d.active_users||0;
+                document.getElementById('totalWithdrawals').querySelector('.stat-value').textContent=d.pending_withdrawals||0;
+                c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📊 Подробная статистика</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">'+
+                    '<div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Пользователей</div><div class="stat-value">'+d.total_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">👆</div><div class="stat-label">Всего тапов</div><div class="stat-value">'+Math.floor(d.total_taps||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Общий доход</div><div class="stat-value">'+Math.floor(d.total_revenue||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💸</div><div class="stat-label">Заявок на вывод</div><div class="stat-value">'+d.pending_withdrawals+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-label">Всего коинов</div><div class="stat-value">'+Math.floor(d.total_coins||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">💎</div><div class="stat-label">Всего QuanHash</div><div class="stat-value">'+Math.floor(d.total_quanhash||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔗</div><div class="stat-label">Рефералов</div><div class="stat-value">'+Math.floor(d.total_referrals||0).toLocaleString()+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-label">Активных</div><div class="stat-value">'+d.active_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔒</div><div class="stat-label">Заблокированных</div><div class="stat-value">'+d.banned_users+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-label">Машин</div><div class="stat-value">'+d.total_machines+'</div></div>'+
+                    '<div class="stat-card"><div class="stat-icon">🎴</div><div class="stat-label">Карточек</div><div class="stat-value">'+d.total_cards+'</div></div></div>';
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки статистики</div>');
+        }
+        
+        let currentFilter = 'all';
+        
+        function filterUsersByCategory(category){
+            currentFilter = category;
+            filterUsers();
+        }
+        
+        function filterUsers(){
+            const searchInput = document.getElementById('userSearch');
+            const searchTerm = searchInput ? searchInput.value : '';
+            if(!window.allUsers) return;
+            const c = document.getElementById('content');
+            if(!c) return;
+            
+            let filteredUsers = window.allUsers;
+            
+            // Apply search filter
+            if(searchTerm){
+                filteredUsers = filteredUsers.filter(u=>(u.username||'').toLowerCase().includes(searchTerm.toLowerCase())||u.telegram_id.toString().includes(searchTerm));
+            }
+            
+            // Apply category filter
+            if(currentFilter === 'vip'){
+                filteredUsers = filteredUsers.filter(u => (u.vip_level || 0) > 0);
+            } else if(currentFilter === 'banned'){
+                filteredUsers = filteredUsers.filter(u => u.is_banned);
+            } else if(currentFilter === 'frozen'){
+                filteredUsers = filteredUsers.filter(u => u.is_frozen);
+            } else if(currentFilter === 'active'){
+                filteredUsers = filteredUsers.filter(u => !u.is_banned && !u.is_frozen);
+            }
+            
+            // Clear existing cards
+            const userCardsContainer = c.querySelector('#userCardsContainer');
+            if(!userCardsContainer) return;
+            
+            // Update active tab button
+            document.querySelectorAll('.user-filter-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.user-filter-btn[data-filter="${currentFilter}"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            
+            // Render filtered users
+            userCardsContainer.innerHTML = '';
+            let visibleCount = 0;
+            
+            filteredUsers.forEach(u => {
+                visibleCount++;
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `<div class="user-header"><div class="user-info"><h3>${u.username||'Unknown'}</h3><div class="user-id">ID: ${u.telegram_id}</div></div></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💰 Коины</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.coins||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">💎 Hash</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.quanhash||0).toLocaleString()}</div></div>
+<div style="text-align:center;padding:10px;background:rgba(0,0,0,0.3);border-radius:9px;"><div style="font-size:10px;color:#94a3b8;margin-bottom:5px;">⚡ Энергия</div><div style="font-size:18px;font-weight:900;color:#fff;">${Math.floor(u.energy||0)}/${Math.floor(u.max_energy||0)}</div></div>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'coins','💰 Коины',${Math.floor(u.coins||0)})">💰 Изменить коины</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'quanhash','💎 QuanHash',${Math.floor(u.quanhash||0)})">💎 Изменить Hash</button>
+<button class="action-btn btn-edit" onclick="openEditModal(${u.telegram_id},'energy','⚡ Энергия',${Math.floor(u.energy||0)})">⚡ Изменить энергию</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn ${u.is_banned?'btn-success':'btn-manage'}" onclick="toggleBan(${u.telegram_id},${u.is_banned})">${u.is_banned?'🔓 Разблокировать':'🔒 Заблокировать'}</button>
+<button class="action-btn ${u.is_frozen?'btn-success':'btn-manage'}" onclick="toggleFreeze(${u.telegram_id},${u.is_frozen})">${u.is_frozen?'🔥 Разморозить':'❄️ Заморозить'}</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
+</div>
+<div class="actions-grid">
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
+<button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
+</div>`;
+                userCardsContainer.appendChild(card);
+            });
+            
+            // Update count display
+            const countEl = c.querySelector('#filterCount');
+            if(countEl) countEl.textContent = `Найдено: ${visibleCount}`;
+            
+            // Show "not found" message if no results
+            if(visibleCount === 0 && (searchTerm || currentFilter !== 'all')){
+                const notice = document.createElement('div');
+                notice.style.cssText = 'padding:30px;text-align:center;color:#94a3b8;font-size:16px;font-weight:700;';
+                notice.textContent = '❌ Ничего не найдено';
+                userCardsContainer.appendChild(notice);
+            }
+        }
+        
+        function loadUsers(){
+            const c=document.getElementById('content');
+            c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/users').then(r=>r.json()).then(d=>{
+                if(d.users&&d.users.length>0){
+                    window.allUsers=d.users;
+                    c.innerHTML=`
+<div style="margin-bottom:20px;">
+<input type="text" id="userSearch" placeholder="🔍 Поиск по имени или ID..." style="width:100%;padding:14px 18px;background:rgba(0,0,0,0.3);border:2px solid rgba(99,102,241,0.2);border-radius:12px;color:#fff;font-size:15px;margin-bottom:16px;outline:none;transition:all 0.3s;" onfocus="this.style.borderColor='#667eea';this.style.boxShadow='0 0 20px rgba(102,126,234,0.3)'" onblur="this.style.borderColor='rgba(99,102,241,0.2)';this.style.boxShadow='none'" oninput="clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>filterUsers(),300)">
+<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+<button class="user-filter-btn active" data-filter="all" onclick="filterUsersByCategory('all')" style="padding:10px 20px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(99,102,241,0.3);">👥 Все</button>
+<button class="user-filter-btn" data-filter="active" onclick="filterUsersByCategory('active')" style="padding:10px 20px;background:rgba(99,102,241,0.2);color:#fff;border:2px solid rgba(99,102,241,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">✅ Активные</button>
+<button class="user-filter-btn" data-filter="vip" onclick="filterUsersByCategory('vip')" style="padding:10px 20px;background:rgba(255,215,0,0.1);color:#ffd700;border:2px solid rgba(255,215,0,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">👑 VIP</button>
+<button class="user-filter-btn" data-filter="banned" onclick="filterUsersByCategory('banned')" style="padding:10px 20px;background:rgba(239,68,68,0.1);color:#ef4444;border:2px solid rgba(239,68,68,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">🔒 Заблокированные</button>
+<button class="user-filter-btn" data-filter="frozen" onclick="filterUsersByCategory('frozen')" style="padding:10px 20px;background:rgba(6,182,212,0.1);color:#06b6d4;border:2px solid rgba(6,182,212,0.3);border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.3s;">❄️ Замороженные</button>
+</div>
+<div id="filterCount" style="font-size:12px;color:#94a3b8;font-weight:700;margin-bottom:12px;">Найдено: ${d.users.length}</div>
+</div>
+<div id="userCardsContainer"></div>`;
+                    
+                    // Render all users initially
+                    filterUsers();
+                }else{c.innerHTML='<div class="loading">Нет пользователей</div>';}
+            });
+        }
+        
+        function manageVIP(uid,vipLevel,vipBadge,hasSupport,hasProfile,hasPlace,hasDesign){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'vipModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">👑 Управление VIP-статусом</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="background:rgba(255,215,0,0.1);padding:15px;border-radius:12px;border:2px solid rgba(255,215,0,0.3);margin-bottom:20px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">VIP уровень:</div>
+                        <select id="vipLevel" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="0" ${vipLevel==0?'selected':''}>0 - Обычный</option>
+                            <option value="1" ${vipLevel==1?'selected':''}>1 - Bronze VIP</option>
+                            <option value="2" ${vipLevel==2?'selected':''}>2 - Silver VIP</option>
+                            <option value="3" ${vipLevel==3?'selected':''}>3 - Gold VIP</option>
+                            <option value="4" ${vipLevel==4?'selected':''}>4 - Platinum VIP</option>
+                            <option value="5" ${vipLevel==5?'selected':''}>5 - Diamond VIP</option>
+                            <option value="6" ${vipLevel==6?'selected':''}>6 - Absolute VIP</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">VIP Badge:</label>
+                        <select id="vipBadge" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="">Нет значка</option>
+                            <option value="bronze_vip" ${vipBadge=='bronze_vip'?'selected':''}>Bronze VIP</option>
+                            <option value="silver_vip" ${vipBadge=='silver_vip'?'selected':''}>Silver VIP</option>
+                            <option value="gold_vip" ${vipBadge=='gold_vip'?'selected':''}>Gold VIP</option>
+                            <option value="platinum_vip" ${vipBadge=='platinum_vip'?'selected':''}>Platinum VIP</option>
+                            <option value="diamond_vip" ${vipBadge=='diamond_vip'?'selected':''}>Diamond VIP</option>
+                            <option value="absolute_vip" ${vipBadge=='absolute_vip'?'selected':''}>Absolute VIP</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(102,126,234,0.1);padding:15px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">VIP привилегии:</div>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasSupport" ${hasSupport?'checked':''}><span>Premium Support</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasProfile" ${hasProfile?'checked':''}><span>Golden Profile</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;"><input type="checkbox" id="hasPlace" ${hasPlace?'checked':''}><span>Top Place</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="hasDesign" ${hasDesign?'checked':''}><span>Unique Design</span></label>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="saveVIPChanges(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">✅ Сохранить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function saveVIPChanges(uid){
+            const vipLevel = parseInt(document.getElementById('vipLevel').value);
+            const vipBadge = document.getElementById('vipBadge').value;
+            const hasSupport = document.getElementById('hasSupport').checked;
+            const hasProfile = document.getElementById('hasProfile').checked;
+            const hasPlace = document.getElementById('hasPlace').checked;
+            const hasDesign = document.getElementById('hasDesign').checked;
+            
+            const vipData = {
+                vip_level: vipLevel,
+                vip_badge: vipBadge,
+                has_premium_support: hasSupport,
+                has_golden_profile: hasProfile,
+                has_top_place: hasPlace,
+                has_unique_design: hasDesign
+            };
+            
+            fetch('/api/admin/set_vip', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: uid,
+                    vip_data: vipData
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    showNotification('✅ VIP-статус обновлён');
+                    document.getElementById('vipModal').remove();
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                }
+            })
+            .catch(() => showNotification('❌ Ошибка обновления'));
+        }
+        
+        function openEditModal(uid,field,title,currentValue){
+            document.getElementById('modalTitle').textContent=title;
+            document.getElementById('modalInput').value=currentValue||0;
+            document.getElementById('quickEditModal').classList.add('active');
+            quickEditData={userId:uid,field};
+        }
+        function closeModal(){document.getElementById('quickEditModal').classList.remove('active');quickEditData=null;}
+        function confirmQuickEdit(){
+            if(!quickEditData)return;
+            const v=parseFloat(document.getElementById('modalInput').value);
+            if(isNaN(v)){alert('❌ Введите число');return;}
+            modifyUser(quickEditData.userId,'set_'+quickEditData.field,v);closeModal();
+        }
+        function toggleBan(uid,isBanned){
+            if(isBanned){
+                showUnbanModal(uid);
+            }else{
+                showBanModal(uid);
+            }
+        }
+        function toggleFreeze(uid,isFrozen){
+            if(isFrozen){
+                showUnfreezeModal(uid);
+            }else{
+                showFreezeModal(uid);
+            }
+        }
+        
+        function showUnbanModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'unbanModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔓 Разблокировать пользователя</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(16,185,129,0.1);padding:15px;border-radius:12px;border:2px solid rgba(16,185,129,0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите разблокировать этого пользователя?</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="modifyUser(${uid},'unban','Admin');document.getElementById('unbanModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">✅ Разблокировать</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function showUnfreezeModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'unfreezeModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔥 Разморозить аккаунт</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(245,158,11,0.1);padding:15px;border-radius:12px;border:2px solid rgba(245,158,11,0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите разморозить аккаунт этого пользователя? Все функции будут восстановлены.</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="modifyUser(${uid},'unfreeze','');document.getElementById('unfreezeModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔥 Разморозить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function showBanModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'banModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">🔒 Заблокировать пользователя</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Срок блокировки:</label>
+                        <select id="banDuration" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="1">1 день</option>
+                            <option value="7">7 дней</option>
+                            <option value="30">30 дней</option>
+                            <option value="365">1 год</option>
+                            <option value="-1">Навсегда</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Причина:</label>
+                        <textarea id="banReason" placeholder="Введите причину блокировки..." style="width:100%;min-height:80px;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;resize:vertical;outline:none;"></textarea>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmBan(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔒 Заблокировать</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function showFreezeModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'freezeModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">❄️ Заморозить аккаунт</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Срок заморозки:</label>
+                        <select id="freezeDuration" style="width:100%;padding:12px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;">
+                            <option value="1">1 день</option>
+                            <option value="7">7 дней</option>
+                            <option value="30">30 дней</option>
+                            <option value="365">1 год</option>
+                            <option value="-1">Навсегда</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(102,126,234,0.1);padding:15px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:#fff;">Что блокировать:</div>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><input type="checkbox" id="freezeTaps" checked><span>Тапы</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><input type="checkbox" id="freezeShop" checked><span>Магазин</span></label>
+                        <label style="display:flex;align-items:center;gap:10px;"><input type="checkbox" id="freezeWithdraw" checked><span>Вывод</span></label>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmFreeze(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">❄️ Заморозить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function confirmBan(uid){
+            const duration = document.getElementById('banDuration').value;
+            const reason = document.getElementById('banReason').value || 'Блокировка администратором';
+            modifyUser(uid,'ban',reason+','+duration);
+            document.getElementById('banModal').remove();
+        }
+        
+        function confirmFreeze(uid){
+            const duration = document.getElementById('freezeDuration').value;
+            const freezeTaps = document.getElementById('freezeTaps').checked;
+            const freezeShop = document.getElementById('freezeShop').checked;
+            const freezeWithdraw = document.getElementById('freezeWithdraw').checked;
+            const flags = (freezeTaps?1:0)+(freezeShop?2:0)+(freezeWithdraw?4:0);
+            modifyUser(uid,'freeze',duration+','+flags);
+            document.getElementById('freezeModal').remove();
+        }
+        function resetUser(uid){
+            openResetUserModal(uid);
+        }
+        
+        function openResetUserModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width:700px;background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(220,38,38,0.1));border:2px solid #ef4444;">
+                    <div style="text-align:center;margin-bottom:25px;">
+                        <div style="font-size:48px;margin-bottom:15px;">⚠️</div>
+                        <h2 style="color:#ef4444;font-size:24px;margin-bottom:10px;font-weight:800;">ПОЛНЫЙ СБРОС ПОЛЬЗОВАТЕЛЯ</h2>
+                        <div style="color:#fca5a5;font-size:16px;line-height:1.5;">
+                            Это действие <strong>НЕОБРАТИМО</strong> и обнулит ВСЕ данные пользователя!
+                        </div>
+                    </div>
+                    
+                    <div style="background:rgba(239,68,68,0.2);padding:20px;border-radius:12px;margin-bottom:25px;border:1px solid rgba(239,68,68,0.3);">
+                        <h3 style="color:#ef4444;font-size:18px;margin-bottom:15px;font-weight:700;">Что будет сброшено:</h3>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;color:#fca5a5;font-size:14px;">
+                            <div>💰 Коины → 0</div>
+                            <div>💎 QuanHash → 0</div>
+                            <div>⚡ Энергия → 100</div>
+                            <div>📈 Максимум энергии → 100</div>
+                            <div>🔄 Скорость регенерации → 1</div>
+                            <div>💪 Множитель тапа → 1</div>
+                            <div>🤖 Автобот → отключен</div>
+                            <div>👑 VIP статус → сброшен</div>
+                            <div>🏭 Майнинг машины → удалены</div>
+                            <div>💳 Карточки → удалены</div>
+                            <div>📊 Статистика → сброшена</div>
+                            <div>🎯 Достижения → сброшены</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:rgba(255,215,0,0.2);padding:15px;border-radius:10px;margin-bottom:25px;border:1px solid rgba(255,215,0,0.4);">
+                        <div style="color:#fbbf24;font-weight:700;font-size:16px;margin-bottom:8px;">⚠️ ВНИМАНИЕ!</div>
+                        <div style="color:#fde68a;font-size:14px;">
+                            Убедитесь, что вы действительно хотите сбросить данные этого пользователя!
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;color:#fca5a5;font-weight:700;margin-bottom:10px;font-size:16px;">
+                            Выберите тип сброса:
+                        </label>
+                        <div style="display:flex;gap:10px;margin-bottom:15px;">
+                            <label style="flex:1;display:flex;align-items:center;padding:15px;background:rgba(0,0,0,0.2);border:2px solid #ef4444;border-radius:10px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+                                <input type="radio" name="resetType" value="full" checked style="margin-right:10px;transform:scale(1.2);">
+                                <div>
+                                    <div style="color:#ef4444;font-weight:700;">🔥 ПОЛНЫЙ СБРОС</div>
+                                    <div style="color:#fca5a5;font-size:12px;">Все данные → 0</div>
+                                </div>
+                            </label>
+                            <label style="flex:1;display:flex;align-items:center;padding:15px;background:rgba(0,0,0,0.2);border:2px solid #f59e0b;border-radius:10px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(245,158,11,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+                                <input type="radio" name="resetType" value="soft" style="margin-right:10px;transform:scale(1.2);">
+                                <div>
+                                    <div style="color:#f59e0b;font-weight:700;">⚡ МЯГКИЙ СБРОС</div>
+                                    <div style="color:#fbbf24;font-size:12px;">Только прогресс</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;color:#fca5a5;font-weight:700;margin-bottom:10px;font-size:16px;">
+                            Введите "СБРОСИТЬ" для подтверждения:
+                        </label>
+                        <input type="text" id="resetConfirmation" placeholder="СБРОСИТЬ" 
+                               style="width:100%;padding:15px;background:rgba(0,0,0,0.3);border:2px solid #ef4444;border-radius:10px;color:#fff;font-size:16px;text-align:center;font-weight:700;"
+                               onkeyup="this.value=this.value.toUpperCase()">
+                    </div>
+                    
+                    <div style="display:flex;gap:15px;">
+                        <button class="btn-modal" style="flex:1;background:rgba(99,102,241,0.2);color:#fff;padding:15px;font-size:16px;font-weight:700;" 
+                                onclick="this.closest('.modal').remove()">
+                            ❌ Отмена
+                        </button>
+                        <button class="btn-modal" id="confirmResetBtn" style="flex:1;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:15px;font-size:16px;font-weight:700;" 
+                                onclick="confirmUserReset('${uid}')" disabled>
+                            ⚠️ СБРОСИТЬ
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Включаем кнопку только при правильном вводе
+            const confirmInput = document.getElementById('resetConfirmation');
+            const confirmBtn = document.getElementById('confirmResetBtn');
+            
+            confirmInput.addEventListener('input', function() {
+                if (this.value === 'СБРОСИТЬ') {
+                    confirmBtn.disabled = false;
+                    confirmBtn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+                } else {
+                    confirmBtn.disabled = true;
+                    confirmBtn.style.background = 'rgba(239,68,68,0.3)';
+                }
+            });
+        }
+        
+        function confirmUserReset(uid){
+            const modal = document.querySelector('.modal.active');
+            const confirmInput = document.getElementById('resetConfirmation');
+            const resetType = document.querySelector('input[name="resetType"]:checked').value;
+            
+            if (confirmInput.value !== 'СБРОСИТЬ') {
+                showNotification('❌ Неверное подтверждение!');
+                return;
+            }
+            
+            // Показываем финальное предупреждение
+            const resetTypeText = resetType === 'full' ? 'ПОЛНЫЙ СБРОС' : 'МЯГКИЙ СБРОС';
+            if (!confirm(`🚨 ФИНАЛЬНОЕ ПРЕДУПРЕЖДЕНИЕ!\n\nВы действительно хотите выполнить ${resetTypeText} для этого пользователя?\n\nЭто действие НЕОБРАТИМО!`)) {
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            const loadingModal = document.createElement('div');
+            loadingModal.className = 'modal active';
+            loadingModal.innerHTML = `
+                <div class="modal-content" style="max-width:500px;text-align:center;">
+                    <div style="font-size:48px;margin-bottom:20px;">⏳</div>
+                    <h2 style="color:#fff;font-size:24px;margin-bottom:15px;">Сброс данных...</h2>
+                    <div style="color:#94a3b8;font-size:16px;margin-bottom:20px;">
+                        Пожалуйста, подождите.
+                    </div>
+                    <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:10px;">
+                        <div style="color:#10b981;font-weight:700;font-size:14px;">Обрабатывается запрос...</div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingModal);
+            modal.remove();
+            
+            // Отправляем запрос на сброс
+            fetch('/api/admin/reset_user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: uid,
+                    reset_type: resetType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingModal.remove();
+                if (data.success) {
+                    showNotification('✅ Пользователь успешно сброшен!');
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка сброса: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                loadingModal.remove();
+                showNotification('❌ Ошибка соединения при сбросе данных');
+            });
+        }
+        function setReferrer(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'referrerModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">👥 Назначить реферера</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:14px;font-weight:600;margin-bottom:10px;color:#94a3b8;">Telegram ID реферера:</label>
+                        <input type="number" id="referrerInput" placeholder="Введите ID..." style="width:100%;padding:14px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:16px;outline:none;transition:all 0.3s;" onfocus="this.style.borderColor='#667eea';this.style.boxShadow='0 0 20px rgba(102,126,234,0.3)';" onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.boxShadow='none';">
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="confirmSetReferrer(${uid})" style="flex:1;padding:14px;background:linear-gradient(135deg,#a78bfa,#8b5cf6);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(167,139,250,0.3);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(167,139,250,0.5)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(167,139,250,0.3)';">✅ Назначить</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">Отмена</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.onclick = (e) => {
+                if(e.target === modal) modal.remove();
+            };
+        }
+        
+        function confirmSetReferrer(uid){
+            const refId = document.getElementById('referrerInput').value;
+            if(refId && !isNaN(refId)){
+                modifyUser(uid,'set_referrer',parseInt(refId));
+                document.getElementById('referrerModal').remove();
+            } else {
+                alert('❌ Введите корректный ID');
+            }
+        }
+        function modifyUser(uid,a,v){
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:a,value:v})}).then(r=>r.json()).then(()=>{showNotification('✅ Применено');loadUsers();}).catch(()=>showNotification('❌ Ошибка'));
+        }
+        
+        function loadWithdrawals(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/withdrawals').then(r=>r.json()).then(d=>{
+                if(d.requests&&d.requests.length>0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">💸 Заявки на вывод ('+d.requests.length+')</h2>';
+                    d.requests.forEach(r=>{
+                        const user=window.allUsers&&window.allUsers.find(u=>u.telegram_id===r.telegram_id);
+                        const div=document.createElement('div');div.className='user-card';
+                        const statusColor = r.status==='completed'?'rgba(16,185,129,0.2)':r.status==='rejected'?'rgba(239,68,68,0.2)':'rgba(245,158,11,0.2)';
+                        const statusIcon = r.status==='completed'?'✅':r.status==='rejected'?'❌':'⏳';
+                        const statusText = r.status==='completed'?'Выполнено':r.status==='rejected'?'Отклонено':'Ожидает';
+                        const html='<div style="margin-bottom:16px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><div><div style="font-weight:800;font-size:20px;color:#fff;">Заявка #'+r.id+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(r.created_at).toLocaleString()+'</div></div><div style="padding:10px 20px;background:'+statusColor+';border-radius:12px;color:#fff;font-weight:700;font-size:14px;border:2px solid rgba(255,255,255,0.1);">'+statusIcon+' '+statusText+'</div></div></div><div style="background:rgba(0,0,0,0.3);padding:16px;border-radius:12px;margin-bottom:16px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;"><div><div style="font-size:12px;color:#94a3b8;">Пользователь:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?user.username:'Unknown')+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Telegram ID:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(r.telegram_id||r.user_id)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">Коины:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.coins||0).toLocaleString():0)+'</div></div><div><div style="font-size:12px;color:#94a3b8;">QuanHash:</div><div style="font-size:15px;color:#fff;font-weight:700;">'+(user?Math.floor(user.quanhash||0).toLocaleString():0)+'</div></div></div><div style="margin-top:16px;padding:16px;background:rgba(102,126,234,0.15);border-radius:12px;border:2px solid rgba(102,126,234,0.3);"><div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">Сумма вывода:</div><div style="font-size:28px;font-weight:900;color:#667eea;line-height:1.2;">💎 '+(r.amount||0).toLocaleString()+' QuanHash</div><div style="font-size:16px;color:#94a3b8;margin-top:8px;">≈ $'+(parseFloat(r.usdt_amount||0)).toFixed(2)+' USDT</div></div><div style="margin-top:16px;"><div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Адрес BEP20:</div><div style="background:rgba(102,126,234,0.2);padding:16px;border-radius:12px;border:2px solid rgba(102,126,234,0.4);display:flex;align-items:center;gap:12px;"><div style="flex:1;font-family:monospace;font-size:13px;color:#fff;word-break:break-all;font-weight:600;">'+(r.address||'N/A')+'</div><button onclick="copyAddress(\''+(r.address||'')+'\')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(102,126,234,0.4);transition:all 0.3s;">📋 Копировать</button></div></div></div>';
+                        const actions=r.status==='pending'?'<div class="actions-grid"><button class="action-btn btn-success" data-rid="'+r.id+'" data-status="completed" onclick="confirmWithdrawal(this,\'approved\')">✅ Одобрить</button><button class="action-btn btn-danger" data-rid="'+r.id+'" data-status="rejected" onclick="confirmWithdrawal(this,\'rejected\')">❌ Отклонить</button></div>':'';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет заявок на вывод</div>';}
+            });
+        }
+        
+        function copyAddress(address){
+            navigator.clipboard.writeText(address).then(()=>{
+                showNotification('📋 Адрес скопирован в буфер обмена!');
+            }).catch(()=>showNotification('❌ Ошибка копирования'));
+        }
+        
+        function confirmWithdrawal(btn,type){
+            const rid=btn.getAttribute('data-rid');
+            const status=type==='approved'?'completed':'rejected';
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;">${type==='approved'?'✅ Одобрить заявку':'❌ Отклонить заявку'}</h2>
+                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                    </div>
+                    <div style="margin-bottom:20px;background:rgba(${type==='approved'?'16,185,129':'239,68,68'},0.1);padding:15px;border-radius:12px;border:2px solid rgba(${type==='approved'?'16,185,129':'239,68,68'},0.3);">
+                        <p style="color:#fff;font-size:14px;line-height:1.6;">Вы уверены, что хотите ${type==='approved'?'одобрить':'отклонить'} эту заявку на вывод?</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button onclick="processWithdrawalBtnConfirmed(${rid},'${status}');document.getElementById('confirmModal').remove();" style="flex:1;padding:14px;background:linear-gradient(135deg,${type==='approved'?'#10b981,#059669':'#ef4444,#dc2626'});color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">${type==='approved'?'✅ Одобрить':'❌ Отклонить'}</button>
+                        <button onclick="this.closest('.modal').remove()" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;">Отмена</button>
+                    </div>
+                </div>
+            `;
+            modal.id='confirmModal';
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+        }
+        
+        function processWithdrawalBtnConfirmed(rid,status){
+            fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Заявка одобрена':'❌ Заявка отклонена');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));
+        }
+        
+        function processWithdrawalBtn(btn){const rid=btn.getAttribute('data-rid');const status=btn.getAttribute('data-status');fetch('/api/admin/process_withdrawal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request_id:rid,status:status})}).then(()=>{showNotification(status==='completed'?'✅ Одобрено':'❌ Отклонено');loadWithdrawals();}).catch(()=>showNotification('❌ Ошибка'));}
+        
+        function loadQuestions(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const unreadCount = d.unread_count || 0;
+                const badgeEl = document.getElementById('questionsBadge');
+                if(unreadCount > 0) {
+                    badgeEl.textContent = unreadCount;
+                    badgeEl.style.display = 'inline-block';
+                } else {
+                    badgeEl.style.display = 'none';
+                }
+                const unreadBadge = unreadCount > 0 ? '<span style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-left:10px;box-shadow:0 4px 12px rgba(239,68,68,0.4);">'+unreadCount+' новое</span>' : '';
+                const activeTickets = (d.tickets || []).filter(t => t.status !== 'resolved');
+                if(activeTickets.length>0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;display:flex;align-items:center;">💬 Вопросы от пользователей ('+activeTickets.length+')'+unreadBadge+'</h2>';
+                    activeTickets.forEach(t=>{
+                        const div=document.createElement('div');div.className='user-card';
+                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                        const actions=t.status==='pending'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="answerQuestion('+t.id+')">📝 Ответить</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':t.status==='answered'?'<div class="actions-grid"><button class="action-btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);" onclick="archiveTicket('+t.id+')">📁 Архивировать</button><button class="action-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);" onclick="deleteTicket('+t.id+')">🗑️ Удалить</button></div>':'<div style="padding:10px;background:rgba(99,102,241,0.2);border-radius:10px;color:#6366f1;text-align:center;font-weight:700;">📁 В архиве</div>';
+                        div.innerHTML=html+actions;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Нет вопросов</div>';}
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
+        }
+        
+        function answerQuestion(id){
+            // Create beautiful modal for answer
+            const modal = document.createElement('div');
+            modal.id = 'answerModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;backdrop-filter:blur(10px);';
+            modal.innerHTML = `
+                <div style="background:linear-gradient(135deg,#1e3a5f,#2d4a6a);padding:30px;border-radius:20px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:2px solid rgba(102,126,234,0.3);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="color:#fff;font-size:22px;font-weight:700;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">💬 Ответить пользователю</h2>
+                        <button id="closeAnswerModal" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+                    </div>
+                    <textarea id="answerText" placeholder="Введите ваш ответ..." style="width:100%;min-height:150px;padding:15px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:12px;color:#fff;font-size:14px;outline:none;resize:vertical;transition:all 0.3s;" onfocus="this.style.borderColor='#667eea';this.style.boxShadow='0 0 20px rgba(102,126,234,0.3)';" onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.boxShadow='none';"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:20px;">
+                        <button id="sendAnswer" style="flex:1;padding:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(16,185,129,0.3);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(16,185,129,0.5)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(16,185,129,0.3)';">
+                            📤 Отправить
+                        </button>
+                        <button id="cancelAnswer" style="padding:14px 24px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.1)';">
+                            Отмена
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Close on X
+            document.getElementById('closeAnswerModal').onclick = () => modal.remove();
+            
+            // Close on cancel
+            document.getElementById('cancelAnswer').onclick = () => modal.remove();
+            
+            // Send answer
+            document.getElementById('sendAnswer').onclick = () => {
+                const msg = document.getElementById('answerText').value.trim();
+                if(!msg){
+                    showNotification('⚠️ Введите ответ');
+                    return;
+                }
+                
+                fetch('/api/admin/answer_ticket', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        ticket_id: id,
+                        answer: msg
+                    })
+                })
+                .then(r => r.json())
+                .then(d => {
+                    if(d.success) {
+                        showNotification('✅ Ответ отправлен пользователю');
+                        modal.remove();
+                        loadQuestions();
+                    } else {
+                        showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                    }
+                })
+                .catch(() => showNotification('❌ Ошибка отправки'));
+            };
+            
+            // Close on outside click
+            modal.onclick = (e) => {
+                if(e.target === modal) modal.remove();
+            };
+        }
+        
+        function deleteTicket(id){
+            if(!confirm('Удалить этот вопрос?')) return;
+            fetch('/api/admin/delete_ticket', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ticket_id: id})
+            })
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    showNotification('🗑️ Вопрос удален');
+                    loadQuestions();
+                } else {
+                    showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                }
+            })
+            .catch(() => showNotification('❌ Ошибка удаления'));
+        }
+        
+        function archiveTicket(id){
+            fetch('/api/admin/archive_ticket', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ticket_id: id})
+            })
+            .then(r => r.json())
+            .then(d => {
+                if(d.success) {
+                    showNotification('📁 Вопрос отправлен в архив');
+                    loadQuestions();
+                    // Switch to archive tab after archiving
+                    setTimeout(() => {
+                        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                        const archiveBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.textContent.includes('Архив'));
+                        if(archiveBtn) {
+                            archiveBtn.classList.add('active');
+                            loadTab('archive');
+                        }
+                    }, 500);
+                } else {
+                    showNotification('❌ Ошибка: ' + (d.error || 'неизвестная'));
+                }
+            })
+            .catch(() => showNotification('❌ Ошибка архивирования'));
+        }
+        
+        function loadArchive(){
+            const c=document.getElementById('content');c.innerHTML='<div class="loading">Загрузка...</div>';
+            fetch('/api/admin/support').then(r=>r.json()).then(d=>{
+                const archivedTickets = (d.tickets || []).filter(t => t.status === 'resolved');
+                if(archivedTickets.length > 0){
+                    c.innerHTML='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">📁 Архив вопросов ('+archivedTickets.length+')</h2>';
+                    archivedTickets.forEach(t=>{
+                        const div=document.createElement('div');div.className='user-card';
+                        const html='<div style="margin-bottom:12px;"><div style="font-weight:800;font-size:16px;color:#fff;">'+t.topic+'</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">От: '+(t.username||'Unknown')+' (ID: '+t.telegram_id+')</div><div style="font-size:12px;color:#94a3b8;margin-top:4px;">'+new Date(t.created_at).toLocaleString()+'</div></div><div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:10px;margin-bottom:12px;"><div style="font-size:14px;color:#fff;line-height:1.6;">'+t.message+'</div></div>';
+                        const statusDiv='<div style="padding:10px;background:rgba(99,102,241,0.2);border-radius:10px;color:#6366f1;text-align:center;font-weight:700;">📁 Архив</div>';
+                        div.innerHTML=html+statusDiv;
+                        c.appendChild(div);
+                    });
+                }else{c.innerHTML='<div class="loading">Архив пуст</div>';}
+            }).catch(()=>c.innerHTML='<div class="loading">Ошибка загрузки</div>');
+        }
+        
+        function loadSettings(){
+            const arr=['Энергия','Тапы','Коины','Hash','Бусты','Рефералы','Вывод','Дизайн','Статистика','Уведомления','API','Автообнов','Мобильная','Баланс','Доступ','Хранение','Аналитика','Локализация','Турниры','Боты','Рассылка'];
+            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">⚙️ Настройки системы</h2><div class="settings-grid">';
+            arr.forEach(s=>{
+                const msg='⚙️ Настройка: '+s;
+                html+='<div class="setting-card"><div class="card-title">⚙️ '+s+'</div><div class="card-desc">Настройка параметров '+s.toLowerCase()+'</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;" data-msg="'+msg+'">⚙️ Настроить</button></div></div>';
+            });
+            html+='</div>';
+            document.getElementById('content').innerHTML=html;
+            document.querySelectorAll('.setting-card .btn-modal').forEach(btn=>{
+                btn.addEventListener('click',()=>showNotification(btn.getAttribute('data-msg')));
+            });
+        }
+        
+        function loadSecurity(){
+            const arr=['DDoS защита','2FA аутентификация','Anti-Bot','Шифрование','Логины','Пароли','Файрвол','Аудит','Оповещения','Резервный Бэкап','Автобан','Целостность','SSL/TLS','IDS','Ротация ключей','IP Whitelist','Rate Limiting','Антивирус','Журнал изменений','Мониторинг аномалий'];
+            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🔒 Безопасность системы</h2><div class="security-grid">';
+            arr.forEach(s=>{
+                const msg='🔒 Безопасность: '+s;
+                html+='<div class="security-card"><div class="card-title">🔒 '+s+'</div><div class="card-desc">Безопасность: '+s.toLowerCase()+'</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);color:#fff;" data-msg="'+msg+'">🔒 Настроить</button></div></div>';
+            });
+            html+='</div>';
+            document.getElementById('content').innerHTML=html;
+            document.querySelectorAll('.security-card .btn-modal').forEach(btn=>{
+                btn.addEventListener('click',()=>showNotification(btn.getAttribute('data-msg')));
+            });
+        }
+        
+        function loadTools(){
+            const arr=['Анализ БД','Экспорт данных','Очистка данных','Тест API','Обновление системы','Генерация отчетов','Промо акции','Турниры','Подарки пользователям','Кэш очистка','Мониторинг сервера','Поиск пользователей','Бенчмаркинг','Автоматизация задач','Редактор конфигурации','Push уведомления','A/B тестирование'];
+            let html='<h2 style="color:#fff;font-size:20px;margin-bottom:20px;">🛠️ Инструменты администратора</h2><div class="tools-grid"><div class="tool-card"><div class="card-title">📨 Массовая рассылка</div><div class="card-desc">Отправить уведомление всем пользователям</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;padding:10px 20px;width:100%;" id="massNotifyBtn">📨 Отправить</button></div></div>';
+            arr.forEach(s=>{
+                const msg='🛠️ Инструмент: '+s;
+                html+='<div class="tool-card"><div class="card-title">🛠️ '+s+'</div><div class="card-desc">Инструмент: '+s.toLowerCase()+'</div><div class="card-actions"><button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" data-msg="'+msg+'">🛠️ Использовать</button></div></div>';
+            });
+            html+='</div>';
+            document.getElementById('content').innerHTML=html;
+            document.getElementById('massNotifyBtn').addEventListener('click',openMassNotifyModal);
+            document.querySelectorAll('.tool-card .btn-modal').forEach(btn=>{
+                if(btn.getAttribute('data-msg'))btn.addEventListener('click',()=>showNotification(btn.getAttribute('data-msg')));
+            });
+        }
+        
+        function openMassNotifyModal(){
+            const modal=document.createElement('div');modal.className='modal active';
+            modal.innerHTML=`<div class="modal-content" style="max-width:600px;">
+<h2 class="modal-title">📨 Массовая рассылка</h2>
+<textarea id="notifyMessage" placeholder="Введите текст уведомления..." style="width:100%;min-height:150px;padding:14px;background:rgba(0,0,0,0.3);border:1px solid rgba(99,102,241,0.2);border-radius:11px;color:#fff;font-size:15px;margin-bottom:18px;"></textarea>
+<div class="modal-actions">
+<button class="btn-modal" style="background:rgba(99,102,241,0.2);color:#fff;" onclick="this.closest('.modal').remove()">Отмена</button>
+<button class="btn-modal" style="background:linear-gradient(135deg,#a78bfa,#c084fc);color:#fff;" onclick="sendMassNotification()">📨 Отправить всем</button>
+</div></div>`;
+            document.body.appendChild(modal);
+        }
+        
+        function sendMassNotification(){
+            const msg=document.getElementById('notifyMessage').value;
+            if(!msg){alert('❌ Введите сообщение');return;}
+            fetch('/api/admin/mass_notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})}).then(r=>r.json()).then(d=>{
+                if(d.success){showNotification('✅ Уведомление отправлено');document.querySelector('.modal.active').remove();}
+                else showNotification('❌ Ошибка: '+d.error);
+            }).catch(()=>showNotification('❌ Ошибка отправки'));
+        }
+        
+        
+        window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
+    </script>
+</body>
+</html>

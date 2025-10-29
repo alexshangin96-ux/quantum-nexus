@@ -1,0 +1,13 @@
+КОМАНДЫ ДЛЯ ОБНОВЛЕНИЯ СЕРВЕРА
+================================
+
+ВЫПОЛНИТЕ НА СЕРВЕРЕ:
+
+cd ~/quantum-nexus
+git pull origin main
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus
+
+ГОТОВО!
+
