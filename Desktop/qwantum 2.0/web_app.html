@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v4.0 - Updated Shop with 60 Products - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v4.1 - Fixed Close Button Positioning - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -852,7 +852,9 @@
         /* Принудительный сброс для всех возможных конфликтов */
         button.close-btn,
         .modal button.close-btn,
-        .modal-content button.close-btn {
+        .modal-content button.close-btn,
+        [class*="close-btn"],
+        button[class*="close"] {
             background: rgba(255,255,255,0.2) !important;
             border: 2px solid rgba(255,255,255,0.4) !important;
             border-radius: 50% !important;
@@ -878,6 +880,23 @@
             min-height: 32px !important;
             max-width: 32px !important;
             max-height: 32px !important;
+        }
+
+        /* Дополнительная защита от поворота */
+        button.close-btn:hover,
+        .modal button.close-btn:hover,
+        .modal-content button.close-btn:hover,
+        [class*="close-btn"]:hover,
+        button[class*="close"]:hover {
+            transform: scale(1.05) !important;
+        }
+
+        button.close-btn:active,
+        .modal button.close-btn:active,
+        .modal-content button.close-btn:active,
+        [class*="close-btn"]:active,
+        button[class*="close"]:active {
+            transform: scale(0.95) !important;
         }
 
         /* Стильная кнопка закрытия для категорий */
