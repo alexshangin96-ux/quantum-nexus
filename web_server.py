@@ -1294,6 +1294,81 @@ def get_shop_levels():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/admin/super_reset_user', methods=['POST'])
+def super_reset_user():
+    """Super reset user - complete data wipe including shop levels"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Missing user_id'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Complete reset of all user data
+            user.coins = 0.0
+            user.quanhash = 0.0
+            user.energy = 1000  # Set to 1000 as requested
+            user.max_energy = 1000  # Set to 1000 as requested
+            user.energy_regen_rate = 1.0
+            user.total_taps = 0
+            user.total_earned = 0.0
+            user.total_mined = 0.0
+            user.referral_income = 0.0
+            user.referrals_count = 0
+            user.active_multiplier = 1.0
+            user.multiplier_expires_at = None
+            
+            # Reset VIP status
+            user.vip_level = 0
+            user.vip_badge = None
+            user.vip_unique_marker = None
+            user.has_premium_support = False
+            user.has_golden_profile = False
+            user.has_top_place = False
+            user.has_unique_design = False
+            
+            # Reset auto-tap
+            user.auto_tap_enabled = False
+            user.auto_tap_level = 0
+            user.auto_tap_speed = 2.0
+            user.auto_tap_expires_at = None
+            
+            # Reset shop levels
+            user.tap_boost_levels = '{}'
+            user.energy_buy_levels = '{}'
+            user.energy_expand_levels = '{}'
+            
+            # Delete all mining machines
+            db.query(MiningMachine).filter_by(user_id=user.id).delete()
+            
+            # Delete all user cards
+            db.query(UserCard).filter_by(user_id=user.id).delete()
+            
+            # Delete all achievements
+            db.query(UserAchievement).filter_by(user_id=user.id).delete()
+            
+            # Delete all transactions
+            db.query(Transaction).filter_by(user_id=user.id).delete()
+            
+            # Delete all support tickets
+            db.query(SupportTicket).filter_by(user_id=user.id).delete()
+            
+            # Delete all withdrawals
+            db.query(Withdrawal).filter_by(user_id=user.id).delete()
+            
+            db.commit()
+            
+            return jsonify({'success': True, 'message': 'Super reset completed successfully'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/buy_with_stars', methods=['POST'])
 def buy_with_stars():
     """Buy shop item with Telegram stars"""
