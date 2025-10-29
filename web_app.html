@@ -2722,50 +2722,65 @@
                 'tap_boost': {
                     name: '💪 Усилитель Тапа',
                     emoji: '💪',
-                    items: [
-                        {level: 1, name: '🔥 Холодное Сердце', desc: 'Базовое усиление тапа', baseBonus: 1, basePrice: 1000, currency: 'coins', locked: false},
-                        {level: 2, name: '⚡ Молниеносный', desc: '+1 клик за тап', baseBonus: 2, basePrice: 3000, currency: 'coins', locked: false},
-                        {level: 3, name: '💨 Ураган', desc: '+2 клика за тап', baseBonus: 3, basePrice: 8000, currency: 'coins', locked: false},
-                        {level: 4, name: '🌪️ Торнадо', desc: '+3 клика за тап', baseBonus: 4, basePrice: 20000, currency: 'coins', locked: false},
-                        {level: 5, name: '💥 Взрывная Волна', desc: '+5 кликов за тап', baseBonus: 6, basePrice: 50000, currency: 'coins', locked: false},
-                        {level: 6, name: '🌟 Супер Энергия', desc: '+8 кликов за тап', baseBonus: 9, basePrice: 120000, currency: 'coins', locked: false},
-                        {level: 7, name: '🚀 Космический', desc: '+12 кликов за тап', baseBonus: 13, basePrice: 300000, currency: 'coins', locked: false},
-                        {level: 8, name: '💫 Небесный', desc: '+18 кликов за тап', baseBonus: 19, basePrice: 800000, currency: 'coins', locked: false},
-                        {level: 9, name: '⚛️ Квантовый', desc: '+25 кликов за тап', baseBonus: 26, basePrice: 2000000, currency: 'coins', locked: false},
-                        {level: 10, name: '🌌 Галактический', desc: '+35 кликов за тап', baseBonus: 36, basePrice: 5000000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateTapBoostEffect(level);
+                            const price = calculateTapBoostPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateTapBoostName(level),
+                                desc: `+${effect} кликов за тап`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'energy_buy': {
                     name: '⚡ Ускорение Восстановления',
                     emoji: '⚡',
-                    items: [
-                        {level: 1, name: '🔋 Мини Генератор', desc: '+0.2 энергии/сек', bonus: 0.2, price: 1000, currency: 'coins', locked: false},
-                        {level: 2, name: '⚡ Световой', desc: '+0.4 энергии/сек', bonus: 0.4, price: 2500, currency: 'coins', locked: false},
-                        {level: 3, name: '💫 Звездный', desc: '+0.6 энергии/сек', bonus: 0.6, price: 5000, currency: 'coins', locked: false},
-                        {level: 4, name: '🌟 Золотой', desc: '+0.8 энергии/сек', bonus: 0.8, price: 10000, currency: 'coins', locked: false},
-                        {level: 5, name: '💎 Бриллиантовый', desc: '+1.0 энергии/сек', bonus: 1.0, price: 20000, currency: 'coins', locked: false},
-                        {level: 6, name: '🔥 Огненный', desc: '+1.2 энергии/сек', bonus: 1.2, price: 40000, currency: 'coins', locked: false},
-                        {level: 7, name: '❄️ Ледяной', desc: '+1.4 энергии/сек', bonus: 1.4, price: 80000, currency: 'coins', locked: false},
-                        {level: 8, name: '🌊 Морской', desc: '+1.6 энергии/сек', bonus: 1.6, price: 160000, currency: 'coins', locked: false},
-                        {level: 9, name: '⚡ Молниеносный', desc: '+1.8 энергии/сек', bonus: 1.8, price: 320000, currency: 'coins', locked: false},
-                        {level: 10, name: '🌙 Лунный', desc: '+2.0 энергии/сек', bonus: 2.0, price: 640000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateEnergyEffect(level);
+                            const price = calculateEnergyPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateEnergyName(level),
+                                desc: `+${effect} энергии/сек`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'energy_expand': {
                     name: '📈 Расширение Энергии',
                     emoji: '📈',
-                    items: [
-                        {level: 1, name: '🏃 Начальный', desc: 'Расширить максимум на 100', bonus: 100, price: 2000, currency: 'coins', locked: false},
-                        {level: 2, name: '💨 Быстрый', desc: 'Расширить максимум на 150', bonus: 150, price: 5000, currency: 'coins', locked: false},
-                        {level: 3, name: '⚡ Ускоренный', desc: 'Расширить максимум на 250', bonus: 250, price: 10000, currency: 'coins', locked: false},
-                        {level: 4, name: '🚀 Турбо', desc: 'Расширить максимум на 400', bonus: 400, price: 20000, currency: 'coins', locked: false},
-                        {level: 5, name: '💥 Ультра', desc: 'Расширить максимум на 600', bonus: 600, price: 40000, currency: 'coins', locked: false},
-                        {level: 6, name: '🌟 Супер', desc: 'Расширить максимум на 900', bonus: 900, price: 80000, currency: 'coins', locked: false},
-                        {level: 7, name: '🌪️ Мега', desc: 'Расширить максимум на 1250', bonus: 1250, price: 160000, currency: 'coins', locked: false},
-                        {level: 8, name: '🔥 Огненный', desc: 'Расширить максимум на 1750', bonus: 1750, price: 320000, currency: 'coins', locked: false},
-                        {level: 9, name: '❄️ Ледяной', desc: 'Расширить максимум на 2500', bonus: 2500, price: 640000, currency: 'coins', locked: false},
-                        {level: 10, name: '💫 Космический', desc: 'Расширить максимум на 3750', bonus: 3750, price: 1280000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateExpandEffect(level);
+                            const price = calculateExpandPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateExpandName(level),
+                                desc: `Расширить максимум энергии на ${effect}`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'autobot': {
                     name: '🤖 Автобот',
@@ -3067,15 +3082,27 @@
                     5: 'rgba(59,130,246,0.3)', // blue
                     10: 'rgba(139,92,246,0.3)', // purple
                     15: 'rgba(236,72,153,0.3)', // pink
-                    20: 'rgba(251,191,36,0.3)' // gold
+                    20: 'rgba(251,191,36,0.3)', // gold
+                    25: 'rgba(34,197,94,0.3)', // green
+                    30: 'rgba(239,68,68,0.3)', // red
+                    35: 'rgba(168,85,247,0.3)', // violet
+                    40: 'rgba(245,158,11,0.3)', // amber
+                    45: 'rgba(6,182,212,0.3)', // cyan
+                    50: 'rgba(255,215,0,0.3)' // gold
                 };
                 const rarityColor = item.level <= 5 ? rarityColors[1] : 
                                    item.level <= 10 ? rarityColors[5] : 
                                    item.level <= 15 ? rarityColors[10] : 
-                                   item.level <= 19 ? rarityColors[15] : rarityColors[20];
+                                   item.level <= 20 ? rarityColors[15] : 
+                                   item.level <= 25 ? rarityColors[20] :
+                                   item.level <= 30 ? rarityColors[25] :
+                                   item.level <= 35 ? rarityColors[30] :
+                                   item.level <= 40 ? rarityColors[35] :
+                                   item.level <= 45 ? rarityColors[40] :
+                                   item.level <= 50 ? rarityColors[45] : rarityColors[50];
                 
-                // Calculate price and bonus based on user level (only for regular items, not VIP)
-                const stats = item.basePrice && !item.premium ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
+                // Use direct price and bonus from item (calculated by formulas)
+                const stats = {price: item.price, bonus: item.bonus};
                 
                 return `
                     <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
@@ -3087,8 +3114,11 @@
                         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                             <span style="font-size:20px;">${item.name.split(' ')[0]}</span>
                             <div style="flex:1;">
-                                <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')}</div>
-                                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${item.desc}</div>
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                                    <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')}</div>
+                                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${item.level}</div>
+                                </div>
+                                <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
@@ -3164,11 +3194,8 @@
         }
         
         function buyShopItem(category, level, price) {
-            // Calculate actual price based on user level
-            const userLevel = 0; // TODO: get from userData
-            const item = shopData[category]?.items.find(i => i.level === level);
-            const stats = item?.basePrice ? calculateItemStats(item.basePrice, item.baseBonus, level, userLevel) : {price: price};
-            const actualPrice = stats.price;
+            // Use direct price from the item (calculated by formulas)
+            const actualPrice = price;
             fetch('/api/buy_shop_item', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
