@@ -1,0 +1,46 @@
+QUANTUM NEXUS - РЕЗЕРВНАЯ КОПИЯ
+================================
+
+Дата создания: 29.10.2025 06:12
+Версия: Стабильная рабочая версия
+Размер: ~1882 файла
+
+СОДЕРЖИМОЕ:
+-----------
+✅ Полная копия папки quantum-nexus
+✅ Все исходные файлы Python
+✅ Веб-приложение (web_app.html)
+✅ Админ панель (admin.html)
+✅ Конфигурационные файлы
+✅ Git репозиторий с историей
+✅ Скрипты установки и обновления
+
+ФАЙЛЫ ДЛЯ ВОССТАНОВЛЕНИЯ:
+-------------------------
+- RESTORE_INSTRUCTIONS.md - Подробные инструкции
+- QUICK_RESTORE.sh - Скрипт быстрого восстановления
+- quantum-nexus/ - Основная папка приложения
+
+КОМАНДЫ ДЛЯ ВОССТАНОВЛЕНИЯ:
+---------------------------
+1. Остановить сервисы:
+   sudo systemctl stop quantum-nexus-web
+   sudo systemctl stop quantum-nexus-bot
+
+2. Загрузить файлы на сервер:
+   scp -r quantum-nexus root@your-server:/root/
+
+3. Установить права:
+   chmod +x /root/quantum-nexus/*.sh
+   chmod 644 /root/quantum-nexus/*.py
+
+4. Обновить веб-файлы:
+   sudo cp /root/quantum-nexus/web_app.html /var/www/quantum-nexus/
+   sudo cp /root/quantum-nexus/admin.html /var/www/quantum-nexus/
+
+5. Перезапустить сервисы:
+   sudo systemctl start quantum-nexus-web
+   sudo systemctl start quantum-nexus-bot
+
+СТАТУС: Готово к восстановлению ✅
+
