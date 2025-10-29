@@ -1214,21 +1214,28 @@ def buy_shop_item():
                 user.energy_expand_levels = json.dumps(levels)
             
             if category == 'tap_boost':
-                # Calculate tap boost effect based on level using base_effect from frontend
-                bonus = int(base_effect * (1.2 ** level))  # Same formula as frontend
+                # Calculate the INCREMENT effect (what should be added)
+                # Current effect at level-1, new effect at level, difference is what we add
+                current_effect = int(base_effect * (1.2 ** (level - 1))) if level > 1 else 0
+                new_effect = int(base_effect * (1.2 ** level))
+                bonus = new_effect - current_effect  # This is the increment
                 
                 # Add to existing tap boost (sum all tap boosts)
                 current_multiplier = getattr(user, 'active_multiplier', 1)
                 user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':
-                # Calculate energy regeneration boost based on level using base_effect from frontend
-                regen_boost = round(base_effect * (1.15 ** level), 2)  # Same formula as frontend
+                # Calculate the INCREMENT effect (what should be added)
+                current_effect = round(base_effect * (1.15 ** (level - 1)), 2) if level > 1 else 0
+                new_effect = round(base_effect * (1.15 ** level), 2)
+                regen_boost = new_effect - current_effect  # This is the increment
                 
                 current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
                 user.energy_regen_rate = current_regen_rate + regen_boost
             elif category == 'energy_expand':
-                # Calculate energy expansion based on level using base_effect from frontend
-                energy_to_add = int(base_effect * (1.25 ** level))  # Same formula as frontend
+                # Calculate the INCREMENT effect (what should be added)
+                current_effect = int(base_effect * (1.25 ** (level - 1))) if level > 1 else 0
+                new_effect = int(base_effect * (1.25 ** level))
+                energy_to_add = new_effect - current_effect  # This is the increment
                 
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
