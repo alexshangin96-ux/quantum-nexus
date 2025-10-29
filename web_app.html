@@ -2278,7 +2278,7 @@
                 const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                 
                 // Block all autobot buttons
-                for (let i = 1; i <= 20; i++) {
+                for (let i = 1; i <= 15; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
                     if (btn) {
                         btn.disabled = true;
@@ -2304,7 +2304,7 @@
                     if (remainingMs <= 0) {
                         clearInterval(window.autobotShopInterval);
                         // Unblock all buttons
-                        for (let i = 1; i <= 20; i++) {
+                        for (let i = 1; i <= 15; i++) {
                             const btn = document.getElementById(`autobot-btn-${i}`);
                             if (btn) {
                                 btn.disabled = false;
@@ -2330,7 +2330,7 @@
             } else {
                 // Unblock all buttons
                 if (window.autobotShopInterval) clearInterval(window.autobotShopInterval);
-                for (let i = 1; i <= 20; i++) {
+                for (let i = 1; i <= 15; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
                     if (btn) {
                         btn.disabled = false;
