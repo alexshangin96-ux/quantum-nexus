@@ -2334,6 +2334,14 @@
                 
                 // Load shop levels after user data is loaded
                 loadShopLevels();
+                
+                // Force refresh of current shop category if it's open
+                setTimeout(() => {
+                    const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
+                    if (activeBtn && activeBtn.dataset.category) {
+                        loadShopCategory(activeBtn.dataset.category);
+                    }
+                }, 100);
             })
             .catch(err => console.error('Error:', err));
         }
@@ -3061,7 +3069,9 @@
                     const baseEffect = item.baseEffect || 1;
                     const basePrice = item.basePrice || 1000;
                     // Показываем реальное значение из базы данных (active_multiplier - 1, так как базовое значение 1)
-                    currentEffect = Math.max(0, (window.userData?.active_multiplier || 1) - 1);
+                    const userMultiplier = window.userData?.active_multiplier || 1;
+                    console.log('Tap boost - userMultiplier:', userMultiplier, 'window.userData:', window.userData);
+                    currentEffect = Math.max(0, userMultiplier - 1);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
                     // Показываем прирост эффекта для следующего уровня
                     nextLevelEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
@@ -3069,7 +3079,9 @@
                     const baseEffect = item.baseEffect || 0.5;
                     const basePrice = item.basePrice || 1500;
                     // Показываем реальное значение из базы данных (energy_regen_rate - 1, так как базовое значение 1)
-                    currentEffect = Math.max(0, Math.round(((window.userData?.energy_regen_rate || 1) - 1) * 10) / 10);
+                    const userRegenRate = window.userData?.energy_regen_rate || 1;
+                    console.log('Energy buy - userRegenRate:', userRegenRate, 'window.userData:', window.userData);
+                    currentEffect = Math.max(0, Math.round((userRegenRate - 1) * 10) / 10);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.4, currentLevel + 1));
                     // Показываем прирост эффекта для следующего уровня (максимум 1 десятичная)
                     nextLevelEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 10) / 10;
@@ -3077,7 +3089,9 @@
                     const baseEffect = item.baseEffect || 50;
                     const basePrice = item.basePrice || 2000;
                     // Показываем реальное значение из базы данных (max_energy - 1000, так как базовое значение 1000)
-                    currentEffect = Math.max(0, (window.userData?.max_energy || 1000) - 1000);
+                    const userMaxEnergy = window.userData?.max_energy || 1000;
+                    console.log('Energy expand - userMaxEnergy:', userMaxEnergy, 'window.userData:', window.userData);
+                    currentEffect = Math.max(0, userMaxEnergy - 1000);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.6, currentLevel + 1));
                     // Показываем прирост эффекта для следующего уровня
                     nextLevelEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1));
@@ -3266,8 +3280,6 @@
             const actualPrice = price;
             const userId = window.user?.id || window.userData?.id;
             
-            console.log('Buying item:', {userId, category, level, price: actualPrice, itemIndex});
-            
             if (!userId) {
                 showNotification('error', 'Ошибка: пользователь не найден');
                 return;
@@ -3275,6 +3287,14 @@
             
             // For multilevel items, we need to pass the next level (current level + 1)
             const nextLevel = level + 1;
+            
+            // Get base effect and price from shopData
+            const shopData = window.shopData || {};
+            const item = shopData[category] && shopData[category].items && shopData[category].items[itemIndex] 
+                ? shopData[category].items[itemIndex] 
+                : { baseEffect: 1, basePrice: 1000 };
+            
+            console.log('Buying item:', {userId, category, level, price: actualPrice, itemIndex, item});
             
             fetch('/api/buy_shop_item', {
                 method: 'POST',
