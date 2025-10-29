@@ -817,21 +817,22 @@
         }
 
         .close-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            color: white;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            position: absolute;
-            top: 15px;
-            right: 15px;
+            background: rgba(255,255,255,0.1) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            cursor: pointer !important;
+            color: white !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+            z-index: 1000 !important;
         }
 
         .close-btn:hover {
@@ -2693,7 +2694,7 @@
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
                     <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
                         <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
-                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:15px;right:15px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
@@ -2803,7 +2804,7 @@
                     <div style="background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.8)); padding: 24px 60px 24px 24px; border-radius: 22px 22px 0 0; text-align: center; position: relative; backdrop-filter: blur(5px);">
                         <h2 style="font-size: 22px; color: #ffd700; margin: 0; font-weight: 800; text-shadow: 0 2px 8px rgba(255,215,0,0.3);">${vipItems.name}</h2>
                         <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 500;">Эксклюзивные функции за Telegram Stars</div>
-                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 18px; right: 18px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); border-radius: 50%; width: 32px; height: 32px; color: #ffd700; cursor: pointer; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,215,0,0.25)'" onmouseout="this.style.background='rgba(255,215,0,0.15)'">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="background: rgba(255,215,0,0.15) !important; border: 1px solid rgba(255,215,0,0.4) !important; color: #ffd700 !important;">✕</button>
                     </div>
                     
                     <div style="padding: 20px;">
