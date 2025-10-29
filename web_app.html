@@ -3177,18 +3177,43 @@
             }
         }
         
+        function showNotification(type, message) {
+            const anim = document.createElement('div');
+            anim.style.cssText = 'position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+            const bgColor = type === 'error' ? 'rgba(239,68,68,0.95),rgba(220,38,38,0.95)' : 'rgba(34,197,94,0.95),rgba(16,185,129,0.95)';
+            const icon = type === 'error' ? '💰' : '✨';
+            anim.innerHTML = `<div style="background:linear-gradient(135deg,${bgColor});padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">${icon}</span> ${message}</div>`;
+            document.body.appendChild(anim);
+            setTimeout(() => {
+                anim.style.opacity = '0';
+                anim.style.transform = 'translate(-50%,-60%)';
+                setTimeout(() => anim.remove(), 300);
+            }, 1500);
+        }
+        
         function buyShopItem(category, level, price, itemIndex) {
             // Use direct price from the item (calculated by formulas)
             const actualPrice = price;
+            const userId = window.user?.id || window.userData?.id;
+            
+            console.log('Buying item:', {userId, category, level, price: actualPrice, itemIndex});
+            
+            if (!userId) {
+                showNotification('error', 'Ошибка: пользователь не найден');
+                return;
+            }
+            
+            // For multilevel items, we need to pass the next level (current level + 1)
+            const nextLevel = level + 1;
+            
             fetch('/api/buy_shop_item', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    user_id: window.user?.id || window.userData?.id, 
+                    user_id: userId, 
                     category: category, 
-                    level: level, 
-                    price: actualPrice,
-                    item_index: itemIndex
+                    level: nextLevel, 
+                    price: actualPrice
                 })
             })
             .then(res => res.json())
@@ -3199,7 +3224,7 @@
                         // Find the item in shopData and increase its level
                         const shopData = window.shopData || {};
                         if (shopData[category] && shopData[category].items && shopData[category].items[itemIndex]) {
-                            shopData[category].items[itemIndex].level++;
+                            shopData[category].items[itemIndex].level = nextLevel;
                         }
                     }
                     
