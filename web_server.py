@@ -7,7 +7,7 @@ Server for Telegram Web App
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from database import get_db
-from models import User, MiningMachine, UserCard, Withdrawal, SupportTicket
+from models import User, MiningMachine, UserCard, Withdrawal, SupportTicket, UserAchievement, Transaction
 from utils import calculate_offline_income
 from datetime import datetime, timedelta
 from config import BASE_TAP_REWARD, ENERGY_COST_PER_TAP, MAX_ENERGY
