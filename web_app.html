@@ -2803,7 +2803,8 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            window.shopData = shopData; // Store globally
+            // Merge VIP data with regular shop data
+            window.shopData = { ...shopData, ...vipData }; // Store globally
             
             // Load user's shop levels from database
             loadShopLevels();
