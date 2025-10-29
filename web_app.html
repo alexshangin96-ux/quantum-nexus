@@ -2717,70 +2717,40 @@
             modal.className = 'modal active';
             modal.id = 'shopModal2';
             
-            // New comprehensive shop with 4 categories and 50 levels each
+            // New comprehensive shop with leveling system - one item per category that levels up
             const shopData = {
                 'tap_boost': {
                     name: '💪 Усилитель Тапа',
                     emoji: '💪',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 1; level <= 50; level++) {
-                            const effect = calculateTapBoostEffect(level);
-                            const price = calculateTapBoostPrice(level);
-                            items.push({
-                                level: level,
-                                name: generateTapBoostName(level),
-                                desc: `+${effect} кликов за тап`,
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [{
+                        level: 0, // Will be updated from user data
+                        name: '💪 Усилитель Тапа',
+                        desc: 'Увеличивает количество кликов за тап',
+                        currency: 'coins',
+                        locked: false
+                    }]
                 },
                 'energy_buy': {
                     name: '⚡ Ускорение Восстановления',
                     emoji: '⚡',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 1; level <= 50; level++) {
-                            const effect = calculateEnergyEffect(level);
-                            const price = calculateEnergyPrice(level);
-                            items.push({
-                                level: level,
-                                name: generateEnergyName(level),
-                                desc: `+${effect} энергии/сек`,
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [{
+                        level: 0, // Will be updated from user data
+                        name: '⚡ Ускорение Восстановления',
+                        desc: 'Увеличивает скорость восстановления энергии',
+                        currency: 'coins',
+                        locked: false
+                    }]
                 },
                 'energy_expand': {
                     name: '📈 Расширение Энергии',
                     emoji: '📈',
-                    items: (() => {
-                        const items = [];
-                        for (let level = 1; level <= 50; level++) {
-                            const effect = calculateExpandEffect(level);
-                            const price = calculateExpandPrice(level);
-                            items.push({
-                                level: level,
-                                name: generateExpandName(level),
-                                desc: `Расширить максимум энергии на ${effect}`,
-                                bonus: effect,
-                                price: price,
-                                currency: 'coins',
-                                locked: false
-                            });
-                        }
-                        return items;
-                    })()
+                    items: [{
+                        level: 0, // Will be updated from user data
+                        name: '📈 Расширение Энергии',
+                        desc: 'Увеличивает максимальный запас энергии',
+                        currency: 'coins',
+                        locked: false
+                    }]
                 },
                 'autobot': {
                     name: '🤖 Автобот',
@@ -3067,18 +3037,46 @@
             const items = window.shopData[category].items;
             const list = document.getElementById('shopItemsList');
             
-            // Find user's current level for this category
+            // Get user's current level for this category from userData
             let userLevel = 0;
-            // TODO: Get user level from userData or API
-            // For now, we'll use a simple calculation based on user's coins
-            if (window.userData && window.userData.coins) {
-                userLevel = Math.floor(Math.log10(window.userData.coins + 1)) || 0;
+            if (window.userData) {
+                // Get level from userData based on category
+                if (category === 'tap_boost') {
+                    userLevel = window.userData.tap_boost_level || 0;
+                } else if (category === 'energy_buy') {
+                    userLevel = window.userData.energy_buy_level || 0;
+                } else if (category === 'energy_expand') {
+                    userLevel = window.userData.energy_expand_level || 0;
+                }
             }
+            
+            // Update item level with user's current level
+            items[0].level = userLevel;
             
             list.innerHTML = items.map(item => {
                 const isLocked = false; // Remove locking - all items are available
+                
+                // Calculate current effect and next level price based on current level
+                let currentEffect = 0;
+                let nextLevelPrice = 0;
+                let nextLevelEffect = 0;
+                
+                if (category === 'tap_boost') {
+                    currentEffect = item.level > 0 ? calculateTapBoostEffect(item.level) : 0;
+                    nextLevelPrice = calculateTapBoostPrice(item.level + 1);
+                    nextLevelEffect = calculateTapBoostEffect(item.level + 1);
+                } else if (category === 'energy_buy') {
+                    currentEffect = item.level > 0 ? calculateEnergyEffect(item.level) : 0;
+                    nextLevelPrice = calculateEnergyPrice(item.level + 1);
+                    nextLevelEffect = calculateEnergyEffect(item.level + 1);
+                } else if (category === 'energy_expand') {
+                    currentEffect = item.level > 0 ? calculateExpandEffect(item.level) : 0;
+                    nextLevelPrice = calculateExpandPrice(item.level + 1);
+                    nextLevelEffect = calculateExpandEffect(item.level + 1);
+                }
+                
                 const rarityColors = {
-                    1: 'rgba(148,163,184,0.3)', // gray
+                    0: 'rgba(148,163,184,0.3)', // gray
                     5: 'rgba(59,130,246,0.3)', // blue
                     10: 'rgba(139,92,246,0.3)', // purple
                     15: 'rgba(236,72,153,0.3)', // pink
@@ -3090,7 +3088,7 @@
                     45: 'rgba(6,182,212,0.3)', // cyan
                     50: 'rgba(255,215,0,0.3)' // gold
                 };
-                const rarityColor = item.level <= 5 ? rarityColors[1] : 
+                const rarityColor = item.level <= 5 ? rarityColors[0] : 
                                    item.level <= 10 ? rarityColors[5] : 
                                    item.level <= 15 ? rarityColors[10] : 
                                    item.level <= 20 ? rarityColors[15] : 
@@ -3101,8 +3099,7 @@
                                    item.level <= 45 ? rarityColors[40] :
                                    item.level <= 50 ? rarityColors[45] : rarityColors[50];
                 
-                // Use direct price and bonus from item (no more basePrice/baseBonus)
-                const stats = {price: item.price, bonus: item.bonus};
+                const stats = {price: nextLevelPrice, bonus: nextLevelEffect};
                 
                 return `
                     <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
@@ -3119,22 +3116,27 @@
                                     <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${item.level}</div>
                                 </div>
                                 <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
+                                ${item.level > 0 ? `
+                                    <div style="font-size:10px;color:#4ade80;margin-top:2px;">
+                                        Текущий эффект: +${currentEffect}${category === 'energy_buy' ? ' энергии/сек' : category === 'energy_expand' ? ' максимум' : ' кликов'}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
                             <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Кликов за тап:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus}</span>
+                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Следующий уровень:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} кликов</span>
                             </div>
                         ` : category === 'energy_buy' ? `
                             <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Добавить:</span>
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Следующий уровень:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
                             </div>
                         ` : category === 'energy_expand' ? `
                             <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширить максимум энергии на:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Следующий уровень:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()} максимум</span>
                             </div>
                         ` : `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
@@ -3194,7 +3196,7 @@
         }
         
         function buyShopItem(category, level, price) {
-            // Use direct price from the item (no more basePrice calculation)
+            // For leveling system, we're buying the next level
             const actualPrice = price;
             fetch('/api/buy_shop_item', {
                 method: 'POST',
@@ -3202,7 +3204,7 @@
                 body: JSON.stringify({
                     user_id: window.user?.id, 
                     category: category, 
-                    level: level, 
+                    level: level, // This will be the next level to buy
                     price: actualPrice
                 })
             })
@@ -3212,7 +3214,7 @@
                     // Compact success notification for Telegram
                     const anim = document.createElement('div');
                     anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Куплено!</div>';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Уровень повышен!</div>';
                     document.body.appendChild(anim);
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
