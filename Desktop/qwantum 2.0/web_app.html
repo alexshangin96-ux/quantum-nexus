@@ -817,27 +817,31 @@
         }
 
         .close-btn {
-            background: rgba(255,255,255,0.1) !important;
-            border: none !important;
+            background: rgba(255,255,255,0.2) !important;
+            border: 2px solid rgba(255,255,255,0.4) !important;
             border-radius: 50% !important;
-            width: 40px !important;
-            height: 40px !important;
+            width: 32px !important;
+            height: 32px !important;
             cursor: pointer !important;
             color: white !important;
-            font-size: 20px !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.2s ease !important;
             position: absolute !important;
-            top: 15px !important;
-            right: 15px !important;
-            z-index: 9999 !important;
+            top: 10px !important;
+            right: 10px !important;
+            z-index: 10001 !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
         }
 
         .close-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: rotate(90deg);
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(255,255,255,0.5) !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
         }
 
         /* Стильная кнопка закрытия для категорий */
