@@ -2726,9 +2726,9 @@
             
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
-                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
+                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
                         <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position:absolute;top:10px;right:10px;transform:none;">✕</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
