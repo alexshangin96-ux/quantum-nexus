@@ -68,3 +68,4 @@ nohup python bot.py > bot.log 2>&1 &
 - Бейджи "АКЦИЯ", "VIP", "LEGENDARY" создадут срочность
 
 
+

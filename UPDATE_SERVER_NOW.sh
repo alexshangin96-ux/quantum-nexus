@@ -20,3 +20,4 @@ systemctl restart quantum-nexus-web.service
 echo "✅ Готово! Проверьте /start в боте."
 
 
+

@@ -61,3 +61,4 @@ journalctl -u quantum-nexus-bot | grep ERROR
 Если нужно тестировать без реальных Stars, скажите мне и я добавлю тестовый режим.
 
 
+

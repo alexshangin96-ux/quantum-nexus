@@ -18,3 +18,4 @@ ORDER BY total_earned DESC
 LIMIT 10;
 
 
+

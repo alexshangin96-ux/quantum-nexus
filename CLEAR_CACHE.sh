@@ -21,3 +21,4 @@ systemctl restart quantum-nexus-bot
 echo "✅ Кэш очищен, сервисы перезапущены"
 
 
+

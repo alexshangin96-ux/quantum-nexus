@@ -57,6 +57,11 @@ class User(Base):
     auto_tap_speed = Column(Float, default=2.0)  # taps per second
     auto_tap_expires_at = Column(DateTime, nullable=True)  # When autobot expires
     
+    # Shop item levels (JSON strings to store levels for each item)
+    tap_boost_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
+    energy_buy_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
+    energy_expand_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
+    
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
     last_passive_update = Column(DateTime, default=datetime.utcnow)

@@ -28,3 +28,4 @@ ssh root@ваш_IP "cd /root/quantum-nexus && git pull origin main && cp admin.h
 ✅ Индивидуальное обновление каждой вкладки
 
 
+

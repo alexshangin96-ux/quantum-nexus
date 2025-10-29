@@ -69,3 +69,4 @@ journalctl -u quantum-nexus-bot | tail -50
 Должен появиться invoice. Если НЕ появился - Stars недоступны.
 
 
+

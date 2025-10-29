@@ -31,3 +31,4 @@ sudo journalctl -u quantum-nexus -n 20 --no-pager | grep -E "(ERROR|Starting|Bot
 echo "=== Готово! ==="
 
 
+

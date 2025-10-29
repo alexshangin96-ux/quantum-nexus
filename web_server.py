@@ -1180,6 +1180,7 @@ def buy_shop_item():
         category = data.get('category')
         level = data.get('level')
         price = data.get('price')
+        item_index = data.get('item_index', 0)  # Index of the item being purchased
         
         if not user_id or not category or not level or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
@@ -1194,6 +1195,21 @@ def buy_shop_item():
                 return jsonify({'success': False, 'error': 'Недостаточно коинов'})
             
             user.coins -= price
+            
+            # Update item level in database
+            import json
+            if category == 'tap_boost':
+                levels = json.loads(user.tap_boost_levels or '{}')
+                levels[str(item_index)] = level
+                user.tap_boost_levels = json.dumps(levels)
+            elif category == 'energy_buy':
+                levels = json.loads(user.energy_buy_levels or '{}')
+                levels[str(item_index)] = level
+                user.energy_buy_levels = json.dumps(levels)
+            elif category == 'energy_expand':
+                levels = json.loads(user.energy_expand_levels or '{}')
+                levels[str(item_index)] = level
+                user.energy_expand_levels = json.dumps(levels)
             
             if category == 'tap_boost':
                 # Tap boost items: bonus = number of extra taps
@@ -1253,6 +1269,31 @@ def buy_shop_item():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/get_shop_levels', methods=['POST'])
+def get_shop_levels():
+    """Get shop item levels for user"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Missing user_id'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            import json
+            return jsonify({
+                'success': True,
+                'tap_boost_levels': json.loads(user.tap_boost_levels or '{}'),
+                'energy_buy_levels': json.loads(user.energy_buy_levels or '{}'),
+                'energy_expand_levels': json.loads(user.energy_expand_levels or '{}')
+            })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/buy_with_stars', methods=['POST'])
 def buy_with_stars():

@@ -2790,6 +2790,10 @@
             `;
             document.body.appendChild(modal);
             window.shopData = shopData; // Store globally
+            
+            // Load user's shop levels from database
+            loadShopLevels();
+            
             loadShopCategory('tap_boost');
         }
         
@@ -3186,6 +3190,46 @@
                 })
                 .catch(err => console.error('Error loading user data for autobots:', err));
             }
+        }
+        
+        function loadShopLevels() {
+            const userId = window.user?.id || window.userData?.id;
+            if (!userId) return;
+            
+            fetch('/api/get_shop_levels', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: userId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update shopData with levels from database
+                    if (window.shopData) {
+                        // Update tap_boost levels
+                        Object.keys(data.tap_boost_levels).forEach(index => {
+                            if (window.shopData.tap_boost && window.shopData.tap_boost.items[index]) {
+                                window.shopData.tap_boost.items[index].level = data.tap_boost_levels[index];
+                            }
+                        });
+                        
+                        // Update energy_buy levels
+                        Object.keys(data.energy_buy_levels).forEach(index => {
+                            if (window.shopData.energy_buy && window.shopData.energy_buy.items[index]) {
+                                window.shopData.energy_buy.items[index].level = data.energy_buy_levels[index];
+                            }
+                        });
+                        
+                        // Update energy_expand levels
+                        Object.keys(data.energy_expand_levels).forEach(index => {
+                            if (window.shopData.energy_expand && window.shopData.energy_expand.items[index]) {
+                                window.shopData.energy_expand.items[index].level = data.energy_expand_levels[index];
+                            }
+                        });
+                    }
+                }
+            })
+            .catch(err => console.error('Error loading shop levels:', err));
         }
         
         function showNotification(type, message) {
