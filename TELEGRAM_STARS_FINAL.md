@@ -120,3 +120,4 @@ journalctl -u quantum-nexus-bot | grep "bought product"
 - Вместо отправки invoice, проверьте баланс и спишите коины
 - Добавьте бонусные коины
 
+

@@ -120,3 +120,4 @@ journalctl -u quantum-nexus-web -f
 Готово! Откройте `https://quantum-nexus.ru/web_app.html`
 
 
+

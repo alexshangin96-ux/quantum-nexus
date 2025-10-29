@@ -10,3 +10,4 @@ sudo systemctl restart quantum-nexus-web.service
 sudo systemctl restart quantum-nexus
 
 ГОТОВО!
+

@@ -21,3 +21,4 @@ systemctl status quantum-nexus-web.service --no-pager -l
 echo ""
 echo "✅ ОБНОВЛЕНО! Откройте /start в боте заново"
 
+

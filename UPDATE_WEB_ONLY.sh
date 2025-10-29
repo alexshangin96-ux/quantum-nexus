@@ -28,3 +28,4 @@ nohup python3 web_server.py > /dev/null 2>&1 &
 echo "✅ Веб-приложение обновлено!"
 echo "📋 Проверьте: http://your-server:5000"
 
+

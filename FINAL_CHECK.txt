@@ -8,3 +8,4 @@ grep "VIP стартовый" web_app.html
 systemctl restart quantum-nexus-web.service
 
 After running, send output of commands 1, 4, 5
+

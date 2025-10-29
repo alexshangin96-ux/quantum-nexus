@@ -27,3 +27,4 @@ ssh root@ваш_IP "cd /root/quantum-nexus && git pull origin main && cp admin.h
 ✅ Сохранение активной вкладки
 ✅ Индивидуальное обновление каждой вкладки
 
+

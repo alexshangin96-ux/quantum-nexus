@@ -21,3 +21,4 @@ echo ""
 echo "=== Recent logs ==="
 sudo journalctl -u quantum-nexus-web -n 20 --no-pager
 
+

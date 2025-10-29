@@ -16,3 +16,4 @@ systemctl status quantum-nexus-web.service
 - Подробные описания
 - Новые цены
 
+

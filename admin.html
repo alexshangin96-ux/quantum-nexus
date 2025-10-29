@@ -379,7 +379,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 ul.appendChild(card);
@@ -547,7 +547,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 userCardsContainer.appendChild(card);
@@ -842,23 +842,164 @@
             document.getElementById('freezeModal').remove();
         }
         function resetUser(uid){
-            if(confirm('⚠️ ПОЛНОЕ ОБНУЛЕНИЕ АККАУНТА!\n\nЭто удалит ВСЕ:\n• Коины и QuanHash\n• Карточки и машины\n• Бусты и усилители\n• Историю выводов\n• Поддержку\n\nДействие НЕОБРАТИМО!\n\nПродолжить?')){
-                fetch('/api/admin/reset_user', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({user_id: uid})
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if(data.success) {
-                        showNotification('✅ Аккаунт полностью обнулен!');
-                        loadUsers();
-                    } else {
-                        showNotification('❌ Ошибка: ' + data.error);
-                    }
-                })
-                .catch(() => showNotification('❌ Ошибка обнуления'));
+            openResetUserModal(uid);
+        }
+        
+        function openResetUserModal(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width:700px;background:linear-gradient(135deg,rgba(239,68,68,0.1),rgba(220,38,38,0.1));border:2px solid #ef4444;">
+                    <div style="text-align:center;margin-bottom:25px;">
+                        <div style="font-size:48px;margin-bottom:15px;">⚠️</div>
+                        <h2 style="color:#ef4444;font-size:24px;margin-bottom:10px;font-weight:800;">ПОЛНЫЙ СБРОС ПОЛЬЗОВАТЕЛЯ</h2>
+                        <div style="color:#fca5a5;font-size:16px;line-height:1.5;">
+                            Это действие <strong>НЕОБРАТИМО</strong> и обнулит ВСЕ данные пользователя!
+                        </div>
+                    </div>
+                    
+                    <div style="background:rgba(239,68,68,0.2);padding:20px;border-radius:12px;margin-bottom:25px;border:1px solid rgba(239,68,68,0.3);">
+                        <h3 style="color:#ef4444;font-size:18px;margin-bottom:15px;font-weight:700;">Что будет сброшено:</h3>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;color:#fca5a5;font-size:14px;">
+                            <div>💰 Коины → 0</div>
+                            <div>💎 QuanHash → 0</div>
+                            <div>⚡ Энергия → 100</div>
+                            <div>📈 Максимум энергии → 100</div>
+                            <div>🔄 Скорость регенерации → 1</div>
+                            <div>💪 Множитель тапа → 1</div>
+                            <div>🤖 Автобот → отключен</div>
+                            <div>👑 VIP статус → сброшен</div>
+                            <div>🏭 Майнинг машины → удалены</div>
+                            <div>💳 Карточки → удалены</div>
+                            <div>📊 Статистика → сброшена</div>
+                            <div>🎯 Достижения → сброшены</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:rgba(255,215,0,0.2);padding:15px;border-radius:10px;margin-bottom:25px;border:1px solid rgba(255,215,0,0.4);">
+                        <div style="color:#fbbf24;font-weight:700;font-size:16px;margin-bottom:8px;">⚠️ ВНИМАНИЕ!</div>
+                        <div style="color:#fde68a;font-size:14px;">
+                            Убедитесь, что вы действительно хотите сбросить данные этого пользователя!
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;color:#fca5a5;font-weight:700;margin-bottom:10px;font-size:16px;">
+                            Выберите тип сброса:
+                        </label>
+                        <div style="display:flex;gap:10px;margin-bottom:15px;">
+                            <label style="flex:1;display:flex;align-items:center;padding:15px;background:rgba(0,0,0,0.2);border:2px solid #ef4444;border-radius:10px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+                                <input type="radio" name="resetType" value="full" checked style="margin-right:10px;transform:scale(1.2);">
+                                <div>
+                                    <div style="color:#ef4444;font-weight:700;">🔥 ПОЛНЫЙ СБРОС</div>
+                                    <div style="color:#fca5a5;font-size:12px;">Все данные → 0</div>
+                                </div>
+                            </label>
+                            <label style="flex:1;display:flex;align-items:center;padding:15px;background:rgba(0,0,0,0.2);border:2px solid #f59e0b;border-radius:10px;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.background='rgba(245,158,11,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">
+                                <input type="radio" name="resetType" value="soft" style="margin-right:10px;transform:scale(1.2);">
+                                <div>
+                                    <div style="color:#f59e0b;font-weight:700;">⚡ МЯГКИЙ СБРОС</div>
+                                    <div style="color:#fbbf24;font-size:12px;">Только прогресс</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;color:#fca5a5;font-weight:700;margin-bottom:10px;font-size:16px;">
+                            Введите "СБРОСИТЬ" для подтверждения:
+                        </label>
+                        <input type="text" id="resetConfirmation" placeholder="СБРОСИТЬ" 
+                               style="width:100%;padding:15px;background:rgba(0,0,0,0.3);border:2px solid #ef4444;border-radius:10px;color:#fff;font-size:16px;text-align:center;font-weight:700;"
+                               onkeyup="this.value=this.value.toUpperCase()">
+                    </div>
+                    
+                    <div style="display:flex;gap:15px;">
+                        <button class="btn-modal" style="flex:1;background:rgba(99,102,241,0.2);color:#fff;padding:15px;font-size:16px;font-weight:700;" 
+                                onclick="this.closest('.modal').remove()">
+                            ❌ Отмена
+                        </button>
+                        <button class="btn-modal" id="confirmResetBtn" style="flex:1;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:15px;font-size:16px;font-weight:700;" 
+                                onclick="confirmUserReset('${uid}')" disabled>
+                            ⚠️ СБРОСИТЬ
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Включаем кнопку только при правильном вводе
+            const confirmInput = document.getElementById('resetConfirmation');
+            const confirmBtn = document.getElementById('confirmResetBtn');
+            
+            confirmInput.addEventListener('input', function() {
+                if (this.value === 'СБРОСИТЬ') {
+                    confirmBtn.disabled = false;
+                    confirmBtn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+                } else {
+                    confirmBtn.disabled = true;
+                    confirmBtn.style.background = 'rgba(239,68,68,0.3)';
+                }
+            });
+        }
+        
+        function confirmUserReset(uid){
+            const modal = document.querySelector('.modal.active');
+            const confirmInput = document.getElementById('resetConfirmation');
+            const resetType = document.querySelector('input[name="resetType"]:checked').value;
+            
+            if (confirmInput.value !== 'СБРОСИТЬ') {
+                showNotification('❌ Неверное подтверждение!');
+                return;
             }
+            
+            // Показываем финальное предупреждение
+            const resetTypeText = resetType === 'full' ? 'ПОЛНЫЙ СБРОС' : 'МЯГКИЙ СБРОС';
+            if (!confirm(`🚨 ФИНАЛЬНОЕ ПРЕДУПРЕЖДЕНИЕ!\n\nВы действительно хотите выполнить ${resetTypeText} для этого пользователя?\n\nЭто действие НЕОБРАТИМО!`)) {
+                return;
+            }
+            
+            // Показываем индикатор загрузки
+            const loadingModal = document.createElement('div');
+            loadingModal.className = 'modal active';
+            loadingModal.innerHTML = `
+                <div class="modal-content" style="max-width:500px;text-align:center;">
+                    <div style="font-size:48px;margin-bottom:20px;">⏳</div>
+                    <h2 style="color:#fff;font-size:24px;margin-bottom:15px;">Сброс данных...</h2>
+                    <div style="color:#94a3b8;font-size:16px;margin-bottom:20px;">
+                        Пожалуйста, подождите.
+                    </div>
+                    <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:10px;">
+                        <div style="color:#10b981;font-weight:700;font-size:14px;">Обрабатывается запрос...</div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingModal);
+            modal.remove();
+            
+            // Отправляем запрос на сброс
+            fetch('/api/admin/reset_user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: uid,
+                    reset_type: resetType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingModal.remove();
+                if (data.success) {
+                    showNotification('✅ Пользователь успешно сброшен!');
+                    loadUsers();
+                } else {
+                    showNotification('❌ Ошибка сброса: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                loadingModal.remove();
+                showNotification('❌ Ошибка соединения при сбросе данных');
+            });
         }
         function setReferrer(uid){
             const modal = document.createElement('div');
@@ -1175,6 +1316,7 @@
                 else showNotification('❌ Ошибка: '+d.error);
             }).catch(()=>showNotification('❌ Ошибка отправки'));
         }
+        
         
         window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
     </script>

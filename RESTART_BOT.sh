@@ -49,3 +49,4 @@ systemctl status quantum-nexus-web --no-pager
 echo ""
 echo "✅ Готово!"
 
+

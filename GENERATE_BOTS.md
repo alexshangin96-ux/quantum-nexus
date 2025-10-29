@@ -30,3 +30,4 @@ systemctl restart quantum-nexus-web
 
 Теперь в топе будут отображаться первые 24 лидера с красивыми VIP значками!
 
+

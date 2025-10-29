@@ -11,3 +11,4 @@ EOF
 echo "✅ Column added and permissions granted!"
 
 
+

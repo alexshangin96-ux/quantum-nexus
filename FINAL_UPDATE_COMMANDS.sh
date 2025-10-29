@@ -82,3 +82,4 @@ echo "   - Админ-панель: https://quantum-nexus.ru/admin"
 echo ""
 
 
+
