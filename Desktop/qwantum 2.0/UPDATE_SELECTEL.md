@@ -12,54 +12,38 @@ ssh root@your-server-ip
 cd /root/quantum-nexus
 ```
 
-### 3. Остановка бота (если запущен)
-```bash
-pkill -f "python.*bot.py"
-# или
-systemctl stop quantum-nexus
-```
-
-### 4. Создание бэкапа текущей версии
-```bash
-cp -r /root/quantum-nexus /root/quantum-nexus-backup-$(date +%Y%m%d-%H%M%S)
-```
-
-### 5. Обновление кода из GitHub
+### 3. Обновление кода из GitHub
 ```bash
 git pull origin master
 ```
 
-### 6. Установка зависимостей (если нужно)
+### 4. Копирование обновленных файлов
 ```bash
-pip install -r requirements.txt
+# Копируем обновленный web_app.html в веб-папку
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Копируем обновленный web_server.py
+sudo cp web_server.py /root/quantum-nexus/
 ```
 
-### 7. Обновление базы данных (если нужно)
+### 5. Перезапуск сервисов
 ```bash
-# Если есть миграции
-python -c "from database import init_db; init_db()"
+# Перезапускаем веб-сервис
+sudo systemctl restart quantum-nexus-web.service
+
+# Перезапускаем основной сервис бота
+sudo systemctl restart quantum-nexus.service
 ```
 
-### 8. Запуск бота
+### 6. Проверка статуса
 ```bash
-# Запуск в фоне
-nohup python bot.py > bot.log 2>&1 &
-
-# Или через systemd
-systemctl start quantum-nexus
-systemctl enable quantum-nexus
-```
-
-### 9. Проверка статуса
-```bash
-# Проверка процессов
-ps aux | grep python
+# Проверка статуса сервисов
+sudo systemctl status quantum-nexus-web.service
+sudo systemctl status quantum-nexus.service
 
 # Проверка логов
-tail -f bot.log
-
-# Проверка systemd (если используется)
-systemctl status quantum-nexus
+sudo journalctl -u quantum-nexus.service -f
+sudo journalctl -u quantum-nexus-web.service -f
 ```
 
 ## 🔧 Дополнительные команды
@@ -100,9 +84,20 @@ git log --oneline -5
 4. Купите автобота и проверьте блокировку кнопок
 5. Убедитесь, что на купленной кнопке показывается таймер
 
+## 🚀 Быстрые команды (копируйте и вставляйте)
+
+```bash
+cd /root/quantum-nexus
+git pull origin master
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /root/quantum-nexus/
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+```
+
 ## 🆘 Если что-то пошло не так
 
-1. Проверьте логи: `tail -f bot.log`
-2. Проверьте статус: `systemctl status quantum-nexus`
-3. Откатитесь к бэкапу: `cp -r /root/quantum-nexus-backup-* /root/quantum-nexus`
-4. Перезапустите бота
+1. Проверьте логи: `sudo journalctl -u quantum-nexus.service -f`
+2. Проверьте статус: `sudo systemctl status quantum-nexus.service`
+3. Откатитесь к предыдущей версии: `git reset --hard HEAD~1`
+4. Перезапустите сервисы: `sudo systemctl restart quantum-nexus-web.service && sudo systemctl restart quantum-nexus.service`

@@ -33,57 +33,56 @@ fi
 
 cd /root/quantum-nexus
 
-# 1. Остановка бота
-log "Останавливаем бота..."
-pkill -f "python.*bot.py" || warning "Бот не был запущен"
-systemctl stop quantum-nexus 2>/dev/null || warning "Сервис quantum-nexus не найден"
-
-# 2. Создание бэкапа
-log "Создаем бэкап..."
-BACKUP_DIR="/root/quantum-nexus-backup-$(date +%Y%m%d-%H%M%S)"
-cp -r /root/quantum-nexus "$BACKUP_DIR"
-log "Бэкап создан: $BACKUP_DIR"
-
-# 3. Обновление кода
+# 1. Обновление кода
 log "Обновляем код из GitHub..."
 git fetch origin
 git reset --hard origin/master
 log "Код обновлен"
 
-# 4. Установка зависимостей
-log "Устанавливаем зависимости..."
-pip install -r requirements.txt --quiet
+# 2. Копирование обновленных файлов
+log "Копируем обновленные файлы..."
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /root/quantum-nexus/
+log "Файлы скопированы"
 
-# 5. Обновление базы данных
-log "Обновляем базу данных..."
-python -c "from database import init_db; init_db()" 2>/dev/null || warning "Ошибка при обновлении БД"
+# 3. Перезапуск сервисов
+log "Перезапускаем сервисы..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+log "Сервисы перезапущены"
 
-# 6. Запуск бота
-log "Запускаем бота..."
-nohup python bot.py > bot.log 2>&1 &
-BOT_PID=$!
-
-# 7. Проверка запуска
+# 4. Проверка статуса
+log "Проверяем статус сервисов..."
 sleep 3
-if ps -p $BOT_PID > /dev/null; then
-    log "✅ Бот успешно запущен (PID: $BOT_PID)"
+
+# Проверка веб-сервиса
+if systemctl is-active --quiet quantum-nexus-web.service; then
+    log "✅ Веб-сервис работает"
 else
-    error "❌ Ошибка при запуске бота!"
-    log "Проверьте логи: tail -f bot.log"
-    exit 1
+    error "❌ Веб-сервис не запустился!"
+    sudo systemctl status quantum-nexus-web.service
 fi
 
-# 8. Финальная проверка
-log "Проверяем статус..."
-sleep 2
-if pgrep -f "python.*bot.py" > /dev/null; then
-    log "✅ Обновление завершено успешно!"
-    log "📊 Статус бота:"
-    ps aux | grep "python.*bot.py" | grep -v grep
-    log "📝 Логи: tail -f bot.log"
+# Проверка основного сервиса
+if systemctl is-active --quiet quantum-nexus.service; then
+    log "✅ Основной сервис работает"
 else
-    error "❌ Бот не запустился!"
-    log "Проверьте логи: tail -f bot.log"
+    error "❌ Основной сервис не запустился!"
+    sudo systemctl status quantum-nexus.service
+fi
+
+# 5. Финальная проверка
+log "Проверяем статус..."
+if systemctl is-active --quiet quantum-nexus-web.service && systemctl is-active --quiet quantum-nexus.service; then
+    log "✅ Обновление завершено успешно!"
+    log "📊 Статус сервисов:"
+    sudo systemctl status quantum-nexus-web.service --no-pager -l
+    sudo systemctl status quantum-nexus.service --no-pager -l
+else
+    error "❌ Не все сервисы запустились!"
+    log "Проверьте логи:"
+    log "sudo journalctl -u quantum-nexus.service -f"
+    log "sudo journalctl -u quantum-nexus-web.service -f"
 fi
 
 echo ""
