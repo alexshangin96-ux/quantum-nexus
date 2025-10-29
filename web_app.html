@@ -816,53 +816,30 @@
             background-clip: text;
         }
 
-        /* ПРОСТОЙ КРЕСТИК БЕЗ АНИМАЦИЙ */
         .close-btn {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.4);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10001;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-            margin: 0;
-            padding: 0;
+            background: rgba(255,255,255,0.1) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            cursor: pointer !important;
+            color: white !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+            z-index: 1000 !important;
         }
 
         .close-btn:hover {
-            background: rgba(255,255,255,0.25);
-            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.2);
+            transform: none !important;
         }
 
-        /* Улучшенные кнопки магазина */
-        .shop-cat-btn {
-            transition: all 0.3s ease !important;
-        }
-
-        .shop-cat-btn:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 25px rgba(102,126,234,0.6) !important;
-        }
-
-        .shop-cat-btn.active {
-            background: linear-gradient(135deg,#667eea,#764ba2) !important;
-            box-shadow: 0 6px 20px rgba(102,126,234,0.5) !important;
-        }
-
-        .shop-cat-btn.active:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 10px 30px rgba(102,126,234,0.7) !important;
-        }
 
         /* Стильная кнопка закрытия для категорий */
         .category-close-btn {
@@ -2715,30 +2692,17 @@
             };
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 480px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 28px;border: 3px solid rgba(167,139,250,0.6);box-shadow: 0 20px 60px rgba(167,139,250,0.4), 0 0 0 1px rgba(255,255,255,0.1);backdrop-filter: blur(20px);">
-                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef,#ff6b6b);padding:24px;border-radius:25px 25px 0 0;text-align:center;position:relative;box-shadow: 0 8px 32px rgba(167,139,250,0.3);">
-                        <h2 style="font-size: 26px; color: #fff; margin: 0; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">🛒 МАГАЗИН</h2>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 4px;">Улучшите свою игру</div>
+                <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
+                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
+                        <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="padding:20px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
-                            <button class="shop-cat-btn active" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.4);transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">💪</div>
-                                <div>Усилитель</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">⚡</div>
-                                <div>Энергия</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">📈</div>
-                                <div>Расширение</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">🤖</div>
-                                <div>Автобот</div>
-                            </button>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
+                            <button class="shop-cat-btn" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">💪 Усилитель</button>
+                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">⚡ Энергия</button>
+                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">📈 Расширение</button>
+                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">🤖 Автобот</button>
                         </div>
                         <!-- VIP Button Row -->
                         <div id="vipButtonRow" style="margin-bottom:15px;">
@@ -2751,7 +2715,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;"></div>
+                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
                         
                         <!-- Стильная кнопка закрытия -->
                         <button class="category-close-btn" onclick="this.closest('.modal').remove()">
@@ -3008,7 +2972,7 @@
                 const stats = item.basePrice && !item.premium ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
                 
                 return `
-                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2))' : 'linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))'};padding:20px;border-radius:18px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.3)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}box-shadow:0 6px 20px rgba(0,0,0,0.2);backdrop-filter:blur(10px);transition:all 0.3s ease;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.2)'">
+                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
                         ${isLocked ? `
                             <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.8);color:#fff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;">🔒</div>
                         ` : item.premium ? `
@@ -3052,7 +3016,7 @@
                         `}
                         ${category === 'autobot' ? `
                             <button id="autobot-btn-${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
+                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
                                     onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
                                     onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
@@ -3060,7 +3024,7 @@
                             </button>
                         ` : `
                             <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
+                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
                                     onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
                                     onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
