@@ -838,23 +838,8 @@
             transform: none !important;
         }
 
-        .close-btn:hover {
-            background: rgba(255,255,255,0.25) !important;
-            border-color: rgba(255,255,255,0.5) !important;
-            transform: scale(1.05) !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
-        }
-
-        .close-btn:active {
-            transform: scale(0.95) !important;
-        }
-
-        /* Принудительный сброс для всех возможных конфликтов */
-        button.close-btn,
-        .modal button.close-btn,
-        .modal-content button.close-btn,
-        [class*="close-btn"],
-        button[class*="close"] {
+        /* ЕДИНСТВЕННОЕ ПРАВИЛО ДЛЯ КРЕСТИКА - БЕЗ ПОВОРОТА */
+        .close-btn {
             background: rgba(255,255,255,0.2) !important;
             border: 2px solid rgba(255,255,255,0.4) !important;
             border-radius: 50% !important;
@@ -876,26 +861,16 @@
             transform: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            min-width: 32px !important;
-            min-height: 32px !important;
-            max-width: 32px !important;
-            max-height: 32px !important;
         }
 
-        /* Дополнительная защита от поворота */
-        button.close-btn:hover,
-        .modal button.close-btn:hover,
-        .modal-content button.close-btn:hover,
-        [class*="close-btn"]:hover,
-        button[class*="close"]:hover {
+        .close-btn:hover {
+            background: rgba(255,255,255,0.25) !important;
+            border-color: rgba(255,255,255,0.5) !important;
             transform: scale(1.05) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
         }
 
-        button.close-btn:active,
-        .modal button.close-btn:active,
-        .modal-content button.close-btn:active,
-        [class*="close-btn"]:active,
-        button[class*="close"]:active {
+        .close-btn:active {
             transform: scale(0.95) !important;
         }
 
@@ -5161,60 +5136,7 @@
             }
         }
 
-        // ПРИНУДИТЕЛЬНЫЙ СБРОС СТИЛЕЙ КРЕСТИКА
-        function forceResetCloseButtons() {
-            const closeButtons = document.querySelectorAll('button.close-btn, .modal button, .modal-content button');
-            closeButtons.forEach(btn => {
-                if (btn.textContent.includes('✕') || btn.onclick && btn.onclick.toString().includes('closeModal')) {
-                    btn.style.transform = 'none';
-                    btn.style.position = 'absolute';
-                    btn.style.top = '10px';
-                    btn.style.right = '10px';
-                    btn.style.zIndex = '99999';
-                }
-            });
-        }
-
-        // Сброс стилей при загрузке и каждые 100мс
-        document.addEventListener('DOMContentLoaded', forceResetCloseButtons);
-        setInterval(forceResetCloseButtons, 100);
     </script>
 
-    <style>
-        /* ФИНАЛЬНАЯ ЗАЩИТА ОТ ПОВОРОТА КРЕСТИКА - МАКСИМАЛЬНЫЙ ПРИОРИТЕТ */
-        button.close-btn,
-        .modal button.close-btn,
-        .modal-content button.close-btn,
-        [class*="close-btn"],
-        button[class*="close"],
-        button[onclick*="closeModal"],
-        button[onclick*="remove"] {
-            transform: none !important;
-            position: absolute !important;
-            top: 10px !important;
-            right: 10px !important;
-            z-index: 99999 !important;
-        }
-
-        button.close-btn:hover,
-        .modal button.close-btn:hover,
-        .modal-content button.close-btn:hover,
-        [class*="close-btn"]:hover,
-        button[class*="close"]:hover,
-        button[onclick*="closeModal"]:hover,
-        button[onclick*="remove"]:hover {
-            transform: scale(1.05) !important;
-        }
-
-        button.close-btn:active,
-        .modal button.close-btn:active,
-        .modal-content button.close-btn:active,
-        [class*="close-btn"]:active,
-        button[class*="close"]:active,
-        button[onclick*="closeModal"]:active,
-        button[onclick*="remove"]:active {
-            transform: scale(0.95) !important;
-        }
-    </style>
 </body>
 </html>
