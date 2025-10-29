@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v4.0 - Updated Shop with 60 Products - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v4.1 - Fixed Close Button Positioning - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -816,74 +816,111 @@
             background-clip: text;
         }
 
+        /* ПРОСТОЙ КРЕСТИК БЕЗ АНИМАЦИЙ */
         .close-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             color: white;
-            font-size: 20px;
+            font-size: 14px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10001;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            margin: 0;
+            padding: 0;
         }
 
         .close-btn:hover {
-            background: rgba(255,255,255,0.2);
-            transform: rotate(90deg);
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.5);
         }
 
-        /* Специальный стиль для крестика в магазине - более специфичный */
-        .close-btn.shop-close-btn {
-            background: linear-gradient(135deg, rgba(239,68,68,0.9), rgba(220,38,38,1)) !important;
-            border: 2px solid rgba(255,255,255,0.4) !important;
-            border-radius: 50% !important;
-            width: 48px !important;
-            height: 48px !important;
-            cursor: pointer !important;
-            color: white !important;
-            font-size: 24px !important;
-            font-weight: 900 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 6px 20px rgba(239,68,68,0.4) !important;
-            position: relative !important;
-            overflow: hidden !important;
+        /* Улучшенные кнопки магазина */
+        .shop-cat-btn {
+            transition: all 0.3s ease !important;
         }
 
-        .close-btn.shop-close-btn::before {
+        .shop-cat-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.6) !important;
+        }
+
+        .shop-cat-btn.active {
+            background: linear-gradient(135deg,#667eea,#764ba2) !important;
+            box-shadow: 0 6px 20px rgba(102,126,234,0.5) !important;
+        }
+
+        .shop-cat-btn.active:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.7) !important;
+        }
+
+        /* Стильная кнопка закрытия для категорий */
+        .category-close-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .category-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* VIP стильная кнопка закрытия */
+        .vip-close-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 15px;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vip-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .vip-close-btn::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255,255,255,0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
-        }
-
-        .close-btn.shop-close-btn:hover {
-            background: linear-gradient(135deg, rgba(239,68,68,1), rgba(220,38,38,1)) !important;
-            transform: rotate(90deg) scale(1.15) !important;
-            box-shadow: 0 8px 30px rgba(239,68,68,0.6) !important;
-            border-color: rgba(255,255,255,0.7) !important;
-        }
-
-        .close-btn.shop-close-btn:hover::before {
+            top: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
         }
 
-        .close-btn.shop-close-btn:active {
-            transform: rotate(90deg) scale(0.9) !important;
-            box-shadow: 0 4px 15px rgba(239,68,68,0.5) !important;
+        .vip-close-btn:hover::before {
+            left: 100%;
         }
 
         .shop-category {
@@ -1389,6 +1426,11 @@
                 <button class="close-btn" onclick="closeModal('statsModal')">✕</button>
             </div>
             <div class="stats-window" id="statsContent"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('statsModal')">
+                ✕ Закрыть статистику
+            </button>
         </div>
     </div>
 
@@ -1397,7 +1439,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">🛒 Магазин</div>
-                <button class="close-btn shop-close-btn" onclick="closeModal('shopModal')">✖</button>
+                <button class="close-btn" onclick="closeModal('shopModal')">✕</button>
             </div>
             <div class="shop-category">
                 <div class="category-title">⚡ Бусты</div>
@@ -1415,6 +1457,11 @@
                 <div class="category-title">💳 Карточки</div>
                 <div id="cardsList"></div>
             </div>
+            
+            <!-- Стильная кнопка закрытия для старого магазина -->
+            <button class="category-close-btn" onclick="closeModal('shopModal')">
+                ✕ Закрыть магазин
+            </button>
         </div>
     </div>
 
@@ -1427,6 +1474,11 @@
             </div>
             <div id="machinesList"></div>
             <button class="btn" onclick="closeModal('miningModal'); openShop(event)">➕ Купить машину</button>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('miningModal')" style="margin-top: 15px;">
+                ✕ Закрыть майнинг
+            </button>
         </div>
     </div>
 
@@ -1438,6 +1490,11 @@
                 <button class="close-btn" onclick="closeModal('cardsModal')">✕</button>
             </div>
             <div id="myCardsList"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('cardsModal')">
+                ✕ Закрыть карточки
+            </button>
         </div>
     </div>
 
@@ -1449,6 +1506,11 @@
                 <button class="close-btn" onclick="closeModal('withdrawModal')">✕</button>
             </div>
             <div id="withdrawContent"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('withdrawModal')">
+                ✕ Закрыть вывод
+            </button>
         </div>
     </div>
 
@@ -1479,6 +1541,11 @@
                 <div class="referral-link" id="refLink">-</div>
                 <button class="btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
             </div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('referralsModal')">
+                ✕ Закрыть рефералы
+            </button>
         </div>
     </div>
 
@@ -1644,7 +1711,7 @@
                         <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
                                 <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">👑 ${userData.username || 'Майнер'}</h2>
-                                <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:38px;height:38px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                             </div>
                             
                             <div style="position:relative;width:110px;height:110px;margin:0 auto 18px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:4px;cursor:pointer;transition:all 0.3s ease;" onclick="document.getElementById('photoInput').click()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
@@ -1755,7 +1822,7 @@
                     <div style="background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);max-width:450px;max-height:85vh;overflow-y:auto;">
                         <div style="background:linear-gradient(135deg,#10b981,#059669);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
                             <h2 style="font-size:22px;color:#fff;margin:0;font-weight:900;">🛍️ МОИ ПОКУПКИ</h2>
-                            <button onclick="this.closest('.modal').remove()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:18px;font-weight:800;">✕</button>
+                            <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                         </div>
                         <div style="padding:20px;">
                 `;
@@ -2053,7 +2120,7 @@
                     <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:20px;border-radius:18px 18px 0 0;text-align:center;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                             <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 900;">🏆 ТОП ЛИДЕРЫ</h2>
-                            <button onclick="this.closest('.modal').remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval);" style="background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:50%;width:36px;height:36px;color:#fff;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                            <button class="close-btn" onclick="this.closest('.modal').remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval);">✕</button>
                         </div>
                         <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Лучшие игроки Quantum Nexus (Автообновление)</div>
                     </div>
@@ -2128,7 +2195,7 @@
                     <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                             <h2 style="font-size: 26px; color: #000; margin: 0; font-weight: 900;">👑 VIP СТАТУСЫ</h2>
-                            <button onclick="this.closest('.modal').remove()" style="background:rgba(0,0,0,0.2);border:2px solid #000;border-radius:50%;width:38px;height:38px;color:#000;cursor:pointer;font-size:20px;font-weight:800;">✕</button>
+                            <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                         </div>
                         <div style="font-size:14px;color:rgba(0,0,0,0.7);">Выберите VIP пакет</div>
                     </div>
@@ -2328,7 +2395,7 @@
                 const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                 
                 // Block all autobot buttons
-                for (let i = 1; i <= 15; i++) {
+                for (let i = 1; i <= 20; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
                     if (btn) {
                         btn.disabled = true;
@@ -2354,7 +2421,7 @@
                     if (remainingMs <= 0) {
                         clearInterval(window.autobotShopInterval);
                         // Unblock all buttons
-                        for (let i = 1; i <= 15; i++) {
+                        for (let i = 1; i <= 20; i++) {
                             const btn = document.getElementById(`autobot-btn-${i}`);
                             if (btn) {
                                 btn.disabled = false;
@@ -2380,7 +2447,7 @@
             } else {
                 // Unblock all buttons
                 if (window.autobotShopInterval) clearInterval(window.autobotShopInterval);
-                for (let i = 1; i <= 15; i++) {
+                for (let i = 1; i <= 20; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
                     if (btn) {
                         btn.disabled = false;
@@ -2648,17 +2715,30 @@
             };
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
-                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
-                        <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
-                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:15px;right:15px;background:linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,1));border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:48px;height:48px;color:#fff;cursor:pointer;font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 20px rgba(239,68,68,0.4);" onmouseover="this.style.background='linear-gradient(135deg,rgba(239,68,68,1),rgba(220,38,38,1))';this.style.transform='rotate(90deg) scale(1.15)';this.style.boxShadow='0 8px 30px rgba(239,68,68,0.6)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,1))';this.style.transform='rotate(0deg) scale(1)';this.style.boxShadow='0 6px 20px rgba(239,68,68,0.4)'">✖</button>
+                <div class="modal-content" style="max-width: 480px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 28px;border: 3px solid rgba(167,139,250,0.6);box-shadow: 0 20px 60px rgba(167,139,250,0.4), 0 0 0 1px rgba(255,255,255,0.1);backdrop-filter: blur(20px);">
+                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef,#ff6b6b);padding:24px;border-radius:25px 25px 0 0;text-align:center;position:relative;box-shadow: 0 8px 32px rgba(167,139,250,0.3);">
+                        <h2 style="font-size: 26px; color: #fff; margin: 0; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">🛒 МАГАЗИН</h2>
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 4px;">Улучшите свою игру</div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="padding:20px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
-                            <button class="shop-cat-btn" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">💪 Усилитель</button>
-                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">⚡ Энергия</button>
-                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">📈 Расширение</button>
-                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">🤖 Автобот</button>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
+                            <button class="shop-cat-btn active" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.4);transition:all 0.3s ease;position:relative;overflow:hidden;">
+                                <div style="font-size:20px;margin-bottom:4px;">💪</div>
+                                <div>Усилитель</div>
+                            </button>
+                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
+                                <div style="font-size:20px;margin-bottom:4px;">⚡</div>
+                                <div>Энергия</div>
+                            </button>
+                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
+                                <div style="font-size:20px;margin-bottom:4px;">📈</div>
+                                <div>Расширение</div>
+                            </button>
+                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
+                                <div style="font-size:20px;margin-bottom:4px;">🤖</div>
+                                <div>Автобот</div>
+                            </button>
                         </div>
                         <!-- VIP Button Row -->
                         <div id="vipButtonRow" style="margin-bottom:15px;">
@@ -2671,7 +2751,12 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
+                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;"></div>
+                        
+                        <!-- Стильная кнопка закрытия -->
+                        <button class="category-close-btn" onclick="this.closest('.modal').remove()">
+                            ✕ Закрыть магазин
+                        </button>
                     </div>
                 </div>
             `;
@@ -2756,7 +2841,7 @@
                     <div style="background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.8)); padding: 24px 60px 24px 24px; border-radius: 22px 22px 0 0; text-align: center; position: relative; backdrop-filter: blur(5px);">
                         <h2 style="font-size: 22px; color: #ffd700; margin: 0; font-weight: 800; text-shadow: 0 2px 8px rgba(255,215,0,0.3);">${vipItems.name}</h2>
                         <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 500;">Эксклюзивные функции за Telegram Stars</div>
-                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 18px; right: 18px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); border-radius: 50%; width: 32px; height: 32px; color: #ffd700; cursor: pointer; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,215,0,0.25)'" onmouseout="this.style.background='rgba(255,215,0,0.15)'">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
                     <div style="padding: 20px;">
@@ -2792,6 +2877,11 @@
                                 </div>
                             `).join('')}
                         </div>
+                        
+                        <!-- VIP стильная кнопка закрытия -->
+                        <button class="vip-close-btn" onclick="this.closest('.modal').remove()">
+                            👑 Закрыть VIP функции
+                        </button>
                     </div>
                 </div>
             `;
@@ -2918,7 +3008,7 @@
                 const stats = item.basePrice && !item.premium ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
                 
                 return `
-                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
+                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2))' : 'linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))'};padding:20px;border-radius:18px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.3)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}box-shadow:0 6px 20px rgba(0,0,0,0.2);backdrop-filter:blur(10px);transition:all 0.3s ease;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.2)'">
                         ${isLocked ? `
                             <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.8);color:#fff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;">🔒</div>
                         ` : item.premium ? `
@@ -2962,7 +3052,7 @@
                         `}
                         ${category === 'autobot' ? `
                             <button id="autobot-btn-${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
+                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
                                     onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
                                     onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
@@ -2970,7 +3060,7 @@
                             </button>
                         ` : `
                             <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:11px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:12px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:14px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'};"
+                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
                                     onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
                                     onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
@@ -3200,7 +3290,7 @@
                 <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                         <h2 style="font-size: 20px; color: #fff;">⚡ Майнинг</h2>
-                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="display:flex;gap:10px;margin-bottom:20px;">
                         <button class="category-btn" onclick="loadMiningCategory('starter')" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:600;">📊 Стартовые</button>
@@ -3410,7 +3500,7 @@
                 <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                         <h2 style="font-size: 24px; color: #fff; font-weight: 800;">💳 Крипто-Карточки</h2>
-                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
                     <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
@@ -3969,7 +4059,7 @@
                 <div class="modal-content" style="max-width: 400px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                         <h2 style="font-size:20px;color:#fff;font-weight:700;">💬 Поддержка</h2>
-                        <button onclick="document.getElementById('supportModal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                        <button class="close-btn" onclick="document.getElementById('supportModal').remove()">✕</button>
                     </div>
                     
                     <div style="margin-bottom:20px;">
@@ -4127,7 +4217,7 @@
                         <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                                 <h2 style="font-size: 20px; color: #fff;">📋 Мои обращения</h2>
-                                <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                             </div>
                             <div>${ticketsList}</div>
                         </div>
@@ -4151,7 +4241,7 @@
                 <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                         <h2 style="font-size: 24px; color: #fff;">🎁 Ежедневные задания</h2>
-                        <button onclick="this.closest('.modal').remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:32px;height:32px;color:#fff;cursor:pointer;font-size:18px;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
                 </div>
@@ -4270,7 +4360,7 @@
                     <!-- Simple Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 700;">⭐ Купить валюту</h2>
-                        <button onclick="this.closest('.modal').remove()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 8px; width: 32px; height: 32px; color: #fff; cursor: pointer; font-size: 18px;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
                     <!-- Category Buttons -->
@@ -5048,6 +5138,9 @@
                 console.error('filterCategory error:', err);
             }
         }
+
     </script>
+
+
 </body>
 </html>
