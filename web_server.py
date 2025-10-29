@@ -2280,8 +2280,9 @@ def reset_user():
             # Reset all user data to initial state
             user.coins = 0
             user.quanhash = 0
-            user.energy = 1000
-            user.max_energy = 1000
+            user.energy = 100  # Начальная энергия
+            user.max_energy = 100  # Начальный максимум энергии
+            user.energy_regen_rate = 1.0  # Скорость восстановления энергии
             user.total_taps = 0
             user.total_earned = 0
             user.total_mined = 0
@@ -2289,11 +2290,20 @@ def reset_user():
             user.multiplier_expires_at = None
             user.auto_tap_enabled = False
             user.auto_tap_level = 0
-            user.auto_tap_speed = 2.0
+            user.auto_tap_speed = 1.0
             user.auto_tap_expires_at = None
+            user.auto_tap_item_id = None
             user.last_active = datetime.utcnow()
             user.last_passive_update = datetime.utcnow()
             user.last_hash_update = datetime.utcnow()
+            
+            # Reset VIP status
+            user.vip_level = 0
+            user.vip_badge = None
+            user.has_premium_support = False
+            user.has_golden_profile = False
+            user.has_top_place = False
+            user.has_unique_design = False
             
             # Remove all user cards
             db.query(UserCard).filter_by(user_id=user.id).delete()

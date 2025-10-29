@@ -379,7 +379,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 ul.appendChild(card);
@@ -547,7 +547,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})">⚠️ Сброс</button>
+<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 userCardsContainer.appendChild(card);
@@ -1175,6 +1175,7 @@
                 else showNotification('❌ Ошибка: '+d.error);
             }).catch(()=>showNotification('❌ Ошибка отправки'));
         }
+        
         
         window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
     </script>
