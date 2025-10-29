@@ -3059,19 +3059,22 @@
                     const basePrice = item.basePrice || 1000;
                     currentEffect = currentLevel > 0 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel)) : 0;
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
-                    nextLevelEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
+                    // Показываем прирост эффекта, а не общий эффект следующего уровня
+                    nextLevelEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1)) - currentEffect;
                 } else if (category === 'energy_buy') {
                     const baseEffect = item.baseEffect || 0.5;
                     const basePrice = item.basePrice || 1500;
                     currentEffect = currentLevel > 0 ? Math.round(baseEffect * Math.pow(1.15, currentLevel) * 100) / 100 : 0;
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.4, currentLevel + 1));
-                    nextLevelEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 100) / 100;
+                    // Показываем прирост эффекта, а не общий эффект следующего уровня
+                    nextLevelEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 100) / 100 - currentEffect;
                 } else if (category === 'energy_expand') {
                     const baseEffect = item.baseEffect || 50;
                     const basePrice = item.basePrice || 2000;
                     currentEffect = currentLevel > 0 ? Math.floor(baseEffect * Math.pow(1.25, currentLevel)) : 0;
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.6, currentLevel + 1));
-                    nextLevelEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1));
+                    // Показываем прирост эффекта, а не общий эффект следующего уровня
+                    nextLevelEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1)) - currentEffect;
                 }
                 
                 const rarityColors = {
@@ -3125,18 +3128,18 @@
                         </div>
                         ${category === 'tap_boost' ? `
                             <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Следующий уровень:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} кликов</span>
+                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Прирост:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} кликов</span>
                             </div>
                         ` : category === 'energy_buy' ? `
                             <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Следующий уровень:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Прирост:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} энергии/сек</span>
                             </div>
                         ` : category === 'energy_expand' ? `
                             <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Следующий уровень:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Прирост:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect.toLocaleString()}</span>
                             </div>
                         ` : `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
@@ -3277,7 +3280,10 @@
                     user_id: userId, 
                     category: category, 
                     level: nextLevel, 
-                    price: actualPrice
+                    price: actualPrice,
+                    item_index: itemIndex,
+                    base_effect: item.baseEffect || 1,
+                    base_price: item.basePrice || 1000
                 })
             })
             .then(res => res.json())

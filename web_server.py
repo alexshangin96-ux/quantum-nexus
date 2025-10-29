@@ -1181,6 +1181,8 @@ def buy_shop_item():
         level = data.get('level')
         price = data.get('price')
         item_index = data.get('item_index', 0)  # Index of the item being purchased
+        base_effect = data.get('base_effect', 1)  # Base effect from frontend
+        base_price = data.get('base_price', 1000)  # Base price from frontend
         
         if not user_id or not category or not level or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
@@ -1212,32 +1214,22 @@ def buy_shop_item():
                 user.energy_expand_levels = json.dumps(levels)
             
             if category == 'tap_boost':
-                # Tap boost items: bonus = number of extra taps
-                tap_boost_map = {
-                    1: 1, 2: 2, 3: 3, 4: 4, 5: 6, 6: 9, 7: 13, 8: 19, 9: 26, 10: 36,
-                    11: 51, 12: 71, 13: 101, 14: 141, 15: 201, 16: 281, 17: 401, 18: 581, 19: 801, 20: 1201
-                }
-                bonus = tap_boost_map.get(level, level)
+                # Calculate tap boost effect based on level using base_effect from frontend
+                bonus = int(base_effect * (1.2 ** level))  # Same formula as frontend
+                
                 # Add to existing tap boost (sum all tap boosts)
                 current_multiplier = getattr(user, 'active_multiplier', 1)
-                # Always add bonus to current multiplier
                 user.active_multiplier = current_multiplier + bonus
             elif category == 'energy_buy':
-                # Increase energy regeneration rate
-                regen_boost_map = {
-                    1: 0.2, 2: 0.4, 3: 0.6, 4: 0.8, 5: 1.0, 6: 1.2, 7: 1.4, 8: 1.6, 9: 1.8, 10: 2.0,
-                    11: 3.0, 12: 4.5, 13: 6.0, 14: 8.0, 15: 10.0
-                }
-                regen_boost = regen_boost_map.get(level, 0.5 * level)
+                # Calculate energy regeneration boost based on level using base_effect from frontend
+                regen_boost = round(base_effect * (1.15 ** level), 2)  # Same formula as frontend
+                
                 current_regen_rate = getattr(user, 'energy_regen_rate', 1.0)
                 user.energy_regen_rate = current_regen_rate + regen_boost
             elif category == 'energy_expand':
-                # Expand max energy
-                expand_map = {
-                    1: 100, 2: 150, 3: 250, 4: 400, 5: 600, 6: 900, 7: 1250, 8: 1750, 9: 2500, 10: 3750,
-                    11: 7500, 12: 12500, 13: 20000, 14: 37500, 15: 75000
-                }
-                energy_to_add = expand_map.get(level, 200 * level)
+                # Calculate energy expansion based on level using base_effect from frontend
+                energy_to_add = int(base_effect * (1.25 ** level))  # Same formula as frontend
+                
                 user.max_energy = getattr(user, 'max_energy', 1000) + energy_to_add
                 user.energy = min(user.energy, user.max_energy)
             elif category == 'autobot':
