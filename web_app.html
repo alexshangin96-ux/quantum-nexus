@@ -2664,20 +2664,17 @@
             return Math.floor(2000 * Math.pow(1.6, level));
         }
         
-        // Name generation functions
+        // Name generation functions - simple names
         function generateTapBoostName(level) {
-            const names = ['💪 Базовый', '💪 Улучшенный', '💪 Мощный', '💪 Эпический', '💪 Легендарный', '💪 Мифический', '💪 Божественный', '💪 Космический', '💪 Квантовый', '💪 Абсолютный'];
-            return names[Math.min(level, names.length - 1)] + ' Усилитель';
+            return '💪 Усилитель Тапа';
         }
         
         function generateEnergyName(level) {
-            const names = ['⚡ Базовый', '⚡ Улучшенный', '⚡ Мощный', '⚡ Эпический', '⚡ Легендарный', '⚡ Мифический', '⚡ Божественный', '⚡ Космический', '⚡ Квантовый', '⚡ Абсолютный'];
-            return names[Math.min(level, names.length - 1)] + ' Генератор';
+            return '⚡ Добавление Энергии';
         }
         
         function generateExpandName(level) {
-            const names = ['📈 Базовое', '📈 Улучшенное', '📈 Мощное', '📈 Эпическое', '📈 Легендарное', '📈 Мифическое', '📈 Божественное', '📈 Космическое', '📈 Квантовое', '📈 Абсолютное'];
-            return names[Math.min(level, names.length - 1)] + ' Расширение';
+            return '📈 Расширение Энергии';
         }
         
         
@@ -2702,7 +2699,7 @@
                             items.push({
                                 level: level,
                                 name: generateTapBoostName(level),
-                                desc: `+${effect} кликов за тап`,
+                                desc: 'Увеличивает количество кликов за тап',
                                 bonus: effect,
                                 price: price,
                                 currency: 'coins',
@@ -2723,7 +2720,7 @@
                             items.push({
                                 level: level,
                                 name: generateEnergyName(level),
-                                desc: `+${effect} энергии/сек`,
+                                desc: 'Добавляет энергию в секунду',
                                 bonus: effect,
                                 price: price,
                                 currency: 'coins',
@@ -2744,7 +2741,7 @@
                             items.push({
                                 level: level,
                                 name: generateExpandName(level),
-                                desc: `Расширить максимум энергии на ${effect}`,
+                                desc: 'Расширяет максимальный запас энергии',
                                 bonus: effect,
                                 price: price,
                                 currency: 'coins',
@@ -3101,17 +3098,17 @@
                         </div>
                         ${category === 'tap_boost' ? `
                             <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Кликов за тап:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus}</span>
+                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Эффект:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} кликов</span>
                             </div>
                         ` : category === 'energy_buy' ? `
                             <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Добавляет:</span>
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Эффект:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
                             </div>
                         ` : category === 'energy_expand' ? `
                             <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширяет максимум энергии на:</span>
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Эффект:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
                             </div>
                         ` : `
@@ -3178,7 +3175,7 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    user_id: window.user?.id, 
+                    user_id: window.user?.id || window.userData?.id, 
                     category: category, 
                     level: level, 
                     price: actualPrice
