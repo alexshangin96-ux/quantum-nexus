@@ -829,11 +829,73 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            position: absolute;
+            top: 15px;
+            right: 15px;
         }
 
         .close-btn:hover {
             background: rgba(255,255,255,0.2);
             transform: rotate(90deg);
+        }
+
+        /* Стильная кнопка закрытия для категорий */
+        .category-close-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .category-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* VIP стильная кнопка закрытия */
+        .vip-close-btn {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 15px;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vip-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .vip-close-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .vip-close-btn:hover::before {
+            left: 100%;
         }
 
         .shop-category {
@@ -1339,6 +1401,11 @@
                 <button class="close-btn" onclick="closeModal('statsModal')">✕</button>
             </div>
             <div class="stats-window" id="statsContent"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('statsModal')">
+                ✕ Закрыть статистику
+            </button>
         </div>
     </div>
 
@@ -1365,6 +1432,11 @@
                 <div class="category-title">💳 Карточки</div>
                 <div id="cardsList"></div>
             </div>
+            
+            <!-- Стильная кнопка закрытия для старого магазина -->
+            <button class="category-close-btn" onclick="closeModal('shopModal')">
+                ✕ Закрыть магазин
+            </button>
         </div>
     </div>
 
@@ -1377,6 +1449,11 @@
             </div>
             <div id="machinesList"></div>
             <button class="btn" onclick="closeModal('miningModal'); openShop(event)">➕ Купить машину</button>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('miningModal')" style="margin-top: 15px;">
+                ✕ Закрыть майнинг
+            </button>
         </div>
     </div>
 
@@ -1388,6 +1465,11 @@
                 <button class="close-btn" onclick="closeModal('cardsModal')">✕</button>
             </div>
             <div id="myCardsList"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('cardsModal')">
+                ✕ Закрыть карточки
+            </button>
         </div>
     </div>
 
@@ -1399,6 +1481,11 @@
                 <button class="close-btn" onclick="closeModal('withdrawModal')">✕</button>
             </div>
             <div id="withdrawContent"></div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('withdrawModal')">
+                ✕ Закрыть вывод
+            </button>
         </div>
     </div>
 
@@ -1429,6 +1516,11 @@
                 <div class="referral-link" id="refLink">-</div>
                 <button class="btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
             </div>
+            
+            <!-- Стильная кнопка закрытия -->
+            <button class="category-close-btn" onclick="closeModal('referralsModal')">
+                ✕ Закрыть рефералы
+            </button>
         </div>
     </div>
 
@@ -2622,6 +2714,11 @@
                             </div>
                         </div>
                         <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
+                        
+                        <!-- Стильная кнопка закрытия -->
+                        <button class="category-close-btn" onclick="this.closest('.modal').remove()">
+                            ✕ Закрыть магазин
+                        </button>
                     </div>
                 </div>
             `;
@@ -2742,6 +2839,11 @@
                                 </div>
                             `).join('')}
                         </div>
+                        
+                        <!-- VIP стильная кнопка закрытия -->
+                        <button class="vip-close-btn" onclick="this.closest('.modal').remove()">
+                            👑 Закрыть VIP функции
+                        </button>
                     </div>
                 </div>
             `;
@@ -2844,6 +2946,11 @@
             
             // Find user's current level for this category
             let userLevel = 0;
+            // TODO: Get user level from userData or API
+            // For now, we'll use a simple calculation based on user's coins
+            if (window.userData && window.userData.coins) {
+                userLevel = Math.floor(Math.log10(window.userData.coins + 1)) || 0;
+            }
             
             list.innerHTML = items.map(item => {
                 const isLocked = false; // Remove locking - all items are available
