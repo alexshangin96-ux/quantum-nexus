@@ -2328,6 +2328,9 @@
                 updateAutobotShopButtons(data);
 
                 // Show withdraw button if user has 500k+ quanhash
+                
+                // Load shop levels after user data is loaded
+                loadShopLevels();
             })
             .catch(err => console.error('Error:', err));
         }
@@ -3226,6 +3229,12 @@
                                 window.shopData.energy_expand.items[index].level = data.energy_expand_levels[index];
                             }
                         });
+                        
+                        // Refresh current shop category if it's open
+                        const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
+                        if (activeBtn && activeBtn.dataset.category) {
+                            loadShopCategory(activeBtn.dataset.category);
+                        }
                     }
                 }
             })
