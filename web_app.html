@@ -836,27 +836,27 @@
             transform: rotate(90deg);
         }
 
-        /* Специальный стиль для крестика в магазине */
-        .shop-close-btn {
-            background: linear-gradient(135deg, rgba(239,68,68,0.9), rgba(220,38,38,1));
-            border: 2px solid rgba(255,255,255,0.4);
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            cursor: pointer;
-            color: white;
-            font-size: 24px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(239,68,68,0.4);
-            position: relative;
-            overflow: hidden;
+        /* Специальный стиль для крестика в магазине - более специфичный */
+        .close-btn.shop-close-btn {
+            background: linear-gradient(135deg, rgba(239,68,68,0.9), rgba(220,38,38,1)) !important;
+            border: 2px solid rgba(255,255,255,0.4) !important;
+            border-radius: 50% !important;
+            width: 48px !important;
+            height: 48px !important;
+            cursor: pointer !important;
+            color: white !important;
+            font-size: 24px !important;
+            font-weight: 900 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 6px 20px rgba(239,68,68,0.4) !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
 
-        .shop-close-btn::before {
+        .close-btn.shop-close-btn::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -869,21 +869,21 @@
             transition: all 0.3s ease;
         }
 
-        .shop-close-btn:hover {
-            background: linear-gradient(135deg, rgba(239,68,68,1), rgba(220,38,38,1));
-            transform: rotate(90deg) scale(1.15);
-            box-shadow: 0 8px 30px rgba(239,68,68,0.6);
-            border-color: rgba(255,255,255,0.7);
+        .close-btn.shop-close-btn:hover {
+            background: linear-gradient(135deg, rgba(239,68,68,1), rgba(220,38,38,1)) !important;
+            transform: rotate(90deg) scale(1.15) !important;
+            box-shadow: 0 8px 30px rgba(239,68,68,0.6) !important;
+            border-color: rgba(255,255,255,0.7) !important;
         }
 
-        .shop-close-btn:hover::before {
+        .close-btn.shop-close-btn:hover::before {
             width: 100%;
             height: 100%;
         }
 
-        .shop-close-btn:active {
-            transform: rotate(90deg) scale(0.9);
-            box-shadow: 0 4px 15px rgba(239,68,68,0.5);
+        .close-btn.shop-close-btn:active {
+            transform: rotate(90deg) scale(0.9) !important;
+            box-shadow: 0 4px 15px rgba(239,68,68,0.5) !important;
         }
 
         .shop-category {
@@ -2651,7 +2651,7 @@
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
                     <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;">
                         <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
-                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:15px;right:15px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                        <button onclick="this.closest('.modal').remove()" style="position:absolute;top:15px;right:15px;background:linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,1));border:2px solid rgba(255,255,255,0.4);border-radius:50%;width:48px;height:48px;color:#fff;cursor:pointer;font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);box-shadow:0 6px 20px rgba(239,68,68,0.4);" onmouseover="this.style.background='linear-gradient(135deg,rgba(239,68,68,1),rgba(220,38,38,1))';this.style.transform='rotate(90deg) scale(1.15)';this.style.boxShadow='0 8px 30px rgba(239,68,68,0.6)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(239,68,68,0.9),rgba(220,38,38,1))';this.style.transform='rotate(0deg) scale(1)';this.style.boxShadow='0 6px 20px rgba(239,68,68,0.4)'">✖</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
