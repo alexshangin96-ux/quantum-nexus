@@ -17,13 +17,10 @@ cd /root/quantum-nexus
 git pull origin master
 ```
 
-### 4. Копирование обновленных файлов
+### 4. Копирование обновленного файла
 ```bash
 # Копируем обновленный web_app.html в веб-папку
 sudo cp web_app.html /var/www/quantum-nexus/web_app.html
-
-# Копируем обновленный web_server.py
-sudo cp web_server.py /root/quantum-nexus/
 ```
 
 ### 5. Перезапуск сервисов
@@ -90,7 +87,6 @@ git log --oneline -5
 cd /root/quantum-nexus
 git pull origin master
 sudo cp web_app.html /var/www/quantum-nexus/web_app.html
-sudo cp web_server.py /root/quantum-nexus/
 sudo systemctl restart quantum-nexus-web.service
 sudo systemctl restart quantum-nexus.service
 ```

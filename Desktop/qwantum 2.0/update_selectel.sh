@@ -39,11 +39,10 @@ git fetch origin
 git reset --hard origin/master
 log "Код обновлен"
 
-# 2. Копирование обновленных файлов
-log "Копируем обновленные файлы..."
+# 2. Копирование обновленного файла
+log "Копируем обновленный web_app.html..."
 sudo cp web_app.html /var/www/quantum-nexus/web_app.html
-sudo cp web_server.py /root/quantum-nexus/
-log "Файлы скопированы"
+log "Файл скопирован"
 
 # 3. Перезапуск сервисов
 log "Перезапускаем сервисы..."
