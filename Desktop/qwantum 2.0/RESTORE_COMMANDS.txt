@@ -1,0 +1,33 @@
+# КОМАНДЫ ДЛЯ ВОССТАНОВЛЕНИЯ QUANTUM NEXUS
+# ========================================
+
+# 1. Остановка сервисов на сервере
+sudo systemctl stop quantum-nexus-web
+sudo systemctl stop quantum-nexus-bot
+
+# 2. Создание резервной копии текущего состояния
+sudo cp -r /root/quantum-nexus /root/quantum-nexus-current-backup-$(date +%Y-%m-%d-%H-%M)
+
+# 3. Загрузка файлов на сервер (замените your-server-ip на IP вашего сервера)
+scp -r "C:\Users\SmartFix\Desktop\qwantum 2.0\quantum-nexus-backup-2025-10-29-06-12\quantum-nexus" root@your-server-ip:/root/
+
+# 4. Установка прав доступа
+cd /root/quantum-nexus
+chmod +x *.sh
+chmod 644 *.py *.html *.md
+
+# 5. Обновление веб-файлов
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp admin.html /var/www/quantum-nexus/
+sudo chown -R www-data:www-data /var/www/quantum-nexus/
+
+# 6. Перезапуск сервисов
+sudo systemctl start quantum-nexus-web
+sudo systemctl start quantum-nexus-bot
+
+# 7. Проверка статуса
+sudo systemctl status quantum-nexus-web
+sudo systemctl status quantum-nexus-bot
+
+# ГОТОВО! ✅
+

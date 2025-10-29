@@ -1,0 +1,101 @@
+Quantum Nexus - Игра Tap-to-Earn для Telegram
+
+КОМАНДЫ ДЛЯ УСТАНОВКИ НА SELECTEL:
+
+1. Подключитесь к серверу по SSH
+
+2. Выполните следующие команды:
+
+# Обновление системы
+sudo apt update && sudo apt upgrade -y
+
+# Установка зависимостей
+sudo apt install -y python3 python3-pip python3-venv git postgresql postgresql-contrib redis-server nginx
+
+# Создание пользователя и базы данных
+sudo -u postgres createuser quantum
+sudo -u postgres psql -c "ALTER USER quantum WITH PASSWORD 'ChangeMe123!';"
+sudo -u postgres createdb -O quantum quantum_nexus
+
+# Установка Redis
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# Клонирование репозитория
+cd ~
+git clone https://github.com/alexshangin96-ux/quantum-nexus.git
+cd quantum-nexus
+
+# Создание виртуального окружения
+python3 -m venv venv
+source venv/bin/activate
+
+# Установка пакетов
+pip install -r requirements.txt
+
+# Редактирование config.py (укажите пароль БД)
+nano config.py
+
+# Инициализация БД
+python -c "from database import init_db; init_db()"
+
+# Создание сервиса
+sudo nano /etc/systemd/system/quantum-nexus.service
+
+Вставьте содержимое:
+[Unit]
+Description=Quantum Nexus Telegram Bot
+After=network.target postgresql.service redis.service
+
+[Service]
+Type=simple
+User=ВАШ_ПОЛЬЗОВАТЕЛЬ
+WorkingDirectory=/home/ВАШ_ПОЛЬЗОВАТЕЛЬ/quantum-nexus
+Environment="PATH=/home/ВАШ_ПОЛЬЗОВАТЕЛЬ/quantum-nexus/venv/bin"
+ExecStart=/home/ВАШ_ПОЛЬЗОВАТЕЛЬ/quantum-nexus/venv/bin/python bot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+# Запуск сервиса
+sudo systemctl daemon-reload
+sudo systemctl start quantum-nexus
+sudo systemctl enable quantum-nexus
+
+# Проверка статуса
+sudo systemctl status quantum-nexus
+journalctl -u quantum-nexus -f
+
+
+ОСНОВНЫЕ ВОЗМОЖНОСТИ ИГРЫ:
+
+✅ Оффлайн доход - 3 часа пассивного дохода
+✅ Двойная валюта - Коины и QuanHash
+✅ Энергия - ограничение активности
+✅ Защита от автокликера
+✅ Майнинг QuanHash на криптомашинах
+✅ Карточки с пассивным доходом
+✅ Бусты и множители
+✅ Реферальная система
+✅ Рейтинги и достижения
+✅ Магазин с расширенными покупками
+
+ФАЙЛЫ В ПРОЕКТЕ:
+- bot.py - главный файл бота
+- config.py - конфигурация (ваш API ключ уже там)
+- database.py - работа с БД
+- models.py - модели данных
+- handlers.py - обработчики команд
+- keyboards.py - интерфейс кнопок
+- utils.py - вспомогательные функции
+- requirements.txt - зависимости
+- README.md - документация
+
+TELEGRAM BOT TOKEN: 8426192106:AAGGlkfOYAhaQKPp-bcL-3oHXBE50tzAMog
+URL: https://quantum-nexus.ru/
+
+Теперь загрузите все файлы на GitHub и сервер!
+
+
+
