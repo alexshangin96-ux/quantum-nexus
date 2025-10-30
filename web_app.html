@@ -3949,6 +3949,15 @@
                     const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
                     console.log('Filtered cards:', cards, 'category:', category);
                     console.log('Updating shopList for category:', category);
+                    console.log('Cards data sample:', cards.slice(0, 2).map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        level: c.level,
+                        price: c.price,
+                        income: c.income,
+                        income_per_min: c.income_per_min,
+                        income_type: c.income_type
+                    })));
                     if(cards && cards.length > 0) {
                         shopList.innerHTML = cards.map((card, i) => {
                         // Skip locked cards
@@ -3961,7 +3970,7 @@
                             'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
                         };
                         const info = rarityInfo[rarity];
-                        const income = card.income_per_min || 0;
+                        const income = card.income_type === 'per_minute' ? (card.income_per_min || 0) : (card.income || 0);
                         const incomeType = card.income_type === 'per_minute' ? '/мин' : '/час';
                         const level = card.level || 1;
                         const nameParts = card.name || 'Карточка';
