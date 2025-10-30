@@ -3890,7 +3890,10 @@
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-50%) scale(1.5)';
                         setTimeout(()=>{anim.remove();},300);
                     },500);
-                    loadMiningCategory(document.querySelector('.category-btn[style*="background: linear-gradient"]').textContent.includes('Стартовые') ? 'starter' : 'premium');
+                    // Reload current category
+                    const activeBtn = document.querySelector('.mining-cat-btn[style*="background: linear-gradient"]');
+                    const currentCat = activeBtn ? (activeBtn.textContent.includes('коины') ? 'coins' : 'quanhash') : 'coins';
+                    loadMiningCategory(currentCat);
                     loadData();
                 } else {
                     anim.innerHTML='❌ ' + data.error;
