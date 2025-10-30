@@ -1764,7 +1764,7 @@
                                     ${userData.active_multiplier > 1 ? `
                                     <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
                                         <span style="color:#94a3b8;">⚡ Усилитель тапа:</span>
-                                        <span style="font-weight:700;color:#fbbf24;">+${userData.active_multiplier} тапов</span>
+                                        <span style="font-weight:700;color:#fbbf24;">+${userData.active_multiplier - 1} тапов</span>
                                     </div>
                                     ` : ''}
                                     <div style="display:flex;justify-content:space-between;padding:10px;">
@@ -3073,12 +3073,16 @@
                         nextLevelEffect = 1;
                     } else {
                         // For other items: use same logic as backend
-                        // Backend formula: current_effect = base_effect * (1.2 ** (level - 1)) if level > 1 else 0
-                        const currentItemEffect = currentLevel > 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
-                        // new_effect = base_effect * (1.2 ** level)
-                        const nextItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
-                        // bonus = new_effect - current_effect
-                        nextLevelEffect = nextItemEffect - currentItemEffect;
+                        // Backend formula: 
+                        //   current_effect = base_effect * (1.2 ** (level - 1)) if level > 1 else 0
+                        //   new_effect = base_effect * (1.2 ** level)
+                        //   bonus = new_effect - current_effect
+                        // When buying, we're at level=currentLevel, buying level=currentLevel+1
+                        // So calculate the bonus that will be added when purchasing next level
+                        // Note: backend checks level > 1, but for display purposes we need to handle level >= 1
+                        const currentEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
+                        const newEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
+                        nextLevelEffect = newEffect - currentEffect;
                     }
                 } else if (category === 'energy_buy') {
                     const baseEffect = item.baseEffect || 0.5;
