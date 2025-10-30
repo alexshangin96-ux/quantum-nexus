@@ -21,6 +21,11 @@ def index():
     """Serve web app"""
     return send_from_directory('.', 'web_app.html')
 
+@app.route('/game_v4.html')
+def game_v4():
+    """Serve new version of web app"""
+    return send_from_directory('.', 'web_app.html')
+
 @app.route('/admin')
 @app.route('/admin.html')
 def admin():
@@ -475,7 +480,7 @@ def get_shop():
                 items = []
                 # Check if user_cards table exists
                 try:
-                    user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
+                user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
                     print(f"Successfully queried user_cards table for user {user_id}")
                 except Exception as e:
                     print(f"Error querying user_cards table: {e}")
@@ -630,10 +635,10 @@ def get_cards():
         data = request.json or {}
         user_id = data.get('user_id')
         telegram_id = data.get('telegram_id')
-
+        
         if not user_id and not telegram_id:
             return jsonify({'error': 'User ID required'}), 400
-
+        
         with get_db() as db:
             user = None
             if user_id:
@@ -774,7 +779,7 @@ def get_offline_income():
             
             # Update last_active to mark user is back in app (only if there was offline income)
             if offline_time > 0:
-                user.last_active = now
+            user.last_active = now
             
             return jsonify({
                 'offline_time': int(offline_time),
@@ -1129,7 +1134,7 @@ def admin_add_passive_hash():
                 )
                 db.add(machine)
             db.commit()
-            return jsonify({'success': True})
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1287,7 +1292,7 @@ def buy_item():
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
                 user.last_active = datetime.utcnow()
-                db.commit()
+            db.commit()
             
             print(f"Successfully processed purchase for user {user_id}, item {item_type}")
             return jsonify({'success': True})
