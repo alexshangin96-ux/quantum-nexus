@@ -124,3 +124,4 @@ journalctl -u quantum-nexus-bot | grep "bought product"
 
 
 
+
