@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v5.0 - Removed numbers from descriptions, improved autobot to work constantly - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.0 - Complete mining redesign with realistic values, beautiful descriptions, multi-level system - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -3671,38 +3671,38 @@
             loadMiningCategory('coins');
         }
         const vipMiningCards = [
-            {id: 'crypto_spark', name: 'Crypto Spark', emoji: '⚡', basePrice: 150, baseHashPerHour: 1000000, rarity: 'vip_spark', productId: 71},
-            {id: 'quantum_flux', name: 'Quantum Flux', emoji: '✨', basePrice: 300, baseHashPerHour: 2500000, rarity: 'vip_flux', productId: 72},
-            {id: 'plasma_core', name: 'Plasma Core', emoji: '🔥', basePrice: 600, baseHashPerHour: 5000000, rarity: 'vip_core', productId: 73},
-            {id: 'stellar_reactor', name: 'Stellar Reactor', emoji: '🌟', basePrice: 1250, baseHashPerHour: 12000000, rarity: 'vip_reactor', productId: 74},
-            {id: 'cosmic_titan', name: 'Cosmic Titan', emoji: '🌌', basePrice: 2500, baseHashPerHour: 25000000, rarity: 'vip_titan', productId: 75},
-            {id: 'absolute_legend', name: 'Absolute Legend', emoji: '👑', basePrice: 5000, baseHashPerHour: 50000000, rarity: 'vip_legend', productId: 76}
+            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 150, baseHashPerHour: 120000, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
+            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 300, baseHashPerHour: 300000, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
+            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 600, baseHashPerHour: 750000, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
+            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 1250, baseHashPerHour: 2000000, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
+            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 2500, baseHashPerHour: 5000000, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
+            {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 5000, baseHashPerHour: 12000000, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
         ];
         
         const miningMachinesData = {
             'coins': [
-                {id: 'miner_basic', name: 'Basic Miner', emoji: '⚙️', basePrice: 5000, baseHashPerHour: 50000, currency: 'coins'},
-                {id: 'miner_advanced', name: 'Advanced Miner', emoji: '🔧', basePrice: 20000, baseHashPerHour: 250000, currency: 'coins'},
-                {id: 'miner_pro', name: 'Pro Miner', emoji: '⚡', basePrice: 80000, baseHashPerHour: 1000000, currency: 'coins'},
-                {id: 'miner_elite', name: 'Elite Miner', emoji: '💎', basePrice: 300000, baseHashPerHour: 4000000, currency: 'coins'},
-                {id: 'miner_master', name: 'Master Miner', emoji: '👑', basePrice: 1000000, baseHashPerHour: 15000000, currency: 'coins'},
-                {id: 'miner_legend', name: 'Legend Miner', emoji: '🌟', basePrice: 3500000, baseHashPerHour: 60000000, currency: 'coins'},
-                {id: 'miner_titan', name: 'Titan Miner', emoji: '🌌', basePrice: 12000000, baseHashPerHour: 250000000, currency: 'coins'},
-                {id: 'miner_apex', name: 'Apex Miner', emoji: '🔥', basePrice: 40000000, baseHashPerHour: 1000000000, currency: 'coins'},
-                {id: 'miner_alpha', name: 'Alpha Miner', emoji: '⚛️', basePrice: 150000000, baseHashPerHour: 4000000000, currency: 'coins'},
-                {id: 'miner_omega', name: 'Omega Miner', emoji: '🎆', basePrice: 500000000, baseHashPerHour: 15000000000, currency: 'coins'}
+                {id: 'miner_cpu', name: 'CPU Майнер', emoji: '💻', basePrice: 5000, baseHashPerHour: 10, currency: 'coins', description: 'Базовый майнер на CPU'},
+                {id: 'miner_gpu', name: 'GPU Майнер', emoji: '🎮', basePrice: 20000, baseHashPerHour: 50, currency: 'coins', description: 'Видеокарта для майнинга'},
+                {id: 'miner_asic', name: 'ASIC Риг', emoji: '⚡', basePrice: 80000, baseHashPerHour: 200, currency: 'coins', description: 'Асик-устройство'},
+                {id: 'miner_quantum', name: 'Quantum Майнер', emoji: '💎', basePrice: 300000, baseHashPerHour: 800, currency: 'coins', description: 'Квантовый майнер'},
+                {id: 'miner_server', name: 'Server Ферма', emoji: '🖥️', basePrice: 1000000, baseHashPerHour: 3000, currency: 'coins', description: 'Серверная ферма'},
+                {id: 'miner_cloud', name: 'Cloud Риг', emoji: '☁️', basePrice: 3500000, baseHashPerHour: 12000, currency: 'coins', description: 'Облачная ферма'},
+                {id: 'miner_data', name: 'Data Центр', emoji: '🏢', basePrice: 12000000, baseHashPerHour: 50000, currency: 'coins', description: 'Дата-центр'},
+                {id: 'miner_quantum_farm', name: 'Quantum Ферма', emoji: '🌌', basePrice: 40000000, baseHashPerHour: 200000, currency: 'coins', description: 'Квантовая ферма'},
+                {id: 'miner_neural', name: 'Neural Майнер', emoji: '🧠', basePrice: 150000000, baseHashPerHour: 800000, currency: 'coins', description: 'Нейросетевой майнер'},
+                {id: 'miner_cosmic', name: 'Cosmic Станция', emoji: '🚀', basePrice: 500000000, baseHashPerHour: 3200000, currency: 'coins', description: 'Космическая станция'}
             ],
             'quanhash': [
-                {id: 'hash_basic', name: 'Hash Starter', emoji: '💚', basePrice: 100000, baseHashPerHour: 100000, currency: 'quanhash'},
-                {id: 'hash_boost', name: 'Hash Boost', emoji: '💙', basePrice: 500000, baseHashPerHour: 750000, currency: 'quanhash'},
-                {id: 'hash_pro', name: 'Hash Pro', emoji: '💛', basePrice: 2500000, baseHashPerHour: 5000000, currency: 'quanhash'},
-                {id: 'hash_ultra', name: 'Hash Ultra', emoji: '🧡', basePrice: 10000000, baseHashPerHour: 25000000, currency: 'quanhash'},
-                {id: 'hash_extreme', name: 'Hash Extreme', emoji: '❤️', basePrice: 40000000, baseHashPerHour: 100000000, currency: 'quanhash'},
-                {id: 'hash_dominant', name: 'Hash Dominant', emoji: '💜', basePrice: 150000000, baseHashPerHour: 400000000, currency: 'quanhash'},
-                {id: 'hash_supreme', name: 'Hash Supreme', emoji: '🤍', basePrice: 600000000, baseHashPerHour: 1500000000, currency: 'quanhash'},
-                {id: 'hash_legend', name: 'Hash Legend', emoji: '🖤', basePrice: 2500000000, baseHashPerHour: 6000000000, currency: 'quanhash'},
-                {id: 'hash_god', name: 'Hash God', emoji: '✨', basePrice: 10000000000, baseHashPerHour: 25000000000, currency: 'quanhash'},
-                {id: 'hash_infinity', name: 'Hash Infinity', emoji: '🌠', basePrice: 40000000000, baseHashPerHour: 100000000000, currency: 'quanhash'}
+                {id: 'hash_quantum_core', name: 'Quantum Ядро', emoji: '⚛️', basePrice: 10000, baseHashPerHour: 80, currency: 'quanhash', description: 'Квантовое ядро'},
+                {id: 'hash_plasma_rig', name: 'Plasma Риг', emoji: '🔥', basePrice: 50000, baseHashPerHour: 400, currency: 'quanhash', description: 'Плазменный майнер'},
+                {id: 'hash_stellar', name: 'Stellar Блок', emoji: '⭐', basePrice: 250000, baseHashPerHour: 1800, currency: 'quanhash', description: 'Звёздный блок'},
+                {id: 'hash_cosmic_flux', name: 'Cosmic Поток', emoji: '🌊', basePrice: 1000000, baseHashPerHour: 7000, currency: 'quanhash', description: 'Космический поток'},
+                {id: 'hash_nova', name: 'Nova Ускоритель', emoji: '🌟', basePrice: 4000000, baseHashPerHour: 28000, currency: 'quanhash', description: 'Новейший ускоритель'},
+                {id: 'hash_galaxy', name: 'Galaxy Матрица', emoji: '🌌', basePrice: 15000000, baseHashPerHour: 110000, currency: 'quanhash', description: 'Галактическая матрица'},
+                {id: 'hash_void', name: 'Void Порталы', emoji: '🕳️', basePrice: 60000000, baseHashPerHour: 450000, currency: 'quanhash', description: 'Врата в пустоту'},
+                {id: 'hash_eternal', name: 'Eternal Движитель', emoji: '∞', basePrice: 250000000, baseHashPerHour: 1800000, currency: 'quanhash', description: 'Вечный движитель'},
+                {id: 'hash_divine', name: 'Divine Генератор', emoji: '👑', basePrice: 1000000000, baseHashPerHour: 7200000, currency: 'quanhash', description: 'Божественный генератор'},
+                {id: 'hash_absolute', name: 'Absolute Мощь', emoji: '⚡', basePrice: 4000000000, baseHashPerHour: 28800000, currency: 'quanhash', description: 'Абсолютная мощь'}
             ]
         };
         
@@ -3738,14 +3738,15 @@
                             <div style="position:absolute;top:8px;right:8px;background:${borderColor};color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⚡</div>
                             <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji}</div>
                             <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
+                            <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${m.description || ''}</div>
                             <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                            <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${(hashPerHour / 1000000).toFixed(2)}M 💎/ч</div>
+                            <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${hashPerHour.toLocaleString()} 💎/ч</div>
                             <button onclick="buyMachine('${m.id}', ${price}, '${m.currency}')" 
                                     style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
                                     onmousedown="this.style.transform='scale(0.96)'" 
                                     onmouseup="this.style.transform='scale(1)'" 
                                     onmouseleave="this.style.transform='scale(1)'">
-                                <span>${price.toLocaleString()} ${m.currency === 'coins' ? '🪙' : '💎'}</span>
+                                <span>${price.toLocaleString()} ${m.currency === 'coins' ? '' : '💎'}</span>
                             </button>
                         </div>
                     `;
@@ -3836,8 +3837,9 @@
                         <div style="position:absolute;top:8px;right:8px;background:#ffd700;color:#000;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">VIP</div>
                         <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
                         <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
+                        <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${card.description || ''}</div>
                         <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                        <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${(hashPerHour / 1000000).toFixed(1)}M 💎/ч</div>
+                        <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${hashPerHour.toLocaleString()} 💎/ч</div>
                         <button onclick="buyVIPMiningMachineWithStars('${card.id}', ${price}, ${card.productId})" 
                                 style="width:100%;padding:11px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
                                 onmousedown="this.style.transform='scale(0.96)'" 

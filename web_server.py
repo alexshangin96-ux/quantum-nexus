@@ -1697,28 +1697,28 @@ def buy_machine():
             # Machine definitions (same as frontend)
             machines_data = {
                 'coins': [
-                    {'id': 'miner_basic', 'name': 'Basic Miner', 'basePrice': 5000, 'baseHashPerHour': 50000, 'emoji': '⚙️'},
-                    {'id': 'miner_advanced', 'name': 'Advanced Miner', 'basePrice': 20000, 'baseHashPerHour': 250000, 'emoji': '🔧'},
-                    {'id': 'miner_pro', 'name': 'Pro Miner', 'basePrice': 80000, 'baseHashPerHour': 1000000, 'emoji': '⚡'},
-                    {'id': 'miner_elite', 'name': 'Elite Miner', 'basePrice': 300000, 'baseHashPerHour': 4000000, 'emoji': '💎'},
-                    {'id': 'miner_master', 'name': 'Master Miner', 'basePrice': 1000000, 'baseHashPerHour': 15000000, 'emoji': '👑'},
-                    {'id': 'miner_legend', 'name': 'Legend Miner', 'basePrice': 3500000, 'baseHashPerHour': 60000000, 'emoji': '🌟'},
-                    {'id': 'miner_titan', 'name': 'Titan Miner', 'basePrice': 12000000, 'baseHashPerHour': 250000000, 'emoji': '🌌'},
-                    {'id': 'miner_apex', 'name': 'Apex Miner', 'basePrice': 40000000, 'baseHashPerHour': 1000000000, 'emoji': '🔥'},
-                    {'id': 'miner_alpha', 'name': 'Alpha Miner', 'basePrice': 150000000, 'baseHashPerHour': 4000000000, 'emoji': '⚛️'},
-                    {'id': 'miner_omega', 'name': 'Omega Miner', 'basePrice': 500000000, 'baseHashPerHour': 15000000000, 'emoji': '🎆'}
+                    {'id': 'miner_cpu', 'name': 'CPU Майнер', 'basePrice': 5000, 'baseHashPerHour': 10, 'emoji': '💻'},
+                    {'id': 'miner_gpu', 'name': 'GPU Майнер', 'basePrice': 20000, 'baseHashPerHour': 50, 'emoji': '🎮'},
+                    {'id': 'miner_asic', 'name': 'ASIC Риг', 'basePrice': 80000, 'baseHashPerHour': 200, 'emoji': '⚡'},
+                    {'id': 'miner_quantum', 'name': 'Quantum Майнер', 'basePrice': 300000, 'baseHashPerHour': 800, 'emoji': '💎'},
+                    {'id': 'miner_server', 'name': 'Server Ферма', 'basePrice': 1000000, 'baseHashPerHour': 3000, 'emoji': '🖥️'},
+                    {'id': 'miner_cloud', 'name': 'Cloud Риг', 'basePrice': 3500000, 'baseHashPerHour': 12000, 'emoji': '☁️'},
+                    {'id': 'miner_data', 'name': 'Data Центр', 'basePrice': 12000000, 'baseHashPerHour': 50000, 'emoji': '🏢'},
+                    {'id': 'miner_quantum_farm', 'name': 'Quantum Ферма', 'basePrice': 40000000, 'baseHashPerHour': 200000, 'emoji': '🌌'},
+                    {'id': 'miner_neural', 'name': 'Neural Майнер', 'basePrice': 150000000, 'baseHashPerHour': 800000, 'emoji': '🧠'},
+                    {'id': 'miner_cosmic', 'name': 'Cosmic Станция', 'basePrice': 500000000, 'baseHashPerHour': 3200000, 'emoji': '🚀'}
                 ],
                 'quanhash': [
-                    {'id': 'hash_basic', 'name': 'Hash Starter', 'basePrice': 100000, 'baseHashPerHour': 100000, 'emoji': '💚'},
-                    {'id': 'hash_boost', 'name': 'Hash Boost', 'basePrice': 500000, 'baseHashPerHour': 750000, 'emoji': '💙'},
-                    {'id': 'hash_pro', 'name': 'Hash Pro', 'basePrice': 2500000, 'baseHashPerHour': 5000000, 'emoji': '💛'},
-                    {'id': 'hash_ultra', 'name': 'Hash Ultra', 'basePrice': 10000000, 'baseHashPerHour': 25000000, 'emoji': '🧡'},
-                    {'id': 'hash_extreme', 'name': 'Hash Extreme', 'basePrice': 40000000, 'baseHashPerHour': 100000000, 'emoji': '❤️'},
-                    {'id': 'hash_dominant', 'name': 'Hash Dominant', 'basePrice': 150000000, 'baseHashPerHour': 400000000, 'emoji': '💜'},
-                    {'id': 'hash_supreme', 'name': 'Hash Supreme', 'basePrice': 600000000, 'baseHashPerHour': 1500000000, 'emoji': '🤍'},
-                    {'id': 'hash_legend', 'name': 'Hash Legend', 'basePrice': 2500000000, 'baseHashPerHour': 6000000000, 'emoji': '🖤'},
-                    {'id': 'hash_god', 'name': 'Hash God', 'basePrice': 10000000000, 'baseHashPerHour': 25000000000, 'emoji': '✨'},
-                    {'id': 'hash_infinity', 'name': 'Hash Infinity', 'basePrice': 40000000000, 'baseHashPerHour': 100000000000, 'emoji': '🌠'}
+                    {'id': 'hash_quantum_core', 'name': 'Quantum Ядро', 'basePrice': 10000, 'baseHashPerHour': 80, 'emoji': '⚛️'},
+                    {'id': 'hash_plasma_rig', 'name': 'Plasma Риг', 'basePrice': 50000, 'baseHashPerHour': 400, 'emoji': '🔥'},
+                    {'id': 'hash_stellar', 'name': 'Stellar Блок', 'basePrice': 250000, 'baseHashPerHour': 1800, 'emoji': '⭐'},
+                    {'id': 'hash_cosmic_flux', 'name': 'Cosmic Поток', 'basePrice': 1000000, 'baseHashPerHour': 7000, 'emoji': '🌊'},
+                    {'id': 'hash_nova', 'name': 'Nova Ускоритель', 'basePrice': 4000000, 'baseHashPerHour': 28000, 'emoji': '🌟'},
+                    {'id': 'hash_galaxy', 'name': 'Galaxy Матрица', 'basePrice': 15000000, 'baseHashPerHour': 110000, 'emoji': '🌌'},
+                    {'id': 'hash_void', 'name': 'Void Порталы', 'basePrice': 60000000, 'baseHashPerHour': 450000, 'emoji': '🕳️'},
+                    {'id': 'hash_eternal', 'name': 'Eternal Движитель', 'basePrice': 250000000, 'baseHashPerHour': 1800000, 'emoji': '∞'},
+                    {'id': 'hash_divine', 'name': 'Divine Генератор', 'basePrice': 1000000000, 'baseHashPerHour': 7200000, 'emoji': '👑'},
+                    {'id': 'hash_absolute', 'name': 'Absolute Мощь', 'basePrice': 4000000000, 'baseHashPerHour': 28800000, 'emoji': '⚡'}
                 ]
             }
             
