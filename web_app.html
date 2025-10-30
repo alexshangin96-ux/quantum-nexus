@@ -3740,7 +3740,7 @@
                     const machine_levels = data.machine_levels || {};
                     shop.innerHTML = machines.map((m, index) => {
                         const level = machine_levels[m.id] || 0;
-                        const price = Math.floor(m.basePrice * Math.pow(1.2, level));
+                        const price = Math.floor(m.basePrice * Math.pow(1.15, level));
                         const hashPerHour = Math.floor(m.baseHashPerHour * Math.pow(1.15, level));
                         
                         return `
@@ -3831,7 +3831,7 @@
             
             let html = vipMiningCards.map((card, index) => {
                 const level = 0; // TODO: Get from user data
-                const price = Math.floor(card.basePrice * Math.pow(1.2, level));
+                const price = Math.floor(card.basePrice * Math.pow(1.15, level));
                 const hashPerHour = Math.floor(card.baseHashPerHour * Math.pow(1.15, level));
                 
                 return `
