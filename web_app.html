@@ -3670,6 +3670,42 @@
             document.body.appendChild(modal);
             loadMiningCategory('coins');
         }
+        const vipMiningCards = [
+            {id: 'crypto_spark', name: 'Crypto Spark', emoji: '⚡', basePrice: 150, baseHashPerHour: 1000000, rarity: 'vip_spark', productId: 71},
+            {id: 'quantum_flux', name: 'Quantum Flux', emoji: '✨', basePrice: 300, baseHashPerHour: 2500000, rarity: 'vip_flux', productId: 72},
+            {id: 'plasma_core', name: 'Plasma Core', emoji: '🔥', basePrice: 600, baseHashPerHour: 5000000, rarity: 'vip_core', productId: 73},
+            {id: 'stellar_reactor', name: 'Stellar Reactor', emoji: '🌟', basePrice: 1250, baseHashPerHour: 12000000, rarity: 'vip_reactor', productId: 74},
+            {id: 'cosmic_titan', name: 'Cosmic Titan', emoji: '🌌', basePrice: 2500, baseHashPerHour: 25000000, rarity: 'vip_titan', productId: 75},
+            {id: 'absolute_legend', name: 'Absolute Legend', emoji: '👑', basePrice: 5000, baseHashPerHour: 50000000, rarity: 'vip_legend', productId: 76}
+        ];
+        
+        const miningMachinesData = {
+            'coins': [
+                {id: 'miner_basic', name: 'Basic Miner', emoji: '⚙️', basePrice: 5000, baseHashPerHour: 50000, currency: 'coins'},
+                {id: 'miner_advanced', name: 'Advanced Miner', emoji: '🔧', basePrice: 20000, baseHashPerHour: 250000, currency: 'coins'},
+                {id: 'miner_pro', name: 'Pro Miner', emoji: '⚡', basePrice: 80000, baseHashPerHour: 1000000, currency: 'coins'},
+                {id: 'miner_elite', name: 'Elite Miner', emoji: '💎', basePrice: 300000, baseHashPerHour: 4000000, currency: 'coins'},
+                {id: 'miner_master', name: 'Master Miner', emoji: '👑', basePrice: 1000000, baseHashPerHour: 15000000, currency: 'coins'},
+                {id: 'miner_legend', name: 'Legend Miner', emoji: '🌟', basePrice: 3500000, baseHashPerHour: 60000000, currency: 'coins'},
+                {id: 'miner_titan', name: 'Titan Miner', emoji: '🌌', basePrice: 12000000, baseHashPerHour: 250000000, currency: 'coins'},
+                {id: 'miner_apex', name: 'Apex Miner', emoji: '🔥', basePrice: 40000000, baseHashPerHour: 1000000000, currency: 'coins'},
+                {id: 'miner_alpha', name: 'Alpha Miner', emoji: '⚛️', basePrice: 150000000, baseHashPerHour: 4000000000, currency: 'coins'},
+                {id: 'miner_omega', name: 'Omega Miner', emoji: '🎆', basePrice: 500000000, baseHashPerHour: 15000000000, currency: 'coins'}
+            ],
+            'quanhash': [
+                {id: 'hash_basic', name: 'Hash Starter', emoji: '💚', basePrice: 100000, baseHashPerHour: 100000, currency: 'quanhash'},
+                {id: 'hash_boost', name: 'Hash Boost', emoji: '💙', basePrice: 500000, baseHashPerHour: 750000, currency: 'quanhash'},
+                {id: 'hash_pro', name: 'Hash Pro', emoji: '💛', basePrice: 2500000, baseHashPerHour: 5000000, currency: 'quanhash'},
+                {id: 'hash_ultra', name: 'Hash Ultra', emoji: '🧡', basePrice: 10000000, baseHashPerHour: 25000000, currency: 'quanhash'},
+                {id: 'hash_extreme', name: 'Hash Extreme', emoji: '❤️', basePrice: 40000000, baseHashPerHour: 100000000, currency: 'quanhash'},
+                {id: 'hash_dominant', name: 'Hash Dominant', emoji: '💜', basePrice: 150000000, baseHashPerHour: 400000000, currency: 'quanhash'},
+                {id: 'hash_supreme', name: 'Hash Supreme', emoji: '🤍', basePrice: 600000000, baseHashPerHour: 1500000000, currency: 'quanhash'},
+                {id: 'hash_legend', name: 'Hash Legend', emoji: '🖤', basePrice: 2500000000, baseHashPerHour: 6000000000, currency: 'quanhash'},
+                {id: 'hash_god', name: 'Hash God', emoji: '✨', basePrice: 10000000000, baseHashPerHour: 25000000000, currency: 'quanhash'},
+                {id: 'hash_infinity', name: 'Hash Infinity', emoji: '🌠', basePrice: 40000000000, baseHashPerHour: 100000000000, currency: 'quanhash'}
+            ]
+        };
+        
         function loadMiningCategory(category) {
             // Update button states
             document.querySelectorAll('.mining-cat-btn').forEach(btn => {
@@ -3684,56 +3720,45 @@
                 }
             });
             
-            fetch('/api/mining', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id, category: category})
-            })
-            .then(res => res.json())
-            .then(data => {
-                const shop = document.getElementById('miningShop');
-                if(shop) {
-                    const isCoins = category === 'coins';
-                    const bgGradient = isCoins ? 'linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.2))' : 'linear-gradient(135deg,rgba(16,185,129,0.2),rgba(34,197,94,0.2))';
-                    const borderColor = isCoins ? '#667eea' : '#10b981';
-                    const buttonGradient = isCoins ? 'linear-gradient(135deg,#667eea,#764ba2)' : 'linear-gradient(135deg,#10b981,#059669)';
+            const machines = miningMachinesData[category] || [];
+            const shop = document.getElementById('miningShop');
+            if(shop) {
+                const isCoins = category === 'coins';
+                const bgGradient = isCoins ? 'linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.2))' : 'linear-gradient(135deg,rgba(16,185,129,0.2),rgba(34,197,94,0.2))';
+                const borderColor = isCoins ? '#667eea' : '#10b981';
+                const buttonGradient = isCoins ? 'linear-gradient(135deg,#667eea,#764ba2)' : 'linear-gradient(135deg,#10b981,#059669)';
+                
+                shop.innerHTML = machines.map((m, index) => {
+                    const level = 0; // TODO: Get from user data
+                    const price = Math.floor(m.basePrice * Math.pow(1.2, level));
+                    const hashPerHour = Math.floor(m.baseHashPerHour * Math.pow(1.15, level));
                     
-                    shop.innerHTML = data.shop_machines.map((m, index) => {
-                        const isLocked = false;
-                        
-                        if (isLocked) {
-                            return `
-                                <div style="background:rgba(60,60,60,0.3);padding:16px;border-radius:16px;border:2px solid rgba(100,100,100,0.4);opacity:0.6;position:relative;">
-                                    <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.9);color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;">🔒</div>
-                                    <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">🔒</div>
-                                    <div style="font-weight:900;font-size:13px;color:#999;text-align:center;margin-bottom:6px;">${m.name}</div>
-                                    <div style="font-size:11px;color:#666;text-align:center;margin-bottom:12px;">
-                                        ⚡ ${m.hash_rate}/s<br>💰 ${m.hash_per_hour}/ч
-                                    </div>
-                                    <button disabled style="width:100%;padding:10px;background:rgba(100,100,100,0.5);color:#ccc;border:none;border-radius:8px;cursor:not-allowed;font-weight:700;font-size:11px;">🔒 Заблокировано</button>
-                                </div>
-                            `;
-                        } else {
-                            return `
-                                <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                                    <div style="position:absolute;top:8px;right:8px;background:${borderColor};color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⚡</div>
-                                    <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji || '⚙️'}</div>
-                                    <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
-                                    <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">⚡ ${m.hash_rate} Hash/s</div>
-                                    <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${m.hash_per_hour} 💎/ч</div>
-                                    <button onclick="buyMachine('${m.id}', ${m.price}, '${m.currency}')" 
-                                            style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                            onmousedown="this.style.transform='scale(0.96)'" 
-                                            onmouseup="this.style.transform='scale(1)'" 
-                                            onmouseleave="this.style.transform='scale(1)'">
-                                        <span>${m.price.toLocaleString()} ${m.currency === 'coins' ? '🪙' : '💎'}</span>
-                                    </button>
-                                </div>
-                            `;
-                        }
-                    }).join('');
-                    
-                    // Show user machines
+                    return `
+                        <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
+                            <div style="position:absolute;top:8px;right:8px;background:${borderColor};color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⚡</div>
+                            <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji}</div>
+                            <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
+                            <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
+                            <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${(hashPerHour / 1000000).toFixed(2)}M 💎/ч</div>
+                            <button onclick="buyMachine('${m.id}', ${price}, '${m.currency}')" 
+                                    style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
+                                    onmousedown="this.style.transform='scale(0.96)'" 
+                                    onmouseup="this.style.transform='scale(1)'" 
+                                    onmouseleave="this.style.transform='scale(1)'">
+                                <span>${price.toLocaleString()} ${m.currency === 'coins' ? '🪙' : '💎'}</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Show user machines from API
+                fetch('/api/mining', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user?.id, category: category})
+                })
+                .then(res => res.json())
+                .then(data => {
                     const machinesList = document.getElementById('machinesList');
                     if(machinesList && data.user_machines) {
                         if(data.user_machines.length > 0) {
@@ -3755,60 +3780,48 @@
                             machinesList.innerHTML = '<p style="text-align:center;opacity:0.7;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;border:2px solid rgba(255,255,255,0.1);">🛒 У вас нет машин. Купите их выше!</p>';
                         }
                     }
-                }
-            });
+                })
+                .catch(err => {
+                    const machinesList = document.getElementById('machinesList');
+                    if(machinesList) {
+                        machinesList.innerHTML = '<p style="text-align:center;opacity:0.7;padding:15px;background:rgba(255,255,255,0.05);border-radius:12px;border:2px solid rgba(255,255,255,0.1);">🛒 У вас нет машин. Купите их выше!</p>';
+                    }
+                });
+            }
         }
         
-        const vipMiningCards = [
-            {id: 'crypto_spark', name: 'Crypto Spark', emoji: '⚡', basePrice: 150, baseHashPerHour: 1000000, rarity: 'vip_spark', productId: 71},
-            {id: 'quantum_flux', name: 'Quantum Flux', emoji: '✨', basePrice: 300, baseHashPerHour: 2500000, rarity: 'vip_flux', productId: 72},
-            {id: 'plasma_core', name: 'Plasma Core', emoji: '🔥', basePrice: 600, baseHashPerHour: 5000000, rarity: 'vip_core', productId: 73},
-            {id: 'stellar_reactor', name: 'Stellar Reactor', emoji: '🌟', basePrice: 1250, baseHashPerHour: 12000000, rarity: 'vip_reactor', productId: 74},
-            {id: 'cosmic_titan', name: 'Cosmic Titan', emoji: '🌌', basePrice: 2500, baseHashPerHour: 25000000, rarity: 'vip_titan', productId: 75},
-            {id: 'absolute_legend', name: 'Absolute Legend', emoji: '👑', basePrice: 5000, baseHashPerHour: 50000000, rarity: 'vip_legend', productId: 76}
-        ];
-        
         window.openVIPMiningModal = function() {
-            fetch('/api/get_vip_mining_machines', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id})
-            })
-            .then(res => res.json())
-            .then(data => {
-                const modal = document.createElement('div');
-                modal.className = 'modal active';
-                modal.style.zIndex = '10001';
-                modal.innerHTML = `
-                    <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
-                        <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                                <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
-                                <div>
-                                    <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP МАШИНЫ</h2>
-                                    <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">🏭 Эксклюзивная добыча QuanHash</div>
-                                </div>
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.zIndex = '10001';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                            <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP МАШИНЫ</h2>
+                                <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">🏭 Эксклюзивная добыча QuanHash</div>
                             </div>
-                            <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
                         </div>
-                        
-                        <div style="padding: 25px;">
-                            <div id="vipMiningContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;"></div>
-                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
                     </div>
-                `;
-                document.body.appendChild(modal);
-                renderVIPMiningCards(data.user_machines || []);
-            });
+                    
+                    <div style="padding: 25px;">
+                        <div id="vipMiningContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            renderVIPMiningCards();
         };
         
-        function renderVIPMiningCards(userMachines) {
+        function renderVIPMiningCards() {
             const vipMiningContent = document.getElementById('vipMiningContent');
             if (!vipMiningContent) return;
             
             let html = vipMiningCards.map((card, index) => {
-                const userMachine = userMachines.find(m => m.machine_id === card.id);
-                const level = userMachine ? userMachine.level : 0;
+                const level = 0; // TODO: Get from user data
                 const price = Math.floor(card.basePrice * Math.pow(1.2, level));
                 const hashPerHour = Math.floor(card.baseHashPerHour * Math.pow(1.15, level));
                 
