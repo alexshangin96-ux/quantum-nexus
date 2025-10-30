@@ -1006,6 +1006,13 @@ def modify_user():
             elif action == 'set_max_energy':
                 user.max_energy = value
                 user.energy = min(user.energy, value)
+            elif action == 'add_max_energy':
+                user.max_energy = max(0, user.max_energy + value)
+                user.energy = min(user.energy, user.max_energy)
+            elif action == 'set_regen_rate':
+                user.energy_regen_rate = float(value)
+            elif action == 'add_energy':
+                user.energy = min(user.max_energy, max(0, user.energy + int(value)))
             elif action == 'set_coins':
                 user.coins = value
             elif action == 'set_quanhash':
@@ -1045,6 +1052,69 @@ def modify_user():
                 user.total_mined = 0
         
         return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/admin/add_passive_coins', methods=['POST'])
+def admin_add_passive_coins():
+    """Admin: add passive coins income (coins per minute) via special card."""
+    try:
+        data = request.json or {}
+        user_id = data.get('user_id')
+        per_min = float(data.get('per_min', 0))
+        replace = bool(data.get('replace', False))
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Missing user_id'}), 400
+        with get_db() as db:
+            user = db.query(User).filter((User.telegram_id == user_id) | (User.id == user_id)).first()
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            if replace:
+                db.query(UserCard).filter_by(user_id=user.id, card_type='admin_boost_coins').delete()
+            if per_min != 0:
+                card = UserCard(
+                    user_id=user.id,
+                    card_type='admin_boost_coins',
+                    card_level=1,
+                    income_per_minute=per_min,
+                    is_active=True
+                )
+                db.add(card)
+            db.commit()
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/admin/add_passive_hash', methods=['POST'])
+def admin_add_passive_hash():
+    """Admin: add passive QuanHash (per hour) via special mining machine."""
+    try:
+        data = request.json or {}
+        user_id = data.get('user_id')
+        per_hour = float(data.get('per_hour', 0))
+        replace = bool(data.get('replace', False))
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Missing user_id'}), 400
+        with get_db() as db:
+            user = db.query(User).filter((User.telegram_id == user_id) | (User.id == user_id)).first()
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            if replace:
+                db.query(MiningMachine).filter_by(user_id=user.id, name='Admin Boost').delete()
+            if per_hour != 0:
+                machine = MiningMachine(
+                    user_id=user.id,
+                    name='Admin Boost',
+                    hash_rate=per_hour / 3600.0,
+                    power_consumption=0.0,
+                    efficiency=1.0,
+                    is_active=True
+                )
+                db.add(machine)
+            db.commit()
+            return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

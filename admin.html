@@ -1324,7 +1324,8 @@
             modal.className = 'modal active';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width:600px;background:linear-gradient(135deg,rgba(220,38,38,0.15),rgba(185,28,28,0.15));border:3px solid #dc2626;box-shadow:0 20px 60px rgba(220,38,38,0.4);">
-                    <div style="text-align:center;margin-bottom:18px;">
+                    <div style="position:relative;text-align:center;margin-bottom:18px;">
+                        <button onclick="this.closest('.modal').remove()" style="position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
                         <div style="font-size:54px;margin-bottom:14px;animation:pulse 2s infinite;">🔥</div>
                         <h2 style="color:#dc2626;font-size:24px;margin-bottom:10px;font-weight:900;">СУПЕР СБРОС</h2>
                         <div style="color:#fca5a5;font-size:16px;font-weight:600;">Выберите, что обнулить</div>
@@ -1451,6 +1452,77 @@
         
         
         window.addEventListener('load',()=>{if(localStorage.getItem('admin_logged_in')==='true'){document.getElementById('loginForm').classList.add('hidden');document.getElementById('adminPanel').classList.remove('hidden');initPanel();}});
+
+        function openBoosts(uid){
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width:640px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                        <h2 style="color:#10b981;font-size:22px;font-weight:900;">🚀 Бусты пользователя</h2>
+                        <button onclick=\"this.closest('.modal').remove()\" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:36px;height:36px;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(16,185,129,0.3);">
+                            <div style="color:#a7f3d0;font-weight:700;margin-bottom:8px;">Коины (пассивно, в минуту)</div>
+                            <input id="boostCoinsPerMin" type="number" step="0.01" placeholder="например 5.5" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                <button onclick="confirmAddPassiveCoins(${uid}, false)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#10b981,#059669);">Добавить</button>
+                                <button onclick="confirmAddPassiveCoins(${uid}, true)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#34d399,#059669);">Заменить</button>
+                            </div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(59,130,246,0.3);">
+                            <div style="color:#bfdbfe;font-weight:700;margin-bottom:8px;">QuanHash (пассивно, в час)</div>
+                            <input id="boostHashPerHour" type="number" step="0.01" placeholder="например 360" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                <button onclick="confirmAddPassiveHash(${uid}, false)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#3b82f6,#2563eb);">Добавить</button>
+                                <button onclick="confirmAddPassiveHash(${uid}, true)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#60a5fa,#2563eb);">Заменить</button>
+                            </div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(234,88,12,0.3);">
+                            <div style="color:#fed7aa;font-weight:700;margin-bottom:8px;">Скорость регена энергии</div>
+                            <input id="boostRegenRate" type="number" step="0.1" placeholder="например 1.5" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <button onclick="setRegenRate(${uid})" class="btn-modal" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f97316,#ea580c);">Применить</button>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(245,158,11,0.3);">
+                            <div style="color:#fde68a;font-weight:700;margin-bottom:8px;">Максимум энергии</div>
+                            <input id="boostMaxEnergy" type="number" step="1" placeholder="например 2000" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                <button onclick="setMaxEnergy(${uid})" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#f59e0b,#d97706);">Установить</button>
+                                <button onclick="addMaxEnergy(${uid})" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#fbbf24,#d97706);">Изменить на Δ</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function confirmAddPassiveCoins(uid, replace){
+            const perMin=parseFloat(document.getElementById('boostCoinsPerMin').value||0);
+            fetch('/api/admin/add_passive_coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,per_min:perMin,replace:!!replace})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Добавлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function confirmAddPassiveHash(uid, replace){
+            const perHour=parseFloat(document.getElementById('boostHashPerHour').value||0);
+            fetch('/api/admin/add_passive_hash',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,per_hour:perHour,replace:!!replace})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Добавлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function setRegenRate(uid){
+            const rate=parseFloat(document.getElementById('boostRegenRate').value||1);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'set_regen_rate',value:rate})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Применено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function setMaxEnergy(uid){
+            const val=parseInt(document.getElementById('boostMaxEnergy').value||1000);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'set_max_energy',value:val})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Установлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function addMaxEnergy(uid){
+            const delta=parseInt(document.getElementById('boostMaxEnergy').value||0);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'add_max_energy',value:delta})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Изменено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
     </script>
 </body>
 </html>
