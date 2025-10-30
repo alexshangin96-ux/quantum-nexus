@@ -3067,12 +3067,12 @@
                     console.log('Tap boost - userMultiplier:', userMultiplier, 'window.userData:', window.userData);
                     currentEffect = Math.max(0, userMultiplier - 1);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
-                    // Показываем прирост эффекта для следующего уровня (всегда +1 для первой позиции)
-                    if (baseEffect === 1) {
-                        nextLevelEffect = 1; // Первая позиция всегда дает +1
-                    } else {
-                        nextLevelEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
-                    }
+                    // Calculate current effect for this item at current level
+                    const currentItemEffect = currentLevel > 0 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
+                    // Calculate next level effect for this item
+                    const nextItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel));
+                    // Show the increment (difference) - это то что реально добавится
+                    nextLevelEffect = nextItemEffect - currentItemEffect;
                 } else if (category === 'energy_buy') {
                     const baseEffect = item.baseEffect || 0.5;
                     const basePrice = item.basePrice || 1500;
@@ -3139,19 +3139,37 @@
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
-                            <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Прирост:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} кликов</span>
+                            <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Кликов за тап:</span>
+                                    <span style="color:#fff;font-size:13px;font-weight:800;">${currentEffect}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                                    <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Прирост:</span>
+                                    <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} кликов</span>
+                                </div>
                             </div>
                         ` : category === 'energy_buy' ? `
-                            <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Прирост:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} энергии/сек</span>
+                            <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Добавить энергии/сек:</span>
+                                    <span style="color:#fff;font-size:13px;font-weight:800;">${currentEffect}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                                    <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Прирост:</span>
+                                    <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect} энергии/сек</span>
+                                </div>
                             </div>
                         ` : category === 'energy_expand' ? `
-                            <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Прирост:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect.toLocaleString()}</span>
+                            <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширить максимум энергии на:</span>
+                                    <span style="color:#fff;font-size:13px;font-weight:800;">${currentEffect > 0 ? currentEffect.toLocaleString() : '0'}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+                                    <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Прирост:</span>
+                                    <span style="color:#4ade80;font-size:13px;font-weight:800;">+${nextLevelEffect.toLocaleString()}</span>
+                                </div>
                             </div>
                         ` : `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
