@@ -3062,15 +3062,16 @@
                 if (category === 'tap_boost') {
                     const baseEffect = item.baseEffect || 1;
                     const basePrice = item.basePrice || 1000;
-                    // Показываем реальное значение из базы данных (active_multiplier - 1, так как базовое значение 1)
+                    // Show total tap boosts (active_multiplier - 1, так как базовое значение 1)
                     const userMultiplier = window.userData?.active_multiplier || 1;
                     console.log('Tap boost - userMultiplier:', userMultiplier, 'window.userData:', window.userData);
-                    currentEffect = Math.max(0, userMultiplier - 1);
+                    const totalBoost = Math.max(0, userMultiplier - 1);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
                     
                     // Special handling for first item (base_effect == 1): always gives +1
                     if (baseEffect === 1) {
                         nextLevelEffect = 1;
+                        currentEffect = totalBoost; // Show total for first item
                     } else {
                         // For other items: use same logic as backend
                         // Backend formula: 
@@ -3080,9 +3081,11 @@
                         // When buying, we're at level=currentLevel, buying level=currentLevel+1
                         // So calculate the bonus that will be added when purchasing next level
                         // Note: backend checks level > 1, but for display purposes we need to handle level >= 1
-                        const currentEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
+                        const currentItemEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
                         const newEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
-                        nextLevelEffect = newEffect - currentEffect;
+                        nextLevelEffect = newEffect - currentItemEffect;
+                        // Show total + this item's current effect for display
+                        currentEffect = totalBoost + currentItemEffect;
                     }
                 } else if (category === 'energy_buy') {
                     const baseEffect = item.baseEffect || 0.5;
