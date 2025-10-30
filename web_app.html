@@ -3922,7 +3922,7 @@
                             'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
                         };
                         const info = rarityInfo[rarity];
-                        const income = card.income_type === 'per_minute' ? (card.income_per_min || 0) : (card.income || 0);
+                        const income = card.income_type === 'per_minute' ? (card.income_per_min || 0) : (card.income_per_min || 0);
                         const incomeType = card.income_type === 'per_minute' ? '/мин' : '/час';
                         const level = card.level || 1;
                         const nameParts = card.name || 'Карточка';
