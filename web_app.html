@@ -3067,10 +3067,10 @@
                     console.log('Tap boost - userMultiplier:', userMultiplier, 'window.userData:', window.userData);
                     currentEffect = Math.max(0, userMultiplier - 1);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
-                    // Calculate current effect for this item at current level
-                    const currentItemEffect = currentLevel > 0 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
-                    // Calculate next level effect for this item
-                    const nextItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel));
+                    // Calculate current effect for this item at current level (currentLevel is the level already purchased)
+                    const currentItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel));
+                    // Calculate next level effect for this item (next level = currentLevel + 1)
+                    const nextItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
                     // Show the increment (difference) - это то что реально добавится
                     nextLevelEffect = nextItemEffect - currentItemEffect;
                 } else if (category === 'energy_buy') {
@@ -3081,8 +3081,12 @@
                     console.log('Energy buy - userRegenRate:', userRegenRate, 'window.userData:', window.userData);
                     currentEffect = Math.max(0, Math.round((userRegenRate - 1) * 10) / 10);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.4, currentLevel + 1));
-                    // Показываем прирост эффекта для следующего уровня (максимум 1 десятичная)
-                    nextLevelEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 10) / 10;
+                    // Calculate current effect for this item at current level
+                    const currentItemEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel) * 10) / 10;
+                    // Calculate next level effect for this item
+                    const nextItemEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 10) / 10;
+                    // Show the increment (difference)
+                    nextLevelEffect = Math.round((nextItemEffect - currentItemEffect) * 10) / 10;
                 } else if (category === 'energy_expand') {
                     const baseEffect = item.baseEffect || 50;
                     const basePrice = item.basePrice || 2000;
@@ -3091,8 +3095,12 @@
                     console.log('Energy expand - userMaxEnergy:', userMaxEnergy, 'window.userData:', window.userData);
                     currentEffect = Math.max(0, userMaxEnergy - 1000);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.6, currentLevel + 1));
-                    // Показываем прирост эффекта для следующего уровня
-                    nextLevelEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1));
+                    // Calculate current effect for this item at current level
+                    const currentItemEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel));
+                    // Calculate next level effect for this item
+                    const nextItemEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1));
+                    // Show the increment (difference)
+                    nextLevelEffect = nextItemEffect - currentItemEffect;
                 }
                 
                 const rarityColors = {
