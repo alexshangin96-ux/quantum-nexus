@@ -3071,7 +3071,8 @@
                     // Special handling for first item (base_effect == 1): always gives +1
                     if (baseEffect === 1) {
                         nextLevelEffect = 1;
-                        currentEffect = totalBoost; // Show total for first item
+                        // For first item, show total since it's the base
+                        currentEffect = totalBoost;
                     } else {
                         // For other items: use same logic as backend
                         // Backend formula: 
@@ -3084,8 +3085,9 @@
                         const currentItemEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
                         const newEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
                         nextLevelEffect = newEffect - currentItemEffect;
-                        // Show total + this item's current effect for display
-                        currentEffect = totalBoost + currentItemEffect;
+                        // Show what total would be AFTER buying this item
+                        // Total would be current total + nextLevelEffect
+                        currentEffect = totalBoost;
                     }
                 } else if (category === 'energy_buy') {
                     const baseEffect = item.baseEffect || 0.5;
