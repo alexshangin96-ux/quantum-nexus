@@ -1037,7 +1037,10 @@ def buy_item():
         item_type = data.get('item_type')
         price = data.get('price')
         
+        print(f"Buy item request: user_id={user_id}, item_type={item_type}, price={price}")
+        
         if not user_id or not item_type or not price:
+            print(f"Missing parameters: user_id={user_id}, item_type={item_type}, price={price}")
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
         # Ensure price is a float
@@ -1176,6 +1179,9 @@ def buy_item():
             
             return jsonify({'success': True})
     except Exception as e:
+        print(f"Error in buy_item: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/buy_shop_item', methods=['POST'])
