@@ -3368,7 +3368,8 @@
                         })
                         .then(res => res.json())
                         .then(shopData => {
-                            console.log('Reloaded cards data:', shopData);
+                            console.log('Reloaded cards data after purchase:', shopData);
+                            console.log('Cards items:', shopData.items);
                             window.shopData = window.shopData || {};
                             window.shopData.items = shopData.items || [];
                             
@@ -3379,6 +3380,15 @@
                             const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
                             const activeCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
                             console.log('Active category:', activeCategory);
+                            
+                            // Log per_hour cards specifically
+                            const perHourCards = shopData.items.filter(item => item.type === 'card' && item.income_type === 'per_hour');
+                            console.log('Per hour cards after purchase:', perHourCards.map(c => ({
+                                id: c.id,
+                                level: c.level,
+                                price: c.price,
+                                income_per_min: c.income_per_min
+                            })));
                             
                             // Force refresh the active category
                             loadCardsCategory(activeCategory);
@@ -3909,6 +3919,12 @@
                         income: c.income,
                         income_per_min: c.income_per_min,
                         income_type: c.income_type
+                    })));
+                    console.log('All cards for category', category, ':', cards.map(c => ({
+                        id: c.id,
+                        level: c.level,
+                        price: c.price,
+                        income_per_min: c.income_per_min
                     })));
                     if(cards && cards.length > 0) {
                         shopList.innerHTML = cards.map((card, i) => {
