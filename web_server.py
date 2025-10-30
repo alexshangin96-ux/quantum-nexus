@@ -662,6 +662,12 @@ def get_mining():
             
             all_machines_data = list(machines_dict.values())
             
+            # Debug logging
+            print(f"User {user_id} has {len(user_machines_db)} machines in DB")
+            print(f"Grouped into {len(all_machines_data)} unique machines")
+            for m in all_machines_data:
+                print(f"  - {m['name']}: level {m['level']}, count {m['count']}, income {m['total_income']}")
+            
             # Get machine levels for current category (for shop display) from JSON
             mining_levels = {}
             if category == 'coins':
@@ -680,6 +686,9 @@ def get_mining():
                 'machine_levels': mining_levels
             })
     except Exception as e:
+        print(f"Error in /api/mining: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/cards', methods=['POST'])
@@ -1862,9 +1871,15 @@ def buy_machine():
                 user.mining_quanhash_levels = json.dumps(levels)
             
             db.commit()
+            
+            # Debug logging
+            print(f"Machine purchased: {machine_id}, level: {new_level}, hash_per_hour: {hash_per_hour}")
         
         return jsonify({'success': True})
     except Exception as e:
+        print(f"Error buying machine: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
