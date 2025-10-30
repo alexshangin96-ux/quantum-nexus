@@ -9,7 +9,9 @@ cd /root/quantum-nexus
 git pull origin main
 
 echo "Проверка web_server.py..."
+source venv/bin/activate
 python -m py_compile web_server.py 2>&1
+deactivate
 
 if [ $? -eq 0 ]; then
     echo -e "✅ Синтаксис OK"
