@@ -3359,23 +3359,6 @@
                     console.log('Response error:', data.error);
                     if(data.success) {
                         showNotification('success', 'Карточка куплена!');
-                        // Force reload user data
-                        loadData();
-                        // Also reload shop data to update levels
-                        loadShopData();
-                        
-                        // Force reload cards data immediately
-                        fetch('/api/shop', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({user_id: userId, category: 'cards'})
-                        })
-                        .then(res => res.json())
-                        .then(shopData => {
-                            console.log('Immediate reload after purchase:', shopData);
-                            window.shopData = window.shopData || {};
-                            window.shopData.items = shopData.items || [];
-                        });
                         
                         // Reload cards data to update levels and prices
                         fetch('/api/shop', {
