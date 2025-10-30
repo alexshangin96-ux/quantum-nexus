@@ -240,6 +240,7 @@ def get_user_data():
                 user_machines = []
             
             return jsonify({
+                'id': user.id,  # Add database ID
                 'coins': user.coins,
                 'quanhash': user.quanhash,
                 'energy': user.energy,
