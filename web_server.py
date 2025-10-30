@@ -623,14 +623,19 @@ def get_mining():
 def get_cards():
     """Get user cards"""
     try:
-        data = request.json
+        data = request.json or {}
         user_id = data.get('user_id')
-        
-        if not user_id:
+        telegram_id = data.get('telegram_id')
+
+        if not user_id and not telegram_id:
             return jsonify({'error': 'User ID required'}), 400
-        
+
         with get_db() as db:
-            user = db.query(User).filter_by(telegram_id=user_id).first()
+            user = None
+            if user_id:
+                user = db.query(User).filter_by(id=user_id).first()
+            elif telegram_id:
+                user = db.query(User).filter_by(telegram_id=telegram_id).first()
             
             if not user:
                 return jsonify({'error': 'User not found'}), 404
@@ -1307,14 +1312,19 @@ def buy_shop_item():
 def get_shop_levels():
     """Get shop item levels for user"""
     try:
-        data = request.json
+        data = request.json or {}
         user_id = data.get('user_id')
-        
-        if not user_id:
+        telegram_id = data.get('telegram_id')
+
+        if not user_id and not telegram_id:
             return jsonify({'success': False, 'error': 'Missing user_id'})
-        
+
         with get_db() as db:
-            user = db.query(User).filter_by(telegram_id=user_id).first()
+            user = None
+            if user_id:
+                user = db.query(User).filter_by(id=user_id).first()
+            elif telegram_id:
+                user = db.query(User).filter_by(telegram_id=telegram_id).first()
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
