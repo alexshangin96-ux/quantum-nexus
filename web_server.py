@@ -779,7 +779,7 @@ def get_offline_income():
             
             # Update last_active to mark user is back in app (only if there was offline income)
             if offline_time > 0:
-            user.last_active = now
+                user.last_active = now
             
             return jsonify({
                 'offline_time': int(offline_time),
