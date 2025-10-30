@@ -1164,6 +1164,9 @@ def buy_item():
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
             
+            # Update last_active for user activity
+            user.last_active = datetime.utcnow()
+            
             db.commit()
             return jsonify({'success': True})
     except Exception as e:
