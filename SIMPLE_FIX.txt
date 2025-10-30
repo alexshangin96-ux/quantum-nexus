@@ -1,0 +1,16 @@
+Выполните эти команды на сервере:
+
+cd /root/quantum-nexus
+git restore FIX_ALL_SYNTAX.sh
+git pull origin main
+chmod +x RESET_AND_FIX.sh
+bash RESET_AND_FIX.sh
+
+Или просто выполните:
+
+cd /root/quantum-nexus
+git restore .
+git pull origin main
+sudo cp web_server.py /var/www/quantum-nexus/web_server.py
+sudo systemctl restart quantum-nexus-web.service
+
