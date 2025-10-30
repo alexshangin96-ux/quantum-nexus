@@ -2906,7 +2906,7 @@
                                         </div>
                                     </div>
                                     
-                                    ${category === 'autobot' ? `
+                                    ${category === 'autobot' || category === 'autobot_vip' ? `
                                         <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⏱️ Длительность:</span>
                                             <span style="color: #fff; font-size: 12px; font-weight: 800;">${item.duration < 60 ? item.duration + ' минут' : Math.floor(item.duration / 60) + ' часов'}</span>
@@ -3036,11 +3036,11 @@
             // Get user's current level for this category from userData
             let userLevel = 0;
             if (window.userData) {
-                if (category === 'tap_boost') {
+                if (category === 'tap_boost' || category === 'tap_boost_vip') {
                     userLevel = window.userData.tap_boost_level || 0;
-                } else if (category === 'energy_buy') {
+                } else if (category === 'energy_buy' || category === 'energy_buy_vip') {
                     userLevel = window.userData.energy_buy_level || 0;
-                } else if (category === 'energy_expand') {
+                } else if (category === 'energy_expand' || category === 'energy_expand_vip') {
                     userLevel = window.userData.energy_expand_level || 0;
             }
             }
@@ -3059,7 +3059,7 @@
                 let nextLevelPrice = 0;
                 let nextLevelEffect = 0;
                 
-                if (category === 'tap_boost') {
+                if (category === 'tap_boost' || category === 'tap_boost_vip') {
                     const baseEffect = item.baseEffect || 1;
                     const basePrice = item.basePrice || 1000;
                     // Show total tap boosts - active_multiplier is already the number of clicks
@@ -3093,34 +3093,42 @@
                         // Total would be current total + nextLevelEffect
                         currentEffect = totalBoost;
                     }
-                } else if (category === 'energy_buy') {
+                } else if (category === 'energy_buy' || category === 'energy_buy_vip') {
                     const baseEffect = item.baseEffect || 0.5;
                     const basePrice = item.basePrice || 1500;
-                    // Показываем реальное значение из базы данных (energy_regen_rate - 1, так как базовое значение 1)
+                    // Show total energy regen (energy_regen_rate includes base 1)
                     const userRegenRate = window.userData?.energy_regen_rate || 1;
                     console.log('Energy buy - userRegenRate:', userRegenRate, 'window.userData:', window.userData);
-                    currentEffect = Math.max(0, Math.round((userRegenRate - 1) * 10) / 10);
+                    const totalRegen = Math.max(0, Math.round((userRegenRate - 1) * 10) / 10);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.4, currentLevel + 1));
-                    // Calculate current effect for this item at current level
-                    const currentItemEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel) * 10) / 10;
-                    // Calculate next level effect for this item
+                    // Backend formula: level is the next level we're buying
+                    // So at currentLevel, we're buying level=currentLevel+1
+                    // Backend calculates: current_effect = base_effect * (1.15 ** (level - 1))
+                    // So for level=currentLevel+1: current_effect = base_effect * (1.15 ** currentLevel)
+                    const currentItemEffect = currentLevel >= 1 ? Math.round(baseEffect * Math.pow(1.15, currentLevel) * 10) / 10 : 0;
+                    // new_effect = base_effect * (1.15 ** level) = base_effect * (1.15 ** (currentLevel + 1))
                     const nextItemEffect = Math.round(baseEffect * Math.pow(1.15, currentLevel + 1) * 10) / 10;
                     // Show the increment (difference)
                     nextLevelEffect = Math.round((nextItemEffect - currentItemEffect) * 10) / 10;
-                } else if (category === 'energy_expand') {
+                    currentEffect = totalRegen;
+                } else if (category === 'energy_expand' || category === 'energy_expand_vip') {
                     const baseEffect = item.baseEffect || 50;
                     const basePrice = item.basePrice || 2000;
-                    // Показываем реальное значение из базы данных (max_energy - 1000, так как базовое значение 1000)
+                    // Show total energy expansion (max_energy includes base 1000)
                     const userMaxEnergy = window.userData?.max_energy || 1000;
                     console.log('Energy expand - userMaxEnergy:', userMaxEnergy, 'window.userData:', window.userData);
-                    currentEffect = Math.max(0, userMaxEnergy - 1000);
+                    const totalExpansion = Math.max(0, userMaxEnergy - 1000);
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.6, currentLevel + 1));
-                    // Calculate current effect for this item at current level
-                    const currentItemEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel));
-                    // Calculate next level effect for this item
+                    // Backend formula: level is the next level we're buying
+                    // So at currentLevel, we're buying level=currentLevel+1
+                    // Backend calculates: current_effect = base_effect * (1.25 ** (level - 1))
+                    // So for level=currentLevel+1: current_effect = base_effect * (1.25 ** currentLevel)
+                    const currentItemEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.25, currentLevel)) : 0;
+                    // new_effect = base_effect * (1.25 ** level) = base_effect * (1.25 ** (currentLevel + 1))
                     const nextItemEffect = Math.floor(baseEffect * Math.pow(1.25, currentLevel + 1));
                     // Show the increment (difference)
                     nextLevelEffect = nextItemEffect - currentItemEffect;
+                    currentEffect = totalExpansion;
                 }
                 
                 const rarityColors = {
@@ -3213,7 +3221,7 @@
                                 ` : ''}
                             </div>
                         `}
-                        ${category === 'autobot' ? `
+                        ${category === 'autobot' || category === 'autobot_vip' ? `
                             <button id="autobot-btn-${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.basePrice || item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
                                     style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;align-items:center;justify-content:center;gap:4px;"
                                     onmousedown="if(!${isLocked}){this.style.transform='scale(0.98)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 12px rgba(255,215,0,0.4)' : '0 3px 8px rgba(102,126,234,0.4)'}'}"
@@ -3241,7 +3249,7 @@
             }
             
             // Update autobot buttons if autobot category is loaded
-            if (category === 'autobot') {
+            if (category === 'autobot' || category === 'autobot_vip') {
                 // Fetch current user data to update autobot buttons
                 fetch('/api/user_data', {
                     method: 'POST',
@@ -3448,7 +3456,7 @@
             }
             
             // For multilevel items we pass next level; for autobot use exact selected level
-            const nextLevel = (category === 'autobot') ? level : (level + 1);
+            const nextLevel = (category === 'autobot' || category === 'autobot_vip') ? level : (level + 1);
             
             // Get base effect and price from shopData
             const shopData = window.shopData || {};
