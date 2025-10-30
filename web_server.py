@@ -475,6 +475,7 @@ def get_shop():
                     user_card_counts[uc.card_type] = user_card_counts.get(uc.card_type, 0) + 1
                 
                 print(f"User {user_id} cards: {user_card_counts}")
+                print(f"All user cards from DB: {[(uc.card_type, uc.card_level, uc.income_per_minute) for uc in user_cards]}")
                 
                 for i, template in enumerate(per_minute_cards):
                     card_key = f"card_min_{i}"
