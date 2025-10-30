@@ -3329,22 +3329,28 @@
                 
                 console.log('Shop data for cards:', shopData);
                 console.log('Cards array:', cards);
-                console.log('Item index:', itemIndex);
+                console.log('Item index or id:', itemIndex);
                 console.log('Actual price:', actualPrice);
                 console.log('Cards length:', cards.length);
                 console.log('Item index valid:', itemIndex >= 0 && itemIndex < cards.length);
                 
-                // Find card by index (itemIndex parameter)
-                const card = cards[itemIndex];
-                if (!card) {
-                    console.error('Card not found at index:', itemIndex, 'cards length:', cards.length);
-                    showNotification('error', 'Карточка не найдена');
-                    return;
+                // If itemIndex is a string, it's actually the card id -> use directly
+                let itemType = (typeof itemIndex === 'string') ? itemIndex : null;
+                let card = null;
+                if (!itemType) {
+                    card = cards[itemIndex];
+                    if (!card) {
+                        console.error('Card not found at index:', itemIndex, 'cards length:', cards.length);
+                        showNotification('error', 'Карточка не найдена');
+                        return;
+                    }
+                    itemType = card.id;
+                } else {
+                    card = cards.find(c => c.id === itemType) || null;
                 }
-                const itemType = card.id; // Use card.id as item_type
                 
                 console.log('Buying card:', {card, itemType, actualPrice, cards: cards.length});
-                console.log('Card ID for purchase:', card.id);
+                console.log('Card ID for purchase:', itemType);
                 console.log('Item type being sent:', itemType);
                 
                 fetch('/api/buy', {
@@ -3955,7 +3961,7 @@
                                 <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:6px;">${card.description}</div>
                                 <div style="font-size:12px;color:#10b981;text-align:center;margin-bottom:6px;font-weight:700;">+${income.toFixed(1)} 🪙${incomeType}</div>
                                 <div style="font-size:9px;color:#fbbf24;text-align:center;margin-bottom:8px;font-weight:600;">Lv.${level} ${info.name}</div>
-                                <button onclick="buyShopItem('card', ${card.level || 1}, ${card.price || 0}, ${i})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
+                                <button onclick="buyShopItem('card', ${card.level || 1}, ${card.price || 0}, '${card.id}')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
                                     🪙 ${(card.price || 0).toLocaleString()}
                                 </button>
                             </div>
