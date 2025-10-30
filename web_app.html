@@ -3899,121 +3899,6 @@
                 loadCardsList(category);
             };
             
-            function openVIPCardsModal() {
-                const modal = document.createElement('div');
-                modal.className = 'modal active';
-                modal.style.zIndex = '10000';
-                modal.innerHTML = `
-                    <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
-                        <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                                <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
-                                <div>
-                                    <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP КАРТОЧКИ</h2>
-                                    <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">💎 Эксклюзивный пассивный доход</div>
-                                </div>
-                            </div>
-                            <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
-                        </div>
-                        
-                        <div style="padding: 25px;">
-                            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:25px;">
-                                <button id="vipCardsBtnHour" onclick="loadVIPCardsCategory('per_hour')" style="padding:14px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));color:#fff;border:2px solid #ffd700;border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
-                                    ⚡ В час
-                                </button>
-                                <button id="vipCardsBtnMin" onclick="loadVIPCardsCategory('per_minute')" style="padding:14px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(167,139,250,0.3);border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
-                                    💎 В минуту
-                                </button>
-                            </div>
-                            
-                            <div id="vipCardsContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                loadVIPCardsCategory('per_hour');
-            }
-            
-            function loadVIPCardsCategory(category) {
-                document.getElementById('vipCardsBtnHour').style.background = category === 'per_hour' ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : 'rgba(255,255,255,0.05)';
-                document.getElementById('vipCardsBtnHour').style.border = category === 'per_hour' ? '2px solid #ffd700' : '2px solid rgba(255,215,0,0.2)';
-                document.getElementById('vipCardsBtnMin').style.background = category === 'per_minute' ? 'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(167,139,250,0.15))' : 'rgba(255,255,255,0.05)';
-                document.getElementById('vipCardsBtnMin').style.border = category === 'per_minute' ? '2px solid #8b5cf6' : '2px solid rgba(167,139,250,0.2)';
-                showVIPCardsList(category);
-            }
-            
-            function showVIPCards() {
-                // Old function kept for compatibility
-                showVIPCardsList();
-            }
-            
-            function showVIPCardsList(category = 'per_hour') {
-                const vipCardsContent = document.getElementById('vipCardsContent');
-                const vipCardsSection = document.getElementById('vipCardsSection');
-                const targetElement = vipCardsContent || vipCardsSection;
-                if (!targetElement) return;
-                
-                // VIP Card definitions
-                const vipCardsPerHour = [
-                    {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 5000, rarity: 'vip_silver'},
-                    {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 15000, rarity: 'vip_gold'},
-                    {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 35000, rarity: 'vip_platinum'},
-                    {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 100000, rarity: 'vip_diamond'},
-                    {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 300000, rarity: 'vip_elite'}
-                ];
-                
-                const vipCardsPerMinute = [
-                    {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 300, rarity: 'vip_nova'},
-                    {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 900, rarity: 'vip_quantum'},
-                    {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 2000, rarity: 'vip_cosmic'},
-                    {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 5000, rarity: 'vip_stellar'},
-                    {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 15000, rarity: 'vip_galaxy'}
-                ];
-                
-                const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
-                let html = '';
-                
-                cards.forEach((card, index) => {
-                    const level = 1;
-                    const price = category === 'per_hour' 
-                        ? Math.floor(card.basePrice * Math.pow(1.2, level - 1))
-                        : Math.floor(card.basePrice * Math.pow(1.3, level - 1));
-                    const income = category === 'per_hour'
-                        ? Math.floor(card.baseIncome * Math.pow(1.15, level - 1))
-                        : Math.floor(card.baseIncome * Math.pow(1.2, level - 1));
-                    const incomeText = category === 'per_hour' ? `+${income.toLocaleString()} 🪙/час` : `+${income.toLocaleString()} 🪙/мин`;
-                    const isHour = category === 'per_hour';
-                    const borderColor = isHour ? '#ffd700' : '#8b5cf6';
-                    const bgGradient = isHour ? 'linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,237,78,0.25))' : 'linear-gradient(135deg,rgba(139,92,246,0.25),rgba(167,139,250,0.25))';
-                    const badgeBg = isHour ? '#ffd700' : '#8b5cf6';
-                    const badgeColor = isHour ? '#000' : '#fff';
-                    const buttonGradient = isHour ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#8b5cf6,#a78bfa,#8b5cf6)';
-                    const buttonColor = isHour ? '#000' : '#fff';
-                    const incomeColor = isHour ? '#4ade80' : '#a78bfa';
-                    
-                    html += `
-                        <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                            <div style="position:absolute;top:8px;right:8px;background:${badgeBg};color:${badgeColor};padding:3px 8px;border-radius:6px;font-size:10px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⭐</div>
-                            <div style="font-size:28px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
-                            <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
-                            <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                            <div style="font-size:13px;color:${incomeColor};font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px ${incomeColor}40;">${incomeText}</div>
-                            <button onclick="buyVIPCardWithStars('${card.rarity}', ${price})" 
-                                    style="width:100%;padding:11px;background:${buttonGradient};color:${buttonColor};border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                    onmousedown="this.style.transform='scale(0.96)'" 
-                                    onmouseup="this.style.transform='scale(1)'" 
-                                    onmouseleave="this.style.transform='scale(1)'">
-                                <span>Купить за</span>
-                                <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
-                                <span>${price}</span>
-                            </button>
-                        </div>
-                    `;
-                });
-                
-                targetElement.innerHTML = html;
-            }
-            
             window.buyVIPCard = function(cardType) {
                 fetch('/api/buy_vip_card', {
                     method: 'POST',
@@ -4028,7 +3913,6 @@
                     if (data.success) {
                         tg.showAlert('✅ VIP карточка куплена!');
                         loadData();
-                        showVIPCards();
                     } else {
                         tg.showAlert('❌ ' + data.error);
                     }
@@ -4118,6 +4002,124 @@
             // Update passive income immediately
             updatePassiveIncome();
         }
+        
+        // VIP Cards Modal - defined globally
+        window.openVIPCardsModal = function() {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.zIndex = '10000';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                            <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP КАРТОЧКИ</h2>
+                                <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">💎 Эксклюзивный пассивный доход</div>
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
+                    </div>
+                    
+                    <div style="padding: 25px;">
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:25px;">
+                            <button id="vipCardsBtnHour" onclick="loadVIPCardsCategory('per_hour')" style="padding:14px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));color:#fff;border:2px solid #ffd700;border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
+                                ⚡ В час
+                            </button>
+                            <button id="vipCardsBtnMin" onclick="loadVIPCardsCategory('per_minute')" style="padding:14px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(167,139,250,0.3);border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
+                                💎 В минуту
+                            </button>
+                        </div>
+                        
+                        <div id="vipCardsContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            loadVIPCardsCategory('per_hour');
+            
+            // Update passive income after modal is opened
+            setTimeout(() => {
+                if (typeof updatePassiveIncome === 'function') {
+                    updatePassiveIncome();
+                }
+            }, 100);
+        };
+        
+        window.loadVIPCardsCategory = function(category) {
+            document.getElementById('vipCardsBtnHour').style.background = category === 'per_hour' ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : 'rgba(255,255,255,0.05)';
+            document.getElementById('vipCardsBtnHour').style.border = category === 'per_hour' ? '2px solid #ffd700' : '2px solid rgba(255,215,0,0.2)';
+            document.getElementById('vipCardsBtnMin').style.background = category === 'per_minute' ? 'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(167,139,250,0.15))' : 'rgba(255,255,255,0.05)';
+            document.getElementById('vipCardsBtnMin').style.border = category === 'per_minute' ? '2px solid #8b5cf6' : '2px solid rgba(167,139,250,0.2)';
+            window.showVIPCardsList(category);
+        };
+        
+        window.showVIPCardsList = function(category = 'per_hour') {
+            const vipCardsContent = document.getElementById('vipCardsContent');
+            const vipCardsSection = document.getElementById('vipCardsSection');
+            const targetElement = vipCardsContent || vipCardsSection;
+            if (!targetElement) return;
+            
+            // VIP Card definitions
+            const vipCardsPerHour = [
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 5000, rarity: 'vip_silver'},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 15000, rarity: 'vip_gold'},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 35000, rarity: 'vip_platinum'},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 100000, rarity: 'vip_diamond'},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 300000, rarity: 'vip_elite'}
+            ];
+            
+            const vipCardsPerMinute = [
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 300, rarity: 'vip_nova'},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 900, rarity: 'vip_quantum'},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 2000, rarity: 'vip_cosmic'},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 5000, rarity: 'vip_stellar'},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 15000, rarity: 'vip_galaxy'}
+            ];
+            
+            const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
+            let html = '';
+            
+            cards.forEach((card, index) => {
+                const level = 1;
+                const price = category === 'per_hour' 
+                    ? Math.floor(card.basePrice * Math.pow(1.2, level - 1))
+                    : Math.floor(card.basePrice * Math.pow(1.3, level - 1));
+                const income = category === 'per_hour'
+                    ? Math.floor(card.baseIncome * Math.pow(1.15, level - 1))
+                    : Math.floor(card.baseIncome * Math.pow(1.2, level - 1));
+                const incomeText = category === 'per_hour' ? `+${income.toLocaleString()} 🪙/час` : `+${income.toLocaleString()} 🪙/мин`;
+                const isHour = category === 'per_hour';
+                const borderColor = isHour ? '#ffd700' : '#8b5cf6';
+                const bgGradient = isHour ? 'linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,237,78,0.25))' : 'linear-gradient(135deg,rgba(139,92,246,0.25),rgba(167,139,250,0.25))';
+                const badgeBg = isHour ? '#ffd700' : '#8b5cf6';
+                const badgeColor = isHour ? '#000' : '#fff';
+                const buttonGradient = isHour ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#8b5cf6,#a78bfa,#8b5cf6)';
+                const buttonColor = isHour ? '#000' : '#fff';
+                const incomeColor = isHour ? '#4ade80' : '#a78bfa';
+                
+                html += `
+                    <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
+                        <div style="position:absolute;top:8px;right:8px;background:${badgeBg};color:${badgeColor};padding:3px 8px;border-radius:6px;font-size:10px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⭐</div>
+                        <div style="font-size:28px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
+                        <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
+                        <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
+                        <div style="font-size:13px;color:${incomeColor};font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px ${incomeColor}40;">${incomeText}</div>
+                        <button onclick="buyVIPCardWithStars('${card.rarity}', ${price})" 
+                                style="width:100%;padding:11px;background:${buttonGradient};color:${buttonColor};border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
+                                onmousedown="this.style.transform='scale(0.96)'" 
+                                onmouseup="this.style.transform='scale(1)'" 
+                                onmouseleave="this.style.transform='scale(1)'">
+                            <span>Купить за</span>
+                            <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
+                            <span>${price}</span>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            targetElement.innerHTML = html;
+        };
         
         function updatePassiveIncome() {
             fetch('/api/cards', {
