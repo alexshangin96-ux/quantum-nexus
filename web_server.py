@@ -648,7 +648,8 @@ def get_mining():
             user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
             machines_count = {}
             for machine in user_machines_db:
-                key = machine.machine_type
+                # Use machine_type, fallback to name if machine_type is None
+                key = machine.machine_type if machine.machine_type else machine.name
                 if key:
                     machines_count[key] = machines_count.get(key, 0) + 1
             
