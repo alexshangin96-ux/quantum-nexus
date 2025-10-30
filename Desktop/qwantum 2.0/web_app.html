@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v4.1 - Fixed Close Button Positioning - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v4.3 - Updated boost descriptions, renamed categories, improved autobot - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -816,96 +816,88 @@
             background-clip: text;
         }
 
-        /* ПРОСТОЙ КРЕСТИК БЕЗ АНИМАЦИЙ */
         .close-btn {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.4);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10001;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-            margin: 0;
-            padding: 0;
+            background: rgba(255,255,255,0.1) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            cursor: pointer !important;
+            color: white !important;
+            font-size: 20px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.3s ease !important;
+            position: absolute !important;
+            top: 15px !important;
+            right: 15px !important;
+            z-index: 1000 !important;
         }
 
         .close-btn:hover {
-            background: rgba(255,255,255,0.25);
-            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.2);
+            transform: none !important;
         }
 
-        /* Улучшенные кнопки магазина */
-        .shop-cat-btn {
-            transition: all 0.3s ease !important;
-        }
-
-        .shop-cat-btn:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 25px rgba(102,126,234,0.6) !important;
-        }
-
-        .shop-cat-btn.active {
-            background: linear-gradient(135deg,#667eea,#764ba2) !important;
-            box-shadow: 0 6px 20px rgba(102,126,234,0.5) !important;
-        }
-
-        .shop-cat-btn.active:hover {
-            transform: translateY(-3px) !important;
-            box-shadow: 0 10px 30px rgba(102,126,234,0.7) !important;
-        }
 
         /* Стильная кнопка закрытия для категорий */
         .category-close-btn {
             width: 100%;
-            padding: 12px 20px;
+            padding: 16px 24px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
-            border: none;
-            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
             cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            margin-top: 15px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            font-weight: 800;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .category-close-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .category-close-btn:active {
+            transform: translateY(-1px);
         }
 
         /* VIP стильная кнопка закрытия */
         .vip-close-btn {
             width: 100%;
             padding: 14px 20px;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
             color: #000;
             border: 2px solid #ffd700;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 16px;
             margin-top: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
             position: relative;
             overflow: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .vip-close-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.7);
+            background: linear-gradient(135deg, #ffed4e, #ffd700, #ffed4e);
+        }
+
+        .vip-close-btn:active {
+            transform: translateY(-1px);
         }
 
         .vip-close-btn::before {
@@ -915,12 +907,23 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            transition: left 0.6s;
         }
 
         .vip-close-btn:hover::before {
             left: 100%;
+        }
+
+        /* Анимация пульсации для VIP звезды */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .shop-category {
@@ -1442,7 +1445,7 @@
                 <button class="close-btn" onclick="closeModal('shopModal')">✕</button>
             </div>
             <div class="shop-category">
-                <div class="category-title">⚡ Бусты</div>
+                <div class="category-title">💪 Усилитель Тапа</div>
                 <div id="boostsList"></div>
             </div>
             <div class="shop-category">
@@ -1450,7 +1453,7 @@
                 <div id="automationList"></div>
             </div>
             <div class="shop-category">
-                <div class="category-title">⚡ Энергия</div>
+                <div class="category-title">⚡ Восстановление Энергии</div>
                 <div id="energyList"></div>
             </div>
             <div class="shop-category">
@@ -2250,14 +2253,14 @@
         
         const shopItems = {
             boosts: [
-                {name: "2x Множитель", emoji: "⚡", price: 1000, desc: "Удваивает доход с тапа", type: "multiplier_2x"},
-                {name: "5x Множитель", emoji: "🔥", price: 5000, desc: "Увеличивает доход в 5 раз", type: "multiplier_5x"},
-                {name: "10x Множитель", emoji: "💥", price: 20000, desc: "x10 к каждому тапу!", type: "multiplier_10x"},
+                {name: "2x Множитель", emoji: "⚡", price: 1000, desc: "Усиливает ваши тапы и увеличивает количество кликов", type: "multiplier_2x"},
+                {name: "5x Множитель", emoji: "🔥", price: 5000, desc: "Мощно усиливает ваши тапы и увеличивает количество кликов", type: "multiplier_5x"},
+                {name: "10x Множитель", emoji: "💥", price: 20000, desc: "Максимально усиливает ваши тапы и увеличивает количество кликов", type: "multiplier_10x"},
             ],
             automation: [
-                {name: "🤖 Авто-бот тапов", emoji: "🤖", price: 50000, desc: "Автоматически тапает за вас (5/сек)", type: "auto_bot"},
-                {name: "⚡ Двойная энергия", emoji: "⚡", price: 30000, desc: "Максимум энергии: 2000", type: "double_energy"},
-                {name: "🔄 Ускорение регенерации", emoji: "🔄", price: 40000, desc: "Энергия восстановливается быстрее", type: "regen_boost"},
+                {name: "🤖 Авто-бот тапов", emoji: "🤖", price: 50000, desc: "Автоматически тапает за вас", type: "auto_bot"},
+                {name: "⚡ Двойная энергия", emoji: "⚡", price: 30000, desc: "Увеличивает максимальный запас вашей энергии", type: "double_energy"},
+                {name: "🔄 Ускорение регенерации", emoji: "🔄", price: 40000, desc: "Ускоряет автоматическое восстановление вашей энергии", type: "regen_boost"},
             ],
             energy: [
                 {name: "Энергия +50", emoji: "⚡", price: 1000, amount: 50},
@@ -2636,64 +2639,148 @@
             });
         }
 
+        // Функции для расчета цены и эффекта по уровням (1-50)
+        function calculateTapBoostEffect(level) {
+            return Math.floor(level * Math.pow(1.2, level));
+        }
+        
+        function calculateTapBoostPrice(level) {
+            return Math.floor(1000 * Math.pow(1.5, level));
+        }
+        
+        function calculateEnergyEffect(level) {
+            return Math.round(level * 0.2 * Math.pow(1.15, level) * 100) / 100;
+        }
+        
+        function calculateEnergyPrice(level) {
+            return Math.floor(1000 * Math.pow(1.4, level));
+        }
+        
+        function calculateExpandEffect(level) {
+            return Math.floor(level * 50 * Math.pow(1.25, level));
+        }
+        
+        function calculateExpandPrice(level) {
+            return Math.floor(2000 * Math.pow(1.6, level));
+        }
+        
+        // Генерация названий для уровней
+        function generateTapBoostName(level) {
+            const names = [
+                '🔥 Холодное Сердце', '⚡ Молниеносный', '💨 Ураган', '🌪️ Торнадо', '💥 Взрывная Волна',
+                '🌟 Супер Энергия', '🌪️ Мега Шторм', '🔥 Огненный', '❄️ Ледяной', '💫 Космический',
+                '🌌 Галактический', '⚛️ Квантовый', '🌠 Звездный', '🌑 Черная Дыра', '✨ Абсолют',
+                '👑 Имперский', '🌟 Легендарный', '💎 Бриллиантовый', '🔥 Пламенный', '❄️ Ледяной Взрыв',
+                '⚡ Молния', '🌪️ Ураган', '💥 Взрыв', '🌟 Звезда', '🌌 Галактика', '⚛️ Квант', '🌠 Новая Ера',
+                '🌑 Тьма', '✨ Свет', '👑 Король', '💎 Драгоценность', '🔥 Пламя', '❄️ Лед', '⚡ Энергия',
+                '🌪️ Шторм', '💥 Бум', '🌟 Сияние', '🌌 Пространство', '⚛️ Атом', '🌠 Комета', '🌑 Пустота',
+                '✨ Магия', '👑 Трон', '💎 Кристалл', '🔥 Вулкан', '❄️ Айсберг', '⚡ Гром', '🌪️ Циклон'
+            ];
+            return names[(level - 1) % names.length];
+        }
+        
+        function generateEnergyName(level) {
+            const names = [
+                '🔋 Мини Генератор', '⚡ Световой', '💫 Звездный', '🌟 Золотой', '💎 Бриллиантовый',
+                '🔥 Огненный', '❄️ Ледяной', '🌊 Морской', '⚡ Молниеносный', '🌙 Лунный',
+                '☀️ Солнечный', '🌌 Галактический', '💫 Новая Ера', '⚛️ Квантовый', '🌠 Небесный',
+                '🌑 Темный', '✨ Светящийся', '👑 Королевский', '💎 Драгоценный', '🔥 Пламенный',
+                '❄️ Ледяной', '⚡ Электрический', '🌪️ Вихревой', '💥 Взрывной', '🌟 Сияющий',
+                '🌌 Пространственный', '⚛️ Атомный', '🌠 Кометный', '🌑 Пустотный', '✨ Магический',
+                '👑 Имперский', '💎 Кристальный', '🔥 Вулканический', '❄️ Айсберговый', '⚡ Грозовой',
+                '🌪️ Циклонный', '💥 Бумовый', '🌟 Светящийся', '🌌 Космический', '⚛️ Ядерный',
+                '🌠 Звездный', '🌑 Черный', '✨ Волшебный', '👑 Королевский', '💎 Алмазный',
+                '🔥 Пылающий', '❄️ Морозный', '⚡ Молниевый', '🌪️ Ураганный', '💥 Взрывчатый'
+            ];
+            return names[(level - 1) % names.length];
+        }
+        
+        function generateExpandName(level) {
+            const names = [
+                '🏃 Начальный', '💨 Быстрый', '⚡ Ускоренный', '🚀 Турбо', '💥 Ультра',
+                '🌟 Супер', '🌪️ Мега', '🔥 Огненный', '❄️ Ледяной', '💫 Космический',
+                '🌌 Галактический', '⚛️ Квантовый', '🌠 Звездный', '🌑 Абсолютный', '👑 Имперский',
+                '💎 Бриллиантовый', '🔥 Пламенный', '❄️ Ледяной', '⚡ Молниеносный', '🌪️ Ураганный',
+                '💥 Взрывной', '🌟 Сияющий', '🌌 Пространственный', '⚛️ Атомный', '🌠 Кометный',
+                '🌑 Темный', '✨ Светящийся', '👑 Королевский', '💎 Драгоценный', '🔥 Пылающий',
+                '❄️ Морозный', '⚡ Электрический', '🌪️ Вихревой', '💥 Бумовый', '🌟 Светящийся',
+                '🌌 Космический', '⚛️ Ядерный', '🌠 Звездный', '🌑 Черный', '✨ Волшебный',
+                '👑 Имперский', '💎 Кристальный', '🔥 Вулканический', '❄️ Айсберговый', '⚡ Грозовой',
+                '🌪️ Циклонный', '💥 Взрывчатый', '🌟 Сияющий', '🌌 Пространственный', '⚛️ Квантовый'
+            ];
+            return names[(level - 1) % names.length];
+        }
+
         function openShop(e) {
             e.preventDefault();
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'shopModal2';
             
-            // New comprehensive shop with 4 categories
+            // New comprehensive shop with 50 levels per category
             const shopData = {
                 'tap_boost': {
                     name: '💪 Усилитель Тапа',
                     emoji: '💪',
-                    items: [
-                        // 10 позиций за коины (с уровневой системой)
-                        {level: 1, name: '🔥 Холодное Сердце', desc: 'Базовое усиление тапа', baseBonus: 1, basePrice: 1000, currency: 'coins', locked: false},
-                        {level: 2, name: '⚡ Молниеносный', desc: '+1 клик за тап', baseBonus: 2, basePrice: 3000, currency: 'coins', locked: false},
-                        {level: 3, name: '💨 Ураган', desc: '+2 клика за тап', baseBonus: 3, basePrice: 8000, currency: 'coins', locked: false},
-                        {level: 4, name: '🌪️ Торнадо', desc: '+3 клика за тап', baseBonus: 4, basePrice: 20000, currency: 'coins', locked: false},
-                        {level: 5, name: '💥 Взрывная Волна', desc: '+5 кликов за тап', baseBonus: 6, basePrice: 50000, currency: 'coins', locked: false},
-                        {level: 6, name: '🌟 Супер Энергия', desc: '+8 кликов за тап', baseBonus: 9, basePrice: 120000, currency: 'coins', locked: false},
-                        {level: 7, name: '🚀 Космический', desc: '+12 кликов за тап', baseBonus: 13, basePrice: 300000, currency: 'coins', locked: false},
-                        {level: 8, name: '💫 Небесный', desc: '+18 кликов за тап', baseBonus: 19, basePrice: 800000, currency: 'coins', locked: false},
-                        {level: 9, name: '⚛️ Квантовый', desc: '+25 кликов за тап', baseBonus: 26, basePrice: 2000000, currency: 'coins', locked: false},
-                        {level: 10, name: '🌌 Галактический', desc: '+35 кликов за тап', baseBonus: 36, basePrice: 5000000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateTapBoostEffect(level);
+                            const price = calculateTapBoostPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateTapBoostName(level),
+                                desc: `Усиливает ваши тапы и увеличивает количество кликов за каждый тап`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'energy_buy': {
-                    name: '⚡ Ускорение Восстановления',
+                    name: '⚡ Восстановление Энергии',
                     emoji: '⚡',
-                    items: [
-                        // 10 позиций за коины
-                        {level: 1, name: '🔋 Мини Генератор', desc: '+0.2 энергии/сек', bonus: 0.2, price: 1000, currency: 'coins', locked: false},
-                        {level: 2, name: '⚡ Световой', desc: '+0.4 энергии/сек', bonus: 0.4, price: 2500, currency: 'coins', locked: false},
-                        {level: 3, name: '💫 Звездный', desc: '+0.6 энергии/сек', bonus: 0.6, price: 5000, currency: 'coins', locked: false},
-                        {level: 4, name: '🌟 Золотой', desc: '+0.8 энергии/сек', bonus: 0.8, price: 10000, currency: 'coins', locked: false},
-                        {level: 5, name: '💎 Бриллиантовый', desc: '+1.0 энергии/сек', bonus: 1.0, price: 20000, currency: 'coins', locked: false},
-                        {level: 6, name: '🔥 Огненный', desc: '+1.2 энергии/сек', bonus: 1.2, price: 40000, currency: 'coins', locked: false},
-                        {level: 7, name: '❄️ Ледяной', desc: '+1.4 энергии/сек', bonus: 1.4, price: 80000, currency: 'coins', locked: false},
-                        {level: 8, name: '🌊 Морской', desc: '+1.6 энергии/сек', bonus: 1.6, price: 160000, currency: 'coins', locked: false},
-                        {level: 9, name: '⚡ Молниеносный', desc: '+1.8 энергии/сек', bonus: 1.8, price: 320000, currency: 'coins', locked: false},
-                        {level: 10, name: '🌙 Лунный', desc: '+2.0 энергии/сек', bonus: 2.0, price: 640000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateEnergyEffect(level);
+                            const price = calculateEnergyPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateEnergyName(level),
+                                desc: `Ускоряет автоматическое восстановление вашей энергии`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'energy_expand': {
                     name: '📈 Расширение Энергии',
                     emoji: '📈',
-                    items: [
-                        // 10 позиций за коины
-                        {level: 1, name: '🏃 Начальный', desc: 'Расширить максимум на 100', bonus: 100, price: 2000, currency: 'coins', locked: false},
-                        {level: 2, name: '💨 Быстрый', desc: 'Расширить максимум на 150', bonus: 150, price: 5000, currency: 'coins', locked: false},
-                        {level: 3, name: '⚡ Ускоренный', desc: 'Расширить максимум на 250', bonus: 250, price: 10000, currency: 'coins', locked: false},
-                        {level: 4, name: '🚀 Турбо', desc: 'Расширить максимум на 400', bonus: 400, price: 20000, currency: 'coins', locked: false},
-                        {level: 5, name: '💥 Ультра', desc: 'Расширить максимум на 600', bonus: 600, price: 40000, currency: 'coins', locked: false},
-                        {level: 6, name: '🌟 Супер', desc: 'Расширить максимум на 900', bonus: 900, price: 80000, currency: 'coins', locked: false},
-                        {level: 7, name: '🌪️ Мега', desc: 'Расширить максимум на 1250', bonus: 1250, price: 160000, currency: 'coins', locked: false},
-                        {level: 8, name: '🔥 Огненный', desc: 'Расширить максимум на 1750', bonus: 1750, price: 320000, currency: 'coins', locked: false},
-                        {level: 9, name: '❄️ Ледяной', desc: 'Расширить максимум на 2500', bonus: 2500, price: 640000, currency: 'coins', locked: false},
-                        {level: 10, name: '💫 Космический', desc: 'Расширить максимум на 3750', bonus: 3750, price: 1280000, currency: 'coins', locked: false},
-                    ]
+                    items: (() => {
+                        const items = [];
+                        for (let level = 1; level <= 50; level++) {
+                            const effect = calculateExpandEffect(level);
+                            const price = calculateExpandPrice(level);
+                            items.push({
+                                level: level,
+                                name: generateExpandName(level),
+                                desc: `Увеличивает максимальный запас вашей энергии для более длительной игры`,
+                                bonus: effect,
+                                price: price,
+                                currency: 'coins',
+                                locked: false
+                            });
+                        }
+                        return items;
+                    })()
                 },
                 'autobot': {
                     name: '🤖 Автобот',
@@ -2715,30 +2802,17 @@
             };
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 480px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 28px;border: 3px solid rgba(167,139,250,0.6);box-shadow: 0 20px 60px rgba(167,139,250,0.4), 0 0 0 1px rgba(255,255,255,0.1);backdrop-filter: blur(20px);">
-                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef,#ff6b6b);padding:24px;border-radius:25px 25px 0 0;text-align:center;position:relative;box-shadow: 0 8px 32px rgba(167,139,250,0.3);">
-                        <h2 style="font-size: 26px; color: #fff; margin: 0; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">🛒 МАГАЗИН</h2>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-top: 4px;">Улучшите свою игру</div>
+                <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
+                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
+                        <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900;">🛒 МАГАЗИН</h2>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="padding:20px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
-                            <button class="shop-cat-btn active" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.4);transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">💪</div>
-                                <div>Усилитель</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">⚡</div>
-                                <div>Энергия</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">📈</div>
-                                <div>Расширение</div>
-                            </button>
-                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:16px;cursor:pointer;font-weight:700;font-size:14px;transition:all 0.3s ease;position:relative;overflow:hidden;">
-                                <div style="font-size:20px;margin-bottom:4px;">🤖</div>
-                                <div>Автобот</div>
-                            </button>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
+                            <button class="shop-cat-btn" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">💪 Усилитель Тапа</button>
+                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">⚡ Восстановление</button>
+                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">📈 Расширение</button>
+                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">🤖 Автобот</button>
                         </div>
                         <!-- VIP Button Row -->
                         <div id="vipButtonRow" style="margin-bottom:15px;">
@@ -2751,7 +2825,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;"></div>
+                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
                         
                         <!-- Стильная кнопка закрытия -->
                         <button class="category-close-btn" onclick="this.closest('.modal').remove()">
@@ -2837,22 +2911,31 @@
             modal.id = 'vipModal';
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 450px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,237,78,0.12), rgba(255,215,0,0.08)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.3); box-shadow: 0 20px 60px rgba(255,215,0,0.2); backdrop-filter: blur(10px);">
-                    <div style="background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(20,20,30,0.8)); padding: 24px 60px 24px 24px; border-radius: 22px 22px 0 0; text-align: center; position: relative; backdrop-filter: blur(5px);">
-                        <h2 style="font-size: 22px; color: #ffd700; margin: 0; font-weight: 800; text-shadow: 0 2px 8px rgba(255,215,0,0.3);">${vipItems.name}</h2>
-                        <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 500;">Эксклюзивные функции за Telegram Stars</div>
+                <div class="modal-content" style="max-width: 480px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 36px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">${vipItems.name}</h2>
+                                <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 600;">VIP функции за Telegram Stars</div>
+                            </div>
+                        </div>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
                     <div style="padding: 20px;">
                         <div style="display: grid; gap: 12px;">
                             ${vipItems.items.map(item => `
-                                <div style="background: linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,237,78,0.08)); padding: 18px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.2); position: relative; backdrop-filter: blur(5px);">
-                                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                                        <span style="font-size: 24px;">${item.name.split(' ')[0]}</span>
+                                <div style="background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(255,215,0,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(255,215,0,0.25)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(255,215,0,0.15)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))'">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                        <span style="font-size: 20px; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));">${item.name.split(' ')[0]}</span>
                                         <div style="flex: 1;">
-                                            <div style="font-weight: 800; font-size: 16px; color: #fff;">${item.name.split(' ').slice(1).join(' ')}</div>
-                                            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px;">${item.desc}</div>
+                                            <div style="font-weight: 800; font-size: 14px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${item.name.split(' ').slice(1).join(' ')}</div>
+                                            <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">${item.desc}</div>
+                                        </div>
+                                        <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #ffd700; box-shadow: 0 3px 8px rgba(255,215,0,0.4); position: relative; overflow: hidden;">
+                                            <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                                            <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">VIP</span>
                                         </div>
                                     </div>
                                     
@@ -2868,11 +2951,13 @@
                                     ` : ''}
                                     
                                     <button onclick="buyWithStars('${category}', ${item.level}, ${item.price})" 
-                                            style="width: 100%; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.8), rgba(255,237,78,0.9), rgba(255,215,0,0.8)); color: #000; border: 1px solid rgba(255,215,0,0.6); border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(255,215,0,0.2); backdrop-filter: blur(5px);"
-                                            onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 8px 25px rgba(255,215,0,0.3)'"
-                                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.2)'"
-                                            onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.2)'">
-                                        Купить за ${item.price} ⭐ Telegram Stars
+                                            style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 1px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(255,215,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;"
+                                            onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'"
+                                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'"
+                                            onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">
+                                        <span>Купить за ${item.price}</span>
+                                        <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(255,215,0,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                                        <span>Telegram Stars</span>
                                     </button>
                                 </div>
                             `).join('')}
@@ -2997,18 +3082,30 @@
                     5: 'rgba(59,130,246,0.3)', // blue
                     10: 'rgba(139,92,246,0.3)', // purple
                     15: 'rgba(236,72,153,0.3)', // pink
-                    20: 'rgba(251,191,36,0.3)' // gold
+                    20: 'rgba(251,191,36,0.3)', // gold
+                    25: 'rgba(34,197,94,0.3)', // green
+                    30: 'rgba(239,68,68,0.3)', // red
+                    35: 'rgba(168,85,247,0.3)', // violet
+                    40: 'rgba(245,158,11,0.3)', // amber
+                    45: 'rgba(6,182,212,0.3)', // cyan
+                    50: 'rgba(255,215,0,0.3)' // gold
                 };
                 const rarityColor = item.level <= 5 ? rarityColors[1] : 
                                    item.level <= 10 ? rarityColors[5] : 
                                    item.level <= 15 ? rarityColors[10] : 
-                                   item.level <= 19 ? rarityColors[15] : rarityColors[20];
+                                   item.level <= 20 ? rarityColors[15] : 
+                                   item.level <= 25 ? rarityColors[20] :
+                                   item.level <= 30 ? rarityColors[25] :
+                                   item.level <= 35 ? rarityColors[30] :
+                                   item.level <= 40 ? rarityColors[35] :
+                                   item.level <= 45 ? rarityColors[40] :
+                                   item.level <= 50 ? rarityColors[45] : rarityColors[50];
                 
-                // Calculate price and bonus based on user level (only for regular items, not VIP)
-                const stats = item.basePrice && !item.premium ? calculateItemStats(item.basePrice, item.baseBonus, item.level, userLevel) : {price: item.price, bonus: item.bonus};
+                // Use direct price and bonus from item (calculated by formulas)
+                const stats = {price: item.price, bonus: item.bonus};
                 
                 return `
-                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2))' : 'linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))'};padding:20px;border-radius:18px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.7)' : 'rgba(255,255,255,0.3)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}box-shadow:0 6px 20px rgba(0,0,0,0.2);backdrop-filter:blur(10px);transition:all 0.3s ease;cursor:pointer;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.2)'">
+                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
                         ${isLocked ? `
                             <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.8);color:#fff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;">🔒</div>
                         ` : item.premium ? `
@@ -3017,8 +3114,11 @@
                         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                             <span style="font-size:20px;">${item.name.split(' ')[0]}</span>
                             <div style="flex:1;">
-                                <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')}</div>
-                                <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${item.desc}</div>
+                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                                    <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')}</div>
+                                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${item.level}</div>
+                                </div>
+                                <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
@@ -3028,15 +3128,15 @@
                             </div>
                         ` : category === 'energy_buy' ? `
                             <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Восстановить:</span>
-                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии</span>
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Добавить:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
                             </div>
                         ` : category === 'energy_expand' ? `
                             <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширить на:</span>
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширить максимум энергии на:</span>
                                 <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
                             </div>
-                        ` : `
+                        ` : category === 'autobot' ? `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
                                 <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <span style="color:#10b981;font-size:12px;font-weight:700;">⏱️ Длительность:</span>
@@ -3049,22 +3149,22 @@
                                 </div>
                                 ` : ''}
                             </div>
-                        `}
+                        ` : ''}
                         ${category === 'autobot' ? `
                             <button id="autobot-btn-${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
-                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
-                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
-                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
-                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить за ${item.price} ⭐ Telegram Stars` : `Купить за ${stats.price.toLocaleString()} 🪙`}
+                                    style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;align-items:center;justify-content:center;gap:4px;"
+                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.98)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 12px rgba(255,215,0,0.4)' : '0 3px 8px rgba(102,126,234,0.4)'}'}"
+                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'}'}"
+                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'}'}">
+                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `<span>Купить за ${item.price}</span><span style="font-size:14px;">⭐</span><span>Stars</span>` : `<span>Купить за ${stats.price.toLocaleString()}</span><span style="font-size:14px;">🪙</span>`}
                             </button>
                         ` : `
                             <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:14px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '2px solid #ffd700' : 'none'};border-radius:16px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:800;font-size:15px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.5)' : '0 4px 15px rgba(102,126,234,0.4)'};backdrop-filter:blur(10px);"
-                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.95)';this.style.boxShadow='${item.currency === 'stars' ? '0 6px 20px rgba(255,215,0,0.6)' : '0 2px 8px rgba(102,126,234,0.4)'}'}"
-                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}"
-                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 15px rgba(255,215,0,0.4)' : 'none'}'}">
-                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить за ${item.price} ⭐ Telegram Stars` : `Купить за ${stats.price.toLocaleString()} 🪙`}
+                                    style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;align-items:center;justify-content:center;gap:4px;"
+                                    onmousedown="if(!${isLocked}){this.style.transform='scale(0.98)';this.style.boxShadow='${item.currency === 'stars' ? '0 4px 12px rgba(255,215,0,0.4)' : '0 3px 8px rgba(102,126,234,0.4)'}'}"
+                                    onmouseup="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'}'}"
+                                    onmouseleave="if(!${isLocked}){this.style.transform='scale(1)';this.style.boxShadow='${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'}'}">
+                                ${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `<span>Купить за ${item.price}</span><span style="font-size:14px;">⭐</span><span>Stars</span>` : `<span>Купить за ${stats.price.toLocaleString()}</span><span style="font-size:14px;">🪙</span>`}
                             </button>
                         `}
                     </div>
@@ -3094,11 +3194,8 @@
         }
         
         function buyShopItem(category, level, price) {
-            // Calculate actual price based on user level
-            const userLevel = 0; // TODO: get from userData
-            const item = shopData[category]?.items.find(i => i.level === level);
-            const stats = item?.basePrice ? calculateItemStats(item.basePrice, item.baseBonus, level, userLevel) : {price: price};
-            const actualPrice = stats.price;
+            // Use direct price from the item (calculated by formulas)
+            const actualPrice = price;
             fetch('/api/buy_shop_item', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -3112,12 +3209,12 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // Beautiful single success notification
+                    // Compact success notification for Telegram
                     const anim = document.createElement('div');
-                    anim.style.cssText='position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:12px 20px;border-radius:12px;font-size:16px;box-shadow:0 6px 20px rgba(16,185,129,0.6);color:#fff;font-weight:700;display:flex;align-items:center;gap:8px;"><span style="font-size:20px;">✨</span> Покупка успешна!</div>';
+                    anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Куплено!</div>';
                     document.body.appendChild(anim);
-                    setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-70%)';setTimeout(()=>{anim.remove();},300);},1000);
+                    setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
                     loadData();
                     
@@ -3173,11 +3270,13 @@
                     // Update passive income immediately
                     updatePassiveIncome();
                 } else {
+                    // Compact error notification for Telegram
                     const error = document.createElement('div');
-                    error.style.cssText='position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    error.innerHTML='<div style="background:rgba(239,68,68,0.95);padding:20px 40px;border-radius:20px;font-size:24px;color:#fff;font-weight:700;">❌ ' + data.error + '</div>';
+                    error.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+                    const errorText = data.error.includes('Недостаточно') ? 'Недостаточно коинов' : data.error;
+                    error.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
                     document.body.appendChild(error);
-                    setTimeout(()=>{error.remove();},2000);
+                    setTimeout(()=>{error.style.opacity='0';error.style.transform='translate(-50%,-60%)';setTimeout(()=>{error.remove();},300);},1500);
                 }
             });
         }
@@ -3974,8 +4073,102 @@
             .catch(() => {});
         }
         
-        // Auto-tap function
+        // Auto-tap function - improved with continuous checking
+        let autoTapCheckInterval = null;
+        let autoTapInterval = null;
+        
         function startAutoTap() {
+            // First, clear any existing intervals
+            if(autoTapCheckInterval) clearInterval(autoTapCheckInterval);
+            if(autoTapInterval) clearInterval(autoTapInterval);
+            
+            // Check autobot status every 2 seconds
+            autoTapCheckInterval = setInterval(() => {
+                fetch('/api/user_data', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: window.user?.id})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Check if auto tap is enabled and still valid
+                    const isEnabled = data.auto_tap_enabled;
+                    const hasMinEnergy = data.energy > 10; // Auto-tap stops at 10 energy
+                    const autobotExpiresAt = data.auto_tap_expires_at || 0;
+                    const isStillValid = autobotExpiresAt > Date.now();
+                    
+                    if(isEnabled && hasMinEnergy && isStillValid) {
+                        const speed = 1000 / (data.auto_tap_speed || 1); // taps per second
+                        
+                        // Only start interval if it's not already running
+                        if(!autoTapInterval) {
+                            autoTapInterval = setInterval(() => {
+                                const energyElement = document.getElementById('energy-text');
+                                if(energyElement) {
+                                    const energy = parseInt(energyElement.textContent.split('/')[0]);
+                                    // Auto-tap stops at 10 energy, manual taps can go to 0
+                                    if(energy > 10) {
+                                        // Call tap with auto flag but show animation
+                                        fetch('/api/tap', {
+                                            method: 'POST',
+                                            headers: {'Content-Type': 'application/json'},
+                                            body: JSON.stringify({user_id: user?.id, is_auto: true})
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if(data.success) {
+                                                // Only show animation if no modal is open
+                                                const hasOpenModal = document.querySelector('.modal.active');
+                                                if (!hasOpenModal) {
+                                                    const button = document.querySelector('.tap-button');
+                                                    if(button){
+                                                        const rect = button.getBoundingClientRect();
+                                                        const centerX = rect.left + rect.width / 2;
+                                                        const centerY = rect.top + rect.height / 2;
+                                                        
+                                                        const coinAnimation = document.createElement('div');
+                                                        coinAnimation.className = 'coin-animation';
+                                                        coinAnimation.textContent = '+' + data.reward;
+                                                        coinAnimation.style.left = centerX + 'px';
+                                                        coinAnimation.style.top = centerY + 'px';
+                                                        coinAnimation.style.transform = 'translate(-50%, -50%)';
+                                                        coinAnimation.style.zIndex = '1000'; // Lower than modals
+                                                        document.body.appendChild(coinAnimation);
+                                                        setTimeout(() => { 
+                                                            if(document.body.contains(coinAnimation)) {
+                                                                document.body.removeChild(coinAnimation); 
+                                                            }
+                                                        }, 2000);
+                                                    }
+                                                }
+                                                loadData();
+                                            }
+                                        })
+                                        .catch(() => {
+                                            // If request fails, don't break the loop
+                                        });
+                                    } else {
+                                        // Stop if energy too low
+                                        clearInterval(autoTapInterval);
+                                        autoTapInterval = null;
+                                    }
+                                }
+                            }, speed);
+                        }
+                    } else {
+                        // Stop if conditions not met
+                        if(autoTapInterval) {
+                            clearInterval(autoTapInterval);
+                            autoTapInterval = null;
+                        }
+                    }
+                })
+                .catch(() => {
+                    // If status check fails, don't break the loop
+                });
+            }, 2000); // Check every 2 seconds
+            
+            // Initial check
             fetch('/api/user_data', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -3983,20 +4176,20 @@
             })
             .then(res => res.json())
             .then(data => {
-                // Check if auto tap is enabled and still valid
                 const isEnabled = data.auto_tap_enabled;
-                const hasMinEnergy = data.energy > 10; // Auto-tap stops at 10 energy
+                const hasMinEnergy = data.energy > 10;
+                const autobotExpiresAt = data.auto_tap_expires_at || 0;
+                const isStillValid = autobotExpiresAt > Date.now();
                 
-                if(isEnabled && hasMinEnergy) {
-                    const speed = 1000 / (data.auto_tap_speed || 2); // taps per second
-                    if(!window.autoTapInterval) {
-                        window.autoTapInterval = setInterval(() => {
+                if(isEnabled && hasMinEnergy && isStillValid) {
+                    const speed = 1000 / (data.auto_tap_speed || 1);
+                    
+                    if(!autoTapInterval) {
+                        autoTapInterval = setInterval(() => {
                             const energyElement = document.getElementById('energy-text');
                             if(energyElement) {
                                 const energy = parseInt(energyElement.textContent.split('/')[0]);
-                                // Auto-tap stops at 10 energy, manual taps can go to 0
                                 if(energy > 10) {
-                                    // Call tap with auto flag but show animation
                                     fetch('/api/tap', {
                                         method: 'POST',
                                         headers: {'Content-Type': 'application/json'},
@@ -4005,7 +4198,6 @@
                                     .then(res => res.json())
                                     .then(data => {
                                         if(data.success) {
-                                            // Only show animation if no modal is open
                                             const hasOpenModal = document.querySelector('.modal.active');
                                             if (!hasOpenModal) {
                                                 const button = document.querySelector('.tap-button');
@@ -4020,7 +4212,7 @@
                                                     coinAnimation.style.left = centerX + 'px';
                                                     coinAnimation.style.top = centerY + 'px';
                                                     coinAnimation.style.transform = 'translate(-50%, -50%)';
-                                                    coinAnimation.style.zIndex = '1000'; // Lower than modals
+                                                    coinAnimation.style.zIndex = '1000';
                                                     document.body.appendChild(coinAnimation);
                                                     setTimeout(() => { 
                                                         if(document.body.contains(coinAnimation)) {
@@ -4031,18 +4223,14 @@
                                             }
                                             loadData();
                                         }
-                                    });
+                                    })
+                                    .catch(() => {});
                                 } else {
-                                    clearInterval(window.autoTapInterval);
-                                    window.autoTapInterval = null;
+                                    clearInterval(autoTapInterval);
+                                    autoTapInterval = null;
                                 }
                             }
                         }, speed);
-                    }
-                } else {
-                    if(window.autoTapInterval) {
-                        clearInterval(window.autoTapInterval);
-                        window.autoTapInterval = null;
                     }
                 }
             });
