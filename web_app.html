@@ -4326,10 +4326,32 @@
                                     .then(res => res.json())
                                     .then(data => {
                                         if(data.success) {
-                                            // Update UI without animation to avoid flicker
+                                            // Show animation for autobot
                                             const hasOpenModal = document.querySelector('.modal.active');
                                             if (!hasOpenModal) {
+                                                const button = document.querySelector('.tap-button');
+                                                if(button) {
+                                                    const rect = button.getBoundingClientRect();
+                                                    const centerX = rect.left + rect.width / 2;
+                                                    const centerY = rect.top + rect.height / 2;
+                                                    
+                                                    const coinAnimation = document.createElement('div');
+                                                    coinAnimation.className = 'coin-animation';
+                                                    coinAnimation.textContent = '+' + data.reward;
+                                                    coinAnimation.style.left = centerX + 'px';
+                                                    coinAnimation.style.top = centerY + 'px';
+                                                    coinAnimation.style.transform = 'translate(-50%, -50%)';
+                                                    coinAnimation.style.zIndex = '999';
+                                                    document.body.appendChild(coinAnimation);
+                                                    setTimeout(() => {
+                                                        if(document.body.contains(coinAnimation)) {
+                                                            document.body.removeChild(coinAnimation);
+                                                        }
+                                                    }, 1000);
+                                                }
                                                 loadUserDataOnly(); // Silent update
+                                            } else {
+                                                loadUserDataOnly();
                                             }
                                         }
                                     })
