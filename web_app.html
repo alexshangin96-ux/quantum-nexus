@@ -3736,8 +3736,6 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Mining API response:', data);
-                    console.log('User machines:', data.user_machines);
                     // Update shop with levels
                     const machine_levels = data.machine_levels || {};
                     shop.innerHTML = machines.map((m, index) => {
@@ -3767,7 +3765,9 @@
                     }).join('');
                     
                     const machinesList = document.getElementById('machinesList');
+                    console.log('machinesList element:', machinesList, 'user_machines:', data.user_machines, 'length:', data.user_machines?.length);
                     if(machinesList && data.user_machines) {
+                        console.log('user_machines array:', data.user_machines);
                         if(data.user_machines.length > 0) {
                             machinesList.innerHTML = data.user_machines.map(m => {
                                 const count = m.count || 1;
