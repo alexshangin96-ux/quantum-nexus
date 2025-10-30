@@ -114,7 +114,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     keyboard = [
         [
-            InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html?v=4.0&t=" + str(int(__import__('time').time()))))
+            InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html?v=4.3&t=" + str(int(__import__('time').time()))))
         ]
     ]
     
@@ -591,7 +591,7 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                 logger.info(f"✅ VIP Stars payment successful! User {user_id} bought VIP product {product_id}: {vip_products[product_id]['name']}")
             else:
                 coins_to_add = product_coins.get(product_id, 0)
-                logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
+            logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
             
             if product_id in vip_products:
                 await update.message.reply_text(
@@ -602,13 +602,13 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                 )
             else:
                 coins_to_add = product_coins.get(product_id, 0)
-                await update.message.reply_text(
-                    f"✨ Покупка успешна!\n\n"
-                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
-                    f"💰 Получено: {coins_to_add:,} коинов\n"
-                    f"📊 Новый баланс: {user.coins:,} коинов"
-                    + vip_message
-                )
+            await update.message.reply_text(
+                f"✨ Покупка успешна!\n\n"
+                f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                f"💰 Получено: {coins_to_add:,} коинов\n"
+                f"📊 Новый баланс: {user.coins:,} коинов"
+                + vip_message
+            )
             
     except Exception as e:
         logger.error(f"Error processing payment: {e}", exc_info=True)
