@@ -639,63 +639,37 @@ def get_mining():
                 ]
             }
             
-            # Get ALL machine levels from JSON
-            coins_levels = json.loads(user.mining_coins_levels or '{}')
-            quanhash_levels = json.loads(user.mining_quanhash_levels or '{}')
-            vip_levels = json.loads(user.mining_vip_levels or '{}')
-            
-            # Get all user machines once to count
+            # Get all user machines from database (source of truth)
             user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
-            machines_count = {}
+            
+            # Group machines by machine_type (or name if machine_type is null)
+            machines_dict = {}
             for machine in user_machines_db:
-                # Use machine_type, fallback to name if machine_type is None
                 key = machine.machine_type if machine.machine_type else machine.name
-                if key:
-                    machines_count[key] = machines_count.get(key, 0) + 1
-            
-            # Build ALL machines list from all categories
-            all_machines_dict = {}
-            for cat, machines_list in machines_defs.items():
-                if cat == 'coins':
-                    levels = coins_levels
-                elif cat == 'quanhash':
-                    levels = quanhash_levels
-                elif cat == 'vip':
-                    levels = vip_levels
+                if key in machines_dict:
+                    machines_dict[key]['count'] += 1
+                    machines_dict[key]['total_income'] += machine.hash_rate * 3600
                 else:
-                    continue
-                    
-                for machine_def in machines_list:
-                    machine_id = machine_def['id']
-                    level = levels.get(machine_id, 0)
-                    if level > 0:  # Only include machines that have been purchased
-                        # Calculate income based on level
-                        hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** (level - 1)))
-                        hash_rate = hash_per_hour / 3600.0
-                        
-                        # Count from preloaded dict
-                        count = machines_count.get(machine_id, 0)
-                        
-                        all_machines_dict[machine_id] = {
-                            'machine_id': machine_id,
-                            'name': machine_def['name'],
-                            'level': level,
-                            'count': count,
-                            'hash_rate': hash_rate,
-                            'income_per_hour': hash_per_hour,
-                            'total_income': hash_per_hour * count
-                        }
+                    machines_dict[key] = {
+                        'machine_id': key,
+                        'name': machine.name,
+                        'level': machine.level,
+                        'count': 1,
+                        'hash_rate': machine.hash_rate,
+                        'income_per_hour': machine.hash_rate * 3600,
+                        'total_income': machine.hash_rate * 3600
+                    }
             
-            # Get machine levels for current category (for shop display)
+            all_machines_data = list(machines_dict.values())
+            
+            # Get machine levels for current category (for shop display) from JSON
             mining_levels = {}
             if category == 'coins':
-                mining_levels = coins_levels
+                mining_levels = json.loads(user.mining_coins_levels or '{}')
             elif category == 'quanhash':
-                mining_levels = quanhash_levels
+                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
             elif category == 'vip':
-                mining_levels = vip_levels
-            
-            all_machines_data = list(all_machines_dict.values())
+                mining_levels = json.loads(user.mining_vip_levels or '{}')
             
             return jsonify({
                 'quanhash': user.quanhash,
