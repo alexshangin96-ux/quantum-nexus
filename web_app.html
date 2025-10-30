@@ -3072,11 +3072,12 @@
                     if (baseEffect === 1) {
                         nextLevelEffect = 1;
                     } else {
-                        // Calculate current effect for this item at current level (currentLevel is the level already purchased)
-                        const currentItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel));
-                        // Calculate next level effect for this item (next level = currentLevel + 1)
+                        // For other items: use same logic as backend
+                        // Backend formula: current_effect = base_effect * (1.2 ** (level - 1)) if level > 1 else 0
+                        const currentItemEffect = currentLevel > 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
+                        // new_effect = base_effect * (1.2 ** level)
                         const nextItemEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
-                        // Show the increment (difference) - это то что реально добавится
+                        // bonus = new_effect - current_effect
                         nextLevelEffect = nextItemEffect - currentItemEffect;
                     }
                 } else if (category === 'energy_buy') {
