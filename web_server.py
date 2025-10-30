@@ -1159,6 +1159,9 @@ def buy_item():
                     is_active=True
                 )
                 db.add(card)
+                user.last_active = datetime.utcnow()
+                db.commit()
+                print(f"Added card {item_type} level {level} for user {user_id}")
             elif item_type == 'auto_bot':
                 # Auto-tap bot implementation
                 taps_per_sec = data.get('taps_per_sec', 2)
@@ -1168,11 +1171,9 @@ def buy_item():
                 # Store expiration (24 hours)
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
+                user.last_active = datetime.utcnow()
+                db.commit()
             
-            # Update last_active for user activity
-            user.last_active = datetime.utcnow()
-            
-            db.commit()
             return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

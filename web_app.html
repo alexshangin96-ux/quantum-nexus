@@ -3321,7 +3321,10 @@
                     console.log('Card purchase response:', data);
                     if(data.success) {
                         showNotification('success', 'Карточка куплена!');
+                        // Force reload user data
                         loadData();
+                        // Also reload shop data to update levels
+                        loadShopData();
                         
                         // Reload cards data to update levels and prices
                         fetch('/api/shop', {
@@ -3338,6 +3341,7 @@
                             // Refresh cards display
                             const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
                             const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
+                            console.log('Refreshing cards with category:', cardCategory);
                             loadCardsList(cardCategory);
                         });
                     } else {
