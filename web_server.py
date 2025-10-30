@@ -474,6 +474,8 @@ def get_shop():
                 for uc in user_cards:
                     user_card_counts[uc.card_type] = user_card_counts.get(uc.card_type, 0) + 1
                 
+                print(f"User {user_id} cards: {user_card_counts}")
+                
                 for i, template in enumerate(per_minute_cards):
                     card_key = f"card_min_{i}"
                     purchases = user_card_counts.get(card_key, 0)
@@ -1111,6 +1113,9 @@ def buy_item():
                     is_active=True
                 )
                 db.add(card)
+                user.last_active = datetime.utcnow()
+                db.commit()
+                print(f"Added card {item_type} level {level} for user {user_id}")
             elif item_type.startswith('card_hour_'):
                 # Per hour card
                 idx = int(item_type.split('_')[2])
