@@ -603,7 +603,7 @@ def get_mining():
             elif category == 'vip':
                 mining_levels = json.loads(user.mining_vip_levels or '{}')
             
-            # Machine definitions for calculating income
+            # Machine definitions for calculating income (ALL categories)
             machines_defs = {
                 'coins': [
                     {'id': 'miner_cpu', 'name': 'CPU Майнер', 'baseHashPerHour': 10, 'emoji': '💻'},
@@ -628,34 +628,54 @@ def get_mining():
                     {'id': 'hash_eternal', 'name': 'Eternal Движитель', 'baseHashPerHour': 1800000, 'emoji': '∞'},
                     {'id': 'hash_divine', 'name': 'Divine Генератор', 'baseHashPerHour': 7200000, 'emoji': '👑'},
                     {'id': 'hash_absolute', 'name': 'Absolute Мощь', 'baseHashPerHour': 28800000, 'emoji': '⚡'}
+                ],
+                'vip': [
+                    {'id': 'vip_quantum_prime', 'name': 'Quantum Prime', 'baseHashPerHour': 120000, 'emoji': '⚡'},
+                    {'id': 'vip_solar_core', 'name': 'Solar Core', 'baseHashPerHour': 300000, 'emoji': '☀️'},
+                    {'id': 'vip_black_hole', 'name': 'Black Hole', 'baseHashPerHour': 750000, 'emoji': '🕳️'},
+                    {'id': 'vip_nebula', 'name': 'Nebula Ферма', 'baseHashPerHour': 2000000, 'emoji': '🌫️'},
+                    {'id': 'vip_multiverse', 'name': 'Multiverse Станция', 'baseHashPerHour': 5000000, 'emoji': '🌐'},
+                    {'id': 'vip_infinity', 'name': 'Infinity Альянс', 'baseHashPerHour': 12000000, 'emoji': '♾️'}
                 ]
             }
             
-            # Build machines list from JSON levels
-            machines_dict = {}
-            if category in machines_defs:
-                # Get all user machines once to count
-                user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
-                machines_count = {}
-                for machine in user_machines_db:
-                    key = machine.machine_type
-                    if key:
-                        machines_count[key] = machines_count.get(key, 0) + 1
-                
-                for machine_def in machines_defs[category]:
+            # Get ALL machine levels from JSON
+            coins_levels = json.loads(user.mining_coins_levels or '{}')
+            quanhash_levels = json.loads(user.mining_quanhash_levels or '{}')
+            vip_levels = json.loads(user.mining_vip_levels or '{}')
+            
+            # Get all user machines once to count
+            user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
+            machines_count = {}
+            for machine in user_machines_db:
+                key = machine.machine_type
+                if key:
+                    machines_count[key] = machines_count.get(key, 0) + 1
+            
+            # Build ALL machines list from all categories
+            all_machines_dict = {}
+            for cat, machines_list in machines_defs.items():
+                if cat == 'coins':
+                    levels = coins_levels
+                elif cat == 'quanhash':
+                    levels = quanhash_levels
+                elif cat == 'vip':
+                    levels = vip_levels
+                else:
+                    continue
+                    
+                for machine_def in machines_list:
                     machine_id = machine_def['id']
-                    level = mining_levels.get(machine_id, 0)
+                    level = levels.get(machine_id, 0)
                     if level > 0:  # Only include machines that have been purchased
-                        # Calculate income based on level (level stored is 1-based, representing current level)
-                        # Income formula: base * (1.15 ^ (level - 1))
-                        # e.g., level 1 = base, level 2 = base * 1.15, level 3 = base * 1.15^2
+                        # Calculate income based on level
                         hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** (level - 1)))
                         hash_rate = hash_per_hour / 3600.0
                         
                         # Count from preloaded dict
                         count = machines_count.get(machine_id, 0)
                         
-                        machines_dict[machine_id] = {
+                        all_machines_dict[machine_id] = {
                             'machine_id': machine_id,
                             'name': machine_def['name'],
                             'level': level,
@@ -665,14 +685,23 @@ def get_mining():
                             'total_income': hash_per_hour * count
                         }
             
-            machines_data = list(machines_dict.values())
+            # Get machine levels for current category (for shop display)
+            mining_levels = {}
+            if category == 'coins':
+                mining_levels = coins_levels
+            elif category == 'quanhash':
+                mining_levels = quanhash_levels
+            elif category == 'vip':
+                mining_levels = vip_levels
+            
+            all_machines_data = list(all_machines_dict.values())
             
             return jsonify({
                 'quanhash': user.quanhash,
                 'coins': user.coins,
                 'category': category,
                 'shop_machines': [],  # Now loaded from frontend
-                'user_machines': machines_data,
+                'user_machines': all_machines_data,  # ALL purchased machines from all categories
                 'machine_levels': mining_levels
             })
     except Exception as e:
