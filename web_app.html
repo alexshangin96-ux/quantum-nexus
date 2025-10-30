@@ -3375,9 +3375,13 @@
                             // Refresh cards display - force reload all cards
                             console.log('Refreshing all cards after purchase');
                             
-                            // Force refresh the cards display for both categories
-                            loadCardsList('per_hour');
-                            loadCardsList('per_minute');
+                            // Find the currently active category and refresh it
+                            const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
+                            const activeCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
+                            console.log('Active category:', activeCategory);
+                            
+                            // Force refresh the active category
+                            loadCardsCategory(activeCategory);
                             
                             // Also refresh the main data to update user stats
                             loadData();
