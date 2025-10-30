@@ -3380,8 +3380,8 @@
                             const activeCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
                             console.log('Active category:', activeCategory);
                             
-                            // Force refresh the active category
-                            loadCardsCategory(activeCategory);
+                            // Force refresh the active category with reload
+                            loadCardsList(activeCategory, true);
                             
                             // Also refresh the main data to update user stats
                             loadData();
@@ -3882,7 +3882,14 @@
                 .catch(err => tg.showAlert('❌ Ошибка покупки'));
             };
             
-            function loadCardsList(category) {
+            function loadCardsList(category, forceReload = false) {
+                // Use cached data if available and not forcing reload
+                if (!forceReload && window.shopData && window.shopData.items) {
+                    console.log('Using cached cards data for category:', category);
+                    renderCardsList(category, window.shopData);
+                    return;
+                }
+                
                 fetch('/api/shop', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -3896,22 +3903,26 @@
                         window.shopData = {};
                     }
                     window.shopData.items = shopData.items || [];
-                    
-                    const shopList = document.getElementById('shopCardsList');
-                    const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
-                    console.log('Filtered cards:', cards, 'category:', category);
-                    console.log('Updating shopList for category:', category);
-                    console.log('Cards data sample:', cards.slice(0, 2).map(c => ({
-                        id: c.id,
-                        name: c.name,
-                        level: c.level,
-                        price: c.price,
-                        income: c.income,
-                        income_per_min: c.income_per_min,
-                        income_type: c.income_type
-                    })));
-                    if(cards && cards.length > 0) {
-                        shopList.innerHTML = cards.map((card, i) => {
+                    renderCardsList(category, shopData);
+                });
+            }
+            
+            function renderCardsList(category, shopData) {
+                const shopList = document.getElementById('shopCardsList');
+                const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
+                console.log('Filtered cards:', cards, 'category:', category);
+                console.log('Updating shopList for category:', category);
+                console.log('Cards data sample:', cards.slice(0, 2).map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    level: c.level,
+                    price: c.price,
+                    income: c.income,
+                    income_per_min: c.income_per_min,
+                    income_type: c.income_type
+                })));
+                if(cards && cards.length > 0) {
+                    shopList.innerHTML = cards.map((card, i) => {
                         // Skip locked cards
                         // Remove locking - all cards are available
                         const rarity = card.rarity || 'common';
@@ -3941,10 +3952,9 @@
                             </div>
                         `;
                     }).join('');
-                    } else {
-                        shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
-                    }
-                });
+                } else {
+                    shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
+                }
             }
             
             // Load per_hour cards by default
