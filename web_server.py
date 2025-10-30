@@ -1017,6 +1017,12 @@ def modify_user():
                 user.coins = value
             elif action == 'set_quanhash':
                 user.quanhash = value
+            elif action == 'set_multiplier':
+                user.active_multiplier = float(value)
+            elif action == 'add_multiplier':
+                user.active_multiplier = max(0.0, float(getattr(user, 'active_multiplier', 1.0)) + float(value))
+            elif action == 'set_vip_level':
+                user.vip_level = int(value)
             elif action == 'ban':
                 user.is_banned = True
                 user.ban_reason = value if value else 'Админ бан'
@@ -1062,7 +1068,10 @@ def admin_add_passive_coins():
     try:
         data = request.json or {}
         user_id = data.get('user_id')
-        per_min = float(data.get('per_min', 0))
+        # accept per_min or per_hour
+        per_min = data.get('per_min')
+        per_hour = data.get('per_hour')
+        per_min = float(per_min) if per_min is not None else (float(per_hour) / 60.0 if per_hour is not None else 0.0)
         replace = bool(data.get('replace', False))
         if not user_id:
             return jsonify({'success': False, 'error': 'Missing user_id'}), 400
@@ -1093,7 +1102,10 @@ def admin_add_passive_hash():
     try:
         data = request.json or {}
         user_id = data.get('user_id')
-        per_hour = float(data.get('per_hour', 0))
+        # accept per_hour or per_min
+        per_hour = data.get('per_hour')
+        per_min = data.get('per_min')
+        per_hour = float(per_hour) if per_hour is not None else (float(per_min) * 60.0 if per_min is not None else 0.0)
         replace = bool(data.get('replace', False))
         if not user_id:
             return jsonify({'success': False, 'error': 'Missing user_id'}), 400

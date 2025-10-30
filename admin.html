@@ -1458,23 +1458,31 @@
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width:640px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                        <h2 style="color:#10b981;font-size:22px;font-weight:900;">🚀 Бусты пользователя</h2>
-                        <button onclick=\"this.closest('.modal').remove()\" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.3);border-radius:8px;width:36px;height:36px;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+                <div class="modal-content" style="max-width:760px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(6,95,70,0.2));border:2px solid rgba(16,185,129,0.4);box-shadow:0 20px 60px rgba(16,185,129,0.25);">
+                    <div style="position:relative;display:flex;justify-content:center;align-items:center;margin-bottom:16px;">
+                        <div style="position:absolute;left:10px;font-size:26px;animation:pulse 2s infinite;">🚀</div>
+                        <h2 style="color:#10b981;font-size:22px;font-weight:900;letter-spacing:0.5px;">БУСТЫ ПОЛЬЗОВАТЕЛЯ</h2>
+                        <button onclick=\"this.closest('..modal').remove()\" style="display:none"></button>
+                        <button onclick=\"this.closest('.modal').remove()\" style="position:absolute;right:10px;top:0;width:36px;height:36px;border-radius:18px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                         <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(16,185,129,0.3);">
-                            <div style="color:#a7f3d0;font-weight:700;margin-bottom:8px;">Коины (пассивно, в минуту)</div>
-                            <input id="boostCoinsPerMin" type="number" step="0.01" placeholder="например 5.5" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <div style="color:#a7f3d0;font-weight:800;margin-bottom:8px;">Коины (пассивно)</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                <input id="boostCoinsPerMin" type="number" step="0.01" placeholder="минуту (напр. 5.5)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                                <input id="boostCoinsPerHour" type="number" step="0.01" placeholder="час (напр. 300)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            </div>
                             <div style="display:flex;gap:8px;margin-top:10px;">
                                 <button onclick="confirmAddPassiveCoins(${uid}, false)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#10b981,#059669);">Добавить</button>
                                 <button onclick="confirmAddPassiveCoins(${uid}, true)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#34d399,#059669);">Заменить</button>
                             </div>
                         </div>
                         <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(59,130,246,0.3);">
-                            <div style="color:#bfdbfe;font-weight:700;margin-bottom:8px;">QuanHash (пассивно, в час)</div>
-                            <input id="boostHashPerHour" type="number" step="0.01" placeholder="например 360" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <div style="color:#bfdbfe;font-weight:800;margin-bottom:8px;">QuanHash (пассивно)</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                <input id="boostHashPerMin" type="number" step="0.01" placeholder="минуту (напр. 6)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                                <input id="boostHashPerHour" type="number" step="0.01" placeholder="час (напр. 360)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            </div>
                             <div style="display:flex;gap:8px;margin-top:10px;">
                                 <button onclick="confirmAddPassiveHash(${uid}, false)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#3b82f6,#2563eb);">Добавить</button>
                                 <button onclick="confirmAddPassiveHash(${uid}, true)" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#60a5fa,#2563eb);">Заменить</button>
@@ -1493,6 +1501,22 @@
                                 <button onclick="addMaxEnergy(${uid})" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#fbbf24,#d97706);">Изменить на Δ</button>
                             </div>
                         </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(99,102,241,0.3);">
+                            <div style="color:#ddd6fe;font-weight:700;margin-bottom:8px;">Множитель (tap multiplier)</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                                <input id="boostMultiplierSet" type="number" step="0.1" placeholder="установить (напр. 2)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                                <input id="boostMultiplierAdd" type="number" step="0.1" placeholder="изменить на Δ (напр. 0.5)" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            </div>
+                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                <button onclick="setMultiplier(${uid})" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#8b5cf6,#7c3aed);">Установить</button>
+                                <button onclick="addMultiplier(${uid})" class="btn-modal" style="flex:1;background:linear-gradient(135deg,#a78bfa,#7c3aed);">Изменить на Δ</button>
+                            </div>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.04);padding:12px;border-radius:12px;border:1px solid rgba(251,191,36,0.3);">
+                            <div style="color:#fef08a;font-weight:700;margin-bottom:8px;">VIP</div>
+                            <input id="boostVipLevel" type="number" step="1" placeholder="уровень VIP" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.35);color:#fff;">
+                            <button onclick="setVipLevel(${uid})" class="btn-modal" style="width:100%;margin-top:10px;background:linear-gradient(135deg,#f59e0b,#d97706);">Установить VIP</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1500,13 +1524,21 @@
         }
 
         function confirmAddPassiveCoins(uid, replace){
-            const perMin=parseFloat(document.getElementById('boostCoinsPerMin').value||0);
-            fetch('/api/admin/add_passive_coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,per_min:perMin,replace:!!replace})})
+            const perMinVal=document.getElementById('boostCoinsPerMin').value;
+            const perHourVal=document.getElementById('boostCoinsPerHour').value;
+            const payload={user_id:uid,replace:!!replace};
+            if(perMinVal) payload.per_min=parseFloat(perMinVal);
+            if(perHourVal) payload.per_hour=parseFloat(perHourVal);
+            fetch('/api/admin/add_passive_coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
             .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Добавлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
         }
         function confirmAddPassiveHash(uid, replace){
-            const perHour=parseFloat(document.getElementById('boostHashPerHour').value||0);
-            fetch('/api/admin/add_passive_hash',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,per_hour:perHour,replace:!!replace})})
+            const perMinVal=document.getElementById('boostHashPerMin').value;
+            const perHourVal=document.getElementById('boostHashPerHour').value;
+            const payload={user_id:uid,replace:!!replace};
+            if(perMinVal) payload.per_min=parseFloat(perMinVal);
+            if(perHourVal) payload.per_hour=parseFloat(perHourVal);
+            fetch('/api/admin/add_passive_hash',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
             .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Добавлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
         }
         function setRegenRate(uid){
@@ -1523,6 +1555,21 @@
             const delta=parseInt(document.getElementById('boostMaxEnergy').value||0);
             fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'add_max_energy',value:delta})})
             .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Изменено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function setMultiplier(uid){
+            const val=parseFloat(document.getElementById('boostMultiplierSet').value||0);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'set_multiplier',value:val})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Установлено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function addMultiplier(uid){
+            const delta=parseFloat(document.getElementById('boostMultiplierAdd').value||0);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'add_multiplier',value:delta})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ Изменено');}else showNotification('❌ '+(d.error||'Ошибка'));});
+        }
+        function setVipLevel(uid){
+            const level=parseInt(document.getElementById('boostVipLevel').value||0);
+            fetch('/api/admin/modify_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:uid,action:'set_vip_level',value:level})})
+            .then(r=>r.json()).then(d=>{if(d.success){showNotification('✅ VIP установлен');}else showNotification('❌ '+(d.error||'Ошибка'));});
         }
     </script>
 </body>
