@@ -3451,54 +3451,6 @@
                         }
                     }, 200);
                     
-                    // Force immediate reload of cards shop - preserve current category
-                    if(document.getElementById('shopCardsList')) {
-                        const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
-                        const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 
-                                          (activeBtn && activeBtn.textContent.includes('В минуту') ? 'per_minute' : 'per_hour');
-                        fetch('/api/shop', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({user_id: user?.id, category: 'cards'})
-                        })
-                        .then(res => res.json())
-                        .then(shopData => {
-                            const shopList = document.getElementById('shopCardsList');
-                            const filterCategory = cardCategory || 'per_hour';
-                            const cards = shopData.items.filter(item => item.type === 'card' && (filterCategory === 'all' || item.income_type === filterCategory));
-                            if(cards && cards.length > 0) {
-                                shopList.innerHTML = cards.map((card, i) => {
-                                // Remove locking - all cards are available
-                                const rarity = card.rarity || 'common';
-                                const rarityInfo = {
-                                    'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
-                                    'rare': {emoji:'🔵', name:'Редкая', color:'rgba(102,126,234,0.25)', border:'rgba(102,126,234,0.8)'},
-                                    'epic': {emoji:'🟣', name:'Эпическая', color:'rgba(118,75,162,0.25)', border:'rgba(118,75,162,0.8)'},
-                                    'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
-                                };
-                                const info = rarityInfo[rarity];
-                                const income = card.income_per_min || 0;
-                                const incomeType = card.income_type === 'per_minute' ? '/мин' : '/час';
-                                const level = card.level || 1;
-                                const nameParts = card.name || 'Карточка';
-                                const cardEmoji = nameParts.match(/[\u{1F600}-\u{1F9FF}]/u)?.[0] || '💳';
-                                const cardName = nameParts.replace(/[\u{1F600}-\u{1F9FF}]/u, '').trim();
-                                return `
-                                    <div style="background:${info.color};padding:12px;border-radius:12px;border:2px solid ${info.border};">
-                                        <div style="font-size:24px;text-align:center;margin-bottom:6px;">${cardEmoji}</div>
-                                        <div style="font-size:10px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;">${cardName}</div>
-                                        <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:6px;">${card.description}</div>
-                                        <div style="font-size:12px;color:#10b981;text-align:center;margin-bottom:6px;font-weight:700;">+${income.toFixed(1)} 🪙${incomeType}</div>
-                                        <div style="font-size:9px;color:#fbbf24;text-align:center;margin-bottom:8px;font-weight:600;">Lv.${level} ${info.name}</div>
-                                        <button onclick="buyShopItem('card', ${card.level || 1}, ${card.price || 0}, ${i})" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
-                                            🪙 ${(card.price || 0).toLocaleString()}
-                                        </button>
-                                    </div>
-                                `;
-                                }).join('');
-                            }
-                        });
-                    }
                     
                     // Update passive income immediately
                     updatePassiveIncome();
