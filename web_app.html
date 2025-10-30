@@ -3417,8 +3417,8 @@
                 return;
             }
             
-            // For multilevel items, we need to pass the next level (current level + 1)
-            const nextLevel = level + 1;
+            // For multilevel items we pass next level; for autobot use exact selected level
+            const nextLevel = (category === 'autobot') ? level : (level + 1);
             
             // Get base effect and price from shopData
             const shopData = window.shopData || {};
