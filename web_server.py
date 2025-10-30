@@ -379,7 +379,10 @@ def get_shop():
             return jsonify({'error': 'User ID required'}), 400
         
         with get_db() as db:
+            # Try to find user by telegram_id first, then by id
             user = db.query(User).filter_by(telegram_id=user_id).first()
+            if not user:
+                user = db.query(User).filter_by(id=user_id).first()
             
             if not user:
                 return jsonify({'error': 'User not found'}), 404
@@ -1065,7 +1068,10 @@ def buy_item():
         price = float(price) if price else 0
         
         with get_db() as db:
+            # Try to find user by telegram_id first, then by id
             user = db.query(User).filter_by(telegram_id=user_id).first()
+            if not user:
+                user = db.query(User).filter_by(id=user_id).first()
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
