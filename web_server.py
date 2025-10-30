@@ -1353,6 +1353,16 @@ def super_reset_user():
     try:
         data = request.json
         user_id = data.get('user_id')
+        # Optional granular flags (default True for backward compatibility)
+        reset_energy = data.get('reset_energy', True)
+        reset_shop_levels = data.get('reset_shop_levels', True)
+        reset_cards_minute = data.get('reset_cards_minute', True)
+        reset_cards_hour = data.get('reset_cards_hour', True)
+        reset_machines = data.get('reset_machines', True)
+        reset_achievements = data.get('reset_achievements', True)
+        reset_transactions = data.get('reset_transactions', True)
+        reset_support = data.get('reset_support', True)
+        reset_withdrawals = data.get('reset_withdrawals', True)
         
         if not user_id:
             return jsonify({'success': False, 'error': 'Missing user_id'})
@@ -1363,12 +1373,13 @@ def super_reset_user():
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
             
-            # Complete reset of all user data
+            # Base currencies/statistics
             user.coins = 0.0
             user.quanhash = 0.0
-            user.energy = 1000  # Set to 1000 as requested
-            user.max_energy = 1000  # Set to 1000 as requested
-            user.energy_regen_rate = 1.0
+            if reset_energy:
+                user.energy = 1000
+                user.max_energy = 1000
+                user.energy_regen_rate = 1.0
             user.total_taps = 0
             user.total_earned = 0.0
             user.total_mined = 0.0
@@ -1393,27 +1404,39 @@ def super_reset_user():
             user.auto_tap_expires_at = None
             
             # Reset shop levels
-            user.tap_boost_levels = '{}'
-            user.energy_buy_levels = '{}'
-            user.energy_expand_levels = '{}'
+            if reset_shop_levels:
+                user.tap_boost_levels = '{}'
+                user.energy_buy_levels = '{}'
+                user.energy_expand_levels = '{}'
             
-            # Delete all mining machines
-            db.query(MiningMachine).filter_by(user_id=user.id).delete()
+            # Delete mining machines
+            if reset_machines:
+                db.query(MiningMachine).filter_by(user_id=user.id).delete()
             
-            # Delete all user cards
-            db.query(UserCard).filter_by(user_id=user.id).delete()
+            # Delete user cards (granular)
+            if reset_cards_minute and reset_cards_hour:
+                db.query(UserCard).filter_by(user_id=user.id).delete()
+            else:
+                if reset_cards_minute:
+                    db.query(UserCard).filter(UserCard.user_id == user.id, UserCard.card_type.like('card_min_%')).delete(synchronize_session=False)
+                if reset_cards_hour:
+                    db.query(UserCard).filter(UserCard.user_id == user.id, UserCard.card_type.like('card_hour_%')).delete(synchronize_session=False)
             
-            # Delete all achievements
-            db.query(UserAchievement).filter_by(user_id=user.id).delete()
+            # Delete achievements
+            if reset_achievements:
+                db.query(UserAchievement).filter_by(user_id=user.id).delete()
             
-            # Delete all transactions
-            db.query(Transaction).filter_by(user_id=user.id).delete()
+            # Delete transactions
+            if reset_transactions:
+                db.query(Transaction).filter_by(user_id=user.id).delete()
             
-            # Delete all support tickets
-            db.query(SupportTicket).filter_by(user_id=user.id).delete()
+            # Delete support tickets
+            if reset_support:
+                db.query(SupportTicket).filter_by(user_id=user.id).delete()
             
-            # Delete all withdrawals
-            db.query(Withdrawal).filter_by(user_id=user.id).delete()
+            # Delete withdrawals
+            if reset_withdrawals:
+                db.query(Withdrawal).filter_by(user_id=user.id).delete()
             
             db.commit()
             

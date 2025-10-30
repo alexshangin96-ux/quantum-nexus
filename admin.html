@@ -379,8 +379,9 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
-<button class="action-btn btn-danger" onclick="superResetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(220,38,38,0.4);margin-left:5px;">🔥 СУПЕР СБРОС</button>
+<button class="action-btn" onclick="openBoosts(${u.telegram_id})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(16,185,129,0.3);">🚀 БУСТЫ</button>
+<button class="action-btn" onclick="openBoosts(${u.telegram_id})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(16,185,129,0.3);">🚀 БУСТЫ</button>
+<button class="action-btn btn-danger" onclick="superResetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(220,38,38,0.4);">🔥 СУПЕР СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 ul.appendChild(card);
@@ -548,8 +549,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
-<button class="action-btn btn-danger" onclick="resetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(239,68,68,0.3);">⚠️ ПОЛНЫЙ СБРОС</button>
-<button class="action-btn btn-danger" onclick="superResetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(220,38,38,0.4);margin-left:5px;">🔥 СУПЕР СБРОС</button>
+<button class="action-btn btn-danger" onclick="superResetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(220,38,38,0.4);">🔥 СУПЕР СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
                 userCardsContainer.appendChild(card);
@@ -1320,62 +1320,61 @@
         }
         
         function superResetUser(uid) {
-            // Красивое модальное окно подтверждения
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width:600px;background:linear-gradient(135deg,rgba(220,38,38,0.15),rgba(185,28,28,0.15));border:3px solid #dc2626;box-shadow:0 20px 60px rgba(220,38,38,0.4);">
-                    <div style="text-align:center;margin-bottom:30px;">
-                        <div style="font-size:64px;margin-bottom:20px;animation:pulse 2s infinite;">🔥</div>
-                        <h2 style="color:#dc2626;font-size:28px;margin-bottom:15px;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,0.3);">СУПЕР СБРОС ПОЛЬЗОВАТЕЛЯ</h2>
-                        <div style="color:#fca5a5;font-size:18px;line-height:1.6;font-weight:600;">
-                            Полное обнуление ВСЕХ данных пользователя
-                        </div>
+                    <div style="text-align:center;margin-bottom:18px;">
+                        <div style="font-size:54px;margin-bottom:14px;animation:pulse 2s infinite;">🔥</div>
+                        <h2 style="color:#dc2626;font-size:24px;margin-bottom:10px;font-weight:900;">СУПЕР СБРОС</h2>
+                        <div style="color:#fca5a5;font-size:16px;font-weight:600;">Выберите, что обнулить</div>
                     </div>
-                    
-                    <div style="background:rgba(220,38,38,0.25);padding:25px;border-radius:16px;margin-bottom:30px;border:2px solid rgba(220,38,38,0.4);">
-                        <h3 style="color:#dc2626;font-size:20px;margin-bottom:20px;font-weight:800;text-align:center;">🚨 ЧТО БУДЕТ СБРОШЕНО:</h3>
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;color:#fca5a5;font-size:15px;font-weight:600;">
-                            <div style="display:flex;align-items:center;gap:8px;">💰 Коины → 0</div>
-                            <div style="display:flex;align-items:center;gap:8px;">💎 QuanHash → 0</div>
-                            <div style="display:flex;align-items:center;gap:8px;">⚡ Энергия → 1000</div>
-                            <div style="display:flex;align-items:center;gap:8px;">📈 Максимум энергии → 1000</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🔄 Скорость регенерации → 1</div>
-                            <div style="display:flex;align-items:center;gap:8px;">💪 Множитель тапа → 1</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🤖 Автобот → отключен</div>
-                            <div style="display:flex;align-items:center;gap:8px;">👑 VIP статус → сброшен</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🏭 Майнинг машины → удалены</div>
-                            <div style="display:flex;align-items:center;gap:8px;">💳 Карточки → удалены</div>
-                            <div style="display:flex;align-items:center;gap:8px;">📊 Статистика → сброшена</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🎯 Достижения → сброшены</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🛒 Уровни магазина → 0</div>
-                            <div style="display:flex;align-items:center;gap:8px;">🎮 Игровой прогресс → 0</div>
-                        </div>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;">
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_energy" type="checkbox" checked> ⚡ Энергия → 1000 (и максимум)
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_levels" type="checkbox" checked> 🛒 Уровни магазина
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_cards_min" type="checkbox" checked> 💳 Карточки (в минуту)
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_cards_hour" type="checkbox" checked> ⏱️ Карточки (в час)
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_machines" type="checkbox" checked> 🏭 Майнеры
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_ach" type="checkbox" checked> 🎯 Достижения
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_tx" type="checkbox" checked> 📜 Транзакции
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_support" type="checkbox" checked> 🎫 Тикеты поддержки
+                        </label>
+                        <label style="display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.25);padding:10px;border-radius:12px;border:1px solid rgba(220,38,38,0.35);">
+                            <input id="sr_reset_withdrawals" type="checkbox" checked> 💸 Заявки на вывод
+                        </label>
                     </div>
-                    
-                    <div style="background:rgba(255,215,0,0.25);padding:20px;border-radius:12px;margin-bottom:30px;border:2px solid rgba(255,215,0,0.5);">
-                        <div style="color:#fbbf24;font-weight:800;font-size:18px;margin-bottom:10px;text-align:center;">⚠️ ВНИМАНИЕ!</div>
-                        <div style="color:#fde68a;font-size:16px;text-align:center;font-weight:600;">
-                            Это действие НЕОБРАТИМО и полностью обнулит пользователя!
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex;gap:20px;">
-                        <button class="btn-modal" style="flex:1;background:rgba(99,102,241,0.3);color:#fff;padding:18px;font-size:18px;font-weight:700;border-radius:12px;border:2px solid rgba(99,102,241,0.5);" 
-                                onclick="this.closest('.modal').remove()">
-                            ❌ Отмена
-                        </button>
-                        <button class="btn-modal" style="flex:1;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;padding:18px;font-size:18px;font-weight:800;border-radius:12px;box-shadow:0 6px 20px rgba(220,38,38,0.4);" 
-                                onclick="executeSuperReset('${uid}')">
-                            🔥 ВЫПОЛНИТЬ СУПЕР СБРОС
-                        </button>
-                    </div>
+                    <button class="btn-modal" style="width:100%;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;padding:16px;font-size:16px;font-weight:800;border-radius:12px;" onclick="executeSuperReset('${uid}', {
+                        reset_energy: document.getElementById('sr_reset_energy').checked,
+                        reset_shop_levels: document.getElementById('sr_reset_levels').checked,
+                        reset_cards_minute: document.getElementById('sr_reset_cards_min').checked,
+                        reset_cards_hour: document.getElementById('sr_reset_cards_hour').checked,
+                        reset_machines: document.getElementById('sr_reset_machines').checked,
+                        reset_achievements: document.getElementById('sr_reset_ach').checked,
+                        reset_transactions: document.getElementById('sr_reset_tx').checked,
+                        reset_support: document.getElementById('sr_reset_support').checked,
+                        reset_withdrawals: document.getElementById('sr_reset_withdrawals').checked
+                    })">🔥 Выполнить супер сброс</button>
                 </div>
             `;
             document.body.appendChild(modal);
         }
         
-        function executeSuperReset(uid) {
+        function executeSuperReset(uid, options) {
             // Закрываем текущее модальное окно
             const currentModal = document.querySelector('.modal.active');
             if (currentModal) {
@@ -1399,7 +1398,7 @@
             fetch('/api/admin/super_reset_user', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: uid})
+                body: JSON.stringify(Object.assign({user_id: uid}, options||{}))
             })
             .then(res => {
                 console.log('Response status:', res.status);
