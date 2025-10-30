@@ -3740,6 +3740,8 @@
                     const machine_levels = data.machine_levels || {};
                     shop.innerHTML = machines.map((m, index) => {
                         const level = machine_levels[m.id] || 0;
+                        const maxLevel = 50;
+                        const isMaxLevel = level >= maxLevel;
                         const price = Math.floor(m.basePrice * Math.pow(1.15, level));
                         const hashPerHour = Math.floor(m.baseHashPerHour * Math.pow(1.15, level));
                         
@@ -3749,14 +3751,14 @@
                                 <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji}</div>
                                 <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
                                 <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${m.description || ''}</div>
-                                <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
+                                <div style="font-size:10px;color:${isMaxLevel ? '#fbbf24' : '#94a3b8'};text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}${isMaxLevel ? ' ⭐ MAX' : ` / ${maxLevel}`}</div>
                                 <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">Доход +${hashPerHour.toLocaleString()} QuanHash/ч</div>
-                                <button onclick="buyMachine('${m.id}', ${price}, '${m.currency}')" 
-                                        style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                        onmousedown="this.style.transform='scale(0.96)'" 
-                                        onmouseup="this.style.transform='scale(1)'" 
-                                        onmouseleave="this.style.transform='scale(1)'">
-                                    <span>Купить за ${m.currency === 'coins' ? '🪙' : '💎'} ${price.toLocaleString()} ${m.currency === 'coins' ? 'коинов' : 'QuanHash'}</span>
+                                <button onclick="${isMaxLevel ? 'alert(\'✨ Максимальный уровень достигнут!\')' : `buyMachine('${m.id}', ${price}, '${m.currency}')`}" 
+                                        style="width:100%;padding:11px;background:${isMaxLevel ? 'linear-gradient(135deg,#fbbf24,#fcd34d,#fbbf24)' : buttonGradient};color:${isMaxLevel ? '#000' : '#fff'};border:none;border-radius:10px;cursor:${isMaxLevel ? 'not-allowed' : 'pointer'};font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;opacity:${isMaxLevel ? 0.7 : 1};"
+                                        onmousedown="${!isMaxLevel ? 'this.style.transform=\'scale(0.96)\'' : ''}" 
+                                        onmouseup="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}" 
+                                        onmouseleave="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}">
+                                    <span>${isMaxLevel ? '✨ Максимальный уровень' : `Купить за ${m.currency === 'coins' ? '🪙' : '💎'} ${price.toLocaleString()} ${m.currency === 'coins' ? 'коинов' : 'QuanHash'}`}</span>
                                 </button>
                             </div>
                         `;
@@ -3822,15 +3824,32 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            renderVIPMiningCards();
+            
+            // Load VIP levels from API
+            fetch('/api/mining', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, category: 'vip'})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const vip_levels = data.machine_levels || {};
+                renderVIPMiningCards(vip_levels);
+            })
+            .catch(err => {
+                console.error('Failed to load VIP levels:', err);
+                renderVIPMiningCards({});
+            });
         };
         
-        function renderVIPMiningCards() {
+        function renderVIPMiningCards(vip_levels) {
             const vipMiningContent = document.getElementById('vipMiningContent');
             if (!vipMiningContent) return;
             
             let html = vipMiningCards.map((card, index) => {
-                const level = 0; // TODO: Get from user data
+                const level = vip_levels[card.id] || 0;
+                const maxLevel = 50;
+                const isMaxLevel = level >= maxLevel;
                 const price = Math.floor(card.basePrice * Math.pow(1.15, level));
                 const hashPerHour = Math.floor(card.baseHashPerHour * Math.pow(1.15, level));
                 
@@ -3840,16 +3859,16 @@
                         <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
                         <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
                         <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${card.description || ''}</div>
-                        <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
+                        <div style="font-size:10px;color:${isMaxLevel ? '#fbbf24' : '#94a3b8'};text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}${isMaxLevel ? ' ⭐ MAX' : ` / ${maxLevel}`}</div>
                         <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">Доход +${hashPerHour.toLocaleString()} QuanHash/ч</div>
-                        <button onclick="buyVIPMiningMachineWithStars('${card.id}', ${price}, ${card.productId})" 
-                                style="width:100%;padding:11px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                onmousedown="this.style.transform='scale(0.96)'" 
-                                onmouseup="this.style.transform='scale(1)'" 
-                                onmouseleave="this.style.transform='scale(1)'">
-                            <span>Купить за</span>
-                            <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
-                            <span>${price}</span>
+                        <button onclick="${isMaxLevel ? 'alert(\'✨ Максимальный уровень достигнут!\')' : `buyVIPMiningMachineWithStars('${card.id}', ${price}, ${card.productId})`}" 
+                                style="width:100%;padding:11px;background:${isMaxLevel ? 'linear-gradient(135deg,#fbbf24,#fcd34d,#fbbf24)' : 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)'};color:${isMaxLevel ? '#000' : '#000'};border:none;border-radius:10px;cursor:${isMaxLevel ? 'not-allowed' : 'pointer'};font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;opacity:${isMaxLevel ? 0.7 : 1};"
+                                onmousedown="${!isMaxLevel ? 'this.style.transform=\'scale(0.96)\'' : ''}" 
+                                onmouseup="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}" 
+                                onmouseleave="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}">
+                            <span>${isMaxLevel ? '✨ Максимальный уровень' : `Купить за`}</span>
+                            <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">${isMaxLevel ? '' : '⭐'}</span>
+                            <span>${isMaxLevel ? '' : price}</span>
                         </button>
                     </div>
                 `;

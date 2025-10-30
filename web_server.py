@@ -621,6 +621,8 @@ def get_mining():
                 mining_levels = json.loads(user.mining_coins_levels or '{}')
             elif category == 'quanhash':
                 mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+            elif category == 'vip':
+                mining_levels = json.loads(user.mining_vip_levels or '{}')
             
             return jsonify({
                 'quanhash': user.quanhash,
@@ -1667,6 +1669,31 @@ def process_star_purchase():
                 user.auto_tap_level = level
                 user.auto_tap_speed = speed
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+            elif category == 'mining_vip':
+                # VIP mining machines mapping to product_ids 71-76
+                # VIP machines: vip_quantum_prime, vip_solar_core, vip_black_hole, vip_nebula, vip_multiverse, vip_infinity
+                vip_machine_map = {
+                    71: 'vip_quantum_prime',
+                    72: 'vip_solar_core',
+                    73: 'vip_black_hole',
+                    74: 'vip_nebula',
+                    75: 'vip_multiverse',
+                    76: 'vip_infinity'
+                }
+                machine_id = vip_machine_map.get(product_id, None)
+                
+                if machine_id:
+                    import json
+                    vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    current_level = vip_levels.get(machine_id, 0)
+                    new_level = current_level + 1
+                    
+                    # Check max level
+                    if new_level > 50:
+                        return jsonify({'success': False, 'error': 'Maximum level reached'})
+                    
+                    vip_levels[machine_id] = new_level
+                    user.mining_vip_levels = json.dumps(vip_levels)
             
             db.commit()
             return jsonify({'success': True})
@@ -1765,6 +1792,11 @@ def buy_machine():
                     current_level = levels.get(machine_id, 0)
             
             new_level = current_level + 1
+            
+            # Check max level (50)
+            if new_level > 50:
+                return jsonify({'success': False, 'error': 'Maximum level reached'})
+            
             hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
             
             machine = MiningMachine(

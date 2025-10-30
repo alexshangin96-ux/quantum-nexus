@@ -573,6 +573,32 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     user.auto_tap_speed = vip_info['effect']  # Set autobot speed
                     user.auto_tap_expires_at = int(time.time()) + duration_seconds  # Set expiration time
                     vip_message = f"\n\n🤖 VIP Бот активирован!\n⚡ {vip_info['name']}: автотап на {duration_seconds // 60} минут"
+            elif product_id >= 71 and product_id <= 76:
+                # Handle VIP mining machines (71-76)
+                vip_mining_map = {
+                    71: 'vip_quantum_prime',
+                    72: 'vip_solar_core',
+                    73: 'vip_black_hole',
+                    74: 'vip_nebula',
+                    75: 'vip_multiverse',
+                    76: 'vip_infinity'
+                }
+                machine_id = vip_mining_map.get(product_id)
+                
+                if machine_id:
+                    import json
+                    vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    current_level = vip_levels.get(machine_id, 0)
+                    new_level = current_level + 1
+                    
+                    # Check max level
+                    if new_level > 50:
+                        await update.message.reply_text("❌ Ошибка: Максимальный уровень достигнут")
+                        return
+                    
+                    vip_levels[machine_id] = new_level
+                    user.mining_vip_levels = json.dumps(vip_levels)
+                    vip_message = f"\n\n🏭 VIP Машина улучшена!\n⚡ Уровень {new_level}/50"
             else:
                 # Handle regular coin products (1-20, 31-60)
                 coins_to_add = product_coins.get(product_id, 0)
@@ -688,7 +714,14 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         57: {'title': '⭐ Пульсар', 'description': '350,000,000 коинов', 'stars': 70000, 'coins': 350000000},
         58: {'title': '🌌 Квазар', 'description': '400,000,000 коинов', 'stars': 80000, 'coins': 400000000},
         59: {'title': '🌟 Чёрная дыра', 'description': '450,000,000 коинов', 'stars': 90000, 'coins': 450000000},
-        60: {'title': '⭐ Большой взрыв', 'description': '500,000,000 коинов', 'stars': 100000, 'coins': 500000000}
+        60: {'title': '⭐ Большой взрыв', 'description': '500,000,000 коинов', 'stars': 100000, 'coins': 500000000},
+        # VIP MINING MACHINES (71-76)
+        71: {'title': '⚡ Quantum Prime', 'description': 'Элитный квантовый майнер VIP уровня', 'stars': 50, 'coins': 0, 'vip_type': 'mining_machine'},
+        72: {'title': '☀️ Solar Core', 'description': 'Солнечное ядро энергии VIP', 'stars': 100, 'coins': 0, 'vip_type': 'mining_machine'},
+        73: {'title': '🕳️ Black Hole', 'description': 'Чёрная дыра энергии VIP', 'stars': 150, 'coins': 0, 'vip_type': 'mining_machine'},
+        74: {'title': '🌫️ Nebula Ферма', 'description': 'Ферма в туманности VIP', 'stars': 250, 'coins': 0, 'vip_type': 'mining_machine'},
+        75: {'title': '🌐 Multiverse Станция', 'description': 'Мультивселенная VIP', 'stars': 400, 'coins': 0, 'vip_type': 'mining_machine'},
+        76: {'title': '♾️ Infinity Альянс', 'description': 'Бесконечный альянс VIP', 'stars': 750, 'coins': 0, 'vip_type': 'mining_machine'}
     }
     
     product = products.get(product_id)
