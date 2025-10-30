@@ -1,0 +1,15 @@
+-- Add VIP columns to users table in PostgreSQL
+-- Run this as: sudo -u postgres psql quantum_nexus < ADD_VIP_TO_POSTGRES.sql
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS vip_level INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS vip_badge VARCHAR(50);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS vip_unique_marker VARCHAR(50);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS has_premium_support BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS has_golden_profile BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS has_top_place BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS has_unique_design BOOLEAN DEFAULT FALSE;
+
+
+
+
+

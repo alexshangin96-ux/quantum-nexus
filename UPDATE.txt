@@ -1,0 +1,33 @@
+Команды для обновления админ-панели Quantum Nexus:
+
+=== Вариант 1: Быстрое обновление (рекомендуется) ===
+
+ssh root@ваш_IP
+cd /root/quantum-nexus
+git pull origin main
+cp admin.html /var/www/quantum-nexus/
+systemctl restart quantum-nexus-web
+
+=== Вариант 2: Через готовый скрипт ===
+
+ssh root@ваш_IP "cd /root/quantum-nexus && chmod +x UPDATE_SERVER.sh && ./UPDATE_SERVER.sh"
+
+=== Вариант 3: Быстрое обновление в одну строку ===
+
+ssh root@ваш_IP "cd /root/quantum-nexus && git pull origin main && cp admin.html /var/www/quantum-nexus/ && systemctl restart quantum-nexus-web"
+
+=== Что было обновлено ===
+
+✅ Красивые модальные окна для блокировки/заморозки с выбором срока и функций
+✅ Модальные окна для разблокировки/разморозки
+✅ Уведомления при новых заявках на вывод
+✅ Красивые карточки заявок с кнопкой копирования адреса
+✅ Статусы заявок (Ожидает/Выполнено/Отклонено)
+✅ Автообновление данных каждые 10 секунд без переключения вкладок
+✅ Сохранение активной вкладки
+✅ Индивидуальное обновление каждой вкладки
+
+
+
+
+

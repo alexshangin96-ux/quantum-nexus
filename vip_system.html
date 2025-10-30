@@ -1,0 +1,90 @@
+<!-- VIP Exclusive Machines Section -->
+<div id="vipMiningSection" style="display:none;">
+    <h3 style="color:#ffd700;font-weight:800;font-size:18px;margin-bottom:15px;text-align:center;text-shadow:0 0 20px rgba(255,215,0,0.5);">
+        👑 VIP ПРЕМИУМ МАШИНЫ
+    </h3>
+    
+    <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:12px;border-radius:12px;margin-bottom:15px;">
+        <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;">⚡ Quantum Miners Pro</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:8px;">500 QuanHash/час • Эксклюзивная производительность</div>
+            <div style="font-size:11px;color:#ffd700;margin-bottom:8px;">✅ Только для Diamond VIP и выше</div>
+            <button onclick="buyVipMachine('quantum_pro')" style="width:100%;padding:10px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 Купить за 50M 🪙</button>
+        </div>
+    </div>
+    
+    <div style="background:linear-gradient(135deg,#c084fc,#a78bfa);padding:12px;border-radius:12px;margin-bottom:15px;">
+        <div style="background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;">
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:5px;">💎 Absolute Hash Machine</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:8px;">1000 QuanHash/час • Максимальная мощность</div>
+            <div style="font-size:11px;color:#c084fc;margin-bottom:8px;">✅ Только для Absolute VIP</div>
+            <button onclick="buyVipMachine('absolute_pro')" style="width:100%;padding:10px;background:linear-gradient(135deg,#c084fc,#a78bfa);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">💰 Купить за 100M 🪙</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIP Exclusive Events Section -->
+<div id="vipEventsSection" style="display:none;margin-top:20px;">
+    <h3 style="color:#ffd700;font-weight:800;font-size:18px;margin-bottom:15px;text-align:center;">
+        🎉 VIP МЕРОПРИЯТИЯ
+    </h3>
+    
+    <div style="background:rgba(255,215,0,0.1);border:2px solid #ffd700;border-radius:12px;padding:15px;margin-bottom:15px;">
+        <div style="font-size:16px;font-weight:800;color:#ffd700;margin-bottom:10px;">🏆 VIP Турнир День Деньги</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Соревнование только для VIP игроков! Топ-3 получают эксклюзивные награды.</div>
+        <div style="font-size:11px;color:#ffd700;margin-bottom:8px;">✅ Награды: 500M коинов, уникальные значки</div>
+        <button style="width:100%;padding:10px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">🎯 Участвовать</button>
+    </div>
+    
+    <div style="background:rgba(192,132,252,0.1);border:2px solid #c084fc;border-radius:12px;padding:15px;margin-bottom:15px;">
+        <div style="font-size:16px;font-weight:800;color:#c084fc;margin-bottom:10px;">💎 VIP Эксклюзивный Челлендж</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Специальное событие для VIP! Получайте бонусы x10 за каждое действие.</div>
+        <div style="font-size:11px;color:#c084fc;margin-bottom:8px;">✅ Бонус: x10 к доходам на 1 час</div>
+        <button style="width:100%;padding:10px;background:linear-gradient(135deg,#c084fc,#a78bfa);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;">🚀 Активовать</button>
+    </div>
+</div>
+
+<script>
+function buyVipMachine(machineType) {
+    const userVIP = getUserVIPLevel(); // Placeholder
+    
+    if (!userVIP || userVIP < 5) {
+        alert('❌ Эта машина доступна только для Diamond VIP и выше!');
+        return;
+    }
+    
+    const prices = {
+        'quantum_pro': 50000000,
+        'absolute_pro': 100000000
+    };
+    
+    fetch('/api/buy_vip_machine', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            user_id: user?.id,
+            machine_type: machineType,
+            price: prices[machineType]
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ VIP машина куплена!');
+            loadData();
+        } else {
+            alert('❌ Ошибка: ' + data.error);
+        }
+    });
+}
+
+function getUserVIPLevel() {
+    // Get from user data
+    return window.currentUserData?.vip_level || 0;
+}
+</script>
+
+
+
+
+
