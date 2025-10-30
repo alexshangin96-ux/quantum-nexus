@@ -634,20 +634,26 @@ def get_mining():
             # Build machines list from JSON levels
             machines_dict = {}
             if category in machines_defs:
+                # Get all user machines once to count
+                user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
+                machines_count = {}
+                for machine in user_machines_db:
+                    key = machine.machine_type
+                    if key:
+                        machines_count[key] = machines_count.get(key, 0) + 1
+                
                 for machine_def in machines_defs[category]:
                     machine_id = machine_def['id']
                     level = mining_levels.get(machine_id, 0)
                     if level > 0:  # Only include machines that have been purchased
-                        # Calculate income based on level
-                        hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** level))
+                        # Calculate income based on level (level stored is 1-based, representing current level)
+                        # Income formula: base * (1.15 ^ (level - 1))
+                        # e.g., level 1 = base, level 2 = base * 1.15, level 3 = base * 1.15^2
+                        hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** (level - 1)))
                         hash_rate = hash_per_hour / 3600.0
                         
-                        # Count how many times this machine was bought (count from database)
-                        user_machines_db = db.query(MiningMachine).filter_by(
-                            user_id=user.id,
-                            machine_type=machine_id
-                        ).all()
-                        count = len(user_machines_db)
+                        # Count from preloaded dict
+                        count = machines_count.get(machine_id, 0)
                         
                         machines_dict[machine_id] = {
                             'machine_id': machine_id,
