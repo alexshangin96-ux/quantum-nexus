@@ -3227,7 +3227,7 @@
         }
         
         function loadShopLevels() {
-            const userId = window.user?.id || window.userData?.id;
+            const userId = window.userData?.id || window.user?.id;
             if (!userId) return;
             
             fetch('/api/get_shop_levels', {
@@ -3289,7 +3289,7 @@
         function buyShopItem(category, level, price, itemIndex) {
             // Use direct price from the item (calculated by formulas)
             const actualPrice = price;
-            const userId = window.user?.id || window.userData?.id;
+            const userId = window.userData?.id || window.user?.id;
             
             if (!userId) {
                 showNotification('error', 'Ошибка: пользователь не найден');
