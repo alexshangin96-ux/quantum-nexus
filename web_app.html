@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.0 - Complete mining redesign with realistic values, beautiful descriptions, multi-level system - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.1 - Mining level 50 limit, beautiful notifications, fixed level system - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -3896,10 +3896,10 @@
         
         function buyMachine(id, price, currency) {
             const anim = document.createElement('div');
-            anim.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);z-index:10000;opacity:0;transition:all 0.4s ease-out;pointer-events:none;';
-            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.98),rgba(118,75,162,0.98));padding:25px 50px;border-radius:20px;font-size:36px;box-shadow:0 20px 60px rgba(102,126,234,0.8);text-shadow:0 0 20px rgba(255,255,255,0.8);">⚡ Покупка...</div>';
+            anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">⚡</span> Покупка...</div>';
             document.body.appendChild(anim);
-            setTimeout(()=>{anim.style.opacity='1';anim.style.transform='translate(-50%,-50%) scale(1)';},10);
+            setTimeout(()=>{anim.style.opacity='1';},10);
             
             fetch('/api/buy_machine', {
                 method: 'POST',
@@ -3914,20 +3914,25 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    anim.innerHTML='✅';
+                    // Success notification - like in shop
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Машина улучшена!</div>';
                     setTimeout(()=>{
-                        anim.style.opacity='0';anim.style.transform='translate(-50%,-50%) scale(1.5)';
+                        anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
                         setTimeout(()=>{anim.remove();},300);
-                    },500);
+                    },800);
                     // Reload current category
                     const activeBtn = document.querySelector('.mining-cat-btn[style*="background: linear-gradient"]');
                     const currentCat = activeBtn ? (activeBtn.textContent.includes('коины') ? 'coins' : 'quanhash') : 'coins';
                     loadMiningCategory(currentCat);
                     loadData();
                 } else {
-                    anim.innerHTML='❌ ' + data.error;
-                    anim.style.background='rgba(239,68,68,0.95)';
-                    setTimeout(()=>{anim.remove();},1500);
+                    // Error notification - like in shop
+                    const errorText = data.error.includes('Недостаточно') ? 'Недостаточно ' + (currency === 'coins' ? 'коинов' : 'QuanHash') : data.error;
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
+                    setTimeout(()=>{
+                        anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
+                        setTimeout(()=>{anim.remove();},300);
+                    },1500);
                 }
             });
         }
