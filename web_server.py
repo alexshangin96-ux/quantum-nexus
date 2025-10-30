@@ -480,7 +480,7 @@ def get_shop():
                 items = []
                 # Check if user_cards table exists
                 try:
-                user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
+                    user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
                     print(f"Successfully queried user_cards table for user {user_id}")
                 except Exception as e:
                     print(f"Error querying user_cards table: {e}")
