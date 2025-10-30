@@ -3333,16 +3333,15 @@
                 console.log('Actual price:', actualPrice);
                 
                 // Find card by index (itemIndex parameter)
-                const card = cards[itemIndex] || cards.find(c => c.type === 'card' && Math.abs(c.price - actualPrice) < 1);
-                const itemType = card ? card.id : 'card_min_1'; // Use card.id as item_type
-                
-                console.log('Buying card:', {card, itemType, actualPrice, cards: cards.length});
-                
+                const card = cards[itemIndex];
                 if (!card) {
-                    console.error('Card not found!', {itemIndex, actualPrice, cards});
+                    console.error('Card not found at index:', itemIndex, 'cards length:', cards.length);
                     showNotification('error', 'Карточка не найдена');
                     return;
                 }
+                const itemType = card.id; // Use card.id as item_type
+                
+                console.log('Buying card:', {card, itemType, actualPrice, cards: cards.length});
                 
                 fetch('/api/buy', {
                     method: 'POST',
