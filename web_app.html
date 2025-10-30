@@ -345,7 +345,6 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
         }
-        
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
@@ -695,7 +694,6 @@
                 transform: translateY(0);
             }
         }
-        
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -1045,7 +1043,6 @@
             align-items: center;
             margin-bottom: 10px;
         }
-
         .machine-name {
             font-weight: bold;
             display: flex;
@@ -1382,8 +1379,6 @@
                 <text x="110" y="150" font-size="100" text-anchor="middle" fill="#fff" font-weight="bold" style="filter: drop-shadow(0 0 15px rgba(255, 192, 203, 0.8));">💰</text>
             </svg>
         </button>
-
-
         <div class="buttons">
             <a href="#" class="btn" onclick="openShop(event)">
                 <div class="btn-emoji">🛒</div>
@@ -1684,7 +1679,6 @@
             // VIP events accessible from menu
             // Will be integrated into main interface
         }
-        
         function openVIPProfileModal() {
             fetch('/api/user_data', {
                 method: 'POST',
@@ -2021,7 +2015,6 @@
                 reader.readAsDataURL(file);
             }
         }
-        
         function openVIPTopLeaders() {
             const modal = document.createElement('div');
             modal.className = 'modal active';
@@ -2345,7 +2338,6 @@
             })
             .catch(err => console.error('Error:', err));
         }
-        
         function updateAutobotToggle(data) {
             const autobotStatusSection = document.getElementById('autobotStatusSection');
             const autobotStatusBtn = document.getElementById('autobotStatusBtn');
@@ -2690,10 +2682,6 @@
         function generateExpandName(level) {
             return '📈 Расширение Энергии';
         }
-        
-        
-        
-
         function openShop(e) {
             e.preventDefault();
             const modal = document.createElement('div');
@@ -3029,7 +3017,6 @@
                 ]
             }
         };
-        
         function loadShopCategory(category) {
             // Update button states
             document.querySelectorAll('.shop-cat-btn').forEach(btn => {
@@ -3149,9 +3136,6 @@
                                     <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${currentLevel}</div>
                                 </div>
                                 <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
-                                <div style="font-size:10px;color:#4ade80;margin-top:2px;">
-                                    Текущий эффект: +${currentEffect}${category === 'energy_buy' ? ' энергии/сек' : category === 'energy_expand' ? ' максимум' : ' кликов'}
-                                </div>
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
@@ -3681,7 +3665,6 @@
             })
             .catch(err => tg.showAlert('❌ Ошибка покупки'));
         }
-        
         function loadMiningCategory(category) {
             // Update button states
             document.querySelectorAll('.category-btn').forEach(btn => {
@@ -4008,7 +3991,6 @@
                 }
             }
         });
-
         function openStats(e) {
             e.preventDefault();
             document.getElementById('statsModal').classList.add('active');
@@ -4653,7 +4635,6 @@
         function activateDiamondChallenge() {
             tg.showAlert('⚡ Diamond Challenge активирован! Получайте x50 бонус к доходам на 24 часа!');
         }
-        
         function claimReward(taskId) {
             fetch('/api/claim_task', {
                 method: 'POST',
@@ -4995,7 +4976,6 @@
                             </div>
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_24')" style="width:100%;padding:9px;background:linear-gradient(135deg,#ffd700,#ffd700);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 3200 ⭐</button>
                         </div>
-                        
                         <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:12px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                                 <div style="font-size:32px;">💎</div>
@@ -5337,7 +5317,6 @@
                             </div>
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_52')" style="width:100%;padding:9px;background:linear-gradient(135deg,#ffd700,#ffd700);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 2500 ⭐</button>
                         </div>
-                        
                         <div data-category="mega" style="background:rgba(255,215,0,0.25);padding:12px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
                                 <div style="font-size:32px;">🏆</div>
