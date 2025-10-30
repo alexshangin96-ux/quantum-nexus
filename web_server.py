@@ -582,7 +582,7 @@ def get_mining():
     try:
         data = request.json
         user_id = data.get('user_id')
-        category = data.get('category', 'starter')
+        category = data.get('category', 'coins')
         
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
@@ -593,36 +593,32 @@ def get_mining():
             if not user:
                 return jsonify({'error': 'User not found'}), 404
             
-            # Generate 30 machines for each category
-            if category == 'starter':
-                # Machines for coins (starting from 5000)
-                machines = [
-                    {'id': f'starter_{i}', 'name': f'Стартовая машина #{i+1}', 'price': 5000 + i*5000, 'hash_rate': round(0.05*(i+1), 2), 'currency': 'coins', 'hash_per_hour': round(0.05*(i+1)*3600)}
-                    for i in range(30)
-                ]
-            else:
-                # Machines for QuanHash
-                machines = [
-                    {'id': f'premium_{i}', 'name': f'Премиум машина #{i+1}', 'price': 50 + i*50, 'hash_rate': round(0.5*(i+1), 2), 'currency': 'quanhash', 'hash_per_hour': round(0.5*(i+1)*3600)}
-                    for i in range(30)
-                ]
+            # Get user machines and group by machine_type
+            user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
+            machines_dict = {}
+            for machine in user_machines_db:
+                key = machine.machine_type or machine.name
+                if key in machines_dict:
+                    machines_dict[key]['count'] += 1
+                    machines_dict[key]['total_income'] += machine.hash_rate * 3600
+                else:
+                    machines_dict[key] = {
+                        'machine_id': key,
+                        'name': machine.name,
+                        'level': machine.level,
+                        'count': 1,
+                        'hash_rate': machine.hash_rate,
+                        'income_per_hour': machine.hash_rate * 3600,
+                        'total_income': machine.hash_rate * 3600
+                    }
             
-            user_machines = db.query(MiningMachine).filter_by(user_id=user.id).all()
-            machines_data = []
-            for machine in user_machines:
-                machines_data.append({
-                    'id': machine.id,
-                    'name': machine.name,
-                    'level': machine.level,
-                    'hash_rate': machine.hash_rate,
-                    'income_per_hour': machine.hash_rate * 3600,
-                })
+            machines_data = list(machines_dict.values())
             
             return jsonify({
                 'quanhash': user.quanhash,
                 'coins': user.coins,
                 'category': category,
-                'shop_machines': machines,
+                'shop_machines': [],  # Now loaded from frontend
                 'user_machines': machines_data
             })
     except Exception as e:
@@ -1698,27 +1694,66 @@ def buy_machine():
                     return jsonify({'success': False, 'error': 'Недостаточно QuanHash'})
                 user.quanhash -= price
             
-            # Parse machine info from ID (format: starter_0, premium_15, etc)
-            parts = machine_id.split('_')
-            if len(parts) != 2:
+            # Machine definitions (same as frontend)
+            machines_data = {
+                'coins': [
+                    {'id': 'miner_basic', 'name': 'Basic Miner', 'basePrice': 5000, 'baseHashPerHour': 50000, 'emoji': '⚙️'},
+                    {'id': 'miner_advanced', 'name': 'Advanced Miner', 'basePrice': 20000, 'baseHashPerHour': 250000, 'emoji': '🔧'},
+                    {'id': 'miner_pro', 'name': 'Pro Miner', 'basePrice': 80000, 'baseHashPerHour': 1000000, 'emoji': '⚡'},
+                    {'id': 'miner_elite', 'name': 'Elite Miner', 'basePrice': 300000, 'baseHashPerHour': 4000000, 'emoji': '💎'},
+                    {'id': 'miner_master', 'name': 'Master Miner', 'basePrice': 1000000, 'baseHashPerHour': 15000000, 'emoji': '👑'},
+                    {'id': 'miner_legend', 'name': 'Legend Miner', 'basePrice': 3500000, 'baseHashPerHour': 60000000, 'emoji': '🌟'},
+                    {'id': 'miner_titan', 'name': 'Titan Miner', 'basePrice': 12000000, 'baseHashPerHour': 250000000, 'emoji': '🌌'},
+                    {'id': 'miner_apex', 'name': 'Apex Miner', 'basePrice': 40000000, 'baseHashPerHour': 1000000000, 'emoji': '🔥'},
+                    {'id': 'miner_alpha', 'name': 'Alpha Miner', 'basePrice': 150000000, 'baseHashPerHour': 4000000000, 'emoji': '⚛️'},
+                    {'id': 'miner_omega', 'name': 'Omega Miner', 'basePrice': 500000000, 'baseHashPerHour': 15000000000, 'emoji': '🎆'}
+                ],
+                'quanhash': [
+                    {'id': 'hash_basic', 'name': 'Hash Starter', 'basePrice': 100000, 'baseHashPerHour': 100000, 'emoji': '💚'},
+                    {'id': 'hash_boost', 'name': 'Hash Boost', 'basePrice': 500000, 'baseHashPerHour': 750000, 'emoji': '💙'},
+                    {'id': 'hash_pro', 'name': 'Hash Pro', 'basePrice': 2500000, 'baseHashPerHour': 5000000, 'emoji': '💛'},
+                    {'id': 'hash_ultra', 'name': 'Hash Ultra', 'basePrice': 10000000, 'baseHashPerHour': 25000000, 'emoji': '🧡'},
+                    {'id': 'hash_extreme', 'name': 'Hash Extreme', 'basePrice': 40000000, 'baseHashPerHour': 100000000, 'emoji': '❤️'},
+                    {'id': 'hash_dominant', 'name': 'Hash Dominant', 'basePrice': 150000000, 'baseHashPerHour': 400000000, 'emoji': '💜'},
+                    {'id': 'hash_supreme', 'name': 'Hash Supreme', 'basePrice': 600000000, 'baseHashPerHour': 1500000000, 'emoji': '🤍'},
+                    {'id': 'hash_legend', 'name': 'Hash Legend', 'basePrice': 2500000000, 'baseHashPerHour': 6000000000, 'emoji': '🖤'},
+                    {'id': 'hash_god', 'name': 'Hash God', 'basePrice': 10000000000, 'baseHashPerHour': 25000000000, 'emoji': '✨'},
+                    {'id': 'hash_infinity', 'name': 'Hash Infinity', 'basePrice': 40000000000, 'baseHashPerHour': 100000000000, 'emoji': '🌠'}
+                ]
+            }
+            
+            # Find machine definition
+            machine_def = None
+            for cat in machines_data.values():
+                for m in cat:
+                    if m['id'] == machine_id:
+                        machine_def = m
+                        break
+                if machine_def:
+                    break
+            
+            if not machine_def:
                 return jsonify({'success': False, 'error': 'Invalid machine ID'})
             
-            machine_num = int(parts[1])
-            if parts[0] == 'starter':
-                hash_rate = round(0.05 * (machine_num + 1), 2)
-                name = f'Стартовая машина #{machine_num + 1}'
-            else:  # premium
-                hash_rate = round(0.5 * (machine_num + 1), 2)
-                name = f'Премиум машина #{machine_num + 1}'
+            # Check existing machine to get level
+            existing = db.query(MiningMachine).filter_by(
+                user_id=user.id, 
+                machine_type=machine_id
+            ).first()
+            
+            current_level = existing.level if existing else 0
+            new_level = current_level + 1
+            hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
             
             machine = MiningMachine(
                 user_id=user.id,
-                name=name,
-                hash_rate=hash_rate,
-                level=1,
+                name=machine_def['name'],
+                hash_rate=hash_per_hour / 3600.0,
+                level=new_level,
                 machine_type=machine_id
             )
             db.add(machine)
+            db.commit()
         
         return jsonify({'success': True})
     except Exception as e:
