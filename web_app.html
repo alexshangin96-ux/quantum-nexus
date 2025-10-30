@@ -3356,6 +3356,8 @@
                 .then(res => res.json())
                 .then(data => {
                     console.log('Card purchase response:', data);
+                    console.log('Response success:', data.success);
+                    console.log('Response error:', data.error);
                     if(data.success) {
                         showNotification('success', 'Карточка куплена!');
                         // Force reload user data

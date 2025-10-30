@@ -1181,6 +1181,7 @@ def buy_item():
                 user.last_active = datetime.utcnow()
                 db.commit()
             
+            print(f"Successfully processed purchase for user {user_id}, item {item_type}")
             return jsonify({'success': True})
     except Exception as e:
         print(f"Error in buy_item: {str(e)}")
