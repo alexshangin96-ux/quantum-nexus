@@ -1764,7 +1764,7 @@
                                     ${userData.active_multiplier > 1 ? `
                                     <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid rgba(255,255,255,0.1);">
                                         <span style="color:#94a3b8;">⚡ Усилитель тапа:</span>
-                                        <span style="font-weight:700;color:#fbbf24;">+${userData.active_multiplier - 1} тапов</span>
+                                        <span style="font-weight:700;color:#fbbf24;">${userData.active_multiplier} кликов за тап</span>
                                     </div>
                                     ` : ''}
                                     <div style="display:flex;justify-content:space-between;padding:10px;">
@@ -3062,10 +3062,10 @@
                 if (category === 'tap_boost') {
                     const baseEffect = item.baseEffect || 1;
                     const basePrice = item.basePrice || 1000;
-                    // Show total tap boosts (active_multiplier - 1, так как базовое значение 1)
+                    // Show total tap boosts - active_multiplier is already the number of clicks
                     const userMultiplier = window.userData?.active_multiplier || 1;
                     console.log('Tap boost - userMultiplier:', userMultiplier, 'window.userData:', window.userData);
-                    const totalBoost = Math.max(0, userMultiplier - 1);
+                    const totalBoost = userMultiplier;
                     nextLevelPrice = Math.floor(basePrice * Math.pow(1.5, currentLevel + 1));
                     
                     // Special handling for first item (base_effect == 1): always gives +1
