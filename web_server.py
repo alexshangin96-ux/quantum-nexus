@@ -474,7 +474,7 @@ def get_shop():
                 for uc in user_cards:
                     user_card_counts[uc.card_type] = user_card_counts.get(uc.card_type, 0) + 1
                 
-                app.logger.info(f"User {user_id} cards: {user_card_counts}")
+                print(f"User {user_id} cards: {user_card_counts}")
                 
                 for i, template in enumerate(per_minute_cards):
                     card_key = f"card_min_{i}"
@@ -1041,10 +1041,10 @@ def buy_item():
         item_type = data.get('item_type')
         price = data.get('price')
         
-        app.logger.info(f"Buy item request: user_id={user_id}, item_type={item_type}, price={price}")
+        print(f"Buy item request: user_id={user_id}, item_type={item_type}, price={price}")
         
         if not user_id or not item_type or not price:
-            app.logger.error(f"Missing parameters: user_id={user_id}, item_type={item_type}, price={price}")
+            print(f"Missing parameters: user_id={user_id}, item_type={item_type}, price={price}")
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
         # Ensure price is a float
@@ -1122,7 +1122,7 @@ def buy_item():
                 db.add(card)
                 user.last_active = datetime.utcnow()
                 db.commit()
-                app.logger.info(f"Added card {item_type} level {level} for user {user_id}")
+                print(f"Added card {item_type} level {level} for user {user_id}")
             elif item_type.startswith('card_hour_'):
                 # Per hour card
                 idx = int(item_type.split('_')[2])
@@ -1168,7 +1168,7 @@ def buy_item():
                 db.add(card)
                 user.last_active = datetime.utcnow()
                 db.commit()
-                app.logger.info(f"Added card {item_type} level {level} for user {user_id}")
+                print(f"Added card {item_type} level {level} for user {user_id}")
             elif item_type == 'auto_bot':
                 # Auto-tap bot implementation
                 taps_per_sec = data.get('taps_per_sec', 2)
@@ -1181,7 +1181,7 @@ def buy_item():
                 user.last_active = datetime.utcnow()
                 db.commit()
             
-            app.logger.info(f"Successfully processed purchase for user {user_id}, item {item_type}")
+            print(f"Successfully processed purchase for user {user_id}, item {item_type}")
             return jsonify({'success': True})
     except Exception as e:
         print(f"Error in buy_item: {str(e)}")
