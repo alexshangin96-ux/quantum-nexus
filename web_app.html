@@ -3920,9 +3920,21 @@
                 .catch(err => tg.showAlert('❌ Ошибка покупки'));
             };
             
-            window.buyVIPCardWithStars = function(cardRarity, price) {
-                // This will be implemented with Telegram Stars API
-                tg.showAlert('🚧 Покупка за Stars будет доступна скоро!');
+            window.buyVIPCardWithStars = function(cardRarity, price, productId) {
+                // Open Telegram payment (same as in VIP shop)
+                const paymentUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+                window.open(paymentUrl, '_blank');
+                
+                // Show beautiful VIP confirmation message
+                const anim = document.createElement('div');
+                anim.style.cssText = 'position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+                anim.innerHTML = '<div style="background:linear-gradient(135deg,rgba(255,215,0,0.95),rgba(255,237,78,0.95));padding:25px 50px;border-radius:25px;font-size:26px;box-shadow:0 15px 50px rgba(255,215,0,0.7);color:#000;font-weight:800;display:flex;align-items:center;gap:20px;border:3px solid rgba(255,215,0,0.8);"><span style="font-size:40px;">⭐</span><div><div style="font-size:28px;margin-bottom:8px;">VIP Покупка</div><div style="font-size:20px;opacity:0.8;">Открывается оплата за ' + price + ' ⭐ Telegram Stars</div></div></div>';
+                document.body.appendChild(anim);
+                setTimeout(() => {
+                    anim.style.opacity = '0';
+                    anim.style.transform = 'translate(-50%,-70%)';
+                    setTimeout(() => {anim.remove();}, 300);
+                }, 2000);
             };
             
             function loadCardsList(category) {
@@ -4062,19 +4074,21 @@
             
             // VIP Card definitions
             const vipCardsPerHour = [
-                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 5000, rarity: 'vip_silver'},
-                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 15000, rarity: 'vip_gold'},
-                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 35000, rarity: 'vip_platinum'},
-                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 100000, rarity: 'vip_diamond'},
-                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 300000, rarity: 'vip_elite'}
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 5000, rarity: 'vip_silver', productId: 51},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 15000, rarity: 'vip_gold', productId: 52},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 35000, rarity: 'vip_platinum', productId: 53},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 100000, rarity: 'vip_diamond', productId: 54},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 300000, rarity: 'vip_elite', productId: 55},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 750000, rarity: 'vip_ultimate', productId: 56}
             ];
             
             const vipCardsPerMinute = [
-                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 300, rarity: 'vip_nova'},
-                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 900, rarity: 'vip_quantum'},
-                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 2000, rarity: 'vip_cosmic'},
-                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 5000, rarity: 'vip_stellar'},
-                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 15000, rarity: 'vip_galaxy'}
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 300, rarity: 'vip_nova', productId: 61},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 900, rarity: 'vip_quantum', productId: 62},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 2000, rarity: 'vip_cosmic', productId: 63},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 5000, rarity: 'vip_stellar', productId: 64},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 15000, rarity: 'vip_galaxy', productId: 65},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 40000, rarity: 'vip_infinity', productId: 66}
             ];
             
             const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
@@ -4100,12 +4114,12 @@
                 
                 html += `
                     <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                        <div style="position:absolute;top:8px;right:8px;background:${badgeBg};color:${badgeColor};padding:3px 8px;border-radius:6px;font-size:10px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⭐</div>
+                        <div style="position:absolute;top:8px;right:8px;background:${badgeBg};color:${badgeColor};padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">VIP</div>
                         <div style="font-size:28px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
                         <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
                         <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
                         <div style="font-size:13px;color:${incomeColor};font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px ${incomeColor}40;">${incomeText}</div>
-                        <button onclick="buyVIPCardWithStars('${card.rarity}', ${price})" 
+                        <button onclick="buyVIPCardWithStars('${card.rarity}', ${price}, ${card.productId})" 
                                 style="width:100%;padding:11px;background:${buttonGradient};color:${buttonColor};border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
                                 onmousedown="this.style.transform='scale(0.96)'" 
                                 onmouseup="this.style.transform='scale(1)'" 
