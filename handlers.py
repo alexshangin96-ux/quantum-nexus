@@ -114,7 +114,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     keyboard = [
         [
-            InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html?v=4.3&t=" + str(int(__import__('time').time()))))
+            InlineKeyboardButton("🎮 Открыть игру", web_app=WebAppInfo(url="https://quantum-nexus.ru/web_app.html?v=4.3&c=shop&t=" + str(int(__import__('time').time()))))
         ]
     ]
     
