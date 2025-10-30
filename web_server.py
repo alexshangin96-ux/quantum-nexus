@@ -509,8 +509,8 @@ def get_shop():
                     purchases = user_card_counts.get(card_key, 0)
                     level = min(purchases + 1, 300)
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
-                    income = template['base_income'] * (1.10 ** (level - 1))
-                    income_per_min = round(income / 60, 2)
+                    income_per_hour = template['base_income'] * (1.10 ** (level - 1))
+                    income_per_min = round(income_per_hour / 60, 2)
                     
                     print(f"Card {card_key}: purchases={purchases}, level={level}, price={price}")
                     
@@ -525,7 +525,7 @@ def get_shop():
                         'price': price,
                         'level': level,
                         'rarity': template['rarity'],
-                        'income': income,
+                        'income': income_per_hour,
                         'income_per_min': income_per_min,
                         'income_type': 'per_hour',
                         'type': 'card',
