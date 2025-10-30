@@ -483,7 +483,7 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
-                    print(f"Card {card_key}: purchases={purchases}, level={level}, price={price}")
+                    print(f"PER MINUTE Card {card_key}: purchases={purchases}, level={level}, price={price}, income={income}")
                     
                     # Remove locking - all cards are available
                     is_locked = False
@@ -512,7 +512,7 @@ def get_shop():
                     income_per_hour = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income_per_hour / 60, 2)
                     
-                    print(f"Card {card_key}: purchases={purchases}, level={level}, price={price}")
+                    print(f"PER HOUR Card {card_key}: purchases={purchases}, level={level}, price={price}, income_per_hour={income_per_hour}, income_per_min={income_per_min}")
                     
                     # Remove locking - all cards are available
                     is_locked = False
