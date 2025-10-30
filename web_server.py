@@ -510,8 +510,10 @@ def get_shop():
                     income = template['base_income'] * (1.10 ** (level - 1))
                     income_per_min = round(income / 60, 2)
                     
-                    # Unlock card if previous card reached level 5
-                    is_locked = i > 0 and user_card_counts.get(f"card_hour_{i-1}", 0) < 5
+                    print(f"Card {card_key}: purchases={purchases}, level={level}, price={price}")
+                    
+                    # Remove locking - all cards are available
+                    is_locked = False
                     
                     items.append({
                         'id': card_key,

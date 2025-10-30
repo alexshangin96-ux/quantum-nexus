@@ -3312,8 +3312,10 @@
                         window.shopData = window.shopData || {};
                         window.shopData.items = shopData.items || [];
                         console.log('Reloaded shop data:', window.shopData);
-                        // Retry the purchase
-                        buyShopItem(category, level, price, itemIndex);
+                        // Retry the purchase with a small delay to avoid recursion issues
+                        setTimeout(() => {
+                            buyShopItem(category, level, price, itemIndex);
+                        }, 100);
                     })
                     .catch(err => {
                         console.error('Error loading shop data:', err);
@@ -3377,7 +3379,12 @@
                             const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
                             const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
                             console.log('Refreshing cards with category:', cardCategory);
+                            
+                            // Force refresh the cards display
                             loadCardsList(cardCategory);
+                            
+                            // Also refresh the main data to update user stats
+                            loadData();
                         });
                     } else {
                         showNotification('error', data.error || 'Ошибка покупки');
