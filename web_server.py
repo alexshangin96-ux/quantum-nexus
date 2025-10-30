@@ -1043,6 +1043,7 @@ def buy_item():
         price = data.get('price')
         
         print(f"Buy item request: user_id={user_id}, item_type={item_type}, price={price}")
+        print(f"Item type starts with card_hour_: {item_type.startswith('card_hour_') if item_type else False}")
         
         if not user_id or not item_type or not price:
             print(f"Missing parameters: user_id={user_id}, item_type={item_type}, price={price}")
