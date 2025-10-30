@@ -549,6 +549,7 @@
 <button class="action-btn" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);" onclick="setReferrer(${u.telegram_id})">👥 Назначить реферера</button>
 </div>
 <div class="actions-grid">
+<button class="action-btn" onclick="openBoosts(${u.telegram_id})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(16,185,129,0.3);">🚀 БУСТЫ</button>
 <button class="action-btn btn-danger" onclick="superResetUser(${u.telegram_id})" style="background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;font-weight:700;box-shadow:0 4px 15px rgba(220,38,38,0.4);">🔥 СУПЕР СБРОС</button>
 <button class="action-btn" style="background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;" onclick="manageVIP(${u.telegram_id},${u.vip_level||0},'${u.vip_badge||''}',${u.has_premium_support||false},${u.has_golden_profile||false},${u.has_top_place||false},${u.has_unique_design||false})">👑 VIP Управление</button>
 </div>`;
