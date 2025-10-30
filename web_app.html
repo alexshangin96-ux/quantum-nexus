@@ -3342,6 +3342,8 @@
                 const itemType = card.id; // Use card.id as item_type
                 
                 console.log('Buying card:', {card, itemType, actualPrice, cards: cards.length});
+                console.log('Card ID for purchase:', card.id);
+                console.log('Item type being sent:', itemType);
                 
                 fetch('/api/buy', {
                     method: 'POST',
