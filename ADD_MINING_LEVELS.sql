@@ -1,4 +1,5 @@
 -- Add mining level fields to users table
+-- Database: quantum_nexus (not quantum_nexus_db!)
 -- Run this SQL to add the new columns for mining machine levels
 
 -- Add mining_coins_levels column
