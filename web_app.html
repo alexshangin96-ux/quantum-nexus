@@ -3299,6 +3299,29 @@
             // Special handling for cards - use /api/buy endpoint
             if (category === 'card') {
                 // Get card data from shopData to find the correct item_type
+                if (!window.shopData || !window.shopData.items) {
+                    console.error('Shop data not loaded! Loading cards data...');
+                    // Force reload cards data
+                    fetch('/api/shop', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({user_id: userId, category: 'cards'})
+                    })
+                    .then(res => res.json())
+                    .then(shopData => {
+                        window.shopData = window.shopData || {};
+                        window.shopData.items = shopData.items || [];
+                        console.log('Reloaded shop data:', window.shopData);
+                        // Retry the purchase
+                        buyShopItem(category, level, price, itemIndex);
+                    })
+                    .catch(err => {
+                        console.error('Error loading shop data:', err);
+                        showNotification('error', 'Ошибка загрузки данных магазина');
+                    });
+                    return;
+                }
+                
                 const shopData = window.shopData || {};
                 const cards = shopData.items || [];
                 
@@ -3910,7 +3933,9 @@
                 .then(shopData => {
                     console.log('Cards shop data:', shopData);
                     // Store cards data globally for buyShopItem function
-                    window.shopData = window.shopData || {};
+                    if (!window.shopData) {
+                        window.shopData = {};
+                    }
                     window.shopData.items = shopData.items || [];
                     
                     const shopList = document.getElementById('shopCardsList');
