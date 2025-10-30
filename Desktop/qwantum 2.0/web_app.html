@@ -3121,7 +3121,22 @@
                                 <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
                             </div>
                         </div>
-                        ${category === 'autobot' ? `
+                        ${category === 'tap_boost' ? `
+                            <div style="background:rgba(102,126,234,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                                <span style="color:#a78bfa;font-size:12px;font-weight:700;">💪 Кликов за тап:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus}</span>
+                            </div>
+                        ` : category === 'energy_buy' ? `
+                            <div style="background:rgba(251,191,36,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                                <span style="color:#fbbf24;font-size:12px;font-weight:700;">⚡ Добавить:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus} энергии/сек</span>
+                            </div>
+                        ` : category === 'energy_expand' ? `
+                            <div style="background:rgba(236,72,153,0.2);padding:8px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+                                <span style="color:#ec4899;font-size:12px;font-weight:700;">📈 Расширить максимум энергии на:</span>
+                                <span style="color:#4ade80;font-size:13px;font-weight:800;">+${stats.bonus.toLocaleString()}</span>
+                            </div>
+                        ` : category === 'autobot' ? `
                             <div style="background:rgba(16,185,129,0.2);padding:8px;border-radius:8px;margin-bottom:8px;">
                                 <div style="display:flex;justify-content:space-between;align-items:center;">
                                     <span style="color:#10b981;font-size:12px;font-weight:700;">⏱️ Длительность:</span>
