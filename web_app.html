@@ -3301,11 +3301,23 @@
                 // Get card data from shopData to find the correct item_type
                 const shopData = window.shopData || {};
                 const cards = shopData.items || [];
+                
+                console.log('Shop data for cards:', shopData);
+                console.log('Cards array:', cards);
+                console.log('Item index:', itemIndex);
+                console.log('Actual price:', actualPrice);
+                
                 // Find card by index (itemIndex parameter)
                 const card = cards[itemIndex] || cards.find(c => c.type === 'card' && Math.abs(c.price - actualPrice) < 1);
                 const itemType = card ? card.id : 'card_min_1'; // Use card.id as item_type
                 
                 console.log('Buying card:', {card, itemType, actualPrice, cards: cards.length});
+                
+                if (!card) {
+                    console.error('Card not found!', {itemIndex, actualPrice, cards});
+                    showNotification('error', 'Карточка не найдена');
+                    return;
+                }
                 
                 fetch('/api/buy', {
                     method: 'POST',
