@@ -251,3 +251,5 @@ sudo -u postgres psql -d quantum_nexus -c "ALTER TABLE users ADD COLUMN IF NOT E
 
 
 
+
+

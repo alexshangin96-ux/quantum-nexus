@@ -23,3 +23,5 @@ sudo journalctl -u quantum-nexus-web -n 20 --no-pager
 
 
 
+
+

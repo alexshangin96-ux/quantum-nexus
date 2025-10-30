@@ -70,3 +70,5 @@ journalctl -u quantum-nexus-bot | tail -50
 
 
 
+
+

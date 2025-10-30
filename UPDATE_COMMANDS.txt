@@ -12,3 +12,5 @@ sudo systemctl restart quantum-nexus
 ГОТОВО!
 
 
+
+

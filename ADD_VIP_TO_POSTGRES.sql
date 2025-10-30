@@ -11,3 +11,5 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS has_unique_design BOOLEAN DEFAULT FAL
 
 
 
+
+

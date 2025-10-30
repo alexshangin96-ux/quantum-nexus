@@ -469,7 +469,14 @@ def get_shop():
                 ]
                 
                 items = []
-                user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
+                # Check if user_cards table exists
+                try:
+                    user_cards = db.query(UserCard).filter_by(user_id=user.id).all()
+                    print(f"Successfully queried user_cards table for user {user_id}")
+                except Exception as e:
+                    print(f"Error querying user_cards table: {e}")
+                    return jsonify({'success': False, 'error': 'Database error'})
+                
                 user_card_counts = {}
                 for uc in user_cards:
                     user_card_counts[uc.card_type] = user_card_counts.get(uc.card_type, 0) + 1
