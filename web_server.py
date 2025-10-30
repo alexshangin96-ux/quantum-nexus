@@ -804,7 +804,10 @@ def create_withdraw():
             return jsonify({'success': False, 'error': 'Минимум 500,000 QuanHash'})
         
         with get_db() as db:
+            # Accept telegram_id or DB id
             user = db.query(User).filter_by(telegram_id=user_id).first()
+            if not user:
+                user = db.query(User).filter_by(id=user_id).first()
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
@@ -1311,7 +1314,10 @@ def buy_shop_item():
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
         with get_db() as db:
+            # Accept telegram_id or DB id
             user = db.query(User).filter_by(telegram_id=user_id).first()
+            if not user:
+                user = db.query(User).filter_by(id=user_id).first()
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
