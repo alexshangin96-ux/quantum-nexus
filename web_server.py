@@ -1771,25 +1771,21 @@ def buy_machine():
             if not machine_def:
                 return jsonify({'success': False, 'error': 'Invalid machine ID'})
             
-            # Check existing machine to get level
+            # Get current level from user's JSON field (this is the source of truth)
+            import json
+            current_level = 0
+            if currency == 'coins':
+                levels = json.loads(user.mining_coins_levels or '{}')
+                current_level = levels.get(machine_id, 0)
+            elif currency == 'quanhash':
+                levels = json.loads(user.mining_quanhash_levels or '{}')
+                current_level = levels.get(machine_id, 0)
+            
+            # Check if machine already exists in database
             existing = db.query(MiningMachine).filter_by(
                 user_id=user.id, 
                 machine_type=machine_id
             ).first()
-            
-            # Get current level from user's JSON field or machine table
-            import json
-            current_level = 0
-            if existing:
-                current_level = existing.level
-            else:
-                # Try to get from JSON field
-                if currency == 'coins':
-                    levels = json.loads(user.mining_coins_levels or '{}')
-                    current_level = levels.get(machine_id, 0)
-                elif currency == 'quanhash':
-                    levels = json.loads(user.mining_quanhash_levels or '{}')
-                    current_level = levels.get(machine_id, 0)
             
             new_level = current_level + 1
             
