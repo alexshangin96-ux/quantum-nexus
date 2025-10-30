@@ -3372,13 +3372,12 @@
                             window.shopData = window.shopData || {};
                             window.shopData.items = shopData.items || [];
                             
-                            // Refresh cards display
-                            const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
-                            const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
-                            console.log('Refreshing cards with category:', cardCategory);
+                            // Refresh cards display - force reload all cards
+                            console.log('Refreshing all cards after purchase');
                             
-                            // Force refresh the cards display
-                            loadCardsList(cardCategory);
+                            // Force refresh the cards display for both categories
+                            loadCardsList('per_hour');
+                            loadCardsList('per_minute');
                             
                             // Also refresh the main data to update user stats
                             loadData();
@@ -3945,6 +3944,7 @@
                     const shopList = document.getElementById('shopCardsList');
                     const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
                     console.log('Filtered cards:', cards, 'category:', category);
+                    console.log('Updating shopList for category:', category);
                     if(cards && cards.length > 0) {
                         shopList.innerHTML = cards.map((card, i) => {
                         // Skip locked cards
