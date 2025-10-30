@@ -1168,7 +1168,8 @@ def buy_item():
                 db.add(card)
                 user.last_active = datetime.utcnow()
                 db.commit()
-                print(f"Added card {item_type} level {level} for user {user_id}")
+                print(f"Added PER HOUR card {item_type} level {level} for user {user_id}")
+                print(f"Card details: income_per_hour={income_per_hour}, income_per_min={income_per_min}")
             elif item_type == 'auto_bot':
                 # Auto-tap bot implementation
                 taps_per_sec = data.get('taps_per_sec', 2)
