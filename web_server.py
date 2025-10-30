@@ -483,6 +483,8 @@ def get_shop():
                     price = int(template['base_price'] * (1.15 ** (level - 1)))
                     income = template['base_income'] * (1.10 ** (level - 1))
                     
+                    print(f"Card {card_key}: purchases={purchases}, level={level}, price={price}")
+                    
                     # Remove locking - all cards are available
                     is_locked = False
                     
