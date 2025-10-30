@@ -7,6 +7,7 @@ from utils import *
 from database import get_db, generate_referral_code
 from config import *
 import logging
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -566,8 +567,12 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     vip_message = f"\n\n🔋 VIP Батарея активирована!\n📈 {vip_info['name']}: +{vip_info['effect']} максимальной энергии"
                     
                 elif vip_info['type'] == 'autobot':
-                    # Add autobot (implement based on your autobot system)
-                    vip_message = f"\n\n🤖 VIP Бот активирован!\n⚡ {vip_info['name']}: автотап на {vip_info['duration']} минут"
+                    # Add autobot with proper duration
+                    duration_seconds = vip_info['duration']  # duration is already in seconds
+                    user.auto_tap_level = 1  # Set autobot level
+                    user.auto_tap_speed = vip_info['effect']  # Set autobot speed
+                    user.auto_tap_expires_at = int(time.time()) + duration_seconds  # Set expiration time
+                    vip_message = f"\n\n🤖 VIP Бот активирован!\n⚡ {vip_info['name']}: автотап на {duration_seconds // 60} минут"
             else:
                 # Handle regular coin products (1-20, 31-60)
                 coins_to_add = product_coins.get(product_id, 0)

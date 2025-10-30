@@ -719,8 +719,6 @@ def get_offline_income():
                 
                 # Only show offline income if user was away for more than 10 seconds
                 if time_diff < 10:
-                    # Update last_active to now (user is active in app)
-                    user.last_active = now
                     return jsonify({
                         'offline_time': 0,
                         'offline_income': 0,
@@ -729,7 +727,6 @@ def get_offline_income():
                 
                 offline_time = min(time_diff - 10, 3 * 60 * 60)  # 3 hours max, minus 10 seconds to exclude active time
             else:
-                user.last_active = now
                 return jsonify({
                     'offline_time': 0,
                     'offline_income': 0,
@@ -752,8 +749,9 @@ def get_offline_income():
             
             offline_hash = (passive_hash_per_hour / 3600) * offline_time
             
-            # Update last_active to mark user is back in app
-            user.last_active = now
+            # Update last_active to mark user is back in app (only if there was offline income)
+            if offline_time > 0:
+                user.last_active = now
             
             return jsonify({
                 'offline_time': int(offline_time),
@@ -1266,6 +1264,9 @@ def buy_shop_item():
                 # Buy card - use existing card purchase logic
                 # This will be handled by the existing /api/buy endpoint
                 return jsonify({'success': False, 'error': 'Use /api/buy for cards'})
+            
+            # Update last_active for user activity
+            user.last_active = datetime.utcnow()
             
             db.commit()
             return jsonify({'success': True})
