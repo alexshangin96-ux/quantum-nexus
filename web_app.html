@@ -3081,8 +3081,12 @@
                         //   bonus = new_effect - current_effect
                         // When buying, we're at level=currentLevel, buying level=currentLevel+1
                         // So calculate the bonus that will be added when purchasing next level
-                        // Note: backend checks level > 1, but for display purposes we need to handle level >= 1
-                        const currentItemEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel - 1)) : 0;
+                        // Backend formula: level is the next level we're buying
+                        // So at currentLevel, we're buying level=currentLevel+1
+                        // Backend calculates: current_effect = base_effect * (1.2 ** (level - 1))
+                        // So for level=currentLevel+1: current_effect = base_effect * (1.2 ** currentLevel)
+                        const currentItemEffect = currentLevel >= 1 ? Math.floor(baseEffect * Math.pow(1.2, currentLevel)) : 0;
+                        // new_effect = base_effect * (1.2 ** level) = base_effect * (1.2 ** (currentLevel + 1))
                         const newEffect = Math.floor(baseEffect * Math.pow(1.2, currentLevel + 1));
                         nextLevelEffect = newEffect - currentItemEffect;
                         // Show what total would be AFTER buying this item
