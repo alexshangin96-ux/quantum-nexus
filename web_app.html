@@ -3042,7 +3042,7 @@
                     userLevel = window.userData.energy_buy_level || 0;
                 } else if (category === 'energy_expand') {
                     userLevel = window.userData.energy_expand_level || 0;
-                }
+            }
             }
             
             // Calculate price and effect for each item based on its current level
@@ -3338,22 +3338,22 @@
                 console.log('Item type being sent:', itemType);
                 
                 fetch('/api/buy', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
                         user_id: userId,
                         item_type: itemType,
-                        price: actualPrice
-                    })
+                    price: actualPrice
                 })
-                .then(res => res.json())
-                .then(data => {
+            })
+            .then(res => res.json())
+            .then(data => {
                     console.log('Card purchase response:', data);
                     console.log('Response success:', data.success);
                     console.log('Response error:', data.error);
-                    if(data.success) {
+                if(data.success) {
                         showNotification('success', 'Карточка куплена!');
-                        
+                    
                         // Reload cards data to update levels and prices
                         fetch('/api/shop', {
                             method: 'POST',
@@ -3452,7 +3452,7 @@
                         const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
                         if (activeBtn && activeBtn.dataset.category) {
                             loadShopCategory(activeBtn.dataset.category);
-                        }
+                            }
                     }, 200);
                     
                     
