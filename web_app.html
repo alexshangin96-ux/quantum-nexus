@@ -3421,7 +3421,7 @@
                             const filterCategory = cardCategory || 'per_hour';
                             const cards = shopData.items.filter(item => item.type === 'card' && (filterCategory === 'all' || item.income_type === filterCategory));
                             if(cards && cards.length > 0) {
-                                shopList.innerHTML = cards.map(card => {
+                                shopList.innerHTML = cards.map((card, i) => {
                                 // Remove locking - all cards are available
                                 const rarity = card.rarity || 'common';
                                 const rarityInfo = {
@@ -3892,14 +3892,16 @@
                 })
                 .then(res => res.json())
                 .then(shopData => {
+                    console.log('Cards shop data:', shopData);
                     // Store cards data globally for buyShopItem function
                     window.shopData = window.shopData || {};
                     window.shopData.items = shopData.items || [];
                     
                     const shopList = document.getElementById('shopCardsList');
                     const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
+                    console.log('Filtered cards:', cards, 'category:', category);
                     if(cards && cards.length > 0) {
-                        shopList.innerHTML = cards.map(card => {
+                        shopList.innerHTML = cards.map((card, i) => {
                         // Skip locked cards
                         // Remove locking - all cards are available
                         const rarity = card.rarity || 'common';
