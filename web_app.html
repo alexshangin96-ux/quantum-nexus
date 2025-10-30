@@ -3671,12 +3671,12 @@
             loadMiningCategory('coins');
         }
         const vipMiningCards = [
-            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 150, baseHashPerHour: 120000, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
-            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 300, baseHashPerHour: 300000, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
-            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 600, baseHashPerHour: 750000, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
-            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 1250, baseHashPerHour: 2000000, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
-            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 2500, baseHashPerHour: 5000000, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
-            {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 5000, baseHashPerHour: 12000000, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
+            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 50, baseHashPerHour: 120000, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
+            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 100, baseHashPerHour: 300000, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
+            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 150, baseHashPerHour: 750000, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
+            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 250, baseHashPerHour: 2000000, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
+            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 400, baseHashPerHour: 5000000, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
+            {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 750, baseHashPerHour: 12000000, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
         ];
         
         const miningMachinesData = {
@@ -3728,31 +3728,7 @@
                 const borderColor = isCoins ? '#667eea' : '#10b981';
                 const buttonGradient = isCoins ? 'linear-gradient(135deg,#667eea,#764ba2)' : 'linear-gradient(135deg,#10b981,#059669)';
                 
-                shop.innerHTML = machines.map((m, index) => {
-                    const level = 0; // TODO: Get from user data
-                    const price = Math.floor(m.basePrice * Math.pow(1.2, level));
-                    const hashPerHour = Math.floor(m.baseHashPerHour * Math.pow(1.15, level));
-                    
-                    return `
-                        <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                            <div style="position:absolute;top:8px;right:8px;background:${borderColor};color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⚡</div>
-                            <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji}</div>
-                            <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
-                            <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${m.description || ''}</div>
-                            <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                            <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${hashPerHour.toLocaleString()} 💎/ч</div>
-                            <button onclick="buyMachine('${m.id}', ${price}, '${m.currency}')" 
-                                    style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                    onmousedown="this.style.transform='scale(0.96)'" 
-                                    onmouseup="this.style.transform='scale(1)'" 
-                                    onmouseleave="this.style.transform='scale(1)'">
-                                <span>${price.toLocaleString()} ${m.currency === 'coins' ? '' : '💎'}</span>
-                            </button>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Show user machines from API
+                // Load user machines and levels from API
                 fetch('/api/mining', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -3760,6 +3736,32 @@
                 })
                 .then(res => res.json())
                 .then(data => {
+                    // Update shop with levels
+                    const machine_levels = data.machine_levels || {};
+                    shop.innerHTML = machines.map((m, index) => {
+                        const level = machine_levels[m.id] || 0;
+                        const price = Math.floor(m.basePrice * Math.pow(1.2, level));
+                        const hashPerHour = Math.floor(m.baseHashPerHour * Math.pow(1.15, level));
+                        
+                        return `
+                            <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
+                                <div style="position:absolute;top:8px;right:8px;background:${borderColor};color:#fff;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">⚡</div>
+                                <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${m.emoji}</div>
+                                <div style="font-weight:900;font-size:13px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${m.name}</div>
+                                <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${m.description || ''}</div>
+                                <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
+                                <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">Доход +${hashPerHour.toLocaleString()} QuanHash/ч</div>
+                                <button onclick="buyMachine('${m.id}', ${price}, '${m.currency}')" 
+                                        style="width:100%;padding:11px;background:${buttonGradient};color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
+                                        onmousedown="this.style.transform='scale(0.96)'" 
+                                        onmouseup="this.style.transform='scale(1)'" 
+                                        onmouseleave="this.style.transform='scale(1)'">
+                                    <span>Купить за ${m.currency === 'coins' ? '🪙' : '💎'} ${price.toLocaleString()} ${m.currency === 'coins' ? 'коинов' : 'QuanHash'}</span>
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    
                     const machinesList = document.getElementById('machinesList');
                     if(machinesList && data.user_machines) {
                         if(data.user_machines.length > 0) {
@@ -3774,7 +3776,7 @@
                                         <div style="flex:1;">
                                             <div style="font-weight:900;font-size:14px;margin-bottom:4px;color:#fff;">${m.name} ${count > 1 ? `<span style="background:rgba(102,126,234,0.6);padding:2px 6px;border-radius:4px;font-size:10px;">x${count}</span>` : ''}</div>
                                             <div style="font-size:11px;color:#94a3b8;">Уровень ${m.level} | ${m.hash_rate} Hash/s</div>
-                                            <div style="font-size:12px;color:#4ade80;margin-top:4px;font-weight:700;">💰 +${Math.floor(totalIncome).toLocaleString()} 💎/час</div>
+                                            <div style="font-size:12px;color:#4ade80;margin-top:4px;font-weight:700;">Доход +${Math.floor(totalIncome).toLocaleString()} QuanHash/час</div>
                                         </div>
                                         <div style="text-align:right;">
                                             <div style="font-size:28px;filter:drop-shadow(0 4px 8px rgba(102,126,234,0.5));">⚡</div>
@@ -3839,7 +3841,7 @@
                         <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
                         <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${card.description || ''}</div>
                         <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                        <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">💰 +${hashPerHour.toLocaleString()} 💎/ч</div>
+                        <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">Доход +${hashPerHour.toLocaleString()} QuanHash/ч</div>
                         <button onclick="buyVIPMiningMachineWithStars('${card.id}', ${price}, ${card.productId})" 
                                 style="width:100%;padding:11px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
                                 onmousedown="this.style.transform='scale(0.96)'" 

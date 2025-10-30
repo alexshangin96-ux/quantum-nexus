@@ -614,12 +614,21 @@ def get_mining():
             
             machines_data = list(machines_dict.values())
             
+            # Get machine levels from user
+            import json
+            mining_levels = {}
+            if category == 'coins':
+                mining_levels = json.loads(user.mining_coins_levels or '{}')
+            elif category == 'quanhash':
+                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+            
             return jsonify({
                 'quanhash': user.quanhash,
                 'coins': user.coins,
                 'category': category,
                 'shop_machines': [],  # Now loaded from frontend
-                'user_machines': machines_data
+                'user_machines': machines_data,
+                'machine_levels': mining_levels
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -1741,7 +1750,20 @@ def buy_machine():
                 machine_type=machine_id
             ).first()
             
-            current_level = existing.level if existing else 0
+            # Get current level from user's JSON field or machine table
+            import json
+            current_level = 0
+            if existing:
+                current_level = existing.level
+            else:
+                # Try to get from JSON field
+                if currency == 'coins':
+                    levels = json.loads(user.mining_coins_levels or '{}')
+                    current_level = levels.get(machine_id, 0)
+                elif currency == 'quanhash':
+                    levels = json.loads(user.mining_quanhash_levels or '{}')
+                    current_level = levels.get(machine_id, 0)
+            
             new_level = current_level + 1
             hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
             
@@ -1753,6 +1775,17 @@ def buy_machine():
                 machine_type=machine_id
             )
             db.add(machine)
+            
+            # Update levels in user's JSON field
+            if currency == 'coins':
+                levels = json.loads(user.mining_coins_levels or '{}')
+                levels[machine_id] = new_level
+                user.mining_coins_levels = json.dumps(levels)
+            elif currency == 'quanhash':
+                levels = json.loads(user.mining_quanhash_levels or '{}')
+                levels[machine_id] = new_level
+                user.mining_quanhash_levels = json.dumps(levels)
+            
             db.commit()
         
         return jsonify({'success': True})
