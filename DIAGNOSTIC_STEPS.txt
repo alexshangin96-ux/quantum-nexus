@@ -1,0 +1,63 @@
+========================================
+ДИАГНОСТИКА ПРОБЛЕМЫ НА СЕРВЕРЕ
+========================================
+
+На сервере выполните эти команды:
+
+1. ПРОВЕРИТЬ РЕПОЗИТОРИЙ:
+cd /root/quantum-nexus
+git remote -v
+git log --oneline -5
+git status
+
+2. ПРОВЕРИТЬ ВЕРСИЮ WEB_APP.HTML:
+head -n 2 web_app.html
+
+3. ПРОВЕРИТЬ ВЕРСИЮ В HANDLERS.PY:
+grep "web_app.html?v=" handlers.py
+
+4. ПРОВЕРИТЬ SYSTEMD СЕРВИСЫ:
+systemctl status quantum-nexus
+systemctl status quantum-nexus-web.service
+
+Найти где находятся файлы:
+ps aux | grep python | grep bot.py
+ps aux | grep python | grep web_server.py
+
+5. ПРОВЕРИТЬ Nginx/Caddy конфигурацию:
+sudo nginx -T 2>/dev/null | grep -A10 "quantum-nexus"
+ИЛИ
+grep -r "quantum-nexus" /etc/caddy/
+
+6. ПРОВЕРИТЬ РЕАЛЬНЫЙ ФАЙЛ НА СЕРВЕРЕ:
+head -n 2 /var/www/quantum-nexus/web_app.html
+head -n 2 /root/quantum-nexus/web_app.html
+head -n 2 /home/*/quantum-nexus/web_app.html 2>/dev/null
+
+7. ПРОВЕРИТЬ КОГДА ОБНОВЛЯЛСЯ ФАЙЛ:
+ls -lh /var/www/quantum-nexus/web_app.html
+ls -lh /root/quantum-nexus/web_app.html
+
+8. ПРОВЕРИТЬ ПРОЦЕССЫ:
+ps aux | grep -E "bot.py|web_server.py" | grep -v grep
+
+========================================
+ВОЗМОЖНЫЕ ПРОБЛЕМЫ:
+========================================
+
+1. Сервер не в /root/quantum-nexus, а в другом месте
+2. Файлы копируются не туда куда нужно
+3. Nginx кеширует файлы
+4. Web server Flask отдает старые файлы
+5. Telegram кеширует WebApp по старому URL
+
+========================================
+РЕШЕНИЕ:
+========================================
+
+1. Найти где реально запускается бот
+2. Найти где реально находятся файлы
+3. Обновить файлы в правильном месте
+4. Перезапустить все сервисы
+5. Очистить кеш всех прокси/вебсерверов
+
