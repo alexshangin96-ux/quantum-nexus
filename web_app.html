@@ -3298,12 +3298,18 @@
             
             // Special handling for cards - use /api/buy endpoint
             if (category === 'card') {
+                // Get card data from shopData to find the correct item_type
+                const shopData = window.shopData || {};
+                const cards = shopData.items || [];
+                const card = cards.find(c => c.type === 'card' && c.price === actualPrice);
+                const itemType = card ? card.id : 'card_min_1'; // Use card.id as item_type
+                
                 fetch('/api/buy', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         user_id: userId,
-                        item_type: 'card_min_1', // Default card type
+                        item_type: itemType,
                         price: actualPrice
                     })
                 })
@@ -3312,6 +3318,23 @@
                     if(data.success) {
                         showNotification('success', 'Карточка куплена!');
                         loadData();
+                        
+                        // Reload cards data to update levels and prices
+                        fetch('/api/shop', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: userId, category: 'cards'})
+                        })
+                        .then(res => res.json())
+                        .then(shopData => {
+                            window.shopData = window.shopData || {};
+                            window.shopData.items = shopData.items || [];
+                            
+                            // Refresh cards display
+                            const activeBtn = document.querySelector('#cardsShopSection .shop-cat-btn[style*="linear-gradient"]');
+                            const cardCategory = activeBtn && activeBtn.dataset.category ? activeBtn.dataset.category : 'per_hour';
+                            loadCardsList(cardCategory);
+                        });
                     } else {
                         showNotification('error', data.error || 'Ошибка покупки');
                     }
@@ -3864,6 +3887,10 @@
                 })
                 .then(res => res.json())
                 .then(shopData => {
+                    // Store cards data globally for buyShopItem function
+                    window.shopData = window.shopData || {};
+                    window.shopData.items = shopData.items || [];
+                    
                     const shopList = document.getElementById('shopCardsList');
                     const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
                     if(cards && cards.length > 0) {
