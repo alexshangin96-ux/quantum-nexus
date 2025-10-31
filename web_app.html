@@ -3732,7 +3732,7 @@
                 fetch('/api/mining', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({user_id: user?.id, category: category})
+                    body: JSON.stringify({user_id: window.user?.id, category: category})
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -3906,8 +3906,8 @@
             fetch('/api/buy_machine', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    user_id: user?.id,
+                    body: JSON.stringify({
+                    user_id: window.user?.id,
                     machine_id: id,
                     price: price,
                     currency: currency
