@@ -2752,6 +2752,166 @@
                         oscillator.stop(audioContext.currentTime + 0.35);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
                         break;
+                    case 'crypto_tap':
+                        // Crypto tap sound - money drop
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'square';
+                        oscillator.frequency.exponentialRampToValueAtTime(1108, audioContext.currentTime + 0.05);
+                        oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                    case 'big_coin':
+                        // Big coin collect - satisfying ching
+                        oscillator.frequency.value = 523;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.2);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        break;
+                    case 'stars_collect':
+                        // Stars collection - magical sparkle
+                        oscillator.frequency.value = 1319;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(1319, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(1568, audioContext.currentTime + 0.05);
+                        oscillator.frequency.setValueAtTime(1760, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(1319, audioContext.currentTime + 0.15);
+                        oscillator.stop(audioContext.currentTime + 0.25);
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                        break;
+                    case 'machine_working':
+                        // Mining machine working - deep rumble
+                        oscillator.frequency.value = 110;
+                        oscillator.type = 'sawtooth';
+                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(131, audioContext.currentTime + 0.2);
+                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.4);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        break;
+                    case 'rebirth':
+                        // Rebirth - dramatic transformation
+                        oscillator.frequency.value = 175;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.exponentialRampToValueAtTime(349, audioContext.currentTime + 0.3);
+                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.6);
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.9);
+                        oscillator.stop(audioContext.currentTime + 1.0);
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+                        break;
+                    case 'powerup':
+                        // Powerup activated - energy surge
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'square';
+                        oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(2637, audioContext.currentTime + 0.2);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        break;
+                    case 'critical_hit':
+                        // Critical hit - explosive boom
+                        oscillator.frequency.value = 220;
+                        oscillator.type = 'sawtooth';
+                        oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.05);
+                        oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        break;
+                    case 'level_milestone':
+                        // Level milestone - fanfare
+                        oscillator.frequency.value = 523;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.2);
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.35);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        break;
+                    case 'combo':
+                        // Combo multiplier - rising pitch
+                        oscillator.frequency.value = 392;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.08);
+                        oscillator.frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.16);
+                        oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.24);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        break;
+                    case 'daily_bonus':
+                        // Daily bonus - celebration
+                        oscillator.frequency.value = 523;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                        oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+                        oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.3);
+                        oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4);
+                        oscillator.stop(audioContext.currentTime + 0.6);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                        break;
+                    case 'shop_hover':
+                        // Shop hover - subtle tick
+                        oscillator.frequency.value = 1319;
+                        oscillator.type = 'sine';
+                        oscillator.stop(audioContext.currentTime + 0.05);
+                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                        break;
+                    case 'scroll':
+                        // Scroll sound - smooth swipe
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.05);
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        break;
+                    case 'notification':
+                        // Notification - gentle ping
+                        oscillator.frequency.value = 1319;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.08);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        break;
+                    case 'wrong_action':
+                        // Wrong action - buzz
+                        oscillator.frequency.value = 150;
+                        oscillator.type = 'sawtooth';
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        break;
+                    case 'open_menu':
+                        // Open menu - whoosh
+                        oscillator.frequency.value = 349;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(262, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        break;
+                    case 'close_menu':
+                        // Close menu - reverse whoosh
+                        oscillator.frequency.value = 262;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(349, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        break;
+                    case 'click':
+                        // Generic click - click
+                        oscillator.frequency.value = 1000;
+                        oscillator.type = 'square';
+                        oscillator.stop(audioContext.currentTime + 0.03);
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
+                        break;
                     default:
                         oscillator.frequency.value = 440;
                         oscillator.type = 'sine';
