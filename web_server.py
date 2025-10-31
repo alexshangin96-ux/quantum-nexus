@@ -333,6 +333,12 @@ def get_user_data():
                 traceback.print_exc()
                 user_machines = []
             
+            # Calculate experience, level, and rating for current user
+            vip_level = getattr(user, 'vip_level', 0) or 0
+            experience = calculate_experience(user.total_earned, user.total_taps, vip_level)
+            level = calculate_level(experience)
+            rating = calculate_rating(user.coins, user.total_earned, user.total_taps, vip_level, level)
+            
             # Get shop item levels
             import json
             return jsonify({
@@ -363,7 +369,10 @@ def get_user_data():
                 'machines': user_machines,
                 'tap_boost_levels': json.loads(user.tap_boost_levels or '{}'),
                 'energy_buy_levels': json.loads(user.energy_buy_levels or '{}'),
-                'energy_expand_levels': json.loads(user.energy_expand_levels or '{}')
+                'energy_expand_levels': json.loads(user.energy_expand_levels or '{}'),
+                'level': level,
+                'experience': round(experience, 2),
+                'rating': round(rating, 2)
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
