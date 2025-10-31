@@ -1771,6 +1771,9 @@ def buy_machine():
         price = data.get('price')
         currency = data.get('currency', 'coins')
         
+        print(f"=== BUY_MACHINE REQUEST ===")
+        print(f"user_id: {user_id}, machine_id: {machine_id}, price: {price}, currency: {currency}")
+        
         if not user_id or not machine_id or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
@@ -1778,7 +1781,10 @@ def buy_machine():
             user = db.query(User).filter_by(telegram_id=user_id).first()
             
             if not user:
+                print(f"User not found: {user_id}")
                 return jsonify({'success': False, 'error': 'User not found'})
+            
+            print(f"User found: id={user.id}, telegram_id={user.telegram_id}")
             
             # Check balance
             if currency == 'coins':
@@ -1841,6 +1847,8 @@ def buy_machine():
                 levels = json.loads(user.mining_quanhash_levels or '{}')
                 current_level = levels.get(machine_id, 0)
             
+            print(f"Current level from JSON: {current_level}")
+            
             # Check if machine already exists in database
             existing = db.query(MiningMachine).filter_by(
                 user_id=user.id, 
@@ -1849,13 +1857,18 @@ def buy_machine():
             
             new_level = current_level + 1
             
+            print(f"New level: {new_level}")
+            
             # Check max level (50)
             if new_level > 50:
+                print(f"Max level reached: {new_level}")
                 return jsonify({'success': False, 'error': 'Maximum level reached'})
             
             # Calculate hash_per_hour - level in DB is 1-based, but calculation should use current_level
             # When current_level=0 (first purchase), hash should be baseHashPerHour * 1.15^0 = baseHashPerHour
             hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
+            
+            print(f"Creating machine: name={machine_def['name']}, hash_per_hour={hash_per_hour}, level={new_level}")
             
             machine = MiningMachine(
                 user_id=user.id,
@@ -1876,10 +1889,12 @@ def buy_machine():
                 levels[machine_id] = new_level
                 user.mining_quanhash_levels = json.dumps(levels)
             
+            print(f"Committing to database...")
             db.commit()
             
             # Debug logging
-            print(f"Machine purchased: {machine_id}, level: {new_level}, hash_per_hour: {hash_per_hour}")
+            print(f"Machine purchased successfully: {machine_id}, level: {new_level}, hash_per_hour: {hash_per_hour}")
+            print(f"=== END BUY_MACHINE ===")
         
         return jsonify({'success': True})
     except Exception as e:
