@@ -3625,6 +3625,14 @@
 
         function openMining(e) {
             e.preventDefault();
+            // Check if modal already exists
+            const existingModal = document.getElementById('miningModal2');
+            if(existingModal) {
+                existingModal.style.display = 'block';
+                existingModal.classList.add('active');
+                loadMiningCategory('coins');
+                return;
+            }
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'miningModal2';
