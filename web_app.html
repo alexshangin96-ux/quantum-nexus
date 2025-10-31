@@ -1824,101 +1824,74 @@
                         <div style="padding:20px;">
                 `;
                 
-                // Shop purchases: Tap Boost Amplifiers
-                if (data.tap_boost_levels && Object.keys(data.tap_boost_levels).length > 0) {
+                // Shop purchases: Tap Boost Amplifiers - Show total only
+                if (data.active_multiplier > 1 || (data.tap_boost_levels && Object.keys(data.tap_boost_levels).some(k => data.tap_boost_levels[k] > 0))) {
                     purchasesContent += `
                         <div style="margin-bottom:16px;">
                             <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(251,191,36,0.2);border-radius:8px;">⚡ УСИЛИТЕЛЬ ТАПА</div>
                     `;
                     
-                    Object.entries(data.tap_boost_levels).forEach(([index, level]) => {
-                        if (level > 0) {
-                            let name = 'Усилитель тапа';
-                            let effect = 0;
-                            if (index === '0') {
-                                name = '+1 Тап за нажатие';
-                                effect = level;
-                            } else if (index === '1') {
-                                name = '+5 Тапов за нажатие';
-                                effect = 5 * level;
-                            } else if (index === '2') {
-                                name = '+10 Тапов за нажатие';
-                                effect = 10 * level;
-                            }
-                            
-                            purchasesContent += `
-                                <div style="background:rgba(251,191,36,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(251,191,36,0.5);">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${effect} кликов</span>
-                                    </div>
-                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
-                                </div>
-                            `;
-                        }
-                    });
+                    // Show total combined effect
+                    const totalTapsFromActiveMultiplier = data.active_multiplier > 1 ? (data.active_multiplier - 1) : 0;
+                    purchasesContent += `
+                        <div style="background:rgba(251,191,36,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(251,191,36,0.5);">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                <span style="color:#fff;font-weight:700;font-size:13px;">Общий усилитель тапа</span>
+                                <span style="color:#4ade80;font-weight:700;font-size:13px;">+${totalTapsFromActiveMultiplier} тапов</span>
+                            </div>
+                            <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                        </div>
+                    `;
                     
                     purchasesContent += `</div>`;
                 }
                 
-                // Shop purchases: Energy Buy (Energy per second recovery)
-                if (data.energy_buy_levels && Object.keys(data.energy_buy_levels).length > 0) {
+                // Shop purchases: Energy Buy (Energy per second recovery) - Show total only
+                if (data.energy_regen_rate > 1 || (data.energy_buy_levels && Object.keys(data.energy_buy_levels).some(k => data.energy_buy_levels[k] > 0))) {
                     purchasesContent += `
                         <div style="margin-bottom:16px;">
                             <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(16,185,129,0.2);border-radius:8px;">⚡ ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div>
                     `;
                     
-                    Object.entries(data.energy_buy_levels).forEach(([index, level]) => {
-                        if (level > 0) {
-                            let name = 'Восстановление энергии';
-                            let effect = 0;
-                            const baseEffect = 1;
-                            for (let i = 0; i < level; i++) {
-                                effect += baseEffect * (1.25 ** i);
-                            }
-                            
-                            purchasesContent += `
-                                <div style="background:rgba(16,185,129,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(16,185,129,0.5);">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(effect)}/сек</span>
-                                    </div>
-                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                    // Show total regen rate (includes base 1.0 + upgrades)
+                    const totalRegen = data.energy_regen_rate || 1.0;
+                    const bonusRegen = (totalRegen - 1.0).toFixed(2);
+                    if (bonusRegen > 0) {
+                        purchasesContent += `
+                            <div style="background:rgba(16,185,129,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(16,185,129,0.5);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                    <span style="color:#fff;font-weight:700;font-size:13px;">Общая скорость восстановления</span>
+                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">+${bonusRegen}/сек</span>
                                 </div>
-                            `;
-                        }
-                    });
+                                <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                            </div>
+                        `;
+                    }
                     
                     purchasesContent += `</div>`;
                 }
                 
-                // Shop purchases: Energy Expand (Max Energy)
-                if (data.energy_expand_levels && Object.keys(data.energy_expand_levels).length > 0) {
+                // Shop purchases: Energy Expand (Max Energy) - Show total only
+                if (data.max_energy > 1000 || (data.energy_expand_levels && Object.keys(data.energy_expand_levels).some(k => data.energy_expand_levels[k] > 0))) {
                     purchasesContent += `
                         <div style="margin-bottom:16px;">
                             <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(59,130,246,0.2);border-radius:8px;">⚡ РАСШИРЕНИЕ ЭНЕРГИИ</div>
                     `;
                     
-                    Object.entries(data.energy_expand_levels).forEach(([index, level]) => {
-                        if (level > 0) {
-                            let name = 'Максимальная энергия';
-                            let effect = 0;
-                            const baseEffect = 100;
-                            for (let i = 0; i < level; i++) {
-                                effect += baseEffect * (1.25 ** i);
-                            }
-                            
-                            purchasesContent += `
-                                <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
-                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(effect)} энергии</span>
-                                    </div>
-                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                    // Show total max energy (includes base 1000 + upgrades)
+                    const totalMaxEnergy = data.max_energy || 1000;
+                    const bonusEnergy = totalMaxEnergy - 1000;
+                    if (bonusEnergy > 0) {
+                        purchasesContent += `
+                            <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                    <span style="color:#fff;font-weight:700;font-size:13px;">Общая максимальная энергия</span>
+                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">+${bonusEnergy} энергии</span>
                                 </div>
-                            `;
-                        }
-                    });
+                                <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                            </div>
+                        `;
+                    }
                     
                     purchasesContent += `</div>`;
                 }
