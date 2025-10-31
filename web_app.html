@@ -1824,71 +1824,103 @@
                         <div style="padding:20px;">
                 `;
                 
-                // Active Boosts
-                if (data.active_multiplier > 1 || (data.boost_expires_at && new Date(data.boost_expires_at) > now)) {
+                // Shop purchases: Tap Boost Amplifiers
+                if (data.tap_boost_levels && Object.keys(data.tap_boost_levels).length > 0) {
                     purchasesContent += `
                         <div style="margin-bottom:16px;">
-                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(118,75,162,0.2);border-radius:8px;">📈 АКТИВНЫЕ БУСТЫ</div>
+                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(251,191,36,0.2);border-radius:8px;">⚡ УСИЛИТЕЛЬ ТАПА</div>
                     `;
                     
-                    if (data.active_multiplier > 1) {
-                        if (data.boost_expires_at) {
-                            const expiresAt = new Date(data.boost_expires_at);
-                            if (expiresAt > now) {
-                                const remaining = Math.max(0, Math.floor((expiresAt - now) / 1000));
-                                const hours = Math.floor(remaining / 3600);
-                                const minutes = Math.floor((remaining % 3600) / 60);
-                                const seconds = remaining % 60;
-                                
-                                purchasesContent += `
-                                    <div style="background:rgba(118,75,162,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(118,75,162,0.5);">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                            <span style="color:#fff;font-weight:700;font-size:13px;">🔥 Доход x${data.active_multiplier}</span>
-                                            <span style="color:#4ade80;font-weight:700;font-size:13px;">+${(data.active_multiplier - 1) * 100}%</span>
-                                        </div>
-                                        <div style="color:#fbbf24;font-size:11px;font-weight:600;">⏱️ Осталось: ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}</div>
-                                    </div>
-                                `;
-                            } else {
-                                purchasesContent += `
-                                    <div style="background:rgba(239,68,68,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(239,68,68,0.5);">
-                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                            <span style="color:#fff;font-weight:700;font-size:13px;">🔥 Доход x${data.active_multiplier}</span>
-                                            <span style="color:#ef4444;font-weight:700;font-size:13px;">Истёк</span>
-                                        </div>
-                                    </div>
-                                `;
+                    Object.entries(data.tap_boost_levels).forEach(([index, level]) => {
+                        if (level > 0) {
+                            let name = 'Усилитель тапа';
+                            let effect = 0;
+                            if (index === '0') {
+                                name = '+1 Тап за нажатие';
+                                effect = level;
+                            } else if (index === '1') {
+                                name = '+5 Тапов за нажатие';
+                                effect = 5 * level;
+                            } else if (index === '2') {
+                                name = '+10 Тапов за нажатие';
+                                effect = 10 * level;
                             }
-                        } else {
+                            
                             purchasesContent += `
-                                <div style="background:rgba(118,75,162,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(118,75,162,0.5);">
+                                <div style="background:rgba(251,191,36,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(251,191,36,0.5);">
                                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                        <span style="color:#fff;font-weight:700;font-size:13px;">🔥 Доход x${data.active_multiplier}</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${(data.active_multiplier - 1) * 100}%</span>
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${effect} кликов</span>
                                     </div>
                                     <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
                                 </div>
                             `;
                         }
-                    }
+                    });
                     
                     purchasesContent += `</div>`;
                 }
                 
-                // Tap boost status
-                if (data.active_multiplier > 1) {
+                // Shop purchases: Energy Buy (Energy per second recovery)
+                if (data.energy_buy_levels && Object.keys(data.energy_buy_levels).length > 0) {
                     purchasesContent += `
                         <div style="margin-bottom:16px;">
-                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(251,191,36,0.2);border-radius:8px;">⚡ УСИЛИТЕЛЬ ТАПА</div>
-                            <div style="background:rgba(251,191,36,0.3);padding:12px;border-radius:10px;border:1px solid rgba(251,191,36,0.5);">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-                                    <span style="color:#fff;font-weight:700;font-size:13px;">+${data.active_multiplier} тапов за нажатие</span>
-                                    <span style="color:#4ade80;font-weight:700;font-size:13px;">🟢 Активен</span>
-                                </div>
-                                <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
-                            </div>
-                        </div>
+                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(16,185,129,0.2);border-radius:8px;">⚡ ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div>
                     `;
+                    
+                    Object.entries(data.energy_buy_levels).forEach(([index, level]) => {
+                        if (level > 0) {
+                            let name = 'Восстановление энергии';
+                            let effect = 0;
+                            const baseEffect = 1;
+                            for (let i = 0; i < level; i++) {
+                                effect += baseEffect * (1.25 ** i);
+                            }
+                            
+                            purchasesContent += `
+                                <div style="background:rgba(16,185,129,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(16,185,129,0.5);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(effect)}/сек</span>
+                                    </div>
+                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    purchasesContent += `</div>`;
+                }
+                
+                // Shop purchases: Energy Expand (Max Energy)
+                if (data.energy_expand_levels && Object.keys(data.energy_expand_levels).length > 0) {
+                    purchasesContent += `
+                        <div style="margin-bottom:16px;">
+                            <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:10px;padding:8px;background:rgba(59,130,246,0.2);border-radius:8px;">⚡ РАСШИРЕНИЕ ЭНЕРГИИ</div>
+                    `;
+                    
+                    Object.entries(data.energy_expand_levels).forEach(([index, level]) => {
+                        if (level > 0) {
+                            let name = 'Максимальная энергия';
+                            let effect = 0;
+                            const baseEffect = 100;
+                            for (let i = 0; i < level; i++) {
+                                effect += baseEffect * (1.25 ** i);
+                            }
+                            
+                            purchasesContent += `
+                                <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                                        <span style="color:#fff;font-weight:700;font-size:13px;">${name} (Уровень ${level})</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(effect)} энергии</span>
+                                    </div>
+                                    <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Навсегда</div>
+                                </div>
+                            `;
+                        }
+                    });
+                    
+                    purchasesContent += `</div>`;
                 }
                 
                 // Autobot status
@@ -1920,9 +1952,10 @@
                     const cardGroups = {};
                     data.cards.forEach(card => {
                         if (!cardGroups[card.name]) {
-                            cardGroups[card.name] = { count: 0, income: card.income || 0 };
+                            cardGroups[card.name] = { count: 0, totalIncome: 0 };
                         }
                         cardGroups[card.name].count++;
+                        cardGroups[card.name].totalIncome += (card.income || 0);
                     });
                     
                     const cardsList = Object.entries(cardGroups);
@@ -1937,7 +1970,7 @@
                                 <div style="background:rgba(59,130,246,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(59,130,246,0.5);">
                                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
                                         <span style="color:#fff;font-weight:700;font-size:13px;">${name} ${info.count > 1 ? `x${info.count}` : ''}</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(info.income * info.count)}/мин</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(info.totalIncome)}/мин</span>
                                     </div>
                                     <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная карточка</div>
                                 </div>
@@ -1953,9 +1986,10 @@
                     const machineGroups = {};
                     data.machines.forEach(machine => {
                         if (!machineGroups[machine.name]) {
-                            machineGroups[machine.name] = { count: 0, hash_rate: machine.hash_rate || 0 };
+                            machineGroups[machine.name] = { count: 0, totalHashRate: 0 };
                         }
                         machineGroups[machine.name].count++;
+                        machineGroups[machine.name].totalHashRate += (machine.hash_rate || 0);
                     });
                     
                     const machinesList = Object.entries(machineGroups);
@@ -1970,7 +2004,7 @@
                                 <div style="background:rgba(168,85,247,0.3);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(168,85,247,0.5);">
                                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
                                         <span style="color:#fff;font-weight:700;font-size:13px;">${name} ${info.count > 1 ? `x${info.count}` : ''}</span>
-                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${Math.floor(info.hash_rate * info.count)}/сек</span>
+                                        <span style="color:#4ade80;font-weight:700;font-size:13px;">+${(info.totalHashRate * 3600).toFixed(2)}/час</span>
                                     </div>
                                     <div style="color:#86efac;font-size:11px;font-weight:600;">✨ Постоянная майнинг-ферма</div>
                                 </div>

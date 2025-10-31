@@ -309,6 +309,8 @@ def get_user_data():
                 traceback.print_exc()
                 user_machines = []
             
+            # Get shop item levels
+            import json
             return jsonify({
                 'id': user.id,  # Add database ID
                 'coins': user.coins,
@@ -334,7 +336,10 @@ def get_user_data():
                 'boost_expires_at': boost_expires_at,
                 'username': username,
                 'cards': user_cards,
-                'machines': user_machines
+                'machines': user_machines,
+                'tap_boost_levels': json.loads(user.tap_boost_levels or '{}'),
+                'energy_buy_levels': json.loads(user.energy_buy_levels or '{}'),
+                'energy_expand_levels': json.loads(user.energy_expand_levels or '{}')
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
