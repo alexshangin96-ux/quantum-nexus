@@ -2549,6 +2549,73 @@
             });
         }
 
+        // Sound and audio management
+        let audioContext = null;
+        const sounds = {};
+        
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) {
+                    console.log('Audio not supported');
+                }
+            }
+        }
+        
+        function playSound(type) {
+            try {
+                const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                if (!soundEnabled) return;
+                
+                initAudio();
+                if (!audioContext) return;
+                
+                let oscillator = audioContext.createOscillator();
+                let gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                switch(type) {
+                    case 'tap':
+                        oscillator.frequency.value = 440;
+                        oscillator.type = 'sine';
+                        break;
+                    case 'coin':
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'square';
+                        break;
+                    case 'levelup':
+                        oscillator.frequency.value = 660;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.2);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        break;
+                    case 'error':
+                        oscillator.frequency.value = 220;
+                        oscillator.type = 'sawtooth';
+                        oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
+                        break;
+                    case 'success':
+                        oscillator.frequency.value = 523;
+                        oscillator.type = 'triangle';
+                        break;
+                    default:
+                        oscillator.frequency.value = 440;
+                        oscillator.type = 'sine';
+                }
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch(e) {
+                console.log('Audio error:', e);
+            }
+        }
+        
         function startEnergyRegen() {
             if (energyRegenInterval) clearInterval(energyRegenInterval);
             
@@ -2610,7 +2677,17 @@
         }
 
         function tap() {
-            tg.HapticFeedback.impactOccurred('light');
+            // Sound effect
+            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            if (soundEnabled) {
+                playSound('tap');
+            }
+            
+            // Haptic feedback
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            if (hapticsEnabled && tg?.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
             
             const button = document.querySelector('.tap-button');
             if(button){
@@ -2620,7 +2697,10 @@
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
-                tg.showAlert('⚠️ Нет энергии!');
+                if (soundEnabled) playSound('error');
+                const lang = localStorage.getItem('language') || 'ru';
+                const msg = lang === 'en' ? '⚠️ No energy!' : '⚠️ Нет энергии!';
+                tg.showAlert(msg);
                 return;
             }
             
