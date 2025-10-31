@@ -660,7 +660,11 @@ def get_mining():
                         'total_income': machine.hash_rate * 3600
                     }
             
+            # Calculate proper income_per_hour for grouped machines
             all_machines_data = list(machines_dict.values())
+            for m in all_machines_data:
+                if m['count'] > 1:
+                    m['income_per_hour'] = m['total_income']
             
             # Debug logging
             print(f"User {user_id} has {len(user_machines_db)} machines in DB")
@@ -1849,6 +1853,8 @@ def buy_machine():
             if new_level > 50:
                 return jsonify({'success': False, 'error': 'Maximum level reached'})
             
+            # Calculate hash_per_hour - level in DB is 1-based, but calculation should use current_level
+            # When current_level=0 (first purchase), hash should be baseHashPerHour * 1.15^0 = baseHashPerHour
             hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
             
             machine = MiningMachine(
