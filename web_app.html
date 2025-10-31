@@ -2600,15 +2600,25 @@
                 const soundSetting = localStorage.getItem('soundEnabled');
                 // Must be explicitly 'true' to play sound
                 const soundEnabled = soundSetting === 'true';
-                if (!soundEnabled) return;
+                if (!soundEnabled) {
+                    console.log('Sound disabled, setting:', soundSetting);
+                    return;
+                }
                 
+                console.log('Playing sound:', type);
                 initAudio();
-                if (!audioContext) return;
+                if (!audioContext) {
+                    console.log('AudioContext not available');
+                    return;
+                }
                 
+                console.log('AudioContext state:', audioContext.state);
                 // Ensure AudioContext is running - resume if suspended
                 if (audioContext.state === 'suspended') {
+                    console.log('Resuming AudioContext...');
                     audioContext.resume().then(() => {
                         // Context is now running, retry playing sound
+                        console.log('AudioContext resumed, retrying sound');
                         playSound(type);
                     }).catch(e => {
                         console.log('Audio resume failed:', e);
@@ -2616,6 +2626,7 @@
                     return; // Exit and wait for resume to complete
                 }
                 
+                console.log('Creating oscillator for sound:', type);
                 let oscillator = audioContext.createOscillator();
                 let gainNode = audioContext.createGain();
                 
@@ -2739,6 +2750,7 @@
                 }
                 
                 oscillator.start(audioContext.currentTime);
+                console.log('Sound started successfully:', type);
             } catch(e) {
                 console.log('Audio error:', e);
             }
@@ -5006,9 +5018,14 @@
             const hapticsEnabled = document.getElementById('hapticsToggle')?.checked;
             const notificationsEnabled = document.getElementById('notificationsToggle')?.checked;
             
+            console.log('saveSettings - soundEnabled:', soundEnabled, 'hapticsEnabled:', hapticsEnabled);
+            
             // Save to localStorage first
             if(username) localStorage.setItem('username', username);
-            if(soundEnabled !== undefined) localStorage.setItem('soundEnabled', soundEnabled);
+            if(soundEnabled !== undefined) {
+                localStorage.setItem('soundEnabled', soundEnabled);
+                console.log('Saved soundEnabled to localStorage:', soundEnabled);
+            }
             if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
             if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
             
@@ -5046,15 +5063,19 @@
             initAudio();
             
             // Play success sound if enabled (use the value we just saved)
-            if (soundEnabled !== false) {
+            console.log('About to play success sound, soundEnabled === true?', soundEnabled === true);
+            if (soundEnabled === true) {
+                console.log('Playing success sound after settings save');
                 // Wait a moment for AudioContext to resume if needed
                 setTimeout(() => {
                     playSound('success');
                 }, 100);
+            } else {
+                console.log('Sound not enabled, skipping success sound');
             }
             
             // Trigger haptic feedback if enabled (use the value we just saved)
-            if (hapticsEnabled !== false && tg?.HapticFeedback) {
+            if (hapticsEnabled === true && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
         }
