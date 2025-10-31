@@ -667,7 +667,9 @@ def get_mining():
                     m['income_per_hour'] = m['total_income']
             
             # Debug logging
-            print(f"User {user_id} has {len(user_machines_db)} machines in DB")
+            print(f"=== GET_MINING REQUEST ===")
+            print(f"User {user_id}, category: {category}")
+            print(f"User has {len(user_machines_db)} machines in DB")
             print(f"Grouped into {len(all_machines_data)} unique machines")
             for m in all_machines_data:
                 print(f"  - {m['name']}: level {m['level']}, count {m['count']}, income {m['total_income']}")
@@ -680,6 +682,9 @@ def get_mining():
                 mining_levels = json.loads(user.mining_quanhash_levels or '{}')
             elif category == 'vip':
                 mining_levels = json.loads(user.mining_vip_levels or '{}')
+            
+            print(f"Returning {len(all_machines_data)} machines to frontend")
+            print(f"=== END GET_MINING ===")
             
             return jsonify({
                 'quanhash': user.quanhash,
