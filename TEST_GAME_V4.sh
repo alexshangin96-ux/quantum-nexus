@@ -33,3 +33,4 @@ journalctl -u quantum-nexus-web.service -n 20 --no-pager | tail -10
 echo ""
 echo "========================================="
 
+

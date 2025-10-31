@@ -33,3 +33,4 @@ systemctl status quantum-nexus --no-pager | grep -E "Active:|Main PID:"
 echo ""
 echo "========================================="
 
+

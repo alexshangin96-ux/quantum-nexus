@@ -31,3 +31,4 @@ journalctl -u quantum-nexus-web.service -n 30 --no-pager | grep -E "Error|Except
 echo ""
 echo "========================================="
 
+

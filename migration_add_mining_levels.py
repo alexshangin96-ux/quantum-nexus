@@ -32,3 +32,4 @@ def migrate_mining_levels():
 if __name__ == '__main__':
     migrate_mining_levels()
 
+

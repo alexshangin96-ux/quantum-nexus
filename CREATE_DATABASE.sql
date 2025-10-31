@@ -16,3 +16,4 @@ GRANT ALL PRIVILEGES ON DATABASE quantum_nexus TO quantum;
 -- Grant schema privileges
 GRANT ALL ON SCHEMA public TO quantum;
 
+
