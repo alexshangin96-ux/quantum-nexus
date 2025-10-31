@@ -2770,6 +2770,56 @@
                         oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
                         oscillator.stop(audioContext.currentTime + 0.2);
                         break;
+                    case 'energy_regen':
+                        // Energy regeneration sound - subtle shimmer
+                        oscillator.frequency.value = 660;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                    case 'achievement':
+                        // Achievement unlock sound - triumphant fanfare
+                        oscillator.frequency.value = 392;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.25);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        break;
+                    case 'click_boost':
+                        // Click boost activation sound - energizing zap
+                        oscillator.frequency.value = 880;
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.08);
+                        oscillator.stop(audioContext.currentTime + 0.15);
+                        break;
+                    case 'vip_levelup':
+                        // VIP level up sound - luxurious chime
+                        oscillator.frequency.value = 523;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.15);
+                        oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.35);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        break;
+                    case 'collection':
+                        // Collection sound - satisfying pickup
+                        oscillator.frequency.value = 698;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'bonus':
+                        // Bonus sound - cheerful ring
+                        oscillator.frequency.value = 440;
+                        oscillator.type = 'sine';
+                        oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
+                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.25);
+                        oscillator.stop(audioContext.currentTime + 0.35);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+                        break;
                     default:
                         oscillator.frequency.value = 440;
                         oscillator.type = 'sine';
@@ -5037,26 +5087,6 @@
                                 </div>
                             </div>
                             
-                            <div style="margin-bottom:20px;">
-                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🌐 ${lang==='en'?'OTHER':'ДРУГИЕ'}</div>
-                                
-                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
-                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">${lang==='en'?'Interface language':'Язык интерфейса'}</div>
-                                    <select id="languageSelect" onchange="localStorage.setItem('language', this.value)" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;cursor:pointer;">
-                                        <option value="ru" ${savedLanguage==='ru'?'selected':''} style="background:#1e293b;color:#fff;">🇷🇺 Русский</option>
-                                        <option value="en" ${savedLanguage==='en'?'selected':''} style="background:#1e293b;color:#fff;">🇬🇧 English</option>
-                                    </select>
-                                    <div style="font-size:11px;color:#64748b;margin-top:8px;opacity:0.7;">${lang==='en'?'⚠️ Change takes effect after save':'⚠️ Изменение вступит в силу после сохранения'}</div>
-                                </div>
-                                
-                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
-                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">${lang==='en'?'Theme':'Тема оформления'}</div>
-                                    <select id="themeSelect" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;cursor:pointer;">
-                                        <option value="dark" ${savedTheme==='dark'?'selected':''} style="background:#1e293b;color:#fff;">🌙 ${lang==='en'?'Dark':'Темная'}</option>
-                                        <option value="auto" ${savedTheme==='auto'?'selected':''} style="background:#1e293b;color:#fff;">🌗 ${lang==='en'?'Automatic':'Автоматическая'}</option>
-                                    </select>
-                                </div>
-                            </div>
                             
                             <button onclick="saveSettings(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;color:#fff;margin-bottom:10px;border:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.3s;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
                                 💾 ${lang==='en'?'Save Settings':'Сохранить настройки'}
@@ -5076,16 +5106,12 @@
             const soundEnabled = document.getElementById('soundToggle')?.checked;
             const hapticsEnabled = document.getElementById('hapticsToggle')?.checked;
             const notificationsEnabled = document.getElementById('notificationsToggle')?.checked;
-            const language = document.getElementById('languageSelect')?.value;
-            const theme = document.getElementById('themeSelect')?.value;
             
             // Save to localStorage first
             if(username) localStorage.setItem('username', username);
             if(soundEnabled !== undefined) localStorage.setItem('soundEnabled', soundEnabled);
             if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
             if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
-            if(language) localStorage.setItem('language', language);
-            if(theme) localStorage.setItem('theme', theme);
             
             // Save username to database
             if(username && window.user?.id) {
@@ -5101,6 +5127,12 @@
                 .then(data => {
                     if(!data.success) {
                         console.error('Failed to update username in database:', data.error);
+                    } else {
+                        // Username updated successfully, update window.user for immediate profile refresh
+                        if(window.user) {
+                            window.user.username = username;
+                            window.user.first_name = username;
+                        }
                     }
                 })
                 .catch(err => {
@@ -5108,37 +5140,17 @@
                 });
             }
             
-            // Check if settings were saved successfully
-            const savedSound = localStorage.getItem('soundEnabled') !== 'false';
-            const savedHaptics = localStorage.getItem('hapticsEnabled') !== 'false';
-            const savedNotifications = localStorage.getItem('notificationsEnabled') !== 'false';
-            const savedLanguage = localStorage.getItem('language') || 'ru';
-            
-            // Show success message with appropriate language
-            const msg = savedLanguage === 'en' ? '✅ Settings saved!' : '✅ Настройки сохранены!';
-            tg.showAlert(msg);
+            // Show success message
+            tg.showAlert('✅ Настройки сохранены!');
             
             // Play success sound if enabled
-            if (savedSound) {
+            if (localStorage.getItem('soundEnabled') !== 'false') {
                 playSound('success');
             }
             
             // Trigger haptic feedback if enabled
-            if (savedHaptics && tg?.HapticFeedback) {
+            if (localStorage.getItem('hapticsEnabled') !== 'false' && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
-            }
-            
-            // Apply translations if language changed and reload page
-            const oldLang = sessionStorage.getItem('prevLang') || 'ru';
-            if (language !== oldLang) {
-                sessionStorage.setItem('prevLang', language);
-                // Reload page to apply all translations
-                setTimeout(() => {
-                    location.reload();
-                }, 500);
-            } else {
-                // Just apply translations without reload if language didn't change
-                applyTranslations();
             }
         }
         
