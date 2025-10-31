@@ -3922,9 +3922,15 @@
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
                         setTimeout(()=>{anim.remove();},300);
                     },800);
-                    // Reload current category
-                    const activeBtn = document.querySelector('.mining-cat-btn[style*="background: linear-gradient"]');
-                    const currentCat = activeBtn ? (activeBtn.textContent.includes('коины') ? 'coins' : 'quanhash') : 'coins';
+                    // Reload current category - find active button by checking computed styles
+                    let currentCat = 'coins';
+                    document.querySelectorAll('.mining-cat-btn').forEach(btn => {
+                        const bg = btn.style.background;
+                        if(bg.includes('0.25') || bg.includes('linear-gradient')) {
+                            if(btn.textContent.includes('коины')) currentCat = 'coins';
+                            else if(btn.textContent.includes('QuanHash')) currentCat = 'quanhash';
+                        }
+                    });
                     loadMiningCategory(currentCat);
                     loadData();
                 } else {
