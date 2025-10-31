@@ -2903,5 +2903,29 @@ def reset_user():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/update_username', methods=['POST'])
+def update_username():
+    """Update user username"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        username = data.get('username')
+        
+        if not user_id or not username:
+            return jsonify({'error': 'User ID and username required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'error': 'User not found'}), 404
+            
+            user.username = username
+            db.commit()
+            
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

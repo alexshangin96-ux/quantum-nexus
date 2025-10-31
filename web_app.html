@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.3 - 165 achievements, working sounds/vibration, multilingual support with real settings - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.4 - Full sound system (tap, card, mining, purchase), real-time language switching, username synced to database, extended haptics - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1562,6 +1562,114 @@
         }
 
         let energyRegenInterval;
+        
+        // Translation system
+        const translations = {
+            ru: {
+                passiveCoins: '/час',
+                passiveHash: '/час',
+                energyRegen: 'Восстановление: +',
+                energyRegenUnit: '/сек',
+                tapButton: 'TAP',
+                coins: 'Коины',
+                quanhash: 'QuanHash',
+                energy: 'Энергия',
+                passiveIncome: 'Пассивный доход',
+                shop: 'Магазин',
+                cards: 'Карты',
+                mining: 'Майнинг',
+                profile: 'Профиль',
+                autobotActive: 'Автобот активен',
+                level: 'Уровень',
+                speed: 'Скорость',
+                timeLeft: 'Осталось',
+                purchase: 'Покупка',
+                successful: 'Карточка куплена!',
+                error: 'Ошибка',
+                notEnoughCoins: 'Недостаточно коинов',
+                notEnoughHash: 'Недостаточно QuanHash',
+                noEnergy: 'Нет энергии!',
+                shopBoost: 'Буст тапов',
+                shopEnergyRecovery: 'Восстановление энергии',
+                shopEnergyExpand: 'Расширение энергии',
+                shopAutoBot: 'Автобот',
+                shopPerHourCards: 'В час (Основные)',
+                shopPerMinuteCards: 'В минуту (Премиум)',
+                shopVIPCards: 'VIP Карты',
+                miningCoins: 'За коины',
+                miningQuanHash: 'За QuanHash',
+                miningVIP: 'VIP Машины',
+                machineUpgraded: 'Машина улучшена!',
+                levelIncreased: 'Уровень повышен!'
+            },
+            en: {
+                passiveCoins: '/hr',
+                passiveHash: '/hr',
+                energyRegen: 'Regen: +',
+                energyRegenUnit: '/sec',
+                tapButton: 'TAP',
+                coins: 'Coins',
+                quanhash: 'QuanHash',
+                energy: 'Energy',
+                passiveIncome: 'Passive Income',
+                shop: 'Shop',
+                cards: 'Cards',
+                mining: 'Mining',
+                profile: 'Profile',
+                autobotActive: 'Autobot active',
+                level: 'Level',
+                speed: 'Speed',
+                timeLeft: 'Time left',
+                purchase: 'Purchasing...',
+                successful: 'Card purchased!',
+                error: 'Error',
+                notEnoughCoins: 'Not enough coins',
+                notEnoughHash: 'Not enough QuanHash',
+                noEnergy: 'No energy!',
+                shopBoost: 'Tap Boost',
+                shopEnergyRecovery: 'Energy Recovery',
+                shopEnergyExpand: 'Energy Expansion',
+                shopAutoBot: 'Autobot',
+                shopPerHourCards: 'Per Hour (Basic)',
+                shopPerMinuteCards: 'Per Minute (Premium)',
+                shopVIPCards: 'VIP Cards',
+                miningCoins: 'For Coins',
+                miningQuanHash: 'For QuanHash',
+                miningVIP: 'VIP Machines',
+                machineUpgraded: 'Machine upgraded!',
+                levelIncreased: 'Level increased!'
+            }
+        };
+        
+        // Function to apply translations based on current language
+        function applyTranslations() {
+            const lang = localStorage.getItem('language') || 'ru';
+            const t = translations[lang];
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            
+            // Apply translations to static elements
+            const passiveCoinsEl = document.getElementById('passiveCoins');
+            const passiveHashEl = document.getElementById('passiveHash');
+            const shopBtn = document.getElementById('shopBtn');
+            const cardsBtn = document.getElementById('cardsBtn');
+            const miningBtn = document.getElementById('miningBtn');
+            const profileBtn = document.getElementById('profileBtn');
+            
+            if (passiveCoinsEl && passiveCoinsEl.textContent.includes('/час') || passiveCoinsEl?.textContent.includes('/hr')) {
+                const currentValue = passiveCoinsEl.textContent.match(/\d+/)?.[0] || '';
+                passiveCoinsEl.textContent = `+${currentValue}${t.passiveCoins}`;
+            }
+            if (passiveHashEl && passiveHashEl.textContent.includes('/час') || passiveHashEl?.textContent.includes('/hr')) {
+                const currentValue = passiveHashEl.textContent.match(/\d+/)?.[0] || '';
+                passiveHashEl.textContent = `+${currentValue}${t.passiveHash}`;
+            }
+            if (shopBtn) shopBtn.textContent = t.shop;
+            if (cardsBtn) cardsBtn.textContent = t.cards;
+            if (miningBtn) miningBtn.textContent = t.mining;
+            if (profileBtn) profileBtn.textContent = t.profile;
+        }
 
         // VIP Status Management
         function loadVIPStatus(userData) {
@@ -2310,6 +2418,31 @@
                 document.getElementById('passiveCoins').textContent = `+${passiveCoins.toLocaleString()}/час`;
                 document.getElementById('passiveHash').textContent = `+${passiveHash.toLocaleString()}/час`;
                 
+                // Update username from database or localStorage or Telegram
+                const savedUsername = localStorage.getItem('username');
+                const dbUsername = data.username || null;
+                const usernameEl = document.getElementById('username');
+                const lang = localStorage.getItem('language') || 'ru';
+                
+                if (usernameEl) {
+                    if (dbUsername) {
+                        // Database username takes priority
+                        usernameEl.textContent = dbUsername;
+                        // Sync to localStorage
+                        if (!savedUsername || savedUsername !== dbUsername) {
+                            localStorage.setItem('username', dbUsername);
+                        }
+                    } else if (savedUsername) {
+                        // Fallback to localStorage
+                        usernameEl.textContent = savedUsername;
+                    } else if (window.user) {
+                        // Fallback to Telegram name
+                        usernameEl.textContent = window.user.first_name || (lang === 'en' ? 'Miner' : 'Майнер');
+                    } else {
+                        usernameEl.textContent = lang === 'en' ? 'Miner' : 'Майнер';
+                    }
+                }
+                
                 const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
                 const fillBar = document.getElementById('energy-bar-fill');
                 const percentText = document.getElementById('energy-percent');
@@ -2320,10 +2453,10 @@
                     percentText.textContent = Math.round(energyPercent) + '%';
                 }
 
-                // Update energy regeneration rate display
+                // Update energy regeneration rate display (lang already defined above)
                 const energyRegenText = document.getElementById('energy-regen-text');
                 if (energyRegenText) {
-                    energyRegenText.textContent = `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
+                    energyRegenText.textContent = lang === 'en' ? `Regen: +${energyRegenRate.toFixed(1)}/sec` : `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
                 }
                 
                 // Update energy regeneration rate in the running interval
@@ -2584,33 +2717,66 @@
                     case 'tap':
                         oscillator.frequency.value = 440;
                         oscillator.type = 'sine';
+                        oscillator.stop(audioContext.currentTime + 0.1);
                         break;
                     case 'coin':
                         oscillator.frequency.value = 880;
                         oscillator.type = 'square';
+                        oscillator.stop(audioContext.currentTime + 0.15);
                         break;
                     case 'levelup':
                         oscillator.frequency.value = 660;
                         oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.2);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.3);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.stop(audioContext.currentTime + 0.5);
                         break;
                     case 'error':
                         oscillator.frequency.value = 220;
                         oscillator.type = 'sawtooth';
                         oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
+                        oscillator.stop(audioContext.currentTime + 0.3);
                         break;
                     case 'success':
+                        // Success sound - ascending chime
                         oscillator.frequency.value = 523;
                         oscillator.type = 'triangle';
+                        oscillator.frequency.exponentialRampToValueAtTime(1046, audioContext.currentTime + 0.2);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                    case 'purchase':
+                        // Purchase sound - satisfying bell
+                        oscillator.frequency.value = 698;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(698, audioContext.currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1397, audioContext.currentTime + 0.15);
+                        oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.3);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        break;
+                    case 'mining':
+                        // Mining sound - tech beep
+                        oscillator.frequency.value = 440;
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                        oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
+                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'card':
+                        // Card sound - flip sound
+                        oscillator.frequency.value = 1047;
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
+                        oscillator.stop(audioContext.currentTime + 0.2);
                         break;
                     default:
                         oscillator.frequency.value = 440;
                         oscillator.type = 'sine';
+                        oscillator.stop(audioContext.currentTime + 0.2);
                 }
                 
                 oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.2);
             } catch(e) {
                 console.log('Audio error:', e);
             }
@@ -3427,8 +3593,25 @@
             const userId = window.userData?.id || window.user?.id;
             
             if (!userId) {
-                showNotification('error', 'Ошибка: пользователь не найден');
+                const lang = localStorage.getItem('language') || 'ru';
+                showNotification('error', lang === 'en' ? 'Error: user not found' : 'Ошибка: пользователь не найден');
                 return;
+            }
+            
+            // Play sound for shop purchase based on category
+            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            if (soundEnabled) {
+                if (category === 'card') {
+                    playSound('card');
+                } else if (category === 'tap_boost' || category === 'energy_buy' || category === 'energy_expand' || category === 'autobot') {
+                    playSound('purchase');
+                }
+            }
+            
+            // Haptic feedback
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            if (hapticsEnabled && tg?.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
             }
             
             // Special handling for cards - use /api/buy endpoint
@@ -3503,7 +3686,14 @@
                     console.log('Response success:', data.success);
                     console.log('Response error:', data.error);
                 if(data.success) {
-                        showNotification('success', 'Карточка куплена!');
+                        // Success sound and haptics
+                        if (soundEnabled) playSound('success');
+                        if (hapticsEnabled && tg?.HapticFeedback) {
+                            tg.HapticFeedback.notificationOccurred('success');
+                        }
+                        
+                        const lang = localStorage.getItem('language') || 'ru';
+                        showNotification('success', lang === 'en' ? 'Card purchased!' : 'Карточка куплена!');
                     
                         // Reload cards data to update levels and prices
                         fetch('/api/shop', {
@@ -3542,12 +3732,18 @@
                             loadData();
                         });
                     } else {
-                        showNotification('error', data.error || 'Ошибка покупки');
+                        // Error sound
+                        if (soundEnabled) playSound('error');
+                        
+                        const lang = localStorage.getItem('language') || 'ru';
+                        showNotification('error', data.error || (lang === 'en' ? 'Purchase error' : 'Ошибка покупки'));
                     }
                 })
                 .catch(err => {
                     console.error('Error buying card:', err);
-                    showNotification('error', 'Ошибка покупки');
+                    if (soundEnabled) playSound('error');
+                    const lang = localStorage.getItem('language') || 'ru';
+                    showNotification('error', lang === 'en' ? 'Purchase error' : 'Ошибка покупки');
                 });
                 return;
             }
@@ -3579,6 +3775,12 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
+                    // Success sound and haptics
+                    if (soundEnabled) playSound('levelup');
+                    if (hapticsEnabled && tg?.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                    
                     // Update item level locally
                     if (category === 'tap_boost' || category === 'energy_buy' || category === 'energy_expand') {
                         // Find the item in shopData and increase its level
@@ -3589,9 +3791,10 @@
                     }
                     
                     // Compact success notification for Telegram
+                    const lang = localStorage.getItem('language') || 'ru';
                     const anim = document.createElement('div');
                     anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Уровень повышен!</div>';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> ${lang==="en"?"Level increased!":"Уровень повышен!"}</div>';
                     document.body.appendChild(anim);
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
@@ -3610,10 +3813,14 @@
                     // Update passive income immediately
                     updatePassiveIncome();
                 } else {
+                    // Error sound
+                    if (soundEnabled) playSound('error');
+                    
                     // Compact error notification for Telegram
+                    const lang = localStorage.getItem('language') || 'ru';
                     const error = document.createElement('div');
                     error.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    const errorText = data.error.includes('Недостаточно') ? 'Недостаточно коинов' : data.error;
+                    const errorText = (data.error.includes('Недостаточно') || data.error.includes('Not enough')) ? (lang === 'en' ? 'Not enough coins' : 'Недостаточно коинов') : data.error;
                     error.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
                     document.body.appendChild(error);
                     setTimeout(()=>{error.style.opacity='0';error.style.transform='translate(-50%,-60%)';setTimeout(()=>{error.remove();},300);},1500);
@@ -4003,9 +4210,23 @@
         
         function buyMachine(id, price, currency) {
             console.log('buyMachine called:', {id, price, currency, user_id: window.user?.id});
+            
+            // Play sound for mining purchase
+            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            if (soundEnabled) {
+                playSound('mining');
+            }
+            
+            // Haptic feedback
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            if (hapticsEnabled && tg?.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+            
+            const lang = localStorage.getItem('language') || 'ru';
             const anim = document.createElement('div');
             anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">⚡</span> Покупка...</div>';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">⚡</span> ${lang==="en"?"Purchasing...":"Покупка..."}</div>';
             document.body.appendChild(anim);
             setTimeout(()=>{anim.style.opacity='1';},10);
             
@@ -4023,8 +4244,15 @@
             .then(data => {
                 console.log('buyMachine response:', data);
                 if(data.success) {
+                    // Success sound and haptics
+                    if (soundEnabled) playSound('levelup');
+                    if (hapticsEnabled && tg?.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                    
                     // Success notification - like in shop
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Машина улучшена!</div>';
+                    const lang = localStorage.getItem('language') || 'ru';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> ${lang==="en"?"Machine upgraded!":"Машина улучшена!"}</div>';
                     setTimeout(()=>{
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
                         setTimeout(()=>{anim.remove();},300);
@@ -4034,7 +4262,7 @@
                     document.querySelectorAll('.mining-cat-btn').forEach(btn => {
                         const bg = btn.style.background;
                         if(bg.includes('0.25') || bg.includes('linear-gradient')) {
-                            if(btn.textContent.includes('коины')) currentCat = 'coins';
+                            if(btn.textContent.includes('коины') || btn.textContent.includes('Coins')) currentCat = 'coins';
                             else if(btn.textContent.includes('QuanHash')) currentCat = 'quanhash';
                         }
                     });
@@ -4042,8 +4270,12 @@
                     loadMiningCategory(currentCat);
                     loadData();
                 } else {
+                    // Error sound
+                    if (soundEnabled) playSound('error');
+                    
                     // Error notification - like in shop
-                    const errorText = data.error.includes('Недостаточно') ? 'Недостаточно ' + (currency === 'coins' ? 'коинов' : 'QuanHash') : data.error;
+                    const lang = localStorage.getItem('language') || 'ru';
+                    const errorText = data.error.includes('Недостаточно') || data.error.includes('Not enough') ? (lang === 'en' ? 'Not enough ' : 'Недостаточно ') + (currency === 'coins' ? (lang === 'en' ? 'coins' : 'коинов') : 'QuanHash') : data.error;
                     anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
                     setTimeout(()=>{
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
@@ -4847,12 +5079,34 @@
             const language = document.getElementById('languageSelect')?.value;
             const theme = document.getElementById('themeSelect')?.value;
             
+            // Save to localStorage first
             if(username) localStorage.setItem('username', username);
             if(soundEnabled !== undefined) localStorage.setItem('soundEnabled', soundEnabled);
             if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
             if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
             if(language) localStorage.setItem('language', language);
             if(theme) localStorage.setItem('theme', theme);
+            
+            // Save username to database
+            if(username && window.user?.id) {
+                fetch('/api/update_username', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: window.user.id,
+                        username: username
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(!data.success) {
+                        console.error('Failed to update username in database:', data.error);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error updating username in database:', err);
+                });
+            }
             
             // Check if settings were saved successfully
             const savedSound = localStorage.getItem('soundEnabled') !== 'false';
@@ -4872,6 +5126,19 @@
             // Trigger haptic feedback if enabled
             if (savedHaptics && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
+            }
+            
+            // Apply translations if language changed and reload page
+            const oldLang = sessionStorage.getItem('prevLang') || 'ru';
+            if (language !== oldLang) {
+                sessionStorage.setItem('prevLang', language);
+                // Reload page to apply all translations
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            } else {
+                // Just apply translations without reload if language didn't change
+                applyTranslations();
             }
         }
         
@@ -6310,6 +6577,32 @@
             }
         }
 
+    </script>
+
+    <!-- Initialize on page load -->
+    <script>
+        // Initialize audio on first user interaction
+        document.addEventListener('click', initAudio, { once: true });
+        
+        // Apply translations on load
+        applyTranslations();
+        
+        // Start periodic updates
+        loadData();
+        setInterval(loadData, 3000); // Reload every 3 seconds
+        startEnergyRegen();
+        
+        // Initialize shop and other components
+        window.addEventListener('load', () => {
+            if (window.shopData) {
+                const firstCategory = Object.keys(window.shopData).find(key => 
+                    window.shopData[key] && window.shopData[key].items && window.shopData[key].items.length > 0
+                );
+                if (firstCategory) {
+                    loadShopCategory(firstCategory);
+                }
+            }
+        });
     </script>
 
 
