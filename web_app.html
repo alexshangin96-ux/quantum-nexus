@@ -2584,17 +2584,37 @@
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 } catch(e) {
                     console.log('Audio not supported');
+                    return;
                 }
+            }
+            // Resume AudioContext if suspended (required by modern browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().catch(e => {
+                    console.log('Audio resume failed:', e);
+                });
             }
         }
         
         function playSound(type) {
             try {
-                const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                const soundSetting = localStorage.getItem('soundEnabled');
+                // Enabled by default (null), or explicitly set to 'true'
+                const soundEnabled = soundSetting !== 'false';
                 if (!soundEnabled) return;
                 
                 initAudio();
                 if (!audioContext) return;
+                
+                // Ensure AudioContext is running - resume if suspended
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        // Context is now running, retry playing sound
+                        playSound(type);
+                    }).catch(e => {
+                        console.log('Audio resume failed:', e);
+                    });
+                    return; // Exit and wait for resume to complete
+                }
                 
                 let oscillator = audioContext.createOscillator();
                 let gainNode = audioContext.createGain();
@@ -2805,6 +2825,7 @@
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
+                const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
                 if (soundEnabled) playSound('error');
                 tg.showAlert('⚠️ Нет энергии!');
                 return;
@@ -4864,7 +4885,7 @@
                 modal.className = 'modal active';
                 modal.style.zIndex = '10000';
                 
-                // Get saved settings from localStorage or use defaults
+                // Get saved settings from localStorage or use defaults (enabled by default)
                 const savedSound = localStorage.getItem('soundEnabled') !== 'false';
                 const savedHaptics = localStorage.getItem('hapticsEnabled') !== 'false';
                 const savedNotifications = localStorage.getItem('notificationsEnabled') !== 'false';
@@ -5021,9 +5042,15 @@
             // Show success message
             tg.showAlert('✅ Настройки сохранены!');
             
+            // Initialize AudioContext if not already done (for immediate sound feedback)
+            initAudio();
+            
             // Play success sound if enabled (use the value we just saved)
             if (soundEnabled !== false) {
-                playSound('success');
+                // Wait a moment for AudioContext to resume if needed
+                setTimeout(() => {
+                    playSound('success');
+                }, 50);
             }
             
             // Trigger haptic feedback if enabled (use the value we just saved)
@@ -6471,19 +6498,18 @@
 
     <!-- Initialize on page load -->
     <script>
-        // Initialize default settings if not already set
-        if (localStorage.getItem('soundEnabled') === null) {
-            localStorage.setItem('soundEnabled', 'true');
-        }
-        if (localStorage.getItem('hapticsEnabled') === null) {
-            localStorage.setItem('hapticsEnabled', 'true');
-        }
-        if (localStorage.getItem('notificationsEnabled') === null) {
-            localStorage.setItem('notificationsEnabled', 'true');
-        }
+        // Initialize default settings if not already set (enabled by default)
+        // Don't set explicit values - let the check for null handle defaults
+        // This way the logic "null || 'true' || true" will work correctly
         
         // Initialize audio on first user interaction
-        document.addEventListener('click', initAudio, { once: true });
+        // Use capture phase to ensure AudioContext is ready before handlers run
+        function initAudioOnClick(e) {
+            initAudio();
+            // Remove this listener after first click
+            document.removeEventListener('click', initAudioOnClick, true);
+        }
+        document.addEventListener('click', initAudioOnClick, true);
         
         // Start periodic updates
         loadData();
