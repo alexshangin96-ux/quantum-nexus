@@ -220,15 +220,78 @@ def get_user_data():
             # Get purchased cards and machines
             user_cards = []
             try:
+                # Card definitions to map card_type to name
+                per_minute_cards = [
+                    {'name': '⚡ Энергетический генератор', 'desc': 'Производит 0.5 коинов/мин', 'base_income': 0.5, 'base_price': 50000, 'rarity': 'common'},
+                    {'name': '🔋 Мощная батарея', 'desc': 'Производит 1.2 коинов/мин', 'base_income': 1.2, 'base_price': 75000, 'rarity': 'common'},
+                    {'name': '💎 Драгоценный кристалл', 'desc': 'Производит 2.5 коинов/мин', 'base_income': 2.5, 'base_price': 120000, 'rarity': 'rare'},
+                    {'name': '⭐ Звездное ядро', 'desc': 'Производит 4.0 коинов/мин', 'base_income': 4.0, 'base_price': 200000, 'rarity': 'rare'},
+                    {'name': '🔥 Плазменный реактор', 'desc': 'Производит 6.5 коинов/мин', 'base_income': 6.5, 'base_price': 350000, 'rarity': 'epic'},
+                    {'name': '⚛️ Квантовый генератор', 'desc': 'Производит 10.0 коинов/мин', 'base_income': 10.0, 'base_price': 550000, 'rarity': 'epic'},
+                    {'name': '🌌 Галактический мотор', 'desc': 'Производит 15.0 коинов/мин', 'base_income': 15.0, 'base_price': 850000, 'rarity': 'legendary'},
+                    {'name': '👑 Императорский трон', 'desc': 'Производит 22.0 коинов/мин', 'base_income': 22.0, 'base_price': 1300000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сердце', 'desc': 'Производит 30.0 коинов/мин', 'base_income': 30.0, 'base_price': 2000000, 'rarity': 'legendary'},
+                    {'name': '💫 Бесконечность', 'desc': 'Производит 40.0 коинов/мин', 'base_income': 40.0, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '🧠 Нейросеть', 'desc': 'Производит 5.5 коинов/мин', 'base_income': 5.5, 'base_price': 280000, 'rarity': 'epic'},
+                    {'name': '🪐 Планетарный коллайдер', 'desc': 'Производит 18.0 коинов/мин', 'base_income': 18.0, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🎯 Точностный лазер', 'desc': 'Производит 3.0 коинов/мин', 'base_income': 3.0, 'base_price': 150000, 'rarity': 'rare'},
+                    {'name': '🛸 Внеземной чип', 'desc': 'Производит 14.0 коинов/мин', 'base_income': 14.0, 'base_price': 750000, 'rarity': 'epic'},
+                    {'name': '⚗️ Алхимический аппарат', 'desc': 'Производит 8.5 коинов/мин', 'base_income': 8.5, 'base_price': 450000, 'rarity': 'epic'},
+                    {'name': '🧪 Биомедиум', 'desc': 'Производит 12.0 коинов/мин', 'base_income': 12.0, 'base_price': 650000, 'rarity': 'epic'},
+                    {'name': '🌠 Новойдовый ускоритель', 'desc': 'Производит 25.0 коинов/мин', 'base_income': 25.0, 'base_price': 1700000, 'rarity': 'legendary'},
+                    {'name': '🔬 Крио-модуль', 'desc': 'Производит 9.0 коинов/мин', 'base_income': 9.0, 'base_price': 500000, 'rarity': 'epic'},
+                    {'name': '💻 Киберсистема', 'desc': 'Производит 35.0 коинов/мин', 'base_income': 35.0, 'base_price': 2500000, 'rarity': 'legendary'},
+                    {'name': '🏆 Победный трофей', 'desc': 'Производит 50.0 коинов/мин', 'base_income': 50.0, 'base_price': 5000000, 'rarity': 'legendary'},
+                ]
+                per_hour_cards = [
+                    {'name': '🟢 Базовая ферма', 'desc': 'Производит 5 коинов/час', 'base_income': 5, 'base_price': 1000, 'rarity': 'common'},
+                    {'name': '🌱 Росток успеха', 'desc': 'Производит 12 коинов/час', 'base_income': 12, 'base_price': 2500, 'rarity': 'common'},
+                    {'name': '🍀 Четырехлистник', 'desc': 'Производит 20 коинов/час', 'base_income': 20, 'base_price': 5000, 'rarity': 'common'},
+                    {'name': '⚡ Ускоритель', 'desc': 'Производит 35 коинов/час', 'base_income': 35, 'base_price': 8000, 'rarity': 'rare'},
+                    {'name': '🔵 Редкий артефакт', 'desc': 'Производит 55 коинов/час', 'base_income': 55, 'base_price': 15000, 'rarity': 'rare'},
+                    {'name': '🟣 Эпический кристалл', 'desc': 'Производит 90 коинов/час', 'base_income': 90, 'base_price': 30000, 'rarity': 'epic'},
+                    {'name': '⭐ Звездная пыль', 'desc': 'Производит 140 коинов/час', 'base_income': 140, 'base_price': 50000, 'rarity': 'epic'},
+                    {'name': '🔥 Огненное ядро', 'desc': 'Производит 220 коинов/час', 'base_income': 220, 'base_price': 85000, 'rarity': 'legendary'},
+                    {'name': '💎 Кристалл удачи', 'desc': 'Производит 350 коинов/час', 'base_income': 350, 'base_price': 150000, 'rarity': 'legendary'},
+                    {'name': '👑 Корона власти', 'desc': 'Производит 550 коинов/час', 'base_income': 550, 'base_price': 250000, 'rarity': 'legendary'},
+                    {'name': '🏆 Чемпионство', 'desc': 'Производит 850 коинов/час', 'base_income': 850, 'base_price': 400000, 'rarity': 'legendary'},
+                    {'name': '🚀 Ракета мечты', 'desc': 'Производит 1300 коинов/час', 'base_income': 1300, 'base_price': 650000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сокровище', 'desc': 'Производит 2000 коинов/час', 'base_income': 2000, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🌌 Галактика', 'desc': 'Производит 3100 коинов/час', 'base_income': 3100, 'base_price': 1800000, 'rarity': 'legendary'},
+                    {'name': '⚛️ Квантовый скачок', 'desc': 'Производит 5000 коинов/час', 'base_income': 5000, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '💫 Вечность', 'desc': 'Производит 8000 коинов/час', 'base_income': 8000, 'base_price': 5000000, 'rarity': 'legendary'},
+                    {'name': '🌈 Радужный мост', 'desc': 'Производит 13000 коинов/час', 'base_income': 13000, 'base_price': 8500000, 'rarity': 'legendary'},
+                    {'name': '🌠 Звездопад', 'desc': 'Производит 21000 коинов/час', 'base_income': 21000, 'base_price': 15000000, 'rarity': 'legendary'},
+                    {'name': '🎆 Новогодний салют', 'desc': 'Производит 34000 коинов/час', 'base_income': 34000, 'base_price': 25000000, 'rarity': 'legendary'},
+                    {'name': '🌟 Супернова', 'desc': 'Производит 55000 коинов/час', 'base_income': 55000, 'base_price': 50000000, 'rarity': 'legendary'},
+                ]
+                
                 for card in user.cards:
                     if hasattr(card, 'is_active') and card.is_active:
+                        # Map card_type to name
+                        card_name = 'Unknown Card'
+                        card_type = getattr(card, 'card_type', None)
+                        if card_type:
+                            if card_type.startswith('card_min_'):
+                                idx = int(card_type.split('_')[2]) if card_type.split('_')[2].isdigit() else 0
+                                if idx < len(per_minute_cards):
+                                    card_name = per_minute_cards[idx]['name']
+                            elif card_type.startswith('card_hour_'):
+                                idx = int(card_type.split('_')[2]) if card_type.split('_')[2].isdigit() else 0
+                                if idx < len(per_hour_cards):
+                                    card_name = per_hour_cards[idx]['name']
+                            elif hasattr(card, 'name') and card.name:
+                                card_name = card.name
+                        
                         user_cards.append({
-                            'name': getattr(card, 'name', 'Unknown Card'),
+                            'name': card_name,
                             'income': getattr(card, 'income_per_minute', 0) or 0,
                             'type': 'permanent'
                         })
             except Exception as e:
                 print(f"Error getting cards: {e}")
+                import traceback
+                traceback.print_exc()
                 user_cards = []
             
             user_machines = []
@@ -242,6 +305,8 @@ def get_user_data():
                         })
             except Exception as e:
                 print(f"Error getting machines: {e}")
+                import traceback
+                traceback.print_exc()
                 user_machines = []
             
             return jsonify({
