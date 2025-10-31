@@ -1782,28 +1782,9 @@
                                 </div>
                             </div>
                             
-                            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
-                                <!-- Leaderboard Button -->
-                                <div onclick="openVIPTopLeaders(); this.closest('.modal').remove();" style="cursor:pointer;padding:14px;background:linear-gradient(135deg,#fbbf24,#fcd34d);border-radius:12px;text-align:center;font-weight:800;font-size:13px;color:#000;transition:all 0.3s;box-shadow:0 4px 12px rgba(251,191,36,0.3);" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(251,191,36,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(251,191,36,0.3)'">
-                                    🏅 Топ
-                                </div>
-                                
-                                <!-- History Button -->
-                                <div onclick="openReferrals({preventDefault:()=>{}}); this.closest('.modal').remove();" style="cursor:pointer;padding:14px;background:linear-gradient(135deg,#06b6d4,#0891b2);border-radius:12px;text-align:center;font-weight:800;font-size:13px;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(6,182,212,0.3);" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(6,182,212,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(6,182,212,0.3)'">
-                                    📜 История
-                                </div>
-                            </div>
-                            
-                            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
-                                <!-- Referrals Button -->
-                                <div onclick="openReferrals({preventDefault:()=>{}}); this.closest('.modal').remove();" style="cursor:pointer;padding:14px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);border-radius:12px;text-align:center;font-weight:800;font-size:13px;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(139,92,246,0.3);" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(139,92,246,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(139,92,246,0.3)'">
-                                    👥 Рефералы
-                                </div>
-                                
-                                <!-- Support Button -->
-                                <div onclick="openSupport({preventDefault:()=>{}}); this.closest('.modal').remove();" style="cursor:pointer;padding:14px;background:linear-gradient(135deg,#ef4444,#dc2626);border-radius:12px;text-align:center;font-weight:800;font-size:13px;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(239,68,68,0.3);" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(239,68,68,0.3)'">
-                                    🆘 Поддержка
-                                </div>
+                            <!-- Settings Button -->
+                            <div onclick="openSettingsModal(); this.closest('.modal').remove();" style="cursor:pointer;padding:14px;background:linear-gradient(135deg,#4b5563,#374151);border-radius:12px;text-align:center;font-weight:800;font-size:14px;color:#fff;transition:all 0.3s;box-shadow:0 4px 12px rgba(75,85,99,0.3);margin-bottom:15px;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(75,85,99,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(75,85,99,0.3)'">
+                                ⚙️ Настройки
                             </div>
                             
                             <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;margin-top:10px;">Закрыть</button>
@@ -4372,26 +4353,53 @@
                 modal.style.zIndex = '10000';
                 
                 const achievements = [
-                    {id:'first_tap', title:'👆 Первый тап', desc:'Сделайте первый тап', unlocked:data.total_taps >= 1, icon:'👆'},
-                    {id:'hundred_taps', title:'🎯 Мастер тапов', desc:'Сделайте 100 тапов', unlocked:data.total_taps >= 100, icon:'🎯'},
-                    {id:'thousand_taps', title:'⚡ Профи тапов', desc:'Сделайте 1000 тапов', unlocked:data.total_taps >= 1000, icon:'⚡'},
-                    {id:'million_coins', title:'💰 Миллионер', desc:'Заработайте 1M коинов', unlocked:data.total_earned >= 1000000, icon:'💰'},
-                    {id:'first_card', title:'🃏 Первая карта', desc:'Купите первую карту', unlocked:data.cards && data.cards.length > 0, icon:'🃏'},
-                    {id:'first_machine', title:'⛏️ Первая машина', desc:'Купите первую майнинг-машину', unlocked:data.machines && data.machines.length > 0, icon:'⛏️'},
-                    {id:'level_10', title:'🌟 Уровень 10', desc:'Достигните 10 уровня', unlocked:data.level >= 10, icon:'🌟'},
-                    {id:'level_50', title:'⭐ Уровень 50', desc:'Достигните 50 уровня', unlocked:data.level >= 50, icon:'⭐'},
-                    {id:'vip_bronze', title:'🥉 VIP бронза', desc:'Покупайте VIP бронза', unlocked:data.vip_level >= 1, icon:'🥉'},
-                    {id:'vip_silver', title:'🥈 VIP серебро', desc:'Покупайте VIP серебро', unlocked:data.vip_level >= 2, icon:'🥈'},
-                    {id:'vip_gold', title:'🥇 VIP золото', desc:'Покупайте VIP золото', unlocked:data.vip_level >= 3, icon:'🥇'},
-                    {id:'referral_master', title:'👥 Мастер рефералов', desc:'Пригласите 10 друзей', unlocked:data.referrals_count >= 10, icon:'👥'}
+                    {id:'first_tap', title:'👆 Первый тап', desc:'Сделайте первый тап', unlocked:data.total_taps >= 1, icon:'👆', category:'taps', color:'#60a5fa'},
+                    {id:'hundred_taps', title:'🎯 Мастер тапов', desc:'Сделайте 100 тапов', unlocked:data.total_taps >= 100, icon:'🎯', category:'taps', color:'#60a5fa'},
+                    {id:'thousand_taps', title:'⚡ Профи тапов', desc:'Сделайте 1000 тапов', unlocked:data.total_taps >= 1000, icon:'⚡', category:'taps', color:'#60a5fa'},
+                    {id:'tenk_taps', title:'🔥 Легенда тапов', desc:'Сделайте 10,000 тапов', unlocked:data.total_taps >= 10000, icon:'🔥', category:'taps', color:'#f59e0b'},
+                    {id:'hundredk_taps', title:'💥 Бог тапов', desc:'Сделайте 100,000 тапов', unlocked:data.total_taps >= 100000, icon:'💥', category:'taps', color:'#dc2626'},
+                    {id:'million_coins', title:'💰 Миллионер', desc:'Заработайте 1M коинов', unlocked:data.total_earned >= 1000000, icon:'💰', category:'coins', color:'#fbbf24'},
+                    {id:'ten_million', title:'💎 Магнат', desc:'Заработайте 10M коинов', unlocked:data.total_earned >= 10000000, icon:'💎', category:'coins', color:'#fbbf24'},
+                    {id:'hundred_million', title:'👑 Империя', desc:'Заработайте 100M коинов', unlocked:data.total_earned >= 100000000, icon:'👑', category:'coins', color:'#ffd700'},
+                    {id:'first_card', title:'🃏 Первая карта', desc:'Купите первую карту', unlocked:data.cards && data.cards.length > 0, icon:'🃏', category:'cards', color:'#8b5cf6'},
+                    {id:'ten_cards', title:'🃏 Коллекционер', desc:'Купите 10 карт', unlocked:data.cards && data.cards.length >= 10, icon:'🃏', category:'cards', color:'#8b5cf6'},
+                    {id:'fifty_cards', title:'🎴 Мастер карт', desc:'Купите 50 карт', unlocked:data.cards && data.cards.length >= 50, icon:'🎴', category:'cards', color:'#7c3aed'},
+                    {id:'first_machine', title:'⛏️ Первая машина', desc:'Купите первую майнинг-машину', unlocked:data.machines && data.machines.length > 0, icon:'⛏️', category:'mining', color:'#10b981'},
+                    {id:'ten_machines', title:'🏭 Фабрика', desc:'Купите 10 машин', unlocked:data.machines && data.machines.length >= 10, icon:'🏭', category:'mining', color:'#10b981'},
+                    {id:'fifty_machines', title:'🏗️ Мегафабрика', desc:'Купите 50 машин', unlocked:data.machines && data.machines.length >= 50, icon:'🏗️', category:'mining', color:'#059669'},
+                    {id:'level_10', title:'🌟 Уровень 10', desc:'Достигните 10 уровня', unlocked:data.level >= 10, icon:'🌟', category:'level', color:'#a78bfa'},
+                    {id:'level_50', title:'⭐ Уровень 50', desc:'Достигните 50 уровня', unlocked:data.level >= 50, icon:'⭐', category:'level', color:'#a78bfa'},
+                    {id:'level_100', title:'💫 МАКСИМУМ', desc:'Достигните 100 уровня', unlocked:data.level >= 100, icon:'💫', category:'level', color:'#c084fc'},
+                    {id:'vip_bronze', title:'🥉 VIP бронза', desc:'Покупайте VIP бронза', unlocked:data.vip_level >= 1, icon:'🥉', category:'vip', color:'#92400e'},
+                    {id:'vip_silver', title:'🥈 VIP серебро', desc:'Покупайте VIP серебро', unlocked:data.vip_level >= 2, icon:'🥈', category:'vip', color:'#d97706'},
+                    {id:'vip_gold', title:'🥇 VIP золото', desc:'Покупайте VIP золото', unlocked:data.vip_level >= 3, icon:'🥇', category:'vip', color:'#ca8a04'},
+                    {id:'referral_master', title:'👥 Мастер рефералов', desc:'Пригласите 10 друзей', unlocked:data.referrals_count >= 10, icon:'👥', category:'social', color:'#ec4899'},
+                    {id:'referral_legend', title:'🌐 Легенда', desc:'Пригласите 50 друзей', unlocked:data.referrals_count >= 50, icon:'🌐', category:'social', color:'#ec4899'}
                 ];
                 
                 const unlockedCount = achievements.filter(a => a.unlocked).length;
                 const totalCount = achievements.length;
                 const progress = (unlockedCount / totalCount * 100).toFixed(0);
                 
+                // Group achievements by category
+                const categories = {
+                    taps: {icon:'👆', title:'Тапы', color:'#60a5fa'},
+                    coins: {icon:'💰', title:'Доход', color:'#fbbf24'},
+                    cards: {icon:'🃏', title:'Карты', color:'#8b5cf6'},
+                    mining: {icon:'⛏️', title:'Майнинг', color:'#10b981'},
+                    level: {icon:'🌟', title:'Уровни', color:'#a78bfa'},
+                    vip: {icon:'👑', title:'VIP', color:'#ffd700'},
+                    social: {icon:'👥', title:'Социальное', color:'#ec4899'}
+                };
+                
+                const grouped = {};
+                achievements.forEach(ach => {
+                    if(!grouped[ach.category]) grouped[ach.category] = [];
+                    grouped[ach.category].push(ach);
+                });
+                
                 modal.innerHTML = `
-                    <div class="modal-content" style="max-width:450px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);">
+                    <div class="modal-content" style="max-width:500px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);">
                         <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                                 <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">🏆 ДОСТИЖЕНИЯ</h2>
@@ -4399,35 +4407,210 @@
                             </div>
                             <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;color:#fff;">
                                 <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Прогресс: ${unlockedCount}/${totalCount}</div>
-                                <div style="background:rgba(255,255,255,0.2);height:8px;border-radius:10px;overflow:hidden;">
-                                    <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#10b981,#4ade80);transition:width 0.5s;"></div>
+                                <div style="background:rgba(255,255,255,0.2);height:10px;border-radius:10px;overflow:hidden;">
+                                    <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#10b981,#4ade80);transition:width 0.5s;box-shadow:0 0 10px rgba(16,185,129,0.6);"></div>
                                 </div>
-                                <div style="font-size:11px;margin-top:6px;opacity:0.8;">${progress}% завершено</div>
+                                <div style="font-size:11px;margin-top:8px;opacity:0.9;">${progress}% завершено</div>
                             </div>
                         </div>
                         <div style="padding:20px;">
-                            ${achievements.map(ach => `
-                                <div style="margin-bottom:12px;background:${ach.unlocked ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.2)'};padding:14px;border-radius:12px;border:1px solid ${ach.unlocked ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'};transition:all 0.3s;">
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="font-size:32px;filter:${ach.unlocked ? 'none' : 'grayscale(100%) opacity(0.5)'};">${ach.icon}</div>
-                                        <div style="flex:1;">
-                                            <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;">${ach.title}</div>
-                                            <div style="font-size:12px;color:${ach.unlocked ? '#86efac' : '#94a3b8'};">${ach.desc}</div>
+                            ${Object.keys(grouped).map(catKey => {
+                                const cat = categories[catKey];
+                                const catAchievements = grouped[catKey];
+                                const unlockedInCat = catAchievements.filter(a => a.unlocked).length;
+                                const totalInCat = catAchievements.length;
+                                const catProgress = (unlockedInCat / totalInCat * 100).toFixed(0);
+                                
+                                return `
+                                    <div style="margin-bottom:20px;background:linear-gradient(135deg,${cat.color}15,${cat.color}05);border:2px solid ${cat.color}40;border-radius:16px;overflow:hidden;">
+                                        <div style="background:linear-gradient(135deg,${cat.color},${cat.color}cc);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+                                            <div style="display:flex;align-items:center;gap:10px;">
+                                                <span style="font-size:24px;">${cat.icon}</span>
+                                                <span style="font-size:16px;font-weight:800;color:#fff;">${cat.title}</span>
+                                            </div>
+                                            <span style="font-size:13px;font-weight:700;color:#fff;background:rgba(0,0,0,0.2);padding:4px 10px;border-radius:8px;">${unlockedInCat}/${totalInCat}</span>
                                         </div>
-                                        ${ach.unlocked ? `
-                                            <div style="font-size:24px;animation:spin 2s linear infinite;">✅</div>
-                                        ` : `
-                                            <div style="font-size:24px;opacity:0.3;">🔒</div>
-                                        `}
+                                        <div style="padding:12px;">
+                                            ${catAchievements.map(ach => `
+                                                <div style="margin-bottom:10px;background:${ach.unlocked ? `linear-gradient(135deg,${ach.color}20,${ach.color}05)` : 'rgba(0,0,0,0.3)'};padding:14px;border-radius:12px;border:2px solid ${ach.unlocked ? `${ach.color}50` : 'rgba(255,255,255,0.1)'};transition:all 0.3s;position:relative;overflow:hidden;">
+                                                    ${ach.unlocked ? `<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ach.color},transparent);"></div>` : ''}
+                                                    <div style="display:flex;align-items:center;gap:14px;">
+                                                        <div style="font-size:36px;filter:${ach.unlocked ? 'none' : 'grayscale(100%) opacity(0.4)'};transform:${ach.unlocked ? 'scale(1)' : 'scale(0.9)'};transition:all 0.3s;">${ach.icon}</div>
+                                                        <div style="flex:1;">
+                                                            <div style="font-size:15px;font-weight:800;color:${ach.unlocked ? '#fff' : '#94a3b8'};margin-bottom:5px;display:flex;align-items:center;gap:6px;">
+                                                                ${ach.title}
+                                                                ${ach.unlocked ? '<span style="font-size:12px;color:#86efac;">✨</span>' : ''}
+                                                            </div>
+                                                            <div style="font-size:12px;color:${ach.unlocked ? '#86efac' : '#64748b'};font-weight:500;">${ach.desc}</div>
+                                                        </div>
+                                                        ${ach.unlocked ? `
+                                                            <div style="font-size:28px;animation:pulse 2s ease-in-out infinite;">✅</div>
+                                                        ` : `
+                                                            <div style="font-size:28px;opacity:0.2;">🔒</div>
+                                                        `}
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
                                     </div>
-                                </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `;
                 document.body.appendChild(modal);
                 modal.onclick = (e) => {if(e.target === modal) modal.remove();};
             });
+        }
+        
+        function openSettingsModal() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10000';
+                
+                // Get saved settings from localStorage or use defaults
+                const savedSound = localStorage.getItem('soundEnabled') !== 'false';
+                const savedHaptics = localStorage.getItem('hapticsEnabled') !== 'false';
+                const savedNotifications = localStorage.getItem('notificationsEnabled') !== 'false';
+                const savedUsername = data.username || data.first_name || 'Игрок';
+                
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:450px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(75,85,99,0.4);box-shadow:0 10px 40px rgba(75,85,99,0.3);">
+                        <div style="background:linear-gradient(135deg,#4b5563,#374151);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">⚙️ НАСТРОЙКИ</h2>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                            </div>
+                        </div>
+                        <div style="padding:20px;">
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">👤 ПРОФИЛЬ</div>
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Имя пользователя</div>
+                                    <input type="text" id="usernameInput" value="${savedUsername}" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;" 
+                                           onfocus="this.style.borderColor='#667eea';this.style.background='rgba(102,126,234,0.1)';" 
+                                           onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.background='rgba(255,255,255,0.05)';">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔊 ЗВУК И ВИБРАЦИЯ</div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">🔊</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Звуки</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Включить звуковые эффекты</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="soundToggle" ${savedSound ? 'checked' : ''} onchange="localStorage.setItem('soundEnabled', this.checked)" style="opacity:0;width:0;height:0;">
+                                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedSound ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedSound ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">📳</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Вибрация</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Тактильная обратная связь</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="hapticsToggle" ${savedHaptics ? 'checked' : ''} onchange="localStorage.setItem('hapticsEnabled', this.checked)" style="opacity:0;width:0;height:0;">
+                                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedHaptics ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedHaptics ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔔 УВЕДОМЛЕНИЯ</div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">🔔</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Уведомления</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Получать push-уведомления</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="notificationsToggle" ${savedNotifications ? 'checked' : ''} onchange="localStorage.setItem('notificationsEnabled', this.checked)" style="opacity:0;width:0;height:0;">
+                                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedNotifications ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedNotifications ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🌐 ДРУГИЕ</div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
+                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Язык интерфейса</div>
+                                    <select id="languageSelect" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;cursor:pointer;">
+                                        <option value="ru" style="background:#1e293b;color:#fff;" selected>🇷🇺 Русский</option>
+                                        <option value="en" style="background:#1e293b;color:#fff;">🇬🇧 English</option>
+                                    </select>
+                                </div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
+                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Тема оформления</div>
+                                    <select id="themeSelect" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;cursor:pointer;">
+                                        <option value="dark" style="background:#1e293b;color:#fff;" selected>🌙 Темная</option>
+                                        <option value="auto" style="background:#1e293b;color:#fff;">🌗 Автоматическая</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button onclick="saveSettings(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;color:#fff;margin-bottom:10px;border:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.3s;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                                💾 Сохранить настройки
+                            </button>
+                            
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#64748b,#475569);border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;color:#fff;border:none;">Отмена</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+            });
+        }
+        
+        function saveSettings() {
+            const username = document.getElementById('usernameInput')?.value;
+            const soundEnabled = document.getElementById('soundToggle')?.checked;
+            const hapticsEnabled = document.getElementById('hapticsToggle')?.checked;
+            const notificationsEnabled = document.getElementById('notificationsToggle')?.checked;
+            const language = document.getElementById('languageSelect')?.value;
+            const theme = document.getElementById('themeSelect')?.value;
+            
+            if(username) localStorage.setItem('username', username);
+            if(soundEnabled !== undefined) localStorage.setItem('soundEnabled', soundEnabled);
+            if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
+            if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
+            if(language) localStorage.setItem('language', language);
+            if(theme) localStorage.setItem('theme', theme);
+            
+            tg.showAlert('✅ Настройки сохранены!');
         }
         
         function openReferrals(e) {
