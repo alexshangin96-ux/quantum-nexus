@@ -16,6 +16,30 @@ import os
 app = Flask(__name__, static_folder='.')
 CORS(app)
 
+# Helper functions for level and rating calculation
+def calculate_level(experience):
+    """Calculate level based on experience"""
+    if experience <= 0:
+        return 1
+    level = int((experience / 100) ** 0.5) + 1
+    return min(level, 100)  # Max level 100
+
+def calculate_experience(total_earned, total_taps, vip_level):
+    """Calculate experience from user activity"""
+    base_exp = (total_earned or 0) * 0.01  # 1% from earned coins
+    tap_bonus = (total_taps or 0) * 0.1  # Per tap
+    vip_bonus = (vip_level or 0) * 1000  # VIP bonus
+    return base_exp + tap_bonus + vip_bonus
+
+def calculate_rating(coins, total_earned, total_taps, vip_level, level):
+    """Calculate overall rating for ranking"""
+    coins_score = (coins or 0) * 0.01
+    earned_score = (total_earned or 0) * 0.1
+    taps_score = (total_taps or 0) * 0.05
+    vip_score = (vip_level or 0) * 1000000  # VIP always on top
+    level_score = (level or 1) * 10000
+    return coins_score + earned_score + taps_score + vip_score + level_score
+
 @app.route('/')
 def index():
     """Serve web app"""
@@ -2733,11 +2757,18 @@ def get_top_users():
                 vip_level = getattr(u, 'vip_level', 0) or 0
                 vip_badge = getattr(u, 'vip_badge', None) or ""
                 
+                # Calculate experience, level, and rating
+                experience = calculate_experience(u.total_earned, u.total_taps, vip_level)
+                level = calculate_level(experience)
+                rating = calculate_rating(u.coins, u.total_earned, u.total_taps, vip_level, level)
+                
                 top_users.append({
                     'username': u.username or 'Unknown',
                     'total_earned': int(u.total_earned or 0),
                     'coins': int(u.coins or 0),
-                    'level': 1,  # Hardcoded, no level field in User model
+                    'level': level,
+                    'experience': round(experience, 2),
+                    'rating': round(rating, 2),
                     'vip_level': vip_level,
                     'vip_badge': vip_badge,
                     'passive_income': passive_income_per_hour,
@@ -2745,8 +2776,8 @@ def get_top_users():
                     'total_taps': int(u.total_taps or 0)
                 })
             
-            # Sort ONLY by total_earned (coins earned), ignore VIP for ranking
-            top_users.sort(key=lambda x: -x['total_earned'])
+            # Sort: VIPs first (by VIP level DESC), then by rating DESC
+            top_users.sort(key=lambda x: (-x['vip_level'], -x['rating']))
             
             # Return only top 100
             top_users = top_users[:100]

@@ -27,6 +27,11 @@ class User(Base):
     total_earned = Column(Float, default=0.0)
     total_mined = Column(Float, default=0.0)
     
+    # Level and Rating System
+    level = Column(Integer, default=1)  # User level
+    experience = Column(Float, default=0.0)  # User experience
+    rating = Column(Float, default=0.0)  # Overall rating
+    
     # Referral
     referral_code = Column(String(50), unique=True)
     referred_by = Column(Integer, ForeignKey('users.id'), nullable=True)
