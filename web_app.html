@@ -2148,6 +2148,26 @@
                     if (contentDiv) {
                         contentDiv.innerHTML = topUsers.length > 0 ? topHTML : '<div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Рейтинг пуст</div>';
                     }
+                    
+                    // Auto-update current user position display
+                    const positionDiv = modal.querySelector('#currentUserPosition');
+                    const infoDiv = modal.querySelector('#currentUserInfo');
+                    if (positionDiv && infoDiv) {
+                        const currentUserPos = window.currentUserPosition;
+                        const currentUser = window.currentUserInTop;
+                        
+                        if (currentUser && currentUserPos) {
+                            positionDiv.style.display = 'block';
+                            const level = currentUser.level || 1;
+                            const rating = currentUser.rating || 0;
+                            const vipBadge = currentUser.vip_level && currentUser.vip_level > 0 ? `👑 VIP ${currentUser.vip_level}` : '';
+                            infoDiv.innerHTML = `<div style="font-size:16px;font-weight:900;color:#ffd700;margin-bottom:5px;">${currentUser.username}</div><div style="font-size:13px;color:#fff;">Место #${currentUserPos} • Уровень ${level} • Рейтинг ${Math.round(rating).toLocaleString()} ${vipBadge}</div>`;
+                        } else if (currentUserPos === null) {
+                            // Position is null means user not in top, but hide block initially
+                            // Only show if user manually clicks "Find Yourself" button
+                            positionDiv.style.display = 'none';
+                        }
+                    }
                 })
                 .catch(err => {
                     console.error('[TOP_LEADERS] Error loading top users:', err);
