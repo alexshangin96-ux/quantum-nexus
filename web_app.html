@@ -1563,113 +1563,6 @@
 
         let energyRegenInterval;
         
-        // Translation system
-        const translations = {
-            ru: {
-                passiveCoins: '/час',
-                passiveHash: '/час',
-                energyRegen: 'Восстановление: +',
-                energyRegenUnit: '/сек',
-                tapButton: 'TAP',
-                coins: 'Коины',
-                quanhash: 'QuanHash',
-                energy: 'Энергия',
-                passiveIncome: 'Пассивный доход',
-                shop: 'Магазин',
-                cards: 'Карты',
-                mining: 'Майнинг',
-                profile: 'Профиль',
-                autobotActive: 'Автобот активен',
-                level: 'Уровень',
-                speed: 'Скорость',
-                timeLeft: 'Осталось',
-                purchase: 'Покупка',
-                successful: 'Карточка куплена!',
-                error: 'Ошибка',
-                notEnoughCoins: 'Недостаточно коинов',
-                notEnoughHash: 'Недостаточно QuanHash',
-                noEnergy: 'Нет энергии!',
-                shopBoost: 'Буст тапов',
-                shopEnergyRecovery: 'Восстановление энергии',
-                shopEnergyExpand: 'Расширение энергии',
-                shopAutoBot: 'Автобот',
-                shopPerHourCards: 'В час (Основные)',
-                shopPerMinuteCards: 'В минуту (Премиум)',
-                shopVIPCards: 'VIP Карты',
-                miningCoins: 'За коины',
-                miningQuanHash: 'За QuanHash',
-                miningVIP: 'VIP Машины',
-                machineUpgraded: 'Машина улучшена!',
-                levelIncreased: 'Уровень повышен!'
-            },
-            en: {
-                passiveCoins: '/hr',
-                passiveHash: '/hr',
-                energyRegen: 'Regen: +',
-                energyRegenUnit: '/sec',
-                tapButton: 'TAP',
-                coins: 'Coins',
-                quanhash: 'QuanHash',
-                energy: 'Energy',
-                passiveIncome: 'Passive Income',
-                shop: 'Shop',
-                cards: 'Cards',
-                mining: 'Mining',
-                profile: 'Profile',
-                autobotActive: 'Autobot active',
-                level: 'Level',
-                speed: 'Speed',
-                timeLeft: 'Time left',
-                purchase: 'Purchasing...',
-                successful: 'Card purchased!',
-                error: 'Error',
-                notEnoughCoins: 'Not enough coins',
-                notEnoughHash: 'Not enough QuanHash',
-                noEnergy: 'No energy!',
-                shopBoost: 'Tap Boost',
-                shopEnergyRecovery: 'Energy Recovery',
-                shopEnergyExpand: 'Energy Expansion',
-                shopAutoBot: 'Autobot',
-                shopPerHourCards: 'Per Hour (Basic)',
-                shopPerMinuteCards: 'Per Minute (Premium)',
-                shopVIPCards: 'VIP Cards',
-                miningCoins: 'For Coins',
-                miningQuanHash: 'For QuanHash',
-                miningVIP: 'VIP Machines',
-                machineUpgraded: 'Machine upgraded!',
-                levelIncreased: 'Level increased!'
-            }
-        };
-        
-        // Function to apply translations based on current language
-        function applyTranslations() {
-            const lang = localStorage.getItem('language') || 'ru';
-            const t = translations[lang];
-            
-            // Update HTML lang attribute
-            document.documentElement.lang = lang;
-            
-            // Apply translations to static elements
-            const passiveCoinsEl = document.getElementById('passiveCoins');
-            const passiveHashEl = document.getElementById('passiveHash');
-            const shopBtn = document.getElementById('shopBtn');
-            const cardsBtn = document.getElementById('cardsBtn');
-            const miningBtn = document.getElementById('miningBtn');
-            const profileBtn = document.getElementById('profileBtn');
-            
-            if (passiveCoinsEl && passiveCoinsEl.textContent.includes('/час') || passiveCoinsEl?.textContent.includes('/hr')) {
-                const currentValue = passiveCoinsEl.textContent.match(/\d+/)?.[0] || '';
-                passiveCoinsEl.textContent = `+${currentValue}${t.passiveCoins}`;
-            }
-            if (passiveHashEl && passiveHashEl.textContent.includes('/час') || passiveHashEl?.textContent.includes('/hr')) {
-                const currentValue = passiveHashEl.textContent.match(/\d+/)?.[0] || '';
-                passiveHashEl.textContent = `+${currentValue}${t.passiveHash}`;
-            }
-            if (shopBtn) shopBtn.textContent = t.shop;
-            if (cardsBtn) cardsBtn.textContent = t.cards;
-            if (miningBtn) miningBtn.textContent = t.mining;
-            if (profileBtn) profileBtn.textContent = t.profile;
-        }
 
         // VIP Status Management
         function loadVIPStatus(userData) {
@@ -2422,7 +2315,6 @@
                 const savedUsername = localStorage.getItem('username');
                 const dbUsername = data.username || null;
                 const usernameEl = document.getElementById('username');
-                const lang = localStorage.getItem('language') || 'ru';
                 
                 if (usernameEl) {
                     if (dbUsername) {
@@ -2437,9 +2329,9 @@
                         usernameEl.textContent = savedUsername;
                     } else if (window.user) {
                         // Fallback to Telegram name
-                        usernameEl.textContent = window.user.first_name || (lang === 'en' ? 'Miner' : 'Майнер');
+                        usernameEl.textContent = window.user.first_name || 'Майнер';
                     } else {
-                        usernameEl.textContent = lang === 'en' ? 'Miner' : 'Майнер';
+                        usernameEl.textContent = 'Майнер';
                     }
                 }
                 
@@ -2453,10 +2345,10 @@
                     percentText.textContent = Math.round(energyPercent) + '%';
                 }
 
-                // Update energy regeneration rate display (lang already defined above)
+                // Update energy regeneration rate display
                 const energyRegenText = document.getElementById('energy-regen-text');
                 if (energyRegenText) {
-                    energyRegenText.textContent = lang === 'en' ? `Regen: +${energyRegenRate.toFixed(1)}/sec` : `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
+                    energyRegenText.textContent = `Восстановление: +${energyRegenRate.toFixed(1)}/сек`;
                 }
                 
                 // Update energy regeneration rate in the running interval
@@ -2914,9 +2806,7 @@
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
                 if (soundEnabled) playSound('error');
-                const lang = localStorage.getItem('language') || 'ru';
-                const msg = lang === 'en' ? '⚠️ No energy!' : '⚠️ Нет энергии!';
-                tg.showAlert(msg);
+                tg.showAlert('⚠️ Нет энергии!');
                 return;
             }
             
@@ -3643,8 +3533,7 @@
             const userId = window.userData?.id || window.user?.id;
             
             if (!userId) {
-                const lang = localStorage.getItem('language') || 'ru';
-                showNotification('error', lang === 'en' ? 'Error: user not found' : 'Ошибка: пользователь не найден');
+                showNotification('error', 'Ошибка: пользователь не найден');
                 return;
             }
             
@@ -3742,8 +3631,7 @@
                             tg.HapticFeedback.notificationOccurred('success');
                         }
                         
-                        const lang = localStorage.getItem('language') || 'ru';
-                        showNotification('success', lang === 'en' ? 'Card purchased!' : 'Карточка куплена!');
+                        showNotification('success', 'Карточка куплена!');
                     
                         // Reload cards data to update levels and prices
                         fetch('/api/shop', {
@@ -3785,15 +3673,13 @@
                         // Error sound
                         if (soundEnabled) playSound('error');
                         
-                        const lang = localStorage.getItem('language') || 'ru';
-                        showNotification('error', data.error || (lang === 'en' ? 'Purchase error' : 'Ошибка покупки'));
+                        showNotification('error', data.error || 'Ошибка покупки');
                     }
                 })
                 .catch(err => {
                     console.error('Error buying card:', err);
                     if (soundEnabled) playSound('error');
-                    const lang = localStorage.getItem('language') || 'ru';
-                    showNotification('error', lang === 'en' ? 'Purchase error' : 'Ошибка покупки');
+                    showNotification('error', 'Ошибка покупки');
                 });
                 return;
             }
@@ -3841,10 +3727,9 @@
                     }
                     
                     // Compact success notification for Telegram
-                    const lang = localStorage.getItem('language') || 'ru';
                     const anim = document.createElement('div');
                     anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> ${lang==="en"?"Level increased!":"Уровень повышен!"}</div>';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Уровень повышен!</div>';
                     document.body.appendChild(anim);
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
@@ -3867,10 +3752,9 @@
                     if (soundEnabled) playSound('error');
                     
                     // Compact error notification for Telegram
-                    const lang = localStorage.getItem('language') || 'ru';
                     const error = document.createElement('div');
                     error.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-                    const errorText = (data.error.includes('Недостаточно') || data.error.includes('Not enough')) ? (lang === 'en' ? 'Not enough coins' : 'Недостаточно коинов') : data.error;
+                    const errorText = (data.error.includes('Недостаточно') || data.error.includes('Not enough')) ? 'Недостаточно коинов' : data.error;
                     error.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
                     document.body.appendChild(error);
                     setTimeout(()=>{error.style.opacity='0';error.style.transform='translate(-50%,-60%)';setTimeout(()=>{error.remove();},300);},1500);
@@ -4273,10 +4157,9 @@
                 tg.HapticFeedback.impactOccurred('medium');
             }
             
-            const lang = localStorage.getItem('language') || 'ru';
             const anim = document.createElement('div');
             anim.style.cssText='position:fixed;top:15%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
-            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">⚡</span> ${lang==="en"?"Purchasing...":"Покупка..."}</div>';
+            anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(102,126,234,0.95),rgba(118,75,162,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(102,126,234,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">⚡</span> Покупка...</div>';
             document.body.appendChild(anim);
             setTimeout(()=>{anim.style.opacity='1';},10);
             
@@ -4301,8 +4184,7 @@
                     }
                     
                     // Success notification - like in shop
-                    const lang = localStorage.getItem('language') || 'ru';
-                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> ${lang==="en"?"Machine upgraded!":"Машина улучшена!"}</div>';
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(16,185,129,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">✨</span> Машина улучшена!</div>';
                     setTimeout(()=>{
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
                         setTimeout(()=>{anim.remove();},300);
@@ -4324,8 +4206,7 @@
                     if (soundEnabled) playSound('error');
                     
                     // Error notification - like in shop
-                    const lang = localStorage.getItem('language') || 'ru';
-                    const errorText = data.error.includes('Недостаточно') || data.error.includes('Not enough') ? (lang === 'en' ? 'Not enough ' : 'Недостаточно ') + (currency === 'coins' ? (lang === 'en' ? 'coins' : 'коинов') : 'QuanHash') : data.error;
+                    const errorText = data.error.includes('Недостаточно') || data.error.includes('Not enough') ? 'Недостаточно ' + (currency === 'coins' ? 'коинов' : 'QuanHash') : data.error;
                     anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
                     setTimeout(()=>{
                         anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
@@ -4704,18 +4585,16 @@
 
         // Generate all 165 achievements dynamically
         function generateAllAchievements(data) {
-            const lang = localStorage.getItem('language') || 'ru';
             const achievements = [];
             
             // Taps (20 achievements)
             const tapsList = [[1,'👆'],[10,'🎯'],[50,'⚡'],[100,'🔥'],[500,'💫'],[1000,'🌊'],[5000,'🚀'],[10000,'💥'],[25000,'⚡'],[50000,'🔥'],[100000,'👑'],[250000,'💀'],[500000,'😈'],[1000000,'∞'],[2500000,'🌌'],[5000000,'🌀'],[10000000,'💫'],[25000000,'⭐'],[50000000,'✨'],[100000000,'🌟']];
             const tapsTitlesRu = ['Первый тап','Новичок','Активист','Мастер','Эксперт','Профи','Ветеран','Легенда','Гуру','Титан','Бог','Демон','Абсолют','Бесконечность','Вселенная','Мультивселенная','Космос','Звезда','Супер','МАКСИМУМ'];
-            const tapsTitlesEn = ['First Tap','Beginner','Activist','Master','Expert','Pro','Veteran','Legend','Guru','Titan','God','Demon','Absolute','Infinity','Universe','Multiverse','Cosmos','Star','Super','MAXIMUM'];
             tapsList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`taps_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + tapsTitlesEn[idx] : icon + ' ' + tapsTitlesRu[idx],
-                    desc: lang === 'en' ? `Make ${thresh} taps` : `Сделайте ${thresh} тапов`,
+                    title: icon + ' ' + tapsTitlesRu[idx],
+                    desc: `Сделайте ${thresh} тапов`,
                     unlocked: data.total_taps >= thresh,
                     category: 'taps', color: '#60a5fa'
                 });
@@ -4724,12 +4603,11 @@
             // Coins (20 achievements)
             const coinsList = [[1000000,'💰'],[2500000,'💸'],[5000000,'💵'],[10000000,'💎'],[25000000,'🏆'],[50000000,'👑'],[100000000,'⭐'],[250000000,'🌟'],[500000000,'✨'],[1000000000,'💫'],[2500000000,'🔥'],[5000000000,'⚡'],[10000000000,'🌌'],[25000000000,'🌀'],[50000000000,'⭐'],[100000000000,'✨'],[250000000000,'💫'],[500000000000,'🌟'],[1000000000000,'🔥'],[10000000000000,'👑']];
             const coinsTitlesRu = ['Миллионер','Барон','Тиран','Магнат','Король','Олигарх','Империя','Федерация','Конгломерат','Галактика','Космос','Бесконечность','Вселенная','Мультивселенная','Супер','Гипер','Ультра','Мета','Транс','ВСЕЛЕННАЯ'];
-            const coinsTitlesEn = ['Millionaire','Baron','Tyrant','Magnate','King','Oligarch','Empire','Federation','Conglomerate','Galaxy','Cosmos','Infinity','Universe','Multiverse','Super','Hyper','Ultra','Meta','Trans','UNIVERSE'];
             coinsList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`coins_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + coinsTitlesEn[idx] : icon + ' ' + coinsTitlesRu[idx],
-                    desc: lang === 'en' ? `Earn ${thresh/1000000}M coins` : `Заработайте ${thresh/1000000}M коинов`,
+                    title: icon + ' ' + coinsTitlesRu[idx],
+                    desc: `Заработайте ${thresh/1000000}M коинов`,
                     unlocked: data.total_earned >= thresh,
                     category: 'coins', color: '#fbbf24'
                 });
@@ -4738,12 +4616,11 @@
             // Cards (15 achievements)
             const cardsList = [[1,'🃏'],[5,'🎴'],[10,'🃏'],[25,'🎴'],[50,'🃏'],[100,'🎴'],[150,'🃏'],[250,'🎴'],[350,'🃏'],[500,'🎴'],[750,'🃏'],[1000,'🎴'],[1500,'🃏'],[2500,'🎴'],[5000,'🃏']];
             const cardsTitlesRu = ['Первая карта','Коллекционер','Коллекционер+','Мастер','Мастер карт','Легенда','Мифический','Бог карт','Божественный','Космос','Вселенная','Мультивселенная','Бесконечность','Максимальный','КОСМИЧЕСКИЙ'];
-            const cardsTitlesEn = ['First Card','Collector','Collector+','Master','Card Master','Legend','Mythical','Card God','Divine','Cosmos','Universe','Multiverse','Infinity','Maximum','COSMIC'];
             cardsList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`cards_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + cardsTitlesEn[idx] : icon + ' ' + cardsTitlesRu[idx],
-                    desc: lang === 'en' ? `Buy ${thresh} cards` : `Купите ${thresh} карт`,
+                    title: icon + ' ' + cardsTitlesRu[idx],
+                    desc: `Купите ${thresh} карт`,
                     unlocked: (data.cards && data.cards.length >= thresh),
                     category: 'cards', color: '#8b5cf6'
                 });
@@ -4752,12 +4629,11 @@
             // Mining (15 achievements)
             const miningList = [[1,'⛏️'],[5,'🏭'],[10,'🏗️'],[25,'⚙️'],[50,'🏭'],[100,'🏗️'],[150,'⚙️'],[250,'🏭'],[350,'🏗️'],[500,'⚙️'],[750,'🏭'],[1000,'🏗️'],[1500,'⚙️'],[2500,'🏭'],[5000,'🏗️']];
             const miningTitlesRu = ['Первая машина','Цех','Фабрика','Завод','Мегафабрика','Корпорация','Конгломерат','Альянс','Империя','Космос','Вселенная','Мультивселенная','Бесконечность','Максимальный','КОСМИЧЕСКИЙ'];
-            const miningTitlesEn = ['First Machine','Workshop','Factory','Plant','Mega Factory','Corporation','Conglomerate','Alliance','Empire','Cosmos','Universe','Multiverse','Infinity','Maximum','COSMIC'];
             miningList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`mining_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + miningTitlesEn[idx] : icon + ' ' + miningTitlesRu[idx],
-                    desc: lang === 'en' ? `Buy ${thresh} machines` : `Купите ${thresh} машин`,
+                    title: icon + ' ' + miningTitlesRu[idx],
+                    desc: `Купите ${thresh} машин`,
                     unlocked: (data.machines && data.machines.length >= thresh),
                     category: 'mining', color: '#10b981'
                 });
@@ -4766,12 +4642,11 @@
             // Levels (15 achievements)
             const levelsList = [[5,'🌟'],[10,'⭐'],[15,'✨'],[20,'💫'],[25,'🌟'],[30,'⭐'],[35,'✨'],[40,'💫'],[50,'🌟'],[60,'⭐'],[70,'✨'],[80,'💫'],[90,'🌟'],[95,'⭐'],[100,'💫']];
             const levelsTitlesRu = ['Уровень 5','Уровень 10','Уровень 15','Уровень 20','Уровень 25','Уровень 30','Уровень 35','Уровень 40','Уровень 50','Уровень 60','Уровень 70','Уровень 80','Уровень 90','Уровень 95','МАКСИМУМ'];
-            const levelsTitlesEn = ['Level 5','Level 10','Level 15','Level 20','Level 25','Level 30','Level 35','Level 40','Level 50','Level 60','Level 70','Level 80','Level 90','Level 95','MAXIMUM'];
             levelsList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`level_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + levelsTitlesEn[idx] : icon + ' ' + levelsTitlesRu[idx],
-                    desc: lang === 'en' ? `Reach level ${thresh}` : `Достигните ${thresh} уровня`,
+                    title: icon + ' ' + levelsTitlesRu[idx],
+                    desc: `Достигните ${thresh} уровня`,
                     unlocked: data.level >= thresh,
                     category: 'level', color: '#a78bfa'
                 });
@@ -4780,12 +4655,11 @@
             // VIP (15 achievements)
             const vipList = [[1,'🥉'],[2,'🥈'],[3,'🥇'],[4,'💎'],[5,'👑'],[6,'⭐'],[7,'✨'],[8,'💫'],[9,'🌟'],[10,'🔥'],[11,'⚡'],[12,'🌌'],[13,'🌀'],[14,'⭐'],[15,'👑']];
             const vipTitlesRu = ['VIP Бронза','VIP Серебро','VIP Золото','VIP Платина','VIP ДИАМОНД','VIP ЗВЕЗДА','VIP КОСМОС','VIP ВСЕЛЕННАЯ','VIP МУЛЬТИ','VIP БОГ','VIP АБСОЛЮТ','VIP ГАЛАКТИКА','VIP КОСМОС','VIP УЛЬТРА','VIP ВСЕЛЕННАЯ'];
-            const vipTitlesEn = ['VIP Bronze','VIP Silver','VIP Gold','VIP Platinum','VIP DIAMOND','VIP STAR','VIP COSMOS','VIP UNIVERSE','VIP MULTI','VIP GOD','VIP ABSOLUTE','VIP GALAXY','VIP COSMOS','VIP ULTRA','VIP UNIVERSE'];
             vipList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`vip_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + vipTitlesEn[idx] : icon + ' ' + vipTitlesRu[idx],
-                    desc: lang === 'en' ? `VIP level ${thresh}` : `VIP уровень ${thresh}`,
+                    title: icon + ' ' + vipTitlesRu[idx],
+                    desc: `VIP уровень ${thresh}`,
                     unlocked: (data.vip_level || 0) >= thresh,
                     category: 'vip', color: '#ffd700'
                 });
@@ -4794,12 +4668,11 @@
             // Social (15 achievements)
             const socialList = [[1,'👥'],[5,'👫'],[10,'🌐'],[15,'👬'],[25,'👭'],[50,'🤝'],[75,'🙌'],[100,'👍'],[150,'🤝'],[250,'🙏'],[500,'👑'],[1000,'🌟'],[2500,'✨'],[5000,'💫'],[10000,'🔥']];
             const socialTitlesRu = ['Первый друг','Маг','Мастер','Лидер','Капитан','Легенда','Профи','Гуру','Титан','Бог','Космос','Вселенная','Мультивселенная','Бесконечность','ВСЕЛЕННАЯ'];
-            const socialTitlesEn = ['First Friend','Magnate','Master','Leader','Captain','Legend','Pro','Guru','Titan','God','Cosmos','Universe','Multiverse','Infinity','UNIVERSE'];
             socialList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`social_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + socialTitlesEn[idx] : icon + ' ' + socialTitlesRu[idx],
-                    desc: lang === 'en' ? `Invite ${thresh} friends` : `Пригласите ${thresh} друзей`,
+                    title: icon + ' ' + socialTitlesRu[idx],
+                    desc: `Пригласите ${thresh} друзей`,
                     unlocked: (data.referrals_count || 0) >= thresh,
                     category: 'social', color: '#ec4899'
                 });
@@ -4808,12 +4681,11 @@
             // Energy (10 achievements)
             const energyList = [[10,'⚡'],[50,'🔋'],[100,'⚡'],[500,'🔋'],[1000,'⚡'],[2500,'🔋'],[5000,'⚡'],[10000,'🔋'],[25000,'⚡'],[50000,'🔋']];
             const energyTitlesRu = ['Энергия 10','Энергия 50','Энергия 100','Энергия 500','Энергия 1000','Энергия 2500','Энергия 5000','Энергия 10K','Энергия 25K','Энергия 50K'];
-            const energyTitlesEn = ['Energy 10','Energy 50','Energy 100','Energy 500','Energy 1000','Energy 2500','Energy 5000','Energy 10K','Energy 25K','Energy 50K'];
             energyList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`energy_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + energyTitlesEn[idx] : icon + ' ' + energyTitlesRu[idx],
-                    desc: lang === 'en' ? `Accumulate ${thresh} energy` : `Накапливайте ${thresh} энергии`,
+                    title: icon + ' ' + energyTitlesRu[idx],
+                    desc: `Накапливайте ${thresh} энергии`,
                     unlocked: false, // Placeholder - energy tracking not implemented yet
                     category: 'energy', color: '#f59e0b'
                 });
@@ -4822,12 +4694,11 @@
             // Shop (10 achievements)
             const shopList = [[1,'🛍️'],[10,'💳'],[25,'🛒'],[50,'🛍️'],[100,'💳'],[250,'🛒'],[500,'🛍️'],[1000,'💳'],[2500,'🛒'],[5000,'🛍️']];
             const shopTitlesRu = ['Первая покупка','Покупатель','Шопер','Покупатель+','Мастер','Эксперт','Профи','Легенда','Бог','КОСМОС'];
-            const shopTitlesEn = ['First Purchase','Buyer','Shopper','Buyer+','Master','Expert','Pro','Legend','God','COSMOS'];
             shopList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`shop_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + shopTitlesEn[idx] : icon + ' ' + shopTitlesRu[idx],
-                    desc: lang === 'en' ? `Make ${thresh} purchases` : `Сделайте ${thresh} покупок`,
+                    title: icon + ' ' + shopTitlesRu[idx],
+                    desc: `Сделайте ${thresh} покупок`,
                     unlocked: false, // Placeholder - shop purchase tracking not implemented yet
                     category: 'shop', color: '#6366f1'
                 });
@@ -4836,13 +4707,12 @@
             // QuanHash (10 achievements)
             const quanhashList = [[100,'💎'],[1000,'💠'],[10000,'💎'],[100000,'💠'],[1000000,'💎'],[10000000,'💠'],[100000000,'💎'],[1000000000,'💠'],[10000000000,'💎'],[100000000000,'💠']];
             const quanhashTitlesRu = ['100 QuanHash','1K QuanHash','10K QuanHash','100K QuanHash','1M QuanHash','10M QuanHash','100M QuanHash','1B QuanHash','10B QuanHash','100B QuanHash'];
-            const quanhashTitlesEn = ['100 QuanHash','1K QuanHash','10K QuanHash','100K QuanHash','1M QuanHash','10M QuanHash','100M QuanHash','1B QuanHash','10B QuanHash','100B QuanHash'];
             quanhashList.forEach(([thresh, icon], idx) => {
                 const display = thresh >= 1000 ? thresh/1000 + 'K' : thresh;
                 achievements.push({
                     id:`quanhash_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + quanhashTitlesEn[idx] : icon + ' ' + quanhashTitlesRu[idx],
-                    desc: lang === 'en' ? `Mine ${display} QuanHash` : `Добыть ${display} QuanHash`,
+                    title: icon + ' ' + quanhashTitlesRu[idx],
+                    desc: `Добыть ${display} QuanHash`,
                     unlocked: (data.quanhash || 0) >= thresh,
                     category: 'quanhash', color: '#a855f7'
                 });
@@ -4851,12 +4721,11 @@
             // Time (10 achievements)
             const timeList = [[1,'📅'],[7,'📆'],[30,'🗓️'],[60,'📅'],[100,'📆'],[180,'🗓️'],[365,'📅'],[730,'📆'],[1095,'🗓️'],[1825,'📅']];
             const timeTitlesRu = ['1 день','1 неделя','1 месяц','2 месяца','100 дней','6 месяцев','1 год','2 года','3 года','5 лет'];
-            const timeTitlesEn = ['1 Day','1 Week','1 Month','2 Months','100 Days','6 Months','1 Year','2 Years','3 Years','5 Years'];
             timeList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`time_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + timeTitlesEn[idx] : icon + ' ' + timeTitlesRu[idx],
-                    desc: lang === 'en' ? `Play for ${thresh} days` : `Играйте ${thresh} дней`,
+                    title: icon + ' ' + timeTitlesRu[idx],
+                    desc: `Играйте ${thresh} дней`,
                     unlocked: false, // Placeholder - time tracking not implemented yet
                     category: 'time', color: '#06b6d4'
                 });
@@ -4865,12 +4734,11 @@
             // Premium (10 achievements)
             const premiumList = [[1,'🎁'],[5,'🎉'],[10,'🎁'],[25,'🎉'],[50,'🎁'],[100,'🎉'],[250,'🎁'],[500,'🎉'],[1000,'🎁'],[2500,'🎉']];
             const premiumTitlesRu = ['Первый бонус','Бонус x5','Бонус x10','Бонус x25','Бонус x50','Бонус x100','Бонус x250','Бонус x500','Бонус x1K','Бонус x2.5K'];
-            const premiumTitlesEn = ['First Bonus','Bonus x5','Bonus x10','Bonus x25','Bonus x50','Bonus x100','Bonus x250','Bonus x500','Bonus x1K','Bonus x2.5K'];
             premiumList.forEach(([thresh, icon], idx) => {
                 achievements.push({
                     id:`premium_${thresh}`, threshold:thresh, icon:icon,
-                    title: lang === 'en' ? icon + ' ' + premiumTitlesEn[idx] : icon + ' ' + premiumTitlesRu[idx],
-                    desc: lang === 'en' ? `Get ${thresh} bonuses` : `Получите ${thresh} бонусов`,
+                    title: icon + ' ' + premiumTitlesRu[idx],
+                    desc: `Получите ${thresh} бонусов`,
                     unlocked: false, // Placeholder - premium tracking not implemented yet
                     category: 'premium', color: '#ef4444'
                 });
@@ -4891,7 +4759,6 @@
                 modal.className = 'modal active';
                 modal.style.zIndex = '10000';
                 
-                const lang = localStorage.getItem('language') || 'ru';
                 const achievements = generateAllAchievements(data);
                 
                 const unlockedCount = achievements.filter(a => a.unlocked).length;
@@ -4900,18 +4767,18 @@
                 
                 // Group achievements by category
                 const categories = {
-                    taps: {icon:'👆', title:lang==='en'?'Taps':'Тапы', color:'#60a5fa'},
-                    coins: {icon:'💰', title:lang==='en'?'Income':'Доход', color:'#fbbf24'},
-                    cards: {icon:'🃏', title:lang==='en'?'Cards':'Карты', color:'#8b5cf6'},
-                    mining: {icon:'⛏️', title:lang==='en'?'Mining':'Майнинг', color:'#10b981'},
-                    level: {icon:'🌟', title:lang==='en'?'Levels':'Уровни', color:'#a78bfa'},
-                    vip: {icon:'👑', title:lang==='en'?'VIP':'VIP', color:'#ffd700'},
-                    social: {icon:'👥', title:lang==='en'?'Social':'Социальное', color:'#ec4899'},
-                    energy: {icon:'⚡', title:lang==='en'?'Energy':'Энергия', color:'#f59e0b'},
-                    shop: {icon:'🛍️', title:lang==='en'?'Shop':'Магазин', color:'#6366f1'},
-                    quanhash: {icon:'💎', title:lang==='en'?'QuanHash':'QuanHash', color:'#a855f7'},
-                    time: {icon:'📅', title:lang==='en'?'Time':'Время', color:'#06b6d4'},
-                    premium: {icon:'🎁', title:lang==='en'?'Premium':'Премиум', color:'#ef4444'}
+                    taps: {icon:'👆', title:'Тапы', color:'#60a5fa'},
+                    coins: {icon:'💰', title:'Доход', color:'#fbbf24'},
+                    cards: {icon:'🃏', title:'Карты', color:'#8b5cf6'},
+                    mining: {icon:'⛏️', title:'Майнинг', color:'#10b981'},
+                    level: {icon:'🌟', title:'Уровни', color:'#a78bfa'},
+                    vip: {icon:'👑', title:'VIP', color:'#ffd700'},
+                    social: {icon:'👥', title:'Социальное', color:'#ec4899'},
+                    energy: {icon:'⚡', title:'Энергия', color:'#f59e0b'},
+                    shop: {icon:'🛍️', title:'Магазин', color:'#6366f1'},
+                    quanhash: {icon:'💎', title:'QuanHash', color:'#a855f7'},
+                    time: {icon:'📅', title:'Время', color:'#06b6d4'},
+                    premium: {icon:'🎁', title:'Премиум', color:'#ef4444'}
                 };
                 
                 const grouped = {};
@@ -4924,15 +4791,15 @@
                     <div class="modal-content" style="max-width:500px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);">
                         <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">🏆 ${lang==='en'?'ACHIEVEMENTS':'ДОСТИЖЕНИЯ'}</h2>
+                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">🏆 ДОСТИЖЕНИЯ</h2>
                                 <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                             </div>
                             <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;color:#fff;">
-                                <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${lang==='en'?'Progress':'Прогресс'}: ${unlockedCount}/${totalCount}</div>
+                                <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Прогресс: ${unlockedCount}/${totalCount}</div>
                                 <div style="background:rgba(255,255,255,0.2);height:10px;border-radius:10px;overflow:hidden;">
                                     <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#10b981,#4ade80);transition:width 0.5s;box-shadow:0 0 10px rgba(16,185,129,0.6);"></div>
                                 </div>
-                                <div style="font-size:11px;margin-top:8px;opacity:0.9;">${progress}% ${lang==='en'?'complete':'завершено'}</div>
+                                <div style="font-size:11px;margin-top:8px;opacity:0.9;">${progress}% завершено</div>
                             </div>
                         </div>
                         <div style="padding:20px;">
@@ -4998,27 +4865,24 @@
                 modal.style.zIndex = '10000';
                 
                 // Get saved settings from localStorage or use defaults
-                const lang = localStorage.getItem('language') || 'ru';
                 const savedSound = localStorage.getItem('soundEnabled') !== 'false';
                 const savedHaptics = localStorage.getItem('hapticsEnabled') !== 'false';
                 const savedNotifications = localStorage.getItem('notificationsEnabled') !== 'false';
-                const savedUsername = localStorage.getItem('username') || data.username || data.first_name || (lang === 'en' ? 'Player' : 'Игрок');
-                const savedLanguage = localStorage.getItem('language') || 'ru';
-                const savedTheme = localStorage.getItem('theme') || 'dark';
+                const savedUsername = localStorage.getItem('username') || data.username || data.first_name || 'Игрок';
                 
                 modal.innerHTML = `
                     <div class="modal-content" style="max-width:450px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(75,85,99,0.4);box-shadow:0 10px 40px rgba(75,85,99,0.3);">
                         <div style="background:linear-gradient(135deg,#4b5563,#374151);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
                             <div style="display:flex;justify-content:space-between;align-items:center;">
-                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">⚙️ ${lang==='en'?'SETTINGS':'НАСТРОЙКИ'}</h2>
+                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">⚙️ НАСТРОЙКИ</h2>
                                 <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                             </div>
                         </div>
                         <div style="padding:20px;">
                             <div style="margin-bottom:20px;">
-                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">👤 ${lang==='en'?'PROFILE':'ПРОФИЛЬ'}</div>
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">👤 ПРОФИЛЬ</div>
                                 <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">${lang==='en'?'Username':'Имя пользователя'}</div>
+                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Имя пользователя</div>
                                     <input type="text" id="usernameInput" value="${savedUsername}" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;" 
                                            onfocus="this.style.borderColor='#667eea';this.style.background='rgba(102,126,234,0.1)';" 
                                            onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.background='rgba(255,255,255,0.05)';">
@@ -5026,15 +4890,15 @@
                             </div>
                             
                             <div style="margin-bottom:20px;">
-                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔊 ${lang==='en'?'SOUND & VIBRATION':'ЗВУК И ВИБРАЦИЯ'}</div>
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔊 ЗВУК И ВИБРАЦИЯ</div>
                                 
                                 <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
                                     <div style="display:flex;justify-content:space-between;align-items:center;">
                                         <div style="display:flex;align-items:center;gap:10px;">
                                             <span style="font-size:24px;">🔊</span>
                                             <div>
-                                                <div style="font-size:13px;font-weight:700;color:#fff;">${lang==='en'?'Sounds':'Звуки'}</div>
-                                                <div style="font-size:11px;color:#94a3b8;">${lang==='en'?'Enable sound effects':'Включить звуковые эффекты'}</div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Звуки</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Включить звуковые эффекты</div>
                                             </div>
                                         </div>
                                         <label style="position:relative;display:inline-block;width:50px;height:28px;">
@@ -5051,8 +4915,8 @@
                                         <div style="display:flex;align-items:center;gap:10px;">
                                             <span style="font-size:24px;">📳</span>
                                             <div>
-                                                <div style="font-size:13px;font-weight:700;color:#fff;">${lang==='en'?'Haptics':'Вибрация'}</div>
-                                                <div style="font-size:11px;color:#94a3b8;">${lang==='en'?'Tactile feedback':'Тактильная обратная связь'}</div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Вибрация</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Тактильная обратная связь</div>
                                             </div>
                                         </div>
                                         <label style="position:relative;display:inline-block;width:50px;height:28px;">
@@ -5066,15 +4930,15 @@
                             </div>
                             
                             <div style="margin-bottom:20px;">
-                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔔 ${lang==='en'?'NOTIFICATIONS':'УВЕДОМЛЕНИЯ'}</div>
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔔 УВЕДОМЛЕНИЯ</div>
                                 
                                 <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
                                     <div style="display:flex;justify-content:space-between;align-items:center;">
                                         <div style="display:flex;align-items:center;gap:10px;">
                                             <span style="font-size:24px;">🔔</span>
                                             <div>
-                                                <div style="font-size:13px;font-weight:700;color:#fff;">${lang==='en'?'Notifications':'Уведомления'}</div>
-                                                <div style="font-size:11px;color:#94a3b8;">${lang==='en'?'Receive push notifications':'Получать push-уведомления'}</div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Уведомления</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Получать push-уведомления</div>
                                             </div>
                                         </div>
                                         <label style="position:relative;display:inline-block;width:50px;height:28px;">
@@ -5089,10 +4953,10 @@
                             
                             
                             <button onclick="saveSettings(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;color:#fff;margin-bottom:10px;border:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.3s;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
-                                💾 ${lang==='en'?'Save Settings':'Сохранить настройки'}
+                                💾 Сохранить настройки
                             </button>
                             
-                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#64748b,#475569);border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;color:#fff;border:none;">${lang==='en'?'Cancel':'Отмена'}</button>
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#64748b,#475569);border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;color:#fff;border:none;">Отмена</button>
                         </div>
                     </div>
                 `;
@@ -5143,13 +5007,13 @@
             // Show success message
             tg.showAlert('✅ Настройки сохранены!');
             
-            // Play success sound if enabled
-            if (localStorage.getItem('soundEnabled') !== 'false') {
+            // Play success sound if enabled (use the value we just saved)
+            if (soundEnabled !== false) {
                 playSound('success');
             }
             
-            // Trigger haptic feedback if enabled
-            if (localStorage.getItem('hapticsEnabled') !== 'false' && tg?.HapticFeedback) {
+            // Trigger haptic feedback if enabled (use the value we just saved)
+            if (hapticsEnabled !== false && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
         }
@@ -6595,9 +6459,6 @@
     <script>
         // Initialize audio on first user interaction
         document.addEventListener('click', initAudio, { once: true });
-        
-        // Apply translations on load
-        applyTranslations();
         
         // Start periodic updates
         loadData();
