@@ -2067,7 +2067,7 @@
                 fetch('/api/top_users', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({limit: 999})
+                    body: JSON.stringify({limit: 999, user_id: window.user?.id})
                 })
                 .then(res => {
                     console.log('[TOP_LEADERS] Response status:', res.status);
@@ -2078,12 +2078,16 @@
                     const topUsers = topData.users || [];
                     console.log('[TOP_LEADERS] Users count:', topUsers.length);
                     
-                    // Sort: VIPs first, then by total_earned descending
+                    // Store current user info globally
+                    window.currentUserInTop = topData.current_user || null;
+                    window.currentUserPosition = topData.current_user_position || null;
+                    
+                    // Sort: VIPs first, then by rating descending (backend already does this, but keep for consistency)
                     const sortedUsers = [...topUsers].sort((a, b) => {
                         const aVip = a.vip_level || 0;
                         const bVip = b.vip_level || 0;
                         if (aVip !== bVip) return bVip - aVip; // VIPs first
-                        return (b.total_earned || 0) - (a.total_earned || 0);
+                        return (b.rating || 0) - (a.rating || 0); // Then by rating
                     });
                     
                     let topHTML = sortedUsers.map((u, idx) => {
@@ -2163,11 +2167,15 @@
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
                             <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Автообновление каждые 2.5 сек</div>
-                            <button id="refreshTopBtn" onclick="loadTopData();" style="padding:8px 16px;background:rgba(255,255,255,0.2);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)';this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255,255,255,0.2)';this.style.transform='scale(1)'">🔄 Обновить</button>
+                            <button id="findMeBtn" onclick="findMeInTop();" style="padding:8px 16px;background:rgba(255,215,0,0.3);color:#ffd700;border:2px solid rgba(255,215,0,0.5);border-radius:10px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s;" onmouseover="this.style.background='rgba(255,215,0,0.4)';this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255,215,0,0.3)';this.style.transform='scale(1)'">🔍 Найти себя</button>
                         </div>
                     </div>
                     
                     <div style="padding:20px;">
+                        <div id="currentUserPosition" style="display:none;margin-bottom:15px;padding:12px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,255,255,0.08));border:2px solid rgba(255,215,0,0.4);border-radius:12px;text-align:center;">
+                            <div style="font-size:14px;font-weight:800;color:#ffd700;margin-bottom:5px;">📍 Ваша позиция в ТОП</div>
+                            <div style="font-size:11px;color:#94a3b8;" id="currentUserInfo">Загрузка...</div>
+                        </div>
                         <div id="topLeadersContent" style="max-height:550px;overflow-y:auto;">
                             <div style="text-align:center;color:#94a3b8;padding:40px;font-size:14px;">Загрузка...</div>
                         </div>
@@ -2178,6 +2186,41 @@
             `;
             document.body.appendChild(modal);
             modal.onclick = (e) => {if(e.target === modal) { modal.remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval); }};
+            
+            // Define findMeInTop function
+            function findMeInTop() {
+                const currentUserPos = window.currentUserPosition;
+                const currentUser = window.currentUserInTop;
+                const positionDiv = modal.querySelector('#currentUserPosition');
+                const infoDiv = modal.querySelector('#currentUserInfo');
+                
+                if (positionDiv && infoDiv) {
+                    if (currentUser && currentUserPos) {
+                        positionDiv.style.display = 'block';
+                        const level = currentUser.level || 1;
+                        const rating = currentUser.rating || 0;
+                        const vipBadge = currentUser.vip_level && currentUser.vip_level > 0 ? `👑 VIP ${currentUser.vip_level}` : '';
+                        infoDiv.innerHTML = `<div style="font-size:16px;font-weight:900;color:#ffd700;margin-bottom:5px;">${currentUser.username}</div><div style="font-size:13px;color:#fff;">Место #${currentUserPos} • Уровень ${level} • Рейтинг ${Math.round(rating).toLocaleString()} ${vipBadge}</div>`;
+                        
+                        // Scroll to the user's position
+                        const contentDiv = modal.querySelector('#topLeadersContent');
+                        if (contentDiv) {
+                            const userElements = contentDiv.querySelectorAll('div[style*="padding:14px"]');
+                            if (userElements[currentUserPos - 1]) {
+                                userElements[currentUserPos - 1].scrollIntoView({behavior: 'smooth', block: 'center'});
+                                // Highlight the user's card
+                                userElements[currentUserPos - 1].style.boxShadow = '0 0 30px rgba(255,215,0,0.8)';
+                                setTimeout(() => {
+                                    userElements[currentUserPos - 1].style.boxShadow = '';
+                                }, 2000);
+                            }
+                        }
+                    } else {
+                        positionDiv.style.display = 'block';
+                        infoDiv.innerHTML = '<div style="font-size:14px;color:#ef4444;">Вы не найдены в ТОП 100</div>';
+                    }
+                }
+            }
             
             // Load data immediately
             loadTopData();

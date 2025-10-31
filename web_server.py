@@ -2734,6 +2734,7 @@ def get_top_users():
     try:
         data = request.json
         limit = data.get('limit', 100)
+        current_user_id = data.get('user_id', None)  # Get current user ID for "find yourself"
         
         with get_db() as db:
             # Fetch more users to filter
@@ -2782,17 +2783,40 @@ def get_top_users():
                     'vip_badge': vip_badge,
                     'passive_income': passive_income_per_hour,
                     'quanhash': int(getattr(u, 'quanhash', 0) or 0),
-                    'total_taps': int(u.total_taps or 0)
+                    'total_taps': int(u.total_taps or 0),
+                    'telegram_id': int(getattr(u, 'telegram_id', 0))  # Add telegram_id for matching
                 })
             
             # Sort: VIPs first (by VIP level DESC), then by rating DESC
             top_users.sort(key=lambda x: (-x['vip_level'], -x['rating']))
             
+            # Find current user's position if requested
+            current_user_pos = None
+            current_user_data = None
+            if current_user_id:
+                for idx, user_data in enumerate(top_users):
+                    if user_data['telegram_id'] == current_user_id:
+                        current_user_pos = idx + 1  # 1-based position
+                        current_user_data = user_data
+                        break
+            
             # Return only top 100
             top_users = top_users[:100]
             
+            # Remove telegram_id from response (not needed by frontend)
+            for user_data in top_users:
+                if 'telegram_id' in user_data:
+                    del user_data['telegram_id']
+            
             print(f"[TOP_USERS] Returning {len(top_users)} users")
-            return jsonify({'users': top_users})
+            response = {'users': top_users}
+            if current_user_pos and current_user_data:
+                # Remove telegram_id from current user data
+                if 'telegram_id' in current_user_data:
+                    del current_user_data['telegram_id']
+                response['current_user'] = current_user_data
+                response['current_user_position'] = current_user_pos
+            return jsonify(response)
     except Exception as e:
         print(f"[TOP_USERS] Error: {e}")
         import traceback
