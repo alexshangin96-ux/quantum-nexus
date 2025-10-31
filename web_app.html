@@ -2630,15 +2630,20 @@
                     return; // Exit and wait for resume to complete
                 }
                 
-                console.log('Creating oscillator for sound:', type);
+                console.log('Creating oscillator for sound:', type, 'AudioContext:', audioContext);
                 let oscillator = audioContext.createOscillator();
+                console.log('Oscillator created:', oscillator);
                 let gainNode = audioContext.createGain();
+                console.log('Gain node created:', gainNode);
                 
                 oscillator.connect(gainNode);
+                console.log('Oscillator connected to gain');
                 gainNode.connect(audioContext.destination);
+                console.log('Gain connected to destination:', audioContext.destination);
                 
                 gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                console.log('Gain envelope set');
                 
                 switch(type) {
                     case 'tap':
