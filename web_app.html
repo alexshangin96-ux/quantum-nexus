@@ -2583,7 +2583,7 @@
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 } catch(e) {
-                    console.log('Audio not supported');
+                    console.log('Audio not supported:', e);
                     return;
                 }
             }
@@ -2598,8 +2598,8 @@
         function playSound(type) {
             try {
                 const soundSetting = localStorage.getItem('soundEnabled');
-                // Enabled by default (null), or explicitly set to 'true'
-                const soundEnabled = soundSetting !== 'false';
+                // Must be explicitly 'true' to play sound
+                const soundEnabled = soundSetting === 'true';
                 if (!soundEnabled) return;
                 
                 initAudio();
@@ -2806,13 +2806,13 @@
 
         function tap() {
             // Sound effect
-            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
                 playSound('tap');
             }
             
             // Haptic feedback
-            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') === 'true';
             if (hapticsEnabled && tg?.HapticFeedback) {
                 tg.HapticFeedback.impactOccurred('light');
             }
@@ -2825,7 +2825,7 @@
             
             const energy = parseInt(document.getElementById('energy-text').textContent.split('/')[0]);
             if (energy < 1) {
-                const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+                const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
                 if (soundEnabled) playSound('error');
                 tg.showAlert('⚠️ Нет энергии!');
                 return;
@@ -3559,7 +3559,7 @@
             }
             
             // Play sound for shop purchase based on category
-            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
                 if (category === 'card') {
                     playSound('card');
@@ -3569,7 +3569,7 @@
             }
             
             // Haptic feedback
-            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') === 'true';
             if (hapticsEnabled && tg?.HapticFeedback) {
                 tg.HapticFeedback.impactOccurred('light');
             }
@@ -4167,13 +4167,13 @@
             console.log('buyMachine called:', {id, price, currency, user_id: window.user?.id});
             
             // Play sound for mining purchase
-            const soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+            const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
                 playSound('mining');
             }
             
             // Haptic feedback
-            const hapticsEnabled = localStorage.getItem('hapticsEnabled') !== 'false';
+            const hapticsEnabled = localStorage.getItem('hapticsEnabled') === 'true';
             if (hapticsEnabled && tg?.HapticFeedback) {
                 tg.HapticFeedback.impactOccurred('medium');
             }
@@ -4885,10 +4885,10 @@
                 modal.className = 'modal active';
                 modal.style.zIndex = '10000';
                 
-                // Get saved settings from localStorage or use defaults (enabled by default)
-                const savedSound = localStorage.getItem('soundEnabled') !== 'false';
-                const savedHaptics = localStorage.getItem('hapticsEnabled') !== 'false';
-                const savedNotifications = localStorage.getItem('notificationsEnabled') !== 'false';
+                // Get saved settings from localStorage or use defaults (disabled by default)
+                const savedSound = localStorage.getItem('soundEnabled') === 'true';
+                const savedHaptics = localStorage.getItem('hapticsEnabled') === 'true';
+                const savedNotifications = localStorage.getItem('notificationsEnabled') === 'true';
                 const savedUsername = localStorage.getItem('username') || data.username || data.first_name || 'Игрок';
                 
                 modal.innerHTML = `
@@ -5050,7 +5050,7 @@
                 // Wait a moment for AudioContext to resume if needed
                 setTimeout(() => {
                     playSound('success');
-                }, 50);
+                }, 100);
             }
             
             // Trigger haptic feedback if enabled (use the value we just saved)
