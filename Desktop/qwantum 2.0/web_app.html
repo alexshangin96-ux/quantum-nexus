@@ -2871,7 +2871,8 @@
                         btn.style.cursor = 'pointer';
                         // Use cached price to prevent blinking
                         const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
-                        btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
+                        btn.textContent = `Купить ${price.toLocaleString()} 🪙`;
+                        btn.dataset.lockedSet = ''; // Clear lock flag to allow future updates
                     }
                 }
             }
