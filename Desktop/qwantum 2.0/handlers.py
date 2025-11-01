@@ -52,9 +52,25 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if referrer and referrer.id != db_user.id:
                     db_user.referred_by = referrer.id
                     referrer.referrals_count += 1
-                    db_user.coins += REFERRAL_BONUS
-                    referrer.coins += REFERRAL_BONUS // 2
-                    logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
+                    
+                    # Check if user has Telegram Premium (VIP)
+                    # Premium users get bigger bonus
+                    # Get premium status from Telegram user object
+                    user_has_premium = getattr(user, 'is_premium', False) if hasattr(user, 'is_premium') else False
+                    
+                    if user_has_premium:
+                        # VIP/Premium user bonus: 2000 coins
+                        REFERRAL_BONUS_NEW = 2000
+                        REFERRAL_BONUS_REFERRER = 500  # Referrer gets 500 coins bonus
+                    else:
+                        # Regular user bonus: 500 coins
+                        REFERRAL_BONUS_NEW = 500
+                        REFERRAL_BONUS_REFERRER = 250  # Referrer gets 250 coins bonus
+                    
+                    db_user.coins += REFERRAL_BONUS_NEW
+                    referrer.coins += REFERRAL_BONUS_REFERRER
+                    
+                    logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}. Bonus: {REFERRAL_BONUS_NEW} (premium: {user_has_premium})")
         
         # Calculate offline income
         offline_income = calculate_offline_income(db_user)
