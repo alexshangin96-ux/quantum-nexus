@@ -1432,11 +1432,12 @@
             </svg>
         </button>
         <div class="buttons">
-            <a href="#" class="btn" onclick="openShop(event)" style="background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 8px 25px rgba(255,215,0,0.8), 0 4px 20px rgba(102,126,234,0.6), 0 0 30px rgba(255,215,0,0.4);border:4px solid rgba(255,215,0,1);position:relative;overflow:visible;">
-                <div class="btn-emoji" style="font-size:60px;filter:drop-shadow(0 0 25px rgba(255,215,0,1)) drop-shadow(0 0 15px rgba(255,215,0,0.9)) drop-shadow(0 0 8px rgba(255,215,0,0.7));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.4);z-index:3;position:relative;display:inline-block;line-height:1;">🛒</div>
-                <div style="font-weight:900;text-shadow:0 3px 15px rgba(0,0,0,0.9), 0 0 25px rgba(255,215,0,0.8), 0 0 35px rgba(255,215,0,0.6);font-size:18px;letter-spacing:1px;z-index:3;position:relative;">Магазин</div>
-                <div style="position:absolute;top:-8px;left:-8px;right:-8px;bottom:-8px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.2) 50%, transparent 80%);border-radius:inherit;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;z-index:0;"></div>
+            <a href="#" class="btn" onclick="openShop(event)" style="background:linear-gradient(135deg,#ffd700,#ffed4e);box-shadow:0 10px 40px rgba(255,215,0,1), 0 6px 30px rgba(255,215,0,0.9), 0 0 50px rgba(255,215,0,0.8), inset 0 0 30px rgba(255,215,0,0.3);border:5px solid rgba(255,215,0,1);position:relative;overflow:visible;transform:scale(1.05);transition:all 0.3s;">
+                <div class="btn-emoji" style="font-size:75px !important;filter:drop-shadow(0 0 30px rgba(255,215,0,1)) drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 10px rgba(255,215,0,0.8)) drop-shadow(0 4px 8px rgba(0,0,0,0.5));animation:shop-glow 1.5s ease-in-out infinite;transform:scale(1.5) !important;z-index:3;position:relative;display:inline-block;line-height:1;text-shadow:0 0 20px rgba(255,215,0,1);">🛒</div>
+                <div style="font-weight:900;text-shadow:0 4px 20px rgba(0,0,0,1), 0 0 30px rgba(255,215,0,1), 0 0 40px rgba(255,215,0,0.9), 0 0 50px rgba(255,215,0,0.7);font-size:20px !important;letter-spacing:2px;z-index:3;position:relative;color:#fff;font-family:system-ui,-apple-system,sans-serif;">МАГАЗИН</div>
+                <div style="position:absolute;top:-10px;left:-10px;right:-10px;bottom:-10px;background:radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 80%);border-radius:inherit;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 50%, transparent 80%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;z-index:0;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 60%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:1s;pointer-events:none;z-index:0;"></div>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
                 <div class="btn-emoji">🏭</div>
@@ -3144,75 +3145,51 @@
                 
                 let audioPlayed = false;
                 
-                // PRIMARY METHOD: Try HTML5 Audio with blob URLs first (best for Telegram mobile)
+                // SIMPLIFIED APPROACH: Direct Web Audio API for Telegram (most reliable)
+                // Try Web Audio API first - it works better in Telegram WebView
+                playSoundWebAudio(type);
+                
+                // Also try HTML5 Audio as secondary option
                 if (html5AudioSupported) {
                     try {
                         const audio = audioElements[type];
                         if (audio && audio.src) {
-                            // Clone and play to allow overlapping sounds
-                            const audioClone = audio.cloneNode();
-                            audioClone.volume = 0.6;
-                            const playPromise = audioClone.play();
-                            if (playPromise !== undefined) {
-                                playPromise.then(() => {
-                                    console.log('✅ HTML5 Audio played (primary):', type);
-                                    audioPlayed = true;
-                                }).catch(e => {
-                                    console.log('⚠️ HTML5 Audio play failed, trying fallback:', e);
-                                    // Try Web Audio API as fallback
-                                    playSoundWebAudio(type);
-                                });
-                            } else {
-                                audioPlayed = true;
-                            }
-                            return; // Exit early if HTML5 Audio is available
-                        } else {
-                            console.log('⚠️ Audio element not ready for type:', type, '- generating on demand...');
-                            // Try to generate sound on demand
-                            const soundConfigs = {
-                                'tap': { freq: 440, duration: 0.1, type: 'sine' },
-                                'mining': { freq: 554, duration: 0.2, type: 'square' },
-                                'purchase': { freq: 698, duration: 0.3, type: 'triangle' },
-                                'coin': { freq: 880, duration: 0.15, type: 'sine' },
-                                'levelup': { freq: 660, duration: 0.5, type: 'triangle' },
-                                'success': { freq: 523, duration: 0.3, type: 'triangle' },
-                                'error': { freq: 220, duration: 0.3, type: 'sawtooth' }
-                            };
-                            const config = soundConfigs[type];
-                            if (config) {
-                                generateSoundBlob(config.freq, config.duration, config.type).then(blobUrl => {
-                                    if (blobUrl) {
-                                        const newAudio = new Audio(blobUrl);
-                                        newAudio.volume = 0.6;
-                                        newAudio.play().catch(err => console.log('On-demand play failed:', err));
-                                    }
-                                });
-                            }
-                            return;
+                            // Try to play HTML5 audio in parallel (may work in some cases)
+                            setTimeout(() => {
+                                try {
+                                    const audioClone = audio.cloneNode();
+                                    audioClone.volume = 0.4; // Lower volume for parallel play
+                                    audioClone.play().catch(() => {
+                                        // Silent fail - Web Audio is primary
+                                    });
+                                } catch (e) {
+                                    // Silent fail
+                                }
+                            }, 10);
                         }
                     } catch (html5Error) {
-                        console.log('❌ HTML5 Audio error, trying fallback:', html5Error);
+                        // Silent fail - Web Audio is primary
                     }
                 }
-                
-                // FALLBACK METHOD: Web Audio API (if HTML5 Audio not available or failed)
-                playSoundWebAudio(type);
             } catch(e) {
                 console.log('Sound playback error:', e);
             }
         }
         
-        // Web Audio API fallback function
+        // Web Audio API - PRIMARY METHOD for Telegram
         function playSoundWebAudio(type) {
             try {
+                // Ensure audio is initialized
+                if (!userInteractionOccurred) {
+                    initAudioOnInteraction();
+                }
+                
                 initAudio();
                 
                 // Ensure AudioContext is ready
                 if (!audioContext) {
-                    console.log('⚠️ AudioContext not initialized, trying to create...');
                     try {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        console.log('✅ AudioContext created');
                     } catch(e) {
                         console.log('❌ Failed to create AudioContext:', e);
                         return;
@@ -3221,11 +3198,9 @@
                 
                 // Resume AudioContext if suspended (critical for Telegram WebView)
                 if (audioContext && audioContext.state === 'suspended') {
-                    console.log('⏸️ AudioContext suspended, resuming...');
                     audioContext.resume().then(() => {
-                        console.log('✅ AudioContext resumed, state:', audioContext.state);
                         // Retry playing sound after resume
-                        setTimeout(() => playSoundWebAudio(type), 50);
+                        setTimeout(() => playSoundWebAudio(type), 30);
                     }).catch(e => {
                         console.log('❌ Audio resume failed:', e);
                     });
@@ -3234,15 +3209,15 @@
                 
                 if (audioContext && audioContext.state === 'running') {
                     try {
-                        console.log('🎵 Creating oscillator for sound:', type);
                         let oscillator = audioContext.createOscillator();
                         let gainNode = audioContext.createGain();
                         
                         oscillator.connect(gainNode);
                         gainNode.connect(audioContext.destination);
                         
-                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        // Higher volume for better audibility
+                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
                         
                         switch(type) {
                             case 'tap':
@@ -3514,9 +3489,19 @@
                                 oscillator.stop(audioContext.currentTime + 0.2);
                         }
                         
+                        // Start immediately
                         oscillator.start(audioContext.currentTime);
-                        console.log('✅ Web Audio API sound started successfully:', type);
+                        console.log('✅ Web Audio API sound started:', type, 'frequency:', oscillator.frequency.value);
                         audioPlayed = true;
+                        
+                        // Cleanup after sound ends
+                        setTimeout(() => {
+                            try {
+                                if (oscillator && oscillator.state !== 'finished') {
+                                    oscillator.stop();
+                                }
+                            } catch(e) {}
+                        }, 500);
                     } catch(e) {
                         console.log('Web Audio API error:', e);
                         audioPlayed = false;
