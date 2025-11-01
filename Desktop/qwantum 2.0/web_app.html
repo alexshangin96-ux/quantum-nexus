@@ -1488,11 +1488,13 @@
     <!-- Shop Modal -->
     <div id="shopModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" style="display:flex;align-items:center;gap:10px;font-size:24px;font-weight:900;text-shadow:0 2px 15px rgba(255,215,0,0.8), 0 0 25px rgba(255,215,0,0.6);">
-                    <span style="font-size:32px;filter:drop-shadow(0 0 20px rgba(255,215,0,1)) drop-shadow(0 0 10px rgba(255,215,0,0.8));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.15);">🛒</span>
-                    <span>Магазин</span>
+            <div class="modal-header" style="background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.1));border-bottom:3px solid rgba(255,215,0,0.5);padding:20px;position:relative;overflow:visible;">
+                <div class="modal-title" style="display:flex;align-items:center;gap:15px;font-size:28px;font-weight:900;text-shadow:0 3px 20px rgba(255,215,0,1), 0 0 30px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.6);position:relative;z-index:2;">
+                    <span style="font-size:48px;filter:drop-shadow(0 0 25px rgba(255,215,0,1)) drop-shadow(0 0 15px rgba(255,215,0,0.9)) drop-shadow(0 0 8px rgba(255,215,0,0.7));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.3);display:inline-block;position:relative;z-index:3;">🛒</span>
+                    <span style="background:linear-gradient(135deg,#ffd700,#ffed4e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:28px;letter-spacing:1px;">Магазин</span>
                 </div>
+                <!-- Glowing effect behind icon -->
+                <div style="position:absolute;top:50%;left:30px;transform:translateY(-50%);width:60px;height:60px;background:radial-gradient(circle, rgba(255,215,0,0.6) 0%, transparent 70%);border-radius:50%;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
                 <button class="close-btn" onclick="closeModal('shopModal')">✕</button>
             </div>
             <div class="shop-category">
@@ -1610,6 +1612,24 @@
 
         // Make user globally available
         window.user = tg.initDataUnsafe?.user;
+        
+        // Initialize audio on first user interaction (any click/touch)
+        document.addEventListener('click', function initOnFirstClick() {
+            if (!userInteractionOccurred) {
+                console.log('🎯 First user interaction detected - initializing audio...');
+                initAudioOnInteraction();
+                // Remove listener after first interaction
+                document.removeEventListener('click', initOnFirstClick);
+            }
+        }, { once: true });
+        
+        document.addEventListener('touchstart', function initOnFirstTouch() {
+            if (!userInteractionOccurred) {
+                console.log('🎯 First touch detected - initializing audio...');
+                initAudioOnInteraction();
+                document.removeEventListener('touchstart', initOnFirstTouch);
+            }
+        }, { once: true });
         if (window.user) {
             const usernameEl = document.getElementById('username');
             if (usernameEl) {
@@ -2849,33 +2869,38 @@
         // Telegram Web App API - Haptic feedback
         function playHapticFeedback(type = 'light') {
             try {
-                if (window.Telegram && window.Telegram.WebApp) {
-                    const webApp = window.Telegram.WebApp;
-                    if (webApp.HapticFeedback) {
-                        switch(type) {
-                            case 'light':
-                                webApp.HapticFeedback.impactOccurred('light');
-                                break;
-                            case 'medium':
-                                webApp.HapticFeedback.impactOccurred('medium');
-                                break;
-                            case 'heavy':
-                                webApp.HapticFeedback.impactOccurred('heavy');
-                                break;
-                            case 'success':
-                                webApp.HapticFeedback.notificationOccurred('success');
-                                break;
-                            case 'error':
-                                webApp.HapticFeedback.notificationOccurred('error');
-                                break;
-                            default:
-                                webApp.HapticFeedback.impactOccurred('light');
-                        }
-                        console.log('Haptic feedback played:', type);
+                // Use global tg variable if available, otherwise get from window
+                const webApp = (typeof tg !== 'undefined' && tg) ? tg : (window.Telegram?.WebApp);
+                
+                if (webApp && webApp.HapticFeedback) {
+                    switch(type) {
+                        case 'light':
+                            webApp.HapticFeedback.impactOccurred('light');
+                            break;
+                        case 'medium':
+                            webApp.HapticFeedback.impactOccurred('medium');
+                            break;
+                        case 'heavy':
+                            webApp.HapticFeedback.impactOccurred('heavy');
+                            break;
+                        case 'success':
+                            webApp.HapticFeedback.notificationOccurred('success');
+                            break;
+                        case 'error':
+                            webApp.HapticFeedback.notificationOccurred('error');
+                            break;
+                        default:
+                            webApp.HapticFeedback.impactOccurred('light');
                     }
+                    console.log('✅ Haptic feedback played:', type);
+                    return true;
+                } else {
+                    console.log('⚠️ HapticFeedback not available');
+                    return false;
                 }
             } catch (e) {
-                console.log('Haptic feedback failed:', e);
+                console.log('❌ Haptic feedback failed:', e);
+                return false;
             }
         }
         
@@ -2883,27 +2908,43 @@
         function initAudioOnInteraction() {
             if (!userInteractionOccurred) {
                 userInteractionOccurred = true;
+                console.log('🎵 Initializing audio on first user interaction...');
+                
+                // Initialize Web Audio API
                 initAudio();
-                initHTML5Audio(); // Initialize HTML5 Audio as fallback
-                // Try to resume immediately after user interaction
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        console.log('AudioContext resumed after user interaction');
-                        // Play a silent sound to unlock audio
-                        try {
-                            const oscillator = audioContext.createOscillator();
-                            const gainNode = audioContext.createGain();
-                            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                            oscillator.connect(gainNode);
-                            gainNode.connect(audioContext.destination);
-                            oscillator.start();
-                            oscillator.stop(audioContext.currentTime + 0.001);
-                        } catch (e) {
-                            console.log('Silent unlock failed:', e);
-                        }
-                    }).catch(e => {
-                        console.log('Audio resume after interaction failed:', e);
-                    });
+                
+                // Initialize HTML5 Audio as fallback
+                initHTML5Audio();
+                
+                // Force resume AudioContext if suspended (critical for Telegram)
+                if (audioContext) {
+                    if (audioContext.state === 'suspended') {
+                        console.log('⏸️ AudioContext suspended, resuming...');
+                        audioContext.resume().then(() => {
+                            console.log('✅ AudioContext resumed successfully, state:', audioContext.state);
+                            // Play a silent sound to unlock audio in Telegram WebView
+                            try {
+                                const oscillator = audioContext.createOscillator();
+                                const gainNode = audioContext.createGain();
+                                gainNode.gain.setValueAtTime(0.001, audioContext.currentTime); // Very quiet but not silent
+                                oscillator.connect(gainNode);
+                                gainNode.connect(audioContext.destination);
+                                oscillator.frequency.value = 20; // Below human hearing
+                                oscillator.type = 'sine';
+                                oscillator.start(audioContext.currentTime);
+                                oscillator.stop(audioContext.currentTime + 0.01);
+                                console.log('🔓 Audio unlocked with silent sound');
+                            } catch (e) {
+                                console.log('⚠️ Silent unlock failed:', e);
+                            }
+                        }).catch(e => {
+                            console.log('❌ Audio resume after interaction failed:', e);
+                        });
+                    } else {
+                        console.log('✅ AudioContext already running, state:', audioContext.state);
+                    }
+                } else {
+                    console.log('⚠️ AudioContext not created yet');
                 }
             }
         }
@@ -2958,28 +2999,47 @@
                     initAudioOnInteraction();
                 }
                 
-                console.log('Playing sound:', type);
+                console.log('🔊 Playing sound:', type, 'soundEnabled:', soundEnabled);
                 
                 // Try Web Audio API first
                 initAudio();
                 let audioPlayed = false;
                 
+                // Ensure AudioContext is ready
+                if (!audioContext) {
+                    console.log('⚠️ AudioContext not initialized, trying to create...');
+                    try {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        console.log('✅ AudioContext created');
+                    } catch(e) {
+                        console.log('❌ Failed to create AudioContext:', e);
+                    }
+                }
+                
+                // Resume AudioContext if suspended (critical for Telegram WebView)
+                if (audioContext && audioContext.state === 'suspended') {
+                    console.log('⏸️ AudioContext suspended, resuming...');
+                    audioContext.resume().then(() => {
+                        console.log('✅ AudioContext resumed, state:', audioContext.state);
+                        // Retry playing sound after resume
+                        setTimeout(() => playSound(type), 50);
+                    }).catch(e => {
+                        console.log('❌ Audio resume failed:', e);
+                    });
+                    return; // Exit and wait for resume
+                }
+                
                 if (audioContext && audioContext.state === 'running') {
                     try {
-                        console.log('Creating oscillator for sound:', type, 'AudioContext:', audioContext);
+                        console.log('🎵 Creating oscillator for sound:', type);
                         let oscillator = audioContext.createOscillator();
-                        console.log('Oscillator created:', oscillator);
                         let gainNode = audioContext.createGain();
-                        console.log('Gain node created:', gainNode);
                         
                         oscillator.connect(gainNode);
-                        console.log('Oscillator connected to gain');
                         gainNode.connect(audioContext.destination);
-                        console.log('Gain connected to destination:', audioContext.destination);
                         
-                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                        console.log('Gain envelope set');
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
                         
                         switch(type) {
                             case 'tap':
@@ -2988,106 +3048,106 @@
                                 oscillator.stop(audioContext.currentTime + 0.1);
                                 break;
                             case 'coin':
-                        oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        break;
-                    case 'levelup':
-                        oscillator.frequency.value = 660;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.3);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        break;
-                    case 'error':
-                        oscillator.frequency.value = 220;
-                        oscillator.type = 'sawtooth';
-                        oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        break;
-                    case 'success':
-                        // Success sound - ascending chime
-                        oscillator.frequency.value = 523;
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.exponentialRampToValueAtTime(1046, audioContext.currentTime + 0.2);
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        break;
-                    case 'purchase':
-                        // Purchase sound - satisfying bell
-                        oscillator.frequency.value = 698;
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.setValueAtTime(698, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(1397, audioContext.currentTime + 0.15);
-                        oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.3);
-                        oscillator.stop(audioContext.currentTime + 0.4);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-                        break;
-                    case 'mining':
-                        // Mining sound - tech beep
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'square';
-                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                        oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
-                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                        break;
-                    case 'card':
-                        // Card sound - flip sound
-                        oscillator.frequency.value = 1047;
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                        break;
-                    case 'energy_regen':
-                        // Energy regeneration sound - subtle shimmer
-                        oscillator.frequency.value = 660;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        break;
-                    case 'achievement':
-                        // Achievement unlock sound - triumphant fanfare
-                        oscillator.frequency.value = 392;
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.25);
-                        oscillator.stop(audioContext.currentTime + 0.4);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-                        break;
-                    case 'click_boost':
-                        // Click boost activation sound - energizing zap
-                        oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
-                        oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.08);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        break;
-                    case 'vip_levelup':
-                        // VIP level up sound - luxurious chime
-                        oscillator.frequency.value = 523;
-                        oscillator.type = 'triangle';
-                        oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.15);
-                        oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.35);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                        break;
-                    case 'collection':
-                        // Collection sound - satisfying pickup
-                        oscillator.frequency.value = 698;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                        break;
-                    case 'bonus':
-                        // Bonus sound - cheerful ring
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.25);
-                        oscillator.stop(audioContext.currentTime + 0.35);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
-                        break;
+                                oscillator.frequency.value = 880;
+                                oscillator.type = 'square';
+                                oscillator.stop(audioContext.currentTime + 0.15);
+                                break;
+                            case 'levelup':
+                                oscillator.frequency.value = 660;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.3);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                                oscillator.stop(audioContext.currentTime + 0.5);
+                                break;
+                            case 'error':
+                                oscillator.frequency.value = 220;
+                                oscillator.type = 'sawtooth';
+                                oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
+                                oscillator.stop(audioContext.currentTime + 0.3);
+                                break;
+                            case 'success':
+                                // Success sound - ascending chime
+                                oscillator.frequency.value = 523;
+                                oscillator.type = 'triangle';
+                                oscillator.frequency.exponentialRampToValueAtTime(1046, audioContext.currentTime + 0.2);
+                                oscillator.stop(audioContext.currentTime + 0.3);
+                                break;
+                            case 'purchase':
+                                // Purchase sound - satisfying bell
+                                oscillator.frequency.value = 698;
+                                oscillator.type = 'triangle';
+                                oscillator.frequency.setValueAtTime(698, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(1397, audioContext.currentTime + 0.15);
+                                oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.3);
+                                oscillator.stop(audioContext.currentTime + 0.4);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                                break;
+                            case 'mining':
+                                // Mining sound - tech beep
+                                oscillator.frequency.value = 440;
+                                oscillator.type = 'square';
+                                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                                oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
+                                oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.2);
+                                break;
+                            case 'card':
+                                // Card sound - flip sound
+                                oscillator.frequency.value = 1047;
+                                oscillator.type = 'triangle';
+                                oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
+                                oscillator.stop(audioContext.currentTime + 0.2);
+                                break;
+                            case 'energy_regen':
+                                // Energy regeneration sound - subtle shimmer
+                                oscillator.frequency.value = 660;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.15);
+                                break;
+                            case 'achievement':
+                                // Achievement unlock sound - triumphant fanfare
+                                oscillator.frequency.value = 392;
+                                oscillator.type = 'triangle';
+                                oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.1);
+                                oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.25);
+                                oscillator.stop(audioContext.currentTime + 0.4);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                                break;
+                            case 'click_boost':
+                                // Click boost activation sound - energizing zap
+                                oscillator.frequency.value = 880;
+                                oscillator.type = 'square';
+                                oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.08);
+                                oscillator.stop(audioContext.currentTime + 0.15);
+                                break;
+                            case 'vip_levelup':
+                                // VIP level up sound - luxurious chime
+                                oscillator.frequency.value = 523;
+                                oscillator.type = 'triangle';
+                                oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.15);
+                                oscillator.frequency.exponentialRampToValueAtTime(1568, audioContext.currentTime + 0.35);
+                                oscillator.stop(audioContext.currentTime + 0.5);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                                break;
+                            case 'collection':
+                                // Collection sound - satisfying pickup
+                                oscillator.frequency.value = 698;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.2);
+                                break;
+                            case 'bonus':
+                                // Bonus sound - cheerful ring
+                                oscillator.frequency.value = 440;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
+                                oscillator.frequency.exponentialRampToValueAtTime(1320, audioContext.currentTime + 0.25);
+                                oscillator.stop(audioContext.currentTime + 0.35);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+                                break;
                     case 'crypto_tap':
                         // Crypto tap sound - money drop
                         oscillator.frequency.value = 880;
@@ -3224,38 +3284,38 @@
                         oscillator.stop(audioContext.currentTime + 0.15);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
                         break;
-                    case 'open_menu':
-                        // Open menu - whoosh
-                        oscillator.frequency.value = 349;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(262, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-                        break;
-                    case 'close_menu':
-                        // Close menu - reverse whoosh
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(349, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-                        break;
-                    case 'click':
-                        // Generic click - click
-                        oscillator.frequency.value = 1000;
-                        oscillator.type = 'square';
-                        oscillator.stop(audioContext.currentTime + 0.03);
-                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
-                        break;
-                    default:
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                }
-                
+                            case 'open_menu':
+                                // Open menu - whoosh
+                                oscillator.frequency.value = 349;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(262, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.15);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                                break;
+                            case 'close_menu':
+                                // Close menu - reverse whoosh
+                                oscillator.frequency.value = 262;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(349, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.15);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                                break;
+                            case 'click':
+                                // Generic click - click
+                                oscillator.frequency.value = 1000;
+                                oscillator.type = 'square';
+                                oscillator.stop(audioContext.currentTime + 0.03);
+                                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
+                                break;
+                            default:
+                                oscillator.frequency.value = 440;
+                                oscillator.type = 'sine';
+                                oscillator.stop(audioContext.currentTime + 0.2);
+                        }
+                        
                         oscillator.start(audioContext.currentTime);
-                        console.log('Web Audio API sound started successfully:', type);
+                        console.log('✅ Web Audio API sound started successfully:', type);
                         audioPlayed = true;
                     } catch(e) {
                         console.log('Web Audio API error:', e);
@@ -3378,18 +3438,16 @@
             // Initialize audio on first tap (required for Telegram WebView)
             if (!userInteractionOccurred) {
                 initAudioOnInteraction();
+                userInteractionOccurred = true; // Set immediately
             }
+            
+            // Always play haptic feedback (works even if sounds disabled)
+            playHapticFeedback('light');
             
             // Sound effect
             const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
                 playSound('tap');
-            }
-            
-            // Haptic feedback
-            const hapticsEnabled = localStorage.getItem('hapticsEnabled') === 'true';
-            if (hapticsEnabled && tg?.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
             }
             
             const button = document.querySelector('.tap-button');
@@ -3567,13 +3625,16 @@
             
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
-                    <div style="background:linear-gradient(135deg,#a78bfa,#c084fc,#d946ef);padding:20px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
-                        <div style="display:flex;justify-content:center;align-items:center;gap:15px;margin-bottom:5px;position:relative;">
-                            <div style="font-size:90px;filter:drop-shadow(0 0 40px rgba(255,215,0,1)) drop-shadow(0 0 25px rgba(167,139,250,1)) drop-shadow(0 0 15px rgba(255,215,0,0.9));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.3);text-shadow:0 0 30px rgba(255,215,0,1), 0 0 20px rgba(255,215,0,0.8);position:relative;z-index:1;">🛒</div>
-                            <h2 style="font-size: 32px; color: #fff; margin: 0; font-weight: 900;text-shadow:0 3px 15px rgba(0,0,0,0.8), 0 0 25px rgba(255,215,0,0.7), 0 0 15px rgba(255,215,0,0.5);letter-spacing:3px;position:relative;z-index:1;">МАГАЗИН</h2>
-                            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);border-radius:50%;animation:pulse 2s ease-in-out infinite;z-index:0;"></div>
+                    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(167,139,250,0.3),rgba(255,215,0,0.2));padding:25px;border-radius:22px 22px 0 0;text-align:center;position:relative;border-bottom:4px solid rgba(255,215,0,0.8);box-shadow:0 4px 20px rgba(255,215,0,0.4);">
+                        <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:8px;position:relative;z-index:2;">
+                            <div style="font-size:110px;filter:drop-shadow(0 0 50px rgba(255,215,0,1)) drop-shadow(0 0 30px rgba(255,215,0,0.9)) drop-shadow(0 0 20px rgba(167,139,250,1)) drop-shadow(0 0 10px rgba(255,215,0,0.8));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.4);text-shadow:0 0 40px rgba(255,215,0,1), 0 0 30px rgba(255,215,0,0.9), 0 0 20px rgba(255,215,0,0.7);position:relative;z-index:3;display:inline-block;">🛒</div>
+                            <h2 style="font-size: 36px; background:linear-gradient(135deg,#ffd700,#ffed4e,#fff8dc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin: 0; font-weight: 900;text-shadow:0 4px 20px rgba(0,0,0,0.9), 0 0 30px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.6);letter-spacing:4px;position:relative;z-index:3;font-family:system-ui,-apple-system,sans-serif;">МАГАЗИН</h2>
                         </div>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                        <!-- Multiple glowing effects for maximum visibility -->
+                        <div style="position:absolute;top:50%;left:25%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 40%, transparent 70%);border-radius:50%;animation:shop-glow 2s ease-in-out infinite;z-index:1;pointer-events:none;"></div>
+                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.15) 50%, transparent 80%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;z-index:1;pointer-events:none;"></div>
+                        <div style="position:absolute;top:50%;left:75%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 60%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:1s;z-index:1;pointer-events:none;"></div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position:relative;z-index:10;">✕</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
@@ -7239,14 +7300,8 @@
         // Don't set explicit values - let the check for null handle defaults
         // This way the logic "null || 'true' || true" will work correctly
         
-        // Initialize audio on first user interaction
-        // Use capture phase to ensure AudioContext is ready before handlers run
-        function initAudioOnClick(e) {
-            initAudio();
-            // Remove this listener after first click
-            document.removeEventListener('click', initAudioOnClick, true);
-        }
-        document.addEventListener('click', initAudioOnClick, true);
+        // Audio initialization is handled in the main script above
+        // This ensures AudioContext is ready before any sound plays
         
         // Start periodic updates
         loadData();
