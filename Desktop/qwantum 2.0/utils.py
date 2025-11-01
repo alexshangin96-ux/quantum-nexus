@@ -151,4 +151,58 @@ def calculate_mining_reward(machine):
     return reward
 
 
+def should_play_sound(user, sound_type):
+    """Check if sound should be played based on user settings"""
+    if not hasattr(user, 'sound_enabled'):
+        return True  # Default to enabled if attribute doesn't exist
+    return user.sound_enabled
+
+
+def get_sound_file(sound_type):
+    """Get sound file path for sound type"""
+    sound_files = {
+        "tap": "sounds/tap.mp3",
+        "mining": "sounds/mining.mp3",
+        "purchase": "sounds/purchase.mp3",
+        "level_up": "sounds/level_up.mp3",
+        "achievement": "sounds/achievement.mp3",
+    }
+    return sound_files.get(sound_type, "sounds/default.mp3")
+
+
+def play_sound(user, sound_type, context=None):
+    """
+    Play sound if enabled for user
+    This function logs the sound event. Actual playback happens in the web app.
+    
+    Args:
+        user: User object
+        sound_type: Type of sound to play (tap, mining, purchase, etc.)
+        context: Optional context object (for logging)
+    """
+    if not should_play_sound(user, sound_type):
+        return False
+    
+    sound_file = get_sound_file(sound_type)
+    
+    # Log sound event (for web app integration)
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Sound event: {sound_type} for user {user.telegram_id if hasattr(user, 'telegram_id') else user.id}")
+    
+    # In web app, this would trigger HTML5 audio playback
+    # The web app should check user.sound_enabled and play the sound file
+    
+    return True
+
+
+
+
+
+
+
+
+
+
+
 
