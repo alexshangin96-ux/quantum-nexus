@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v15.0.0 - COMPLETELY FIXED AUTOBOT BUTTONS BLINKING - BUILD: 2024-12-29-NO-BLINK -->
+<!-- Quantum Nexus v16.0.0 - ABSOLUTELY NO AUTOBOT BLINKING - BUILD: 2024-12-29-ZERO-BLINK -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2649,12 +2649,14 @@
                 updateAutobotToggle(data);
                 
                 // Update autobot shop buttons (only if shop modal is open and category is autobot)
-                // BUT skip if we just purchased an autobot (prevent blinking during purchase)
+                // BUT completely skip if autobot is active (prevent blinking during active autobot)
                 const shopModal = document.getElementById('shopModal2');
                 const isAutobotCategoryActive = shopModal && document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background.includes('linear-gradient');
                 const justPurchasedAutobot = window.justPurchasedAutobot || false;
+                const autobotIsActive = data.auto_tap_expires_at > Date.now() && data.auto_tap_level > 0;
                 
-                if (isAutobotCategoryActive && !justPurchasedAutobot) {
+                // NEVER update buttons if autobot is active (interval handles it)
+                if (isAutobotCategoryActive && !justPurchasedAutobot && !autobotIsActive && !window.autobotShopInterval) {
                     // Only update if autobot state changed (prevent unnecessary blinking)
                     const currentAutoTapLevel = window.currentAutoTapLevel || 0;
                     const currentAutoTapExpires = window.currentAutoTapExpires || 0;
@@ -2749,6 +2751,11 @@
                 return;
             }
             
+            // Skip update if autobot interval is already running (prevents blinking during active autobot)
+            if (window.autobotShopInterval) {
+                return; // Interval is already updating buttons, don't interfere
+            }
+            
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
             const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
@@ -2807,24 +2814,34 @@
                 
                 // Update countdown timer (only if interval doesn't exist)
                 if (!window.autobotShopInterval) {
+                    // Store autobot data for interval
+                    window.autobotIntervalLevel = autobotLevel;
+                    window.autobotIntervalExpires = autobotExpiresAt;
+                    
                     window.autobotShopInterval = setInterval(() => {
                         const now = Date.now();
-                        const remainingMs = autobotExpiresAt - now;
+                        const level = window.autobotIntervalLevel || autobotLevel;
+                        const expiresAt = window.autobotIntervalExpires || autobotExpiresAt;
+                        const remainingMs = expiresAt - now;
                         
                         if (remainingMs <= 0) {
                             clearInterval(window.autobotShopInterval);
                             window.autobotShopInterval = null;
-                            // Unblock all buttons
-                            for (let i = 1; i <= 20; i++) {
-                                const btn = document.getElementById(`autobot-btn-${i}`);
-                                if (btn) {
-                                    btn.disabled = false;
-                                    btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
-                                    btn.style.cursor = 'pointer';
-                                    const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
-                                    btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
+                            window.autobotIntervalLevel = null;
+                            window.autobotIntervalExpires = null;
+                            // Unblock all buttons (batch update to prevent flicker)
+                            requestAnimationFrame(() => {
+                                for (let i = 1; i <= 20; i++) {
+                                    const btn = document.getElementById(`autobot-btn-${i}`);
+                                    if (btn) {
+                                        btn.disabled = false;
+                                        btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                                        btn.style.cursor = 'pointer';
+                                        const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
+                                        btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
+                                    }
                                 }
-                            }
+                            });
                             return;
                         }
                         
@@ -2832,15 +2849,21 @@
                         const minutes = Math.floor((remainingMs % 3600000) / 60000);
                         const seconds = Math.floor((remainingMs % 60000) / 1000);
                         const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                        const newText = `⏱️ Осталось: ${timeText}`;
                         
-                        // Update only the purchased button with countdown (prevent unnecessary updates)
-                        const purchasedBtn = document.getElementById(`autobot-btn-${autobotLevel}`);
-                        if (purchasedBtn) {
-                            const newText = `⏱️ Осталось: ${timeText}`;
-                            if (purchasedBtn.innerHTML !== newText) {
-                                purchasedBtn.innerHTML = newText;
+                        // Update only the purchased button with countdown (use requestAnimationFrame to prevent flicker)
+                        requestAnimationFrame(() => {
+                            const purchasedBtn = document.getElementById(`autobot-btn-${level}`);
+                            if (purchasedBtn && purchasedBtn.innerHTML !== newText) {
+                                // Only update text node, don't replace entire HTML to prevent blinking
+                                const textNode = purchasedBtn.firstChild;
+                                if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                                    textNode.textContent = newText;
+                                } else {
+                                    purchasedBtn.innerHTML = newText;
+                                }
                             }
-                        }
+                        });
                     }, 1000);
                 }
             } else {
@@ -4804,10 +4827,21 @@
                                     const seconds = Math.floor((remainingMs % 60000) / 1000);
                                     const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                                     
-                                    // Update only the purchased button with countdown (only if changed)
-                                    if (autobotBtn && autobotBtn.innerHTML !== `⏱️ Осталось: ${timeText}`) {
-                                        autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
-                                    }
+                                    // Update only the purchased button with countdown (use requestAnimationFrame to prevent flicker)
+                                    requestAnimationFrame(() => {
+                                        if (autobotBtn) {
+                                            const newText = `⏱️ Осталось: ${timeText}`;
+                                            if (autobotBtn.innerHTML !== newText) {
+                                                // Only update text node, don't replace entire HTML to prevent blinking
+                                                const textNode = autobotBtn.firstChild;
+                                                if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                                                    textNode.textContent = newText;
+                                                } else {
+                                                    autobotBtn.innerHTML = newText;
+                                                }
+                                            }
+                                        }
+                                    });
                                 }, 1000);
                             }, 50); // Small delay to ensure initial update is complete
                         }
