@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.5.0 - Mining modal redesigned to match cards style - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.5.1 - Unified VIP modal style across all sections - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4475,20 +4475,25 @@
             modal.className = 'modal active';
             modal.style.zIndex = '10001';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
-                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                            <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                <div class="modal-content" style="max-width: 480px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 36px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
                             <div>
-                                <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP МАШИНЫ</h2>
-                                <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">🏭 Эксклюзивная добыча QuanHash</div>
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP МАШИНЫ</h2>
+                                <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 600;">Эксклюзивная добыча QuanHash</div>
                             </div>
                         </div>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
-                    <div style="padding: 25px;">
-                        <div id="vipMiningContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;"></div>
+                    <div style="padding: 20px;">
+                        <div id="vipMiningContent" style="display:grid;gap:12px;"></div>
+                        
+                        <!-- VIP стильная кнопка закрытия -->
+                        <button class="vip-close-btn" onclick="this.closest('.modal').remove()" style="margin-top:20px;">
+                            👑 Закрыть VIP функции
+                        </button>
                     </div>
                 </div>
             `;
@@ -4523,21 +4528,37 @@
                 const hashPerHour = Math.floor(card.baseHashPerHour * Math.pow(1.15, level));
                 
                 return `
-                    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,237,78,0.25));padding:16px;border-radius:16px;border:3px solid #ffd700;position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                        <div style="position:absolute;top:8px;right:8px;background:#ffd700;color:#000;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">VIP</div>
-                        <div style="font-size:32px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
-                        <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
-                        <div style="font-size:9px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;opacity:0.8;">${card.description || ''}</div>
-                        <div style="font-size:10px;color:${isMaxLevel ? '#fbbf24' : '#94a3b8'};text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}${isMaxLevel ? ' ⭐ MAX' : ` / ${maxLevel}`}</div>
-                        <div style="font-size:12px;color:#4ade80;font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px rgba(74,222,128,0.4);">Доход +${hashPerHour.toLocaleString()} QuanHash/ч</div>
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(255,215,0,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(255,215,0,0.25)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(255,215,0,0.15)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))'">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span style="font-size: 20px; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));">${card.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 800; font-size: 14px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${card.name}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">${card.description || ''}</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #ffd700; box-shadow: 0 3px 8px rgba(255,215,0,0.4); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                                <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">VIP</span>
+                            </div>
+                        </div>
+                        ${isMaxLevel ? '' : `
+                            <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⚡ Доход:</span>
+                                <span style="color: #fff; font-size: 12px; font-weight: 800;">+${hashPerHour.toLocaleString()} QuanHash/ч</span>
+                            </div>
+                            <div style="background: rgba(234,179,8,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #fbbf24; font-size: 12px; font-weight: 700;">📊 Уровень:</span>
+                                <span style="color: #fff; font-size: 12px; font-weight: 800;">${level} / ${maxLevel}</span>
+                            </div>
+                        `}
+                        
                         <button onclick="${isMaxLevel ? 'alert(\'✨ Максимальный уровень достигнут!\')' : `buyVIPMiningMachineWithStars('${card.id}', ${price}, ${card.productId})`}" 
-                                style="width:100%;padding:11px;background:${isMaxLevel ? 'linear-gradient(135deg,#fbbf24,#fcd34d,#fbbf24)' : 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)'};color:${isMaxLevel ? '#000' : '#000'};border:none;border-radius:10px;cursor:${isMaxLevel ? 'not-allowed' : 'pointer'};font-weight:900;font-size:11px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;opacity:${isMaxLevel ? 0.7 : 1};"
-                                onmousedown="${!isMaxLevel ? 'this.style.transform=\'scale(0.96)\'' : ''}" 
-                                onmouseup="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}" 
-                                onmouseleave="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'' : ''}">
-                            <span>${isMaxLevel ? '✨ Максимальный уровень' : `Купить за`}</span>
-                            <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">${isMaxLevel ? '' : '⭐'}</span>
-                            <span>${isMaxLevel ? '' : price}</span>
+                                style="width: 100%; padding: 10px 12px; background: ${isMaxLevel ? 'linear-gradient(135deg,#fbbf24,#fcd34d,#fbbf24)' : 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700)'}; color: ${isMaxLevel ? '#000' : '#000'}; border: 1px solid #ffd700; border-radius: 10px; cursor: ${isMaxLevel ? 'not-allowed' : 'pointer'}; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(255,215,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;"
+                                onmousedown="${!isMaxLevel ? 'this.style.transform=\'scale(0.98)\'; this.style.boxShadow=\'0 6px 16px rgba(255,215,0,0.4)\'' : ''}"
+                                onmouseup="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'; this.style.boxShadow=\'0 4px 12px rgba(255,215,0,0.3)\'' : ''}"
+                                onmouseleave="${!isMaxLevel ? 'this.style.transform=\'scale(1)\'; this.style.boxShadow=\'0 4px 12px rgba(255,215,0,0.3)\'' : ''}">
+                            <span>${isMaxLevel ? '✨ Максимальный уровень' : `Купить за ${price}`}</span>
+                            <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(255,215,0,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">${isMaxLevel ? '' : '⭐'}</span>
+                            ${isMaxLevel ? '' : '<span>Telegram Stars</span>'}
                         </button>
                     </div>
                 `;
@@ -4826,29 +4847,34 @@
             modal.className = 'modal active';
             modal.style.zIndex = '10000';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 20px 60px rgba(255,215,0,0.3);">
-                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                            <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                <div class="modal-content" style="max-width: 480px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 36px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
                             <div>
-                                <h2 style="font-size: 28px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP КАРТОЧКИ</h2>
-                                <div style="font-size: 15px; color: rgba(0,0,0,0.7); margin-top: 6px; font-weight: 600;">💎 Эксклюзивный пассивный доход</div>
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP КАРТОЧКИ</h2>
+                                <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 600;">Эксклюзивный пассивный доход</div>
                             </div>
                         </div>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="color: #000;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
-                    <div style="padding: 25px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:25px;">
-                            <button id="vipCardsBtnHour" onclick="loadVIPCardsCategory('per_hour')" style="padding:14px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));color:#fff;border:2px solid #ffd700;border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
+                    <div style="padding: 20px;">
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button id="vipCardsBtnHour" onclick="loadVIPCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));color:#fff;border:2px solid #ffd700;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;transition:all 0.3s;">
                                 ⚡ В час
                             </button>
-                            <button id="vipCardsBtnMin" onclick="loadVIPCardsCategory('per_minute')" style="padding:14px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(167,139,250,0.3);border-radius:12px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;">
+                            <button id="vipCardsBtnMin" onclick="loadVIPCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(167,139,250,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;transition:all 0.3s;">
                                 💎 В минуту
                             </button>
                         </div>
                         
-                        <div id="vipCardsContent" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;"></div>
+                        <div id="vipCardsContent" style="display:grid;gap:12px;"></div>
+                        
+                        <!-- VIP стильная кнопка закрытия -->
+                        <button class="vip-close-btn" onclick="this.closest('.modal').remove()" style="margin-top:20px;">
+                            👑 Закрыть VIP функции
+                        </button>
                     </div>
                 </div>
             `;
@@ -4865,9 +4891,9 @@
         
         window.loadVIPCardsCategory = function(category) {
             document.getElementById('vipCardsBtnHour').style.background = category === 'per_hour' ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : 'rgba(255,255,255,0.05)';
-            document.getElementById('vipCardsBtnHour').style.border = category === 'per_hour' ? '2px solid #ffd700' : '2px solid rgba(255,215,0,0.2)';
+            document.getElementById('vipCardsBtnHour').style.border = category === 'per_hour' ? '2px solid #ffd700' : '2px solid rgba(167,139,250,0.3)';
             document.getElementById('vipCardsBtnMin').style.background = category === 'per_minute' ? 'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(167,139,250,0.15))' : 'rgba(255,255,255,0.05)';
-            document.getElementById('vipCardsBtnMin').style.border = category === 'per_minute' ? '2px solid #8b5cf6' : '2px solid rgba(167,139,250,0.2)';
+            document.getElementById('vipCardsBtnMin').style.border = category === 'per_minute' ? '2px solid #8b5cf6' : '2px solid rgba(167,139,250,0.3)';
             window.showVIPCardsList(category);
         };
         
@@ -4918,20 +4944,30 @@
                 const incomeColor = isHour ? '#4ade80' : '#a78bfa';
                 
                 html += `
-                    <div style="background:${bgGradient};padding:16px;border-radius:16px;border:3px solid ${borderColor};position:relative;box-shadow:0 8px 25px rgba(0,0,0,0.3);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 35px rgba(0,0,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.3)'">
-                        <div style="position:absolute;top:8px;right:8px;background:${badgeBg};color:${badgeColor};padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,0.3);">VIP</div>
-                        <div style="font-size:28px;text-align:center;margin-bottom:8px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));">${card.emoji}</div>
-                        <div style="font-weight:900;font-size:14px;color:#fff;text-align:center;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${card.name}</div>
-                        <div style="font-size:10px;color:#94a3b8;text-align:center;margin-bottom:8px;font-weight:600;">Уровень ${level}</div>
-                        <div style="font-size:13px;color:${incomeColor};font-weight:900;text-align:center;margin-bottom:12px;text-shadow:0 0 10px ${incomeColor}40;">${incomeText}</div>
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(255,215,0,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(255,215,0,0.25)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(255,215,0,0.15)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))'">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span style="font-size: 20px; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));">${card.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 800; font-size: 14px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${card.name}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">Пассивный доход 24/7</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #ffd700; box-shadow: 0 3px 8px rgba(255,215,0,0.4); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                                <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">VIP</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #4ade80; font-size: 12px; font-weight: 700;">💰 Доход:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${incomeText}</span>
+                        </div>
                         <button onclick="buyVIPCardWithStars('${card.rarity}', ${price}, ${card.productId})" 
-                                style="width:100%;padding:11px;background:${buttonGradient};color:${buttonColor};border:none;border-radius:10px;cursor:pointer;font-weight:900;font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:6px;"
-                                onmousedown="this.style.transform='scale(0.96)'" 
-                                onmouseup="this.style.transform='scale(1)'" 
-                                onmouseleave="this.style.transform='scale(1)'">
-                            <span>Купить за</span>
-                            <span style="font-size:14px;filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
-                            <span>${price}</span>
+                                style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 1px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(255,215,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;"
+                                onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'"
+                                onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'"
+                                onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">
+                            <span>Купить за ${price}</span>
+                            <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(255,215,0,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                            <span>Telegram Stars</span>
                         </button>
                     </div>
                 `;
