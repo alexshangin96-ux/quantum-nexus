@@ -5306,7 +5306,7 @@
             `;
             document.body.appendChild(modal);
             
-            // Apply VIP styling to all cards after modal is created
+            // Apply comprehensive VIP styling to all cards after modal is created
             setTimeout(() => {
                 const cards = document.querySelectorAll('#buyCurrencyModal [data-category]');
                 cards.forEach(card => {
@@ -5324,6 +5324,7 @@
                     
                     const config = colorConfig[category] || colorConfig['starter'];
                     
+                    // Apply VIP card styling
                     card.style.background = `linear-gradient(135deg,${config.bg},${config.gradient})`;
                     card.style.border = `2px solid ${config.border}`;
                     card.style.boxShadow = `0 4px 15px ${config.shadow}`;
@@ -5331,17 +5332,54 @@
                     card.style.borderRadius = '12px';
                     card.style.marginBottom = '12px';
                     
+                    // Wrap benefits in VIP style box if not already wrapped
+                    const title = card.querySelector('div[style*="font-size:15px"]');
+                    if (title) title.style.fontWeight = '900';
+                    
+                    // Find and wrap benefits
+                    const benefits = card.querySelectorAll('div[style*="margin-top:4px"]');
+                    benefits.forEach(benefit => {
+                        if (benefit.textContent.startsWith('✅')) {
+                            // Create wrapper if not exists
+                            if (!benefit.closest('div[style*="background:rgba(0,0,0,0.2)"]')) {
+                                const wrapper = document.createElement('div');
+                                wrapper.style.background = 'rgba(0,0,0,0.2)';
+                                wrapper.style.padding = '10px';
+                                wrapper.style.borderRadius = '8px';
+                                wrapper.style.marginBottom = '10px';
+                                wrapper.style.marginTop = '10px';
+                                
+                                const inner = document.createElement('div');
+                                inner.style.fontSize = '11px';
+                                inner.style.color = '#94a3b8';
+                                inner.style.lineHeight = '1.8';
+                                inner.innerHTML = benefit.outerHTML;
+                                
+                                wrapper.appendChild(inner);
+                                const button = card.querySelector('button');
+                                card.insertBefore(wrapper, button);
+                                benefit.remove();
+                            }
+                        }
+                    });
+                    
                     // Style buttons inside cards
                     const buttons = card.querySelectorAll('button');
                     buttons.forEach(button => {
                         button.style.fontWeight = '900';
+                        button.style.padding = '10px';
                         button.style.transition = 'all 0.3s ease';
                         if (category === 'starter' || category === 'limited' || category === 'ultra') {
                             button.style.boxShadow = `0 2px 8px ${config.shadow}30`;
                         }
+                        // Update button text to VIP style
+                        const originalText = button.textContent;
+                        if (!originalText.includes('Купить за')) {
+                            button.innerHTML = '💰 Купить за ' + originalText.replace('💰 ', '');
+                        }
                     });
                 });
-            }, 50);
+            }, 100);
             
             setTimeout(() => window.filterCategory('starter'), 100);
         }
