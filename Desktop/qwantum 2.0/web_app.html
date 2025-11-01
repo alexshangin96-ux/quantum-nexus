@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v11.0.0 - BEAUTIFUL SHOP MODAL + NEON COSMIC SOUNDS - BUILD: 2024-12-29-SHOP-VISUAL -->
+<!-- Quantum Nexus v12.0.0 - STYLISH ONE-COLUMN SHOP ITEMS - BUILD: 2024-12-29-SHOP-STYLISH -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -3905,7 +3905,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+                        <div id="shopItemsList" style="display:flex;flex-direction:column;gap:14px;align-items:center;"></div>
                         <div id="vipShopSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
                     </div>
                     
@@ -4280,20 +4280,20 @@
                 // Use calculated price and bonus for next level
                 
                 return `
-                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:14px;border-radius:14px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}">
+                    <div style="background:${isLocked ? 'rgba(0,0,0,0.5)' : item.premium ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : rarityColor};padding:20px;border-radius:16px;border:2px solid ${isLocked ? 'rgba(239,68,68,0.5)' : item.premium ? 'rgba(255,215,0,0.6)' : 'rgba(102,126,234,0.4)'};position:relative;${isLocked ? 'opacity:0.6;' : ''}width:100%;max-width:400px;transition:all 0.3s ease;box-shadow:0 4px 16px rgba(0,0,0,0.2);cursor:pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.2)'">
                         ${isLocked ? `
                             <div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,0.8);color:#fff;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;">🔒</div>
                         ` : item.premium ? `
                             <div style="position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 8px rgba(255,215,0,0.4);">⭐ VIP</div>
                         ` : ''}
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                            <span style="font-size:20px;">${item.name.split(' ')[0]}</span>
-                            <div style="flex:1;">
-                                <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
-                                    <div style="font-weight:800;font-size:14px;color:#fff;">${item.name.split(' ').slice(1).join(' ')} #${index + 1}</div>
-                                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.8),rgba(139,92,246,0.8));color:#fff;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 4px rgba(102,126,234,0.3);">Ур.${currentLevel}</div>
+                        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px;">
+                            <span style="font-size:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${item.name.split(' ')[0]}</span>
+                            <div style="flex:1;text-align:center;">
+                                <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;">
+                                    <div style="font-weight:800;font-size:15px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.3);">${item.name.split(' ').slice(1).join(' ')}</div>
+                                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.9),rgba(139,92,246,0.9));color:#fff;padding:3px 8px;border-radius:8px;font-size:11px;font-weight:700;box-shadow:0 2px 6px rgba(102,126,234,0.4);">Ур.${currentLevel}</div>
                                 </div>
-                                <div style="font-size:11px;color:#94a3b8;">${item.desc}</div>
+                                <div style="font-size:12px;color:#94a3b8;line-height:1.4;">${item.desc}</div>
                             </div>
                         </div>
                         ${category === 'tap_boost' ? `
