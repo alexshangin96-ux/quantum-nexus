@@ -34,3 +34,5 @@ sudo -u postgres psql quantum_nexus -c "\dt"
 
 
 
+
+

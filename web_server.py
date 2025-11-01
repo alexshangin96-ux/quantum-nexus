@@ -16,9 +16,38 @@ import os
 app = Flask(__name__, static_folder='.')
 CORS(app)
 
+# Helper functions for level and rating calculation
+def calculate_level(experience):
+    """Calculate level based on experience"""
+    if experience <= 0:
+        return 1
+    level = int((experience / 100) ** 0.5) + 1
+    return min(level, 100)  # Max level 100
+
+def calculate_experience(total_earned, total_taps, vip_level):
+    """Calculate experience from user activity"""
+    base_exp = (total_earned or 0) * 0.01  # 1% from earned coins
+    tap_bonus = (total_taps or 0) * 0.1  # Per tap
+    vip_bonus = (vip_level or 0) * 1000  # VIP bonus
+    return base_exp + tap_bonus + vip_bonus
+
+def calculate_rating(coins, total_earned, total_taps, vip_level, level):
+    """Calculate overall rating for ranking"""
+    coins_score = (coins or 0) * 0.01
+    earned_score = (total_earned or 0) * 0.1
+    taps_score = (total_taps or 0) * 0.05
+    vip_score = (vip_level or 0) * 1000000  # VIP always on top
+    level_score = (level or 1) * 10000
+    return coins_score + earned_score + taps_score + vip_score + level_score
+
 @app.route('/')
 def index():
     """Serve web app"""
+    return send_from_directory('.', 'web_app.html')
+
+@app.route('/game_v4.html')
+def game_v4():
+    """Serve new version of web app"""
     return send_from_directory('.', 'web_app.html')
 
 @app.route('/admin')
@@ -215,15 +244,78 @@ def get_user_data():
             # Get purchased cards and machines
             user_cards = []
             try:
+                # Card definitions to map card_type to name
+                per_minute_cards = [
+                    {'name': '⚡ Энергетический генератор', 'desc': 'Производит 0.5 коинов/мин', 'base_income': 0.5, 'base_price': 50000, 'rarity': 'common'},
+                    {'name': '🔋 Мощная батарея', 'desc': 'Производит 1.2 коинов/мин', 'base_income': 1.2, 'base_price': 75000, 'rarity': 'common'},
+                    {'name': '💎 Драгоценный кристалл', 'desc': 'Производит 2.5 коинов/мин', 'base_income': 2.5, 'base_price': 120000, 'rarity': 'rare'},
+                    {'name': '⭐ Звездное ядро', 'desc': 'Производит 4.0 коинов/мин', 'base_income': 4.0, 'base_price': 200000, 'rarity': 'rare'},
+                    {'name': '🔥 Плазменный реактор', 'desc': 'Производит 6.5 коинов/мин', 'base_income': 6.5, 'base_price': 350000, 'rarity': 'epic'},
+                    {'name': '⚛️ Квантовый генератор', 'desc': 'Производит 10.0 коинов/мин', 'base_income': 10.0, 'base_price': 550000, 'rarity': 'epic'},
+                    {'name': '🌌 Галактический мотор', 'desc': 'Производит 15.0 коинов/мин', 'base_income': 15.0, 'base_price': 850000, 'rarity': 'legendary'},
+                    {'name': '👑 Императорский трон', 'desc': 'Производит 22.0 коинов/мин', 'base_income': 22.0, 'base_price': 1300000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сердце', 'desc': 'Производит 30.0 коинов/мин', 'base_income': 30.0, 'base_price': 2000000, 'rarity': 'legendary'},
+                    {'name': '💫 Бесконечность', 'desc': 'Производит 40.0 коинов/мин', 'base_income': 40.0, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '🧠 Нейросеть', 'desc': 'Производит 5.5 коинов/мин', 'base_income': 5.5, 'base_price': 280000, 'rarity': 'epic'},
+                    {'name': '🪐 Планетарный коллайдер', 'desc': 'Производит 18.0 коинов/мин', 'base_income': 18.0, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🎯 Точностный лазер', 'desc': 'Производит 3.0 коинов/мин', 'base_income': 3.0, 'base_price': 150000, 'rarity': 'rare'},
+                    {'name': '🛸 Внеземной чип', 'desc': 'Производит 14.0 коинов/мин', 'base_income': 14.0, 'base_price': 750000, 'rarity': 'epic'},
+                    {'name': '⚗️ Алхимический аппарат', 'desc': 'Производит 8.5 коинов/мин', 'base_income': 8.5, 'base_price': 450000, 'rarity': 'epic'},
+                    {'name': '🧪 Биомедиум', 'desc': 'Производит 12.0 коинов/мин', 'base_income': 12.0, 'base_price': 650000, 'rarity': 'epic'},
+                    {'name': '🌠 Новойдовый ускоритель', 'desc': 'Производит 25.0 коинов/мин', 'base_income': 25.0, 'base_price': 1700000, 'rarity': 'legendary'},
+                    {'name': '🔬 Крио-модуль', 'desc': 'Производит 9.0 коинов/мин', 'base_income': 9.0, 'base_price': 500000, 'rarity': 'epic'},
+                    {'name': '💻 Киберсистема', 'desc': 'Производит 35.0 коинов/мин', 'base_income': 35.0, 'base_price': 2500000, 'rarity': 'legendary'},
+                    {'name': '🏆 Победный трофей', 'desc': 'Производит 50.0 коинов/мин', 'base_income': 50.0, 'base_price': 5000000, 'rarity': 'legendary'},
+                ]
+                per_hour_cards = [
+                    {'name': '🟢 Базовая ферма', 'desc': 'Производит 5 коинов/час', 'base_income': 5, 'base_price': 1000, 'rarity': 'common'},
+                    {'name': '🌱 Росток успеха', 'desc': 'Производит 12 коинов/час', 'base_income': 12, 'base_price': 2500, 'rarity': 'common'},
+                    {'name': '🍀 Четырехлистник', 'desc': 'Производит 20 коинов/час', 'base_income': 20, 'base_price': 5000, 'rarity': 'common'},
+                    {'name': '⚡ Ускоритель', 'desc': 'Производит 35 коинов/час', 'base_income': 35, 'base_price': 8000, 'rarity': 'rare'},
+                    {'name': '🔵 Редкий артефакт', 'desc': 'Производит 55 коинов/час', 'base_income': 55, 'base_price': 15000, 'rarity': 'rare'},
+                    {'name': '🟣 Эпический кристалл', 'desc': 'Производит 90 коинов/час', 'base_income': 90, 'base_price': 30000, 'rarity': 'epic'},
+                    {'name': '⭐ Звездная пыль', 'desc': 'Производит 140 коинов/час', 'base_income': 140, 'base_price': 50000, 'rarity': 'epic'},
+                    {'name': '🔥 Огненное ядро', 'desc': 'Производит 220 коинов/час', 'base_income': 220, 'base_price': 85000, 'rarity': 'legendary'},
+                    {'name': '💎 Кристалл удачи', 'desc': 'Производит 350 коинов/час', 'base_income': 350, 'base_price': 150000, 'rarity': 'legendary'},
+                    {'name': '👑 Корона власти', 'desc': 'Производит 550 коинов/час', 'base_income': 550, 'base_price': 250000, 'rarity': 'legendary'},
+                    {'name': '🏆 Чемпионство', 'desc': 'Производит 850 коинов/час', 'base_income': 850, 'base_price': 400000, 'rarity': 'legendary'},
+                    {'name': '🚀 Ракета мечты', 'desc': 'Производит 1300 коинов/час', 'base_income': 1300, 'base_price': 650000, 'rarity': 'legendary'},
+                    {'name': '🐉 Драконье сокровище', 'desc': 'Производит 2000 коинов/час', 'base_income': 2000, 'base_price': 1000000, 'rarity': 'legendary'},
+                    {'name': '🌌 Галактика', 'desc': 'Производит 3100 коинов/час', 'base_income': 3100, 'base_price': 1800000, 'rarity': 'legendary'},
+                    {'name': '⚛️ Квантовый скачок', 'desc': 'Производит 5000 коинов/час', 'base_income': 5000, 'base_price': 3000000, 'rarity': 'legendary'},
+                    {'name': '💫 Вечность', 'desc': 'Производит 8000 коинов/час', 'base_income': 8000, 'base_price': 5000000, 'rarity': 'legendary'},
+                    {'name': '🌈 Радужный мост', 'desc': 'Производит 13000 коинов/час', 'base_income': 13000, 'base_price': 8500000, 'rarity': 'legendary'},
+                    {'name': '🌠 Звездопад', 'desc': 'Производит 21000 коинов/час', 'base_income': 21000, 'base_price': 15000000, 'rarity': 'legendary'},
+                    {'name': '🎆 Новогодний салют', 'desc': 'Производит 34000 коинов/час', 'base_income': 34000, 'base_price': 25000000, 'rarity': 'legendary'},
+                    {'name': '🌟 Супернова', 'desc': 'Производит 55000 коинов/час', 'base_income': 55000, 'base_price': 50000000, 'rarity': 'legendary'},
+                ]
+                
                 for card in user.cards:
                     if hasattr(card, 'is_active') and card.is_active:
+                        # Map card_type to name
+                        card_name = 'Unknown Card'
+                        card_type = getattr(card, 'card_type', None)
+                        if card_type:
+                            if card_type.startswith('card_min_'):
+                                idx = int(card_type.split('_')[2]) if card_type.split('_')[2].isdigit() else 0
+                                if idx < len(per_minute_cards):
+                                    card_name = per_minute_cards[idx]['name']
+                            elif card_type.startswith('card_hour_'):
+                                idx = int(card_type.split('_')[2]) if card_type.split('_')[2].isdigit() else 0
+                                if idx < len(per_hour_cards):
+                                    card_name = per_hour_cards[idx]['name']
+                            elif hasattr(card, 'name') and card.name:
+                                card_name = card.name
+                        
                         user_cards.append({
-                            'name': getattr(card, 'name', 'Unknown Card'),
+                            'name': card_name,
                             'income': getattr(card, 'income_per_minute', 0) or 0,
                             'type': 'permanent'
                         })
             except Exception as e:
                 print(f"Error getting cards: {e}")
+                import traceback
+                traceback.print_exc()
                 user_cards = []
             
             user_machines = []
@@ -237,8 +329,18 @@ def get_user_data():
                         })
             except Exception as e:
                 print(f"Error getting machines: {e}")
+                import traceback
+                traceback.print_exc()
                 user_machines = []
             
+            # Calculate experience, level, and rating for current user
+            vip_level = getattr(user, 'vip_level', 0) or 0
+            experience = calculate_experience(user.total_earned, user.total_taps, vip_level)
+            level = calculate_level(experience)
+            rating = calculate_rating(user.coins, user.total_earned, user.total_taps, vip_level, level)
+            
+            # Get shop item levels
+            import json
             return jsonify({
                 'id': user.id,  # Add database ID
                 'coins': user.coins,
@@ -264,7 +366,13 @@ def get_user_data():
                 'boost_expires_at': boost_expires_at,
                 'username': username,
                 'cards': user_cards,
-                'machines': user_machines
+                'machines': user_machines,
+                'tap_boost_levels': json.loads(user.tap_boost_levels or '{}'),
+                'energy_buy_levels': json.loads(user.energy_buy_levels or '{}'),
+                'energy_expand_levels': json.loads(user.energy_expand_levels or '{}'),
+                'level': level,
+                'experience': round(experience, 2),
+                'rating': round(rating, 2)
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -577,7 +685,7 @@ def get_mining():
     try:
         data = request.json
         user_id = data.get('user_id')
-        category = data.get('category', 'starter')
+        category = data.get('category', 'coins')
         
         if not user_id:
             return jsonify({'error': 'User ID required'}), 400
@@ -588,39 +696,111 @@ def get_mining():
             if not user:
                 return jsonify({'error': 'User not found'}), 404
             
-            # Generate 30 machines for each category
-            if category == 'starter':
-                # Machines for coins (starting from 5000)
-                machines = [
-                    {'id': f'starter_{i}', 'name': f'Стартовая машина #{i+1}', 'price': 5000 + i*5000, 'hash_rate': round(0.05*(i+1), 2), 'currency': 'coins', 'hash_per_hour': round(0.05*(i+1)*3600)}
-                    for i in range(30)
-                ]
-            else:
-                # Machines for QuanHash
-                machines = [
-                    {'id': f'premium_{i}', 'name': f'Премиум машина #{i+1}', 'price': 50 + i*50, 'hash_rate': round(0.5*(i+1), 2), 'currency': 'quanhash', 'hash_per_hour': round(0.5*(i+1)*3600)}
-                    for i in range(30)
-                ]
+            # Get machine levels from user JSON (source of truth)
+            import json
+            mining_levels = {}
+            if category == 'coins':
+                mining_levels = json.loads(user.mining_coins_levels or '{}')
+            elif category == 'quanhash':
+                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+            elif category == 'vip':
+                mining_levels = json.loads(user.mining_vip_levels or '{}')
             
-            user_machines = db.query(MiningMachine).filter_by(user_id=user.id).all()
-            machines_data = []
-            for machine in user_machines:
-                machines_data.append({
-                    'id': machine.id,
-                    'name': machine.name,
-                    'level': machine.level,
-                    'hash_rate': machine.hash_rate,
-                    'income_per_hour': machine.hash_rate * 3600,
-                })
+            # Machine definitions for calculating income (ALL categories)
+            machines_defs = {
+                'coins': [
+                    {'id': 'miner_cpu', 'name': 'CPU Майнер', 'baseHashPerHour': 10, 'emoji': '💻'},
+                    {'id': 'miner_gpu', 'name': 'GPU Майнер', 'baseHashPerHour': 50, 'emoji': '🎮'},
+                    {'id': 'miner_asic', 'name': 'ASIC Риг', 'baseHashPerHour': 200, 'emoji': '⚡'},
+                    {'id': 'miner_quantum', 'name': 'Quantum Майнер', 'baseHashPerHour': 800, 'emoji': '💎'},
+                    {'id': 'miner_server', 'name': 'Server Ферма', 'baseHashPerHour': 3000, 'emoji': '🖥️'},
+                    {'id': 'miner_cloud', 'name': 'Cloud Риг', 'baseHashPerHour': 12000, 'emoji': '☁️'},
+                    {'id': 'miner_data', 'name': 'Data Центр', 'baseHashPerHour': 50000, 'emoji': '🏢'},
+                    {'id': 'miner_quantum_farm', 'name': 'Quantum Ферма', 'baseHashPerHour': 200000, 'emoji': '🌌'},
+                    {'id': 'miner_neural', 'name': 'Neural Майнер', 'baseHashPerHour': 800000, 'emoji': '🧠'},
+                    {'id': 'miner_cosmic', 'name': 'Cosmic Станция', 'baseHashPerHour': 3200000, 'emoji': '🚀'}
+                ],
+                'quanhash': [
+                    {'id': 'hash_quantum_core', 'name': 'Quantum Ядро', 'baseHashPerHour': 80, 'emoji': '⚛️'},
+                    {'id': 'hash_plasma_rig', 'name': 'Plasma Риг', 'baseHashPerHour': 400, 'emoji': '🔥'},
+                    {'id': 'hash_stellar', 'name': 'Stellar Блок', 'baseHashPerHour': 1800, 'emoji': '⭐'},
+                    {'id': 'hash_cosmic_flux', 'name': 'Cosmic Поток', 'baseHashPerHour': 7000, 'emoji': '🌊'},
+                    {'id': 'hash_nova', 'name': 'Nova Ускоритель', 'baseHashPerHour': 28000, 'emoji': '🌟'},
+                    {'id': 'hash_galaxy', 'name': 'Galaxy Матрица', 'baseHashPerHour': 110000, 'emoji': '🌌'},
+                    {'id': 'hash_void', 'name': 'Void Порталы', 'baseHashPerHour': 450000, 'emoji': '🕳️'},
+                    {'id': 'hash_eternal', 'name': 'Eternal Движитель', 'baseHashPerHour': 1800000, 'emoji': '∞'},
+                    {'id': 'hash_divine', 'name': 'Divine Генератор', 'baseHashPerHour': 7200000, 'emoji': '👑'},
+                    {'id': 'hash_absolute', 'name': 'Absolute Мощь', 'baseHashPerHour': 28800000, 'emoji': '⚡'}
+                ],
+                'vip': [
+                    {'id': 'vip_quantum_prime', 'name': 'Quantum Prime', 'baseHashPerHour': 120000, 'emoji': '⚡'},
+                    {'id': 'vip_solar_core', 'name': 'Solar Core', 'baseHashPerHour': 300000, 'emoji': '☀️'},
+                    {'id': 'vip_black_hole', 'name': 'Black Hole', 'baseHashPerHour': 750000, 'emoji': '🕳️'},
+                    {'id': 'vip_nebula', 'name': 'Nebula Ферма', 'baseHashPerHour': 2000000, 'emoji': '🌫️'},
+                    {'id': 'vip_multiverse', 'name': 'Multiverse Станция', 'baseHashPerHour': 5000000, 'emoji': '🌐'},
+                    {'id': 'vip_infinity', 'name': 'Infinity Альянс', 'baseHashPerHour': 12000000, 'emoji': '♾️'}
+                ]
+            }
+            
+            # Get all user machines from database (source of truth)
+            user_machines_db = db.query(MiningMachine).filter_by(user_id=user.id).all()
+            
+            # Group machines by machine_type (or name if machine_type is null)
+            machines_dict = {}
+            for machine in user_machines_db:
+                key = machine.machine_type if machine.machine_type else machine.name
+                if key in machines_dict:
+                    machines_dict[key]['count'] += 1
+                    machines_dict[key]['total_income'] += machine.hash_rate * 3600
+                else:
+                    machines_dict[key] = {
+                        'machine_id': key,
+                        'name': machine.name,
+                        'level': machine.level,
+                        'count': 1,
+                        'hash_rate': machine.hash_rate,
+                        'income_per_hour': machine.hash_rate * 3600,
+                        'total_income': machine.hash_rate * 3600
+                    }
+            
+            # Calculate proper income_per_hour for grouped machines
+            all_machines_data = list(machines_dict.values())
+            for m in all_machines_data:
+                if m['count'] > 1:
+                    m['income_per_hour'] = m['total_income']
+            
+            # Debug logging
+            print(f"=== GET_MINING REQUEST ===")
+            print(f"User {user_id}, category: {category}")
+            print(f"User has {len(user_machines_db)} machines in DB")
+            print(f"Grouped into {len(all_machines_data)} unique machines")
+            for m in all_machines_data:
+                print(f"  - {m['name']}: level {m['level']}, count {m['count']}, income {m['total_income']}")
+            
+            # Get machine levels for current category (for shop display) from JSON
+            mining_levels = {}
+            if category == 'coins':
+                mining_levels = json.loads(user.mining_coins_levels or '{}')
+            elif category == 'quanhash':
+                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+            elif category == 'vip':
+                mining_levels = json.loads(user.mining_vip_levels or '{}')
+            
+            print(f"Returning {len(all_machines_data)} machines to frontend")
+            print(f"=== END GET_MINING ===")
             
             return jsonify({
                 'quanhash': user.quanhash,
                 'coins': user.coins,
                 'category': category,
-                'shop_machines': machines,
-                'user_machines': machines_data
+                'shop_machines': [],  # Now loaded from frontend
+                'user_machines': all_machines_data,  # ALL purchased machines from all categories
+                'machine_levels': mining_levels
             })
     except Exception as e:
+        print(f"Error in /api/mining: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/cards', methods=['POST'])
@@ -630,10 +810,10 @@ def get_cards():
         data = request.json or {}
         user_id = data.get('user_id')
         telegram_id = data.get('telegram_id')
-
+        
         if not user_id and not telegram_id:
             return jsonify({'error': 'User ID required'}), 400
-
+        
         with get_db() as db:
             user = None
             if user_id:
@@ -1129,7 +1309,7 @@ def admin_add_passive_hash():
                 )
                 db.add(machine)
             db.commit()
-            return jsonify({'success': True})
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -1287,7 +1467,7 @@ def buy_item():
                 from datetime import timedelta
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(hours=24)
                 user.last_active = datetime.utcnow()
-                db.commit()
+            db.commit()
             
             print(f"Successfully processed purchase for user {user_id}, item {item_type}")
             return jsonify({'success': True})
@@ -1657,6 +1837,31 @@ def process_star_purchase():
                 user.auto_tap_level = level
                 user.auto_tap_speed = speed
                 user.auto_tap_expires_at = datetime.utcnow() + timedelta(minutes=duration_minutes)
+            elif category == 'mining_vip':
+                # VIP mining machines mapping to product_ids 71-76
+                # VIP machines: vip_quantum_prime, vip_solar_core, vip_black_hole, vip_nebula, vip_multiverse, vip_infinity
+                vip_machine_map = {
+                    71: 'vip_quantum_prime',
+                    72: 'vip_solar_core',
+                    73: 'vip_black_hole',
+                    74: 'vip_nebula',
+                    75: 'vip_multiverse',
+                    76: 'vip_infinity'
+                }
+                machine_id = vip_machine_map.get(product_id, None)
+                
+                if machine_id:
+                    import json
+                    vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    current_level = vip_levels.get(machine_id, 0)
+                    new_level = current_level + 1
+                    
+                    # Check max level
+                    if new_level > 50:
+                        return jsonify({'success': False, 'error': 'Maximum level reached'})
+                    
+                    vip_levels[machine_id] = new_level
+                    user.mining_vip_levels = json.dumps(vip_levels)
             
             db.commit()
             return jsonify({'success': True})
@@ -1674,6 +1879,9 @@ def buy_machine():
         price = data.get('price')
         currency = data.get('currency', 'coins')
         
+        print(f"=== BUY_MACHINE REQUEST ===")
+        print(f"user_id: {user_id}, machine_id: {machine_id}, price: {price}, currency: {currency}")
+        
         if not user_id or not machine_id or not price:
             return jsonify({'success': False, 'error': 'Missing parameters'})
         
@@ -1681,7 +1889,10 @@ def buy_machine():
             user = db.query(User).filter_by(telegram_id=user_id).first()
             
             if not user:
+                print(f"User not found: {user_id}")
                 return jsonify({'success': False, 'error': 'User not found'})
+            
+            print(f"User found: id={user.id}, telegram_id={user.telegram_id}")
             
             # Check balance
             if currency == 'coins':
@@ -1693,30 +1904,111 @@ def buy_machine():
                     return jsonify({'success': False, 'error': 'Недостаточно QuanHash'})
                 user.quanhash -= price
             
-            # Parse machine info from ID (format: starter_0, premium_15, etc)
-            parts = machine_id.split('_')
-            if len(parts) != 2:
+            # Machine definitions (same as frontend)
+            machines_data = {
+                'coins': [
+                    {'id': 'miner_cpu', 'name': 'CPU Майнер', 'basePrice': 5000, 'baseHashPerHour': 10, 'emoji': '💻'},
+                    {'id': 'miner_gpu', 'name': 'GPU Майнер', 'basePrice': 20000, 'baseHashPerHour': 50, 'emoji': '🎮'},
+                    {'id': 'miner_asic', 'name': 'ASIC Риг', 'basePrice': 80000, 'baseHashPerHour': 200, 'emoji': '⚡'},
+                    {'id': 'miner_quantum', 'name': 'Quantum Майнер', 'basePrice': 300000, 'baseHashPerHour': 800, 'emoji': '💎'},
+                    {'id': 'miner_server', 'name': 'Server Ферма', 'basePrice': 1000000, 'baseHashPerHour': 3000, 'emoji': '🖥️'},
+                    {'id': 'miner_cloud', 'name': 'Cloud Риг', 'basePrice': 3500000, 'baseHashPerHour': 12000, 'emoji': '☁️'},
+                    {'id': 'miner_data', 'name': 'Data Центр', 'basePrice': 12000000, 'baseHashPerHour': 50000, 'emoji': '🏢'},
+                    {'id': 'miner_quantum_farm', 'name': 'Quantum Ферма', 'basePrice': 40000000, 'baseHashPerHour': 200000, 'emoji': '🌌'},
+                    {'id': 'miner_neural', 'name': 'Neural Майнер', 'basePrice': 150000000, 'baseHashPerHour': 800000, 'emoji': '🧠'},
+                    {'id': 'miner_cosmic', 'name': 'Cosmic Станция', 'basePrice': 500000000, 'baseHashPerHour': 3200000, 'emoji': '🚀'}
+                ],
+                'quanhash': [
+                    {'id': 'hash_quantum_core', 'name': 'Quantum Ядро', 'basePrice': 10000, 'baseHashPerHour': 80, 'emoji': '⚛️'},
+                    {'id': 'hash_plasma_rig', 'name': 'Plasma Риг', 'basePrice': 50000, 'baseHashPerHour': 400, 'emoji': '🔥'},
+                    {'id': 'hash_stellar', 'name': 'Stellar Блок', 'basePrice': 250000, 'baseHashPerHour': 1800, 'emoji': '⭐'},
+                    {'id': 'hash_cosmic_flux', 'name': 'Cosmic Поток', 'basePrice': 1000000, 'baseHashPerHour': 7000, 'emoji': '🌊'},
+                    {'id': 'hash_nova', 'name': 'Nova Ускоритель', 'basePrice': 4000000, 'baseHashPerHour': 28000, 'emoji': '🌟'},
+                    {'id': 'hash_galaxy', 'name': 'Galaxy Матрица', 'basePrice': 15000000, 'baseHashPerHour': 110000, 'emoji': '🌌'},
+                    {'id': 'hash_void', 'name': 'Void Порталы', 'basePrice': 60000000, 'baseHashPerHour': 450000, 'emoji': '🕳️'},
+                    {'id': 'hash_eternal', 'name': 'Eternal Движитель', 'basePrice': 250000000, 'baseHashPerHour': 1800000, 'emoji': '∞'},
+                    {'id': 'hash_divine', 'name': 'Divine Генератор', 'basePrice': 1000000000, 'baseHashPerHour': 7200000, 'emoji': '👑'},
+                    {'id': 'hash_absolute', 'name': 'Absolute Мощь', 'basePrice': 4000000000, 'baseHashPerHour': 28800000, 'emoji': '⚡'}
+                ]
+            }
+            
+            # Find machine definition
+            machine_def = None
+            for cat in machines_data.values():
+                for m in cat:
+                    if m['id'] == machine_id:
+                        machine_def = m
+                        break
+                if machine_def:
+                    break
+            
+            if not machine_def:
                 return jsonify({'success': False, 'error': 'Invalid machine ID'})
             
-            machine_num = int(parts[1])
-            if parts[0] == 'starter':
-                hash_rate = round(0.05 * (machine_num + 1), 2)
-                name = f'Стартовая машина #{machine_num + 1}'
-            else:  # premium
-                hash_rate = round(0.5 * (machine_num + 1), 2)
-                name = f'Премиум машина #{machine_num + 1}'
+            # Get current level from user's JSON field (this is the source of truth)
+            import json
+            current_level = 0
+            if currency == 'coins':
+                levels = json.loads(user.mining_coins_levels or '{}')
+                current_level = levels.get(machine_id, 0)
+            elif currency == 'quanhash':
+                levels = json.loads(user.mining_quanhash_levels or '{}')
+                current_level = levels.get(machine_id, 0)
+            
+            print(f"Current level from JSON: {current_level}")
+            
+            # Check if machine already exists in database
+            existing = db.query(MiningMachine).filter_by(
+                user_id=user.id, 
+                machine_type=machine_id
+            ).first()
+            
+            new_level = current_level + 1
+            
+            print(f"New level: {new_level}")
+            
+            # Check max level (50)
+            if new_level > 50:
+                print(f"Max level reached: {new_level}")
+                return jsonify({'success': False, 'error': 'Maximum level reached'})
+            
+            # Calculate hash_per_hour - level in DB is 1-based, but calculation should use current_level
+            # When current_level=0 (first purchase), hash should be baseHashPerHour * 1.15^0 = baseHashPerHour
+            hash_per_hour = int(machine_def['baseHashPerHour'] * (1.15 ** current_level))
+            
+            print(f"Creating machine: name={machine_def['name']}, hash_per_hour={hash_per_hour}, level={new_level}")
             
             machine = MiningMachine(
                 user_id=user.id,
-                name=name,
-                hash_rate=hash_rate,
-                level=1,
+                name=machine_def['name'],
+                hash_rate=hash_per_hour / 3600.0,
+                level=new_level,
                 machine_type=machine_id
             )
             db.add(machine)
+            
+            # Update levels in user's JSON field
+            if currency == 'coins':
+                levels = json.loads(user.mining_coins_levels or '{}')
+                levels[machine_id] = new_level
+                user.mining_coins_levels = json.dumps(levels)
+            elif currency == 'quanhash':
+                levels = json.loads(user.mining_quanhash_levels or '{}')
+                levels[machine_id] = new_level
+                user.mining_quanhash_levels = json.dumps(levels)
+            
+            print(f"Committing to database...")
+            db.commit()
+            
+            # Debug logging
+            print(f"Machine purchased successfully: {machine_id}, level: {new_level}, hash_per_hour: {hash_per_hour}")
+            print(f"=== END BUY_MACHINE ===")
         
         return jsonify({'success': True})
     except Exception as e:
+        print(f"Error buying machine: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -2442,6 +2734,7 @@ def get_top_users():
     try:
         data = request.json
         limit = data.get('limit', 100)
+        current_user_id = data.get('user_id', None)  # Get current user ID for "find yourself"
         
         with get_db() as db:
             # Fetch more users to filter
@@ -2474,26 +2767,56 @@ def get_top_users():
                 vip_level = getattr(u, 'vip_level', 0) or 0
                 vip_badge = getattr(u, 'vip_badge', None) or ""
                 
+                # Calculate experience, level, and rating
+                experience = calculate_experience(u.total_earned, u.total_taps, vip_level)
+                level = calculate_level(experience)
+                rating = calculate_rating(u.coins, u.total_earned, u.total_taps, vip_level, level)
+                
                 top_users.append({
                     'username': u.username or 'Unknown',
                     'total_earned': int(u.total_earned or 0),
                     'coins': int(u.coins or 0),
-                    'level': 1,  # Hardcoded, no level field in User model
+                    'level': level,
+                    'experience': round(experience, 2),
+                    'rating': round(rating, 2),
                     'vip_level': vip_level,
                     'vip_badge': vip_badge,
                     'passive_income': passive_income_per_hour,
                     'quanhash': int(getattr(u, 'quanhash', 0) or 0),
-                    'total_taps': int(u.total_taps or 0)
+                    'total_taps': int(u.total_taps or 0),
+                    'telegram_id': int(getattr(u, 'telegram_id', 0))  # Add telegram_id for matching
                 })
             
-            # Sort ONLY by total_earned (coins earned), ignore VIP for ranking
-            top_users.sort(key=lambda x: -x['total_earned'])
+            # Sort: VIPs first (by VIP level DESC), then by rating DESC
+            top_users.sort(key=lambda x: (-x['vip_level'], -x['rating']))
+            
+            # Find current user's position if requested
+            current_user_pos = None
+            current_user_data = None
+            if current_user_id:
+                for idx, user_data in enumerate(top_users):
+                    if user_data['telegram_id'] == current_user_id:
+                        current_user_pos = idx + 1  # 1-based position
+                        current_user_data = user_data
+                        break
             
             # Return only top 100
             top_users = top_users[:100]
             
+            # Remove telegram_id from response (not needed by frontend)
+            for user_data in top_users:
+                if 'telegram_id' in user_data:
+                    del user_data['telegram_id']
+            
             print(f"[TOP_USERS] Returning {len(top_users)} users")
-            return jsonify({'users': top_users})
+            response = {'users': top_users}
+            if current_user_pos and current_user_data:
+                # Remove telegram_id from current user data
+                if 'telegram_id' in current_user_data:
+                    del current_user_data['telegram_id']
+                response['current_user'] = current_user_data
+                response['current_user_position'] = current_user_pos
+            return jsonify(response)
     except Exception as e:
         print(f"[TOP_USERS] Error: {e}")
         import traceback
@@ -2643,6 +2966,35 @@ def reset_user():
             return jsonify({'success': True, 'message': message})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/update_username', methods=['POST'])
+def update_username():
+    """Update user username with uniqueness check"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        username = data.get('username')
+        
+        if not user_id or not username:
+            return jsonify({'success': False, 'error': 'User ID and username required'})
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Check if username already exists for another user
+            existing_user = db.query(User).filter_by(username=username).first()
+            if existing_user and existing_user.telegram_id != user_id:
+                return jsonify({'success': False, 'error': 'Такое имя пользователя уже существует'})
+            
+            user.username = username
+            db.commit()
+            
+            return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

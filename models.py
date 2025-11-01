@@ -27,6 +27,11 @@ class User(Base):
     total_earned = Column(Float, default=0.0)
     total_mined = Column(Float, default=0.0)
     
+    # Level and Rating System
+    level = Column(Integer, default=1)  # User level
+    experience = Column(Float, default=0.0)  # User experience
+    rating = Column(Float, default=0.0)  # Overall rating
+    
     # Referral
     referral_code = Column(String(50), unique=True)
     referred_by = Column(Integer, ForeignKey('users.id'), nullable=True)
@@ -61,6 +66,11 @@ class User(Base):
     tap_boost_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
     energy_buy_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
     energy_expand_levels = Column(Text, default='{}')  # {"0": 0, "1": 0, "2": 0, ...}
+    
+    # Mining machine levels (JSON strings to store levels for each machine)
+    mining_coins_levels = Column(Text, default='{}')  # {"miner_cpu": 0, "miner_gpu": 0, ...}
+    mining_quanhash_levels = Column(Text, default='{}')  # {"hash_quantum_core": 0, "hash_plasma_rig": 0, ...}
+    mining_vip_levels = Column(Text, default='{}')  # {"vip_quantum_prime": 0, "vip_solar_core": 0, ...}
     
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
