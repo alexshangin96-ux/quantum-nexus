@@ -1435,12 +1435,13 @@
             </svg>
         </button>
         <div class="buttons">
-            <a href="#" class="btn" onclick="openShop(event)" style="background:linear-gradient(135deg,#ffd700,#ffed4e);box-shadow:0 10px 40px rgba(255,215,0,1), 0 6px 30px rgba(255,215,0,0.9), 0 0 50px rgba(255,215,0,0.8), inset 0 0 30px rgba(255,215,0,0.3);border:5px solid rgba(255,215,0,1);position:relative;overflow:visible;transform:scale(1.05);transition:all 0.3s;">
-                <div class="btn-emoji" style="font-size:75px !important;filter:drop-shadow(0 0 30px rgba(255,215,0,1)) drop-shadow(0 0 20px rgba(255,215,0,0.9)) drop-shadow(0 0 10px rgba(255,215,0,0.8)) drop-shadow(0 4px 8px rgba(0,0,0,0.5));animation:shop-glow 1.5s ease-in-out infinite;transform:scale(1.5) !important;z-index:3;position:relative;display:inline-block;line-height:1;text-shadow:0 0 20px rgba(255,215,0,1);">🛒</div>
-                <div style="font-weight:900;text-shadow:0 4px 20px rgba(0,0,0,1), 0 0 30px rgba(255,215,0,1), 0 0 40px rgba(255,215,0,0.9), 0 0 50px rgba(255,215,0,0.7);font-size:20px !important;letter-spacing:2px;z-index:3;position:relative;color:#fff;font-family:system-ui,-apple-system,sans-serif;">МАГАЗИН</div>
-                <div style="position:absolute;top:-10px;left:-10px;right:-10px;bottom:-10px;background:radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0.3) 40%, transparent 80%);border-radius:inherit;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 50%, transparent 80%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;z-index:0;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 60%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:1s;pointer-events:none;z-index:0;"></div>
+            <a href="#" class="btn shop-btn-special" onclick="openShop(event)" style="background:linear-gradient(135deg,#ffd700 0%,#ffed4e 50%,#ffd700 100%) !important;box-shadow:0 12px 50px rgba(255,215,0,1), 0 8px 35px rgba(255,215,0,0.95), 0 0 60px rgba(255,215,0,0.9), inset 0 0 40px rgba(255,215,0,0.4) !important;border:6px solid rgba(255,215,0,1) !important;position:relative !important;overflow:visible !important;transform:scale(1.1) !important;transition:all 0.3s !important;padding:20px !important;min-height:120px !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:15px !important;">
+                <span class="shop-icon-mega" style="font-size:90px !important;line-height:1 !important;display:block !important;filter:drop-shadow(0 0 40px rgba(255,215,0,1)) drop-shadow(0 0 25px rgba(255,215,0,0.95)) drop-shadow(0 0 15px rgba(255,215,0,0.9)) drop-shadow(0 6px 12px rgba(0,0,0,0.7)) !important;animation:shop-glow 1.2s ease-in-out infinite !important;transform:scale(1.6) !important;z-index:10 !important;position:relative !important;text-shadow:0 0 30px rgba(255,215,0,1), 0 0 20px rgba(255,215,0,0.9) !important;">🛒</span>
+                <span class="shop-text-mega" style="font-weight:900 !important;text-shadow:0 5px 25px rgba(0,0,0,1), 0 0 35px rgba(255,215,0,1), 0 0 45px rgba(255,215,0,0.95), 0 0 60px rgba(255,215,0,0.8) !important;font-size:24px !important;letter-spacing:3px !important;z-index:10 !important;position:relative !important;color:#fff !important;font-family:system-ui,-apple-system,sans-serif !important;white-space:nowrap !important;">МАГАЗИН</span>
+                <div style="position:absolute;top:-15px;left:-15px;right:-15px;bottom:-15px;background:radial-gradient(circle, rgba(255,215,0,0.7) 0%, rgba(255,215,0,0.4) 30%, rgba(255,215,0,0.2) 60%, transparent 90%);border-radius:inherit;animation:shop-glow 1.8s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;background:radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0.25) 40%, transparent 80%);border-radius:50%;animation:shop-glow 2.2s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;z-index:0;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 50%, transparent 75%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;z-index:0;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 65%);border-radius:50%;animation:shop-glow 1.2s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;z-index:0;"></div>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
                 <div class="btn-emoji">🏭</div>
@@ -3148,55 +3149,67 @@
                 
                 let audioPlayed = false;
                 
-                // ULTRA-SIMPLIFIED APPROACH for Telegram mobile
-                // Use simple immediate sound generation
+                // ULTRA-SIMPLIFIED - Direct sound generation for Telegram
                 const soundConfigs = {
-                    'tap': { freq: 440, dur: 0.1 },
-                    'mining': { freq: 554, dur: 0.2 },
-                    'purchase': { freq: 698, dur: 0.3 },
-                    'coin': { freq: 880, dur: 0.15 },
-                    'levelup': { freq: 660, dur: 0.5 },
-                    'success': { freq: 523, dur: 0.3 },
-                    'error': { freq: 220, dur: 0.3 }
+                    'tap': { freq: 440, dur: 0.12 },
+                    'mining': { freq: 554, dur: 0.25 },
+                    'purchase': { freq: 698, dur: 0.35 },
+                    'coin': { freq: 880, dur: 0.18 },
+                    'levelup': { freq: 660, dur: 0.6 },
+                    'success': { freq: 523, dur: 0.35 },
+                    'error': { freq: 220, dur: 0.35 }
                 };
                 
                 const config = soundConfigs[type] || { freq: 440, dur: 0.2 };
                 
-                // Try simple sound first
+                // IMMEDIATE play - no delays
                 playSimpleSound(config.freq, config.dur);
                 
-                // Also try full Web Audio API as backup
-                setTimeout(() => {
-                    playSoundWebAudio(type);
-                }, 10);
+                // Backup with full API (in case simple doesn't work)
+                if (audioContext && audioContext.state === 'running') {
+                    setTimeout(() => {
+                        try {
+                            playSoundWebAudio(type);
+                        } catch(e) {}
+                    }, 15);
+                }
             } catch(e) {
                 console.log('Sound playback error:', e);
             }
         }
         
-        // SIMPLE SOUND FUNCTION for Telegram mobile (more reliable)
+        // ULTRA SIMPLE SOUND FUNCTION for Telegram mobile (MAXIMUM RELIABILITY)
         function playSimpleSound(frequency, duration) {
             try {
+                // Ensure context exists
                 if (!audioContext || audioContext.state === 'closed') {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
+                
+                // Resume if suspended
                 if (audioContext.state === 'suspended') {
-                    audioContext.resume();
+                    audioContext.resume().then(() => {
+                        // Retry after resume
+                        setTimeout(() => playSimpleSound(frequency, duration), 20);
+                    });
+                    return;
                 }
+                
+                // Play sound if running
                 if (audioContext.state === 'running') {
                     const osc = audioContext.createOscillator();
                     const gain = audioContext.createGain();
                     osc.connect(gain);
                     gain.connect(audioContext.destination);
-                    osc.frequency.value = frequency;
+                    osc.frequency.value = frequency || 440;
                     osc.type = 'sine';
-                    gain.gain.setValueAtTime(0.5, audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    gain.gain.setValueAtTime(0.7, audioContext.currentTime); // Louder
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (duration || 0.15));
                     osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + duration);
+                    osc.stop(audioContext.currentTime + (duration || 0.15));
                 }
             } catch(e) {
-                // Silent fail
+                // Silent fail - don't break the app
             }
         }
         
@@ -3634,22 +3647,38 @@
             // Always play haptic feedback (works even if sounds disabled)
             playHapticFeedback('light');
             
-            // Sound effect - SIMPLIFIED for Telegram mobile
+            // Sound effect - ULTRA SIMPLE for Telegram mobile
             const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
-                // Use simplified immediate sound
+                // Create audio context immediately if needed
                 try {
                     if (!audioContext) {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     }
+                    
+                    // Always try to resume first
                     if (audioContext.state === 'suspended') {
-                        audioContext.resume().then(() => playSimpleSound(440, 0.1));
-                    } else {
-                        playSimpleSound(440, 0.1);
+                        audioContext.resume();
                     }
-                } catch(e) {
-                    console.log('Sound error:', e);
-                }
+                    
+                    // Wait a tiny bit then play
+                    setTimeout(() => {
+                        try {
+                            if (audioContext && audioContext.state === 'running') {
+                                const osc = audioContext.createOscillator();
+                                const gain = audioContext.createGain();
+                                osc.connect(gain);
+                                gain.connect(audioContext.destination);
+                                osc.frequency.value = 440;
+                                osc.type = 'sine';
+                                gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+                                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                                osc.start(audioContext.currentTime);
+                                osc.stop(audioContext.currentTime + 0.15);
+                            }
+                        } catch(e) {}
+                    }, 10);
+                } catch(e) {}
             }
             
             const button = document.querySelector('.tap-button');
