@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v9.0.0 - SOFT CRYPTOTAPEL SOUNDS + RESTORED MODAL ICON - BUILD: 2024-12-29-CRYPTOTAPEL-STYLE -->
+<!-- Quantum Nexus v10.0.0 - NEON COSMIC SOUNDS + CLEAN MODAL HEADER - BUILD: 2024-12-29-NEON-COSMIC -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -3145,20 +3145,20 @@
                 
                 let audioPlayed = false;
                 
-                // CRYPTOTAPEL / QUANTUM NEXUS STYLE - Ultra soft, gentle, pleasant crypto sounds
+                // NEON COSMIC / QUANTUM NEXUS STYLE - Ultra pleasant, soft, cosmic sounds
                 const soundConfigs = {
-                    'tap': { freq: 330, dur: 0.12, type: 'sine' }, // Soft tap - gentle crypto click (C4 note)
-                    'mining': { freq: 262, dur: 0.2, type: 'sine' }, // Soft mining - low gentle hum (C3 note)
-                    'purchase': { freq: 440, dur: 0.25, type: 'triangle' }, // Soft purchase - gentle chime (A4 note)
-                    'coin': { freq: 523, dur: 0.15, type: 'triangle' }, // Soft coin - gentle sparkle (C5 note)
-                    'levelup': { freq: 392, dur: 0.5, type: 'sine' }, // Soft level up - gentle rise (G4 note)
-                    'success': { freq: 440, dur: 0.2, type: 'sine' }, // Soft success - pleasant confirmation (A4 note)
-                    'error': { freq: 220, dur: 0.2, type: 'sine' } // Soft error - gentle warning (A3 note)
+                    'tap': { freq: 294, dur: 0.1, type: 'sine' }, // Cosmic tap - soft nebula pulse (D4)
+                    'mining': { freq: 247, dur: 0.18, type: 'sine' }, // Cosmic mining - deep space hum (B3)
+                    'purchase': { freq: 392, dur: 0.22, type: 'triangle' }, // Cosmic purchase - gentle star chime (G4)
+                    'coin': { freq: 494, dur: 0.13, type: 'triangle' }, // Cosmic coin - soft sparkle (B4)
+                    'levelup': { freq: 349, dur: 0.45, type: 'sine' }, // Cosmic level up - nebula fanfare (F4)
+                    'success': { freq: 392, dur: 0.18, type: 'sine' }, // Cosmic success - pleasant confirmation (G4)
+                    'error': { freq: 196, dur: 0.18, type: 'sine' } // Cosmic error - gentle warning (G3)
                 };
                 
-                const config = soundConfigs[type] || { freq: 330, dur: 0.12, type: 'sine' };
+                const config = soundConfigs[type] || { freq: 294, dur: 0.1, type: 'sine' };
                 
-                // IMMEDIATE play - soft cryptotapel/Quantum Nexus style
+                // IMMEDIATE play - neon cosmic Quantum Nexus style
                 playSimpleSound(config.freq, config.dur, config.type || 'sine');
                 
                 // Backup with full API (in case simple doesn't work)
@@ -3191,18 +3191,18 @@
                     return;
                 }
                 
-                // Play sound if running - Soft Cryptotapel/Quantum Nexus style
+                // Play sound if running - Neon Cosmic Quantum Nexus style
                 if (audioContext.state === 'running') {
                     const osc = audioContext.createOscillator();
                     const gain = audioContext.createGain();
                     osc.connect(gain);
                     gain.connect(audioContext.destination);
-                    osc.frequency.value = frequency || 330;
-                    osc.type = waveType || 'sine'; // Default to sine for soft, pleasant sounds
-                    gain.gain.setValueAtTime(0.35, audioContext.currentTime); // Softer volume for pleasant experience
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (duration || 0.12));
+                    osc.frequency.value = frequency || 294;
+                    osc.type = waveType || 'sine'; // Default to sine for soft, pleasant cosmic sounds
+                    gain.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer volume for pleasant listening
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (duration || 0.1));
                     osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + (duration || 0.12));
+                    osc.stop(audioContext.currentTime + (duration || 0.1));
                 }
             } catch(e) {
                 // Silent fail - don't break the app
@@ -3248,71 +3248,79 @@
                         oscillator.connect(gainNode);
                         gainNode.connect(audioContext.destination);
                         
-                        // Higher volume for better audibility
-                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        // Softer volume for pleasant neon cosmic listening
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
                         
                         switch(type) {
                             case 'tap':
-                                // Soft cryptotapel tap - gentle quantum pulse
-                                oscillator.frequency.value = 330;
+                                // Neon cosmic tap - soft nebula pulse
+                                oscillator.frequency.value = 294;
                                 oscillator.type = 'sine';
-                                oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.06);
-                                oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.12);
-                                oscillator.stop(audioContext.currentTime + 0.12);
+                                oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.05);
+                                oscillator.frequency.exponentialRampToValueAtTime(294, audioContext.currentTime + 0.1);
+                                oscillator.stop(audioContext.currentTime + 0.1);
+                                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
                                 break;
                             case 'coin':
-                                // Soft cryptotapel coin - gentle sparkle
-                                oscillator.frequency.value = 523;
+                                // Neon cosmic coin - soft sparkle
+                                oscillator.frequency.value = 494;
                                 oscillator.type = 'triangle';
-                                oscillator.frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.08);
-                                oscillator.stop(audioContext.currentTime + 0.15);
-                                gainNode.gain.setValueAtTime(0.35, audioContext.currentTime); // Softer volume
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                                oscillator.frequency.exponentialRampToValueAtTime(587, audioContext.currentTime + 0.065);
+                                oscillator.stop(audioContext.currentTime + 0.13);
+                                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.13);
                                 break;
                             case 'levelup':
-                                // Soft cryptotapel level up - gentle cosmic fanfare
-                                oscillator.frequency.value = 392;
+                                // Neon cosmic level up - nebula fanfare
+                                oscillator.frequency.value = 349;
                                 oscillator.type = 'sine';
-                                oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.25);
-                                oscillator.frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.5);
-                                gainNode.gain.setValueAtTime(0.4, audioContext.currentTime); // Slightly louder for celebration
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                                oscillator.stop(audioContext.currentTime + 0.5);
+                                oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.22);
+                                oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.45);
+                                gainNode.gain.setValueAtTime(0.35, audioContext.currentTime); // Slightly louder for celebration
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.45);
+                                oscillator.stop(audioContext.currentTime + 0.45);
                                 break;
                             case 'error':
-                                oscillator.frequency.value = 220;
-                                oscillator.type = 'sawtooth';
-                                oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
-                                oscillator.stop(audioContext.currentTime + 0.3);
+                                // Neon cosmic error - gentle warning
+                                oscillator.frequency.value = 196;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(175, audioContext.currentTime + 0.18);
+                                oscillator.stop(audioContext.currentTime + 0.18);
+                                gainNode.gain.setValueAtTime(0.28, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
                                 break;
                             case 'success':
-                                oscillator.frequency.value = 523;
-                                oscillator.type = 'triangle';
-                                oscillator.frequency.exponentialRampToValueAtTime(1046, audioContext.currentTime + 0.2);
-                                oscillator.stop(audioContext.currentTime + 0.3);
+                                // Neon cosmic success - pleasant confirmation
+                                oscillator.frequency.value = 392;
+                                oscillator.type = 'sine';
+                                oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.18);
+                                oscillator.stop(audioContext.currentTime + 0.18);
+                                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
                                 break;
                             case 'purchase':
-                                // Soft cryptotapel purchase - gentle ascending chime
-                                oscillator.frequency.value = 440;
+                                // Neon cosmic purchase - gentle star chime
+                                oscillator.frequency.value = 392;
                                 oscillator.type = 'triangle';
-                                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                                oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.12);
-                                oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.25);
-                                oscillator.stop(audioContext.currentTime + 0.25);
-                                gainNode.gain.setValueAtTime(0.35, audioContext.currentTime); // Softer volume
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                                oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.11);
+                                oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.22);
+                                oscillator.stop(audioContext.currentTime + 0.22);
+                                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.22);
                                 break;
                             case 'mining':
-                                // Soft cryptotapel mining - gentle low hum
-                                oscillator.frequency.value = 262;
+                                // Neon cosmic mining - deep space hum
+                                oscillator.frequency.value = 247;
                                 oscillator.type = 'sine';
-                                oscillator.frequency.setValueAtTime(262, audioContext.currentTime);
-                                oscillator.frequency.exponentialRampToValueAtTime(294, audioContext.currentTime + 0.1);
-                                oscillator.frequency.exponentialRampToValueAtTime(262, audioContext.currentTime + 0.2);
-                                oscillator.stop(audioContext.currentTime + 0.2);
-                                gainNode.gain.setValueAtTime(0.35, audioContext.currentTime); // Softer volume
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                                oscillator.frequency.setValueAtTime(247, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(277, audioContext.currentTime + 0.09);
+                                oscillator.frequency.exponentialRampToValueAtTime(247, audioContext.currentTime + 0.18);
+                                oscillator.stop(audioContext.currentTime + 0.18);
+                                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer for pleasant listening
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
                                 break;
                             case 'card':
                                 // Card sound - flip sound
@@ -3680,12 +3688,12 @@
                                 const gain = audioContext.createGain();
                                 osc.connect(gain);
                                 gain.connect(audioContext.destination);
-                                osc.frequency.value = 330; // Soft cryptotapel tap - gentle frequency (C4)
-                                osc.type = 'sine'; // Soft, pleasant sound
-                                gain.gain.setValueAtTime(0.35, audioContext.currentTime); // Softer volume
-                                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+                                osc.frequency.value = 294; // Neon cosmic tap - pleasant frequency (D4)
+                                osc.type = 'sine'; // Soft, pleasant cosmic sound
+                                gain.gain.setValueAtTime(0.3, audioContext.currentTime); // Softer volume for pleasant listening
+                                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
                                 osc.start(audioContext.currentTime);
-                                osc.stop(audioContext.currentTime + 0.12);
+                                osc.stop(audioContext.currentTime + 0.1);
                             }
                         } catch(e) {}
                     }, 10);
@@ -3867,16 +3875,12 @@
             
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
-                    <div style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(167,139,250,0.3),rgba(255,215,0,0.2));padding:25px;border-radius:22px 22px 0 0;text-align:center;position:relative;border-bottom:4px solid rgba(255,215,0,0.8);box-shadow:0 4px 20px rgba(255,215,0,0.4);">
-                        <div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:8px;position:relative;z-index:2;">
-                            <div style="font-size:24px;position:relative;z-index:3;display:inline-block;">🛒</div>
-                            <h2 style="font-size: 36px; background:linear-gradient(135deg,#ffd700,#ffed4e,#fff8dc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin: 0; font-weight: 900;text-shadow:0 4px 20px rgba(0,0,0,0.9), 0 0 30px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.6);letter-spacing:4px;position:relative;z-index:3;font-family:system-ui,-apple-system,sans-serif;">МАГАЗИН</h2>
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid rgba(255,255,255,0.1);">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:24px;">🛒</span>
+                            <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 700;">Магазин</h2>
                         </div>
-                        <!-- Multiple glowing effects for maximum visibility -->
-                        <div style="position:absolute;top:50%;left:25%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 40%, transparent 70%);border-radius:50%;animation:shop-glow 2s ease-in-out infinite;z-index:1;pointer-events:none;"></div>
-                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.15) 50%, transparent 80%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;z-index:1;pointer-events:none;"></div>
-                        <div style="position:absolute;top:50%;left:75%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 60%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:1s;z-index:1;pointer-events:none;"></div>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position:relative;z-index:10;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
