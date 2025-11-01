@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v17.0.0 - PERFECT NO FLICKERING AUTOBOT BUTTONS - BUILD: 2024-12-29-PERFECT-SMOOTH -->
+<!-- Quantum Nexus v18.0.0 - ABSOLUTE ZERO FLICKERING AUTOBOT - BUILD: 2024-12-29-ULTRA-SMOOTH -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2785,13 +2785,15 @@
                         const shouldShowCountdown = i === autobotLevel;
                         
                         if (shouldShowCountdown) {
-                            // Update countdown text only (use textContent for smooth updates)
+                            // Update countdown text only (check before update to prevent flickering)
                             const newText = `⏱️ Осталось: ${timeText}`;
-                            if (btn.textContent !== newText) {
+                            const currentText = btn.textContent.trim();
+                            if (currentText !== newText) {
+                                // Direct textContent update - smoothest method
                                 btn.textContent = newText;
                             }
-                            // Set disabled and style only once
-                            if (!btn.disabled) {
+                            // Set disabled and style only once (prevent re-applying styles)
+                            if (!btn.disabled || btn.style.background !== 'rgba(239,68,68,0.6)') {
                                 btn.disabled = true;
                                 btn.style.background = 'rgba(239,68,68,0.6)';
                                 btn.style.cursor = 'not-allowed';
@@ -2804,6 +2806,8 @@
                                 btn.style.cursor = 'not-allowed';
                                 btn.textContent = '🔒 Недоступно';
                                 btn.dataset.lockedSet = 'true'; // Mark as locked, never update again
+                                // Freeze button to prevent any future updates
+                                Object.freeze(btn.style);
                             }
                         }
                     }
@@ -2826,20 +2830,18 @@
                             window.autobotShopInterval = null;
                             window.autobotIntervalLevel = null;
                             window.autobotIntervalExpires = null;
-                            // Unblock all buttons (batch update to prevent flicker)
-                            requestAnimationFrame(() => {
-                                for (let i = 1; i <= 20; i++) {
-                                    const btn = document.getElementById(`autobot-btn-${i}`);
-                                    if (btn) {
-                                        btn.disabled = false;
-                                        btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
-                                        btn.style.cursor = 'pointer';
-                                        const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
-                                        btn.textContent = `Купить ${price.toLocaleString()} 🪙`;
-                                        btn.dataset.lockedSet = ''; // Clear lock flag
-                                    }
+                            // Unblock all buttons (direct update, no animation frame to prevent flicker)
+                            for (let i = 1; i <= 20; i++) {
+                                const btn = document.getElementById(`autobot-btn-${i}`);
+                                if (btn) {
+                                    btn.disabled = false;
+                                    btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                                    btn.style.cursor = 'pointer';
+                                    const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
+                                    btn.textContent = `Купить ${price.toLocaleString()} 🪙`;
+                                    btn.dataset.lockedSet = ''; // Clear lock flag
                                 }
-                            });
+                            }
                             return;
                         }
                         
@@ -2849,11 +2851,15 @@
                         const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                         const newText = `⏱️ Осталось: ${timeText}`;
                         
-                        // Update only the purchased button with countdown (use textContent for smooth updates)
+                        // Update only the purchased button with countdown (direct textContent update)
                         const purchasedBtn = document.getElementById(`autobot-btn-${level}`);
-                        if (purchasedBtn && purchasedBtn.textContent !== newText) {
-                            // Use textContent instead of innerHTML for better performance (no reflow)
-                            purchasedBtn.textContent = newText;
+                        if (purchasedBtn) {
+                            // Check if text changed before updating (prevent unnecessary DOM manipulation)
+                            const currentText = purchasedBtn.textContent.trim();
+                            if (currentText !== newText) {
+                                // Direct textContent update - fastest and smoothest method
+                                purchasedBtn.textContent = newText;
+                            }
                         }
                     }, 1000);
                 }
@@ -4821,11 +4827,13 @@
                                     const seconds = Math.floor((remainingMs % 60000) / 1000);
                                     const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                                     
-                                    // Update only the purchased button with countdown (use textContent for smooth updates)
+                                    // Update only the purchased button with countdown (direct textContent update)
                                     if (autobotBtn) {
                                         const newText = `⏱️ Осталось: ${timeText}`;
-                                        // Use textContent instead of innerHTML for better performance (no reflow)
-                                        if (autobotBtn.textContent !== newText) {
+                                        // Check if text changed before updating (prevent unnecessary DOM manipulation)
+                                        const currentText = autobotBtn.textContent.trim();
+                                        if (currentText !== newText) {
+                                            // Direct textContent update - fastest and smoothest method
                                             autobotBtn.textContent = newText;
                                         }
                                     }
