@@ -227,6 +227,41 @@ def get_user_data():
             if not user.last_hash_update:
                 user.last_hash_update = current_time
             
+            # Calculate and add referral passive income
+            # This is calculated from referrals' total_earned
+            if not hasattr(user, 'last_referral_update'):
+                # Add attribute if doesn't exist
+                from sqlalchemy import Column, DateTime
+                if not hasattr(User, 'last_referral_update'):
+                    # This would need a migration, but for now we'll calculate on-the-fly
+                    pass
+                user.last_referral_update = current_time
+            
+            # Update referral income every minute (to avoid spam)
+            time_diff = (current_time - (user.last_referral_update if hasattr(user, 'last_referral_update') and user.last_referral_update else current_time)).total_seconds()
+            if time_diff >= 60 or not hasattr(user, 'last_referral_update') or not user.last_referral_update:
+                referrals = db.query(User).filter_by(referred_by=user.id).all()
+                new_referral_income = 0.0
+                
+                for ref in referrals:
+                    ref_total_earned = ref.total_earned or 0.0
+                    # Base income percentage (5% for regular users, 10% for VIP)
+                    base_percent = 0.05
+                    if getattr(ref, 'vip_level', 0) > 0:
+                        base_percent = 0.10  # VIP users give 10% instead of 5%
+                    
+                    # Income from this referral = percentage of their total_earned
+                    ref_income = ref_total_earned * base_percent
+                    new_referral_income += ref_income
+                
+                # Update referral income and add to coins
+                income_diff = new_referral_income - (user.referral_income or 0.0)
+                if income_diff > 0:
+                    user.referral_income = new_referral_income
+                    user.coins += income_diff  # Add the difference to coins
+                    user.total_earned += income_diff  # Count as earned
+                    db.commit()
+            
             # Check for active multiplier
             active_multiplier = getattr(user, 'active_multiplier', 1.0)
             multiplier_expires_at = getattr(user, 'multiplier_expires_at', None)
@@ -372,7 +407,10 @@ def get_user_data():
                 'energy_expand_levels': json.loads(user.energy_expand_levels or '{}'),
                 'level': level,
                 'experience': round(experience, 2),
-                'rating': round(rating, 2)
+                'rating': round(rating, 2),
+                'sound_enabled': getattr(user, 'sound_enabled', True),  # Default to True if not set
+                'referral_income': user.referral_income or 0.0,
+                'referrals_count': user.referrals_count or 0
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -852,7 +890,7 @@ def get_cards():
 
 @app.route('/api/referrals', methods=['POST'])
 def get_referrals():
-    """Get user referrals info"""
+    """Get user referrals info with detailed list"""
     try:
         data = request.json
         user_id = data.get('user_id')
@@ -866,10 +904,52 @@ def get_referrals():
             if not user:
                 return jsonify({'error': 'User not found'}), 404
             
+            # Get all referrals with their stats
+            referrals = db.query(User).filter_by(referred_by=user.id).all()
+            
+            # Calculate passive income for each referral
+            referral_list = []
+            total_passive_income = 0.0
+            
+            for ref in referrals:
+                # Calculate referral's total earnings (coins earned from all sources)
+                ref_total_earned = ref.total_earned or 0.0
+                
+                # Base income percentage (5% for regular users, 10% for VIP)
+                base_percent = 0.05
+                if getattr(ref, 'vip_level', 0) > 0:
+                    base_percent = 0.10  # VIP users give 10% instead of 5%
+                
+                # Calculate income from this referral
+                # Income = 5% (or 10% for VIP) of referral's total_earned
+                ref_income = ref_total_earned * base_percent
+                
+                # Check if this referral is VIP
+                is_vip = getattr(ref, 'vip_level', 0) > 0
+                
+                referral_list.append({
+                    'telegram_id': ref.telegram_id,
+                    'username': ref.username or f'User{ref.telegram_id}',
+                    'coins': ref.coins or 0.0,
+                    'total_earned': ref_total_earned,
+                    'income_from_ref': ref_income,
+                    'is_vip': is_vip,
+                    'referral_income_percent': base_percent * 100,
+                    'joined_at': ref.created_at.isoformat() if hasattr(ref, 'created_at') and ref.created_at else None
+                })
+                
+                total_passive_income += ref_income
+            
+            # Update user's referral_income if it's less than calculated
+            if user.referral_income < total_passive_income:
+                user.referral_income = total_passive_income
+                db.commit()
+            
             return jsonify({
                 'referral_code': user.referral_code,
                 'referrals_count': user.referrals_count,
-                'referral_income': user.referral_income
+                'referral_income': total_passive_income,
+                'referrals': referral_list
             })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -2964,6 +3044,31 @@ def reset_user():
             db.commit()
             
             return jsonify({'success': True, 'message': message})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/update_sound_settings', methods=['POST'])
+def update_sound_settings():
+    """Update user sound settings"""
+    try:
+        data = request.json
+        user_id = data.get('user_id')
+        sound_enabled = data.get('sound_enabled', True)
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User ID required'}), 400
+        
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                return jsonify({'success': False, 'error': 'User not found'}), 404
+            
+            # Update sound setting
+            user.sound_enabled = bool(sound_enabled)
+            db.commit()
+            
+            return jsonify({'success': True, 'sound_enabled': user.sound_enabled})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
