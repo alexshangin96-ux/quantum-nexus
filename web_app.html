@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.4.6 - Ultra-compact main page with beautiful design - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.4.7 - Username validation and buy button rename - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1773,7 +1773,7 @@
                                 </div>
                             </div>
                             ` : `
-                            <button onclick="openBuyVIPModal(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:15px;box-shadow:0 4px 15px rgba(255,215,0,0.5);">👑 Купить VIP</button>
+                            <button onclick="openBuyVIPModal(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e);color:#000;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;margin-bottom:15px;box-shadow:0 4px 15px rgba(255,215,0,0.5);">🛍️ Мои покупки</button>
                             `}
                             
                             <div style="background:rgba(0,0,0,0.2);padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.2);">
@@ -5304,9 +5304,14 @@
                                 <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">👤 ПРОФИЛЬ</div>
                                 <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
                                     <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Имя пользователя</div>
-                                    <input type="text" id="usernameInput" value="${savedUsername}" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;" 
-                                           onfocus="this.style.borderColor='#667eea';this.style.background='rgba(102,126,234,0.1)';" 
-                                           onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.background='rgba(255,255,255,0.05)';">
+                                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                                        <input type="text" id="usernameInput" value="${savedUsername}" style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;" 
+                                               onfocus="this.style.borderColor='#667eea';this.style.background='rgba(102,126,234,0.1)';" 
+                                               onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.background='rgba(255,255,255,0.05)';">
+                                        <button onclick="saveUsername();" style="padding:10px 14px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;flex-shrink:0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">✓</button>
+                                    </div>
+                                    <div id="usernameError" style="display:none;margin-top:8px;padding:8px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.5);border-radius:8px;color:#ef4444;font-size:12px;font-weight:600;"></div>
+                                    <div id="usernameSuccess" style="display:none;margin-top:8px;padding:8px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);border-radius:8px;color:#10b981;font-size:12px;font-weight:600;"></div>
                                 </div>
                             </div>
                             
@@ -5466,6 +5471,68 @@
             if (hapticsEnabled === true && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
+        }
+        
+        function saveUsername() {
+            const input = document.getElementById('usernameInput');
+            const errorDiv = document.getElementById('usernameError');
+            const successDiv = document.getElementById('usernameSuccess');
+            const username = input?.value?.trim();
+            
+            if (!username) {
+                errorDiv.textContent = 'Имя пользователя не может быть пустым';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (username.length < 3) {
+                errorDiv.textContent = 'Имя пользователя должно содержать минимум 3 символа';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!window.user?.id) {
+                errorDiv.textContent = 'Ошибка авторизации';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            fetch('/api/update_username', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: window.user.id,
+                    username: username
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('username', username);
+                    if (window.user) {
+                        window.user.username = username;
+                        window.user.first_name = username;
+                    }
+                    errorDiv.style.display = 'none';
+                    successDiv.textContent = '✅ Имя пользователя успешно сохранено!';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    errorDiv.textContent = data.error || '❌ Такое имя пользователя уже существует';
+                    errorDiv.style.display = 'block';
+                    successDiv.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                errorDiv.textContent = '❌ Ошибка подключения к серверу';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            });
         }
         
         function openReferrals(e) {

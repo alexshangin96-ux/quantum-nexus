@@ -2969,27 +2969,32 @@ def reset_user():
 
 @app.route('/api/update_username', methods=['POST'])
 def update_username():
-    """Update user username"""
+    """Update user username with uniqueness check"""
     try:
         data = request.json
         user_id = data.get('user_id')
         username = data.get('username')
         
         if not user_id or not username:
-            return jsonify({'error': 'User ID and username required'}), 400
+            return jsonify({'success': False, 'error': 'User ID and username required'})
         
         with get_db() as db:
             user = db.query(User).filter_by(telegram_id=user_id).first()
             
             if not user:
-                return jsonify({'error': 'User not found'}), 404
+                return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Check if username already exists for another user
+            existing_user = db.query(User).filter_by(username=username).first()
+            if existing_user and existing_user.telegram_id != user_id:
+                return jsonify({'success': False, 'error': 'Такое имя пользователя уже существует'})
             
             user.username = username
             db.commit()
             
             return jsonify({'success': True})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
