@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.4.5 - Compact main page design for better mobile UX - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.4.6 - Ultra-compact main page with beautiful design - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -470,7 +470,7 @@
         }
 
         .energy-bar-container {
-            padding-top: 8px;
+            padding-top: 6px;
         }
 
         .energy-bar {
@@ -1339,8 +1339,8 @@
                     <div class="stat-label-small">💎 QuanHash</div>
                 </div>
             </div>
-            <div class="energy-bar-container" style="margin-bottom: 8px;">
-                <div class="energy-bar-wrapper" style="position: relative; background: linear-gradient(135deg, rgba(15,15,30,0.92), rgba(20,20,35,0.95)); border: 2px solid rgba(118,75,162,0.4); border-radius: 14px; padding: 12px 10px; box-shadow: 0 0 25px rgba(118,75,162,0.3), 0 3px 15px rgba(0,0,0,0.5); width: 100%;">
+            <div class="energy-bar-container" style="margin-bottom: 6px;">
+                <div class="energy-bar-wrapper" style="position: relative; background: linear-gradient(135deg, rgba(15,15,30,0.92), rgba(20,20,35,0.95)); border: 2px solid rgba(118,75,162,0.4); border-radius: 12px; padding: 10px 8px; box-shadow: 0 0 20px rgba(118,75,162,0.3), 0 2px 12px rgba(0,0,0,0.5); width: 100%;">
                     <!-- Ultra-wide progress bar with everything inside -->
                     <div class="energy-bar" style="width: 100%; height: 44px; background: rgba(0,0,0,0.4); border-radius: 14px; overflow: visible; position: relative; box-shadow: inset 0 2px 10px rgba(0,0,0,0.7), 0 0 10px rgba(118,75,162,0.2); border: 1px solid rgba(118,75,162,0.3);">
                         <!-- Energy fill with tap button colors (soft purple gradient) -->
@@ -1358,7 +1358,7 @@
                     </div>
                     
                     <!-- Regen info nicely positioned under the bar -->
-                    <div class="energy-regen" id="energy-regen-text" style="text-align: center; margin-top: 8px; font-size: 11px; color: #86efac; font-weight: 800; text-shadow: 0 0 8px rgba(134,239,172,0.7); letter-spacing: 0.3px;">Восстановление: +1/сек</div>
+                    <div class="energy-regen" id="energy-regen-text" style="text-align: center; margin-top: 6px; font-size: 10px; color: #86efac; font-weight: 800; text-shadow: 0 0 8px rgba(134,239,172,0.7); letter-spacing: 0.3px;">Восстановление: +1/сек</div>
                 </div>
                 
                 <style>
@@ -1372,26 +1372,18 @@
             </div>
             
             <!-- User Level and Rating Section -->
-            <div class="level-rating-container" style="margin-bottom: 8px;">
-                <div style="position: relative; background: linear-gradient(135deg, rgba(15,15,30,0.92), rgba(20,20,35,0.95)); border: 2px solid rgba(255,215,0,0.4); border-radius: 14px; padding: 10px; box-shadow: 0 0 25px rgba(255,215,0,0.3), 0 3px 15px rgba(0,0,0,0.5); width: 100%;">
-                    <!-- Level Progress Bar -->
-                    <div style="margin-bottom: 8px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            <div style="font-size: 12px; font-weight: 800; color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,0.7);">⭐ Уровень <span id="user-level">1</span></div>
-                            <div style="font-size: 11px; font-weight: 700; color: #86efac; text-shadow: 0 0 8px rgba(134,239,172,0.7);"><span id="user-experience">0</span> / <span id="user-next-level-exp">100</span> ОП</div>
-                        </div>
-                        <div style="width: 100%; height: 26px; background: rgba(0,0,0,0.4); border-radius: 12px; overflow: hidden; position: relative; box-shadow: inset 0 2px 8px rgba(0,0,0,0.7), 0 0 8px rgba(255,215,0,0.2); border: 1px solid rgba(255,215,0,0.3);">
-                            <div id="level-progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #ffd700 0%, #ffed4e 50%, #fff176 100%); box-shadow: 0 0 25px rgba(255,215,0,0.6), inset 0 0 15px rgba(255,215,0,0.3), 0 2px 8px rgba(255,215,0,0.4); position: absolute; top: 0; left: 0; transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); border-radius: 10px;">
-                                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%); animation: softShine 3s infinite; border-radius: 10px;"></div>
-                            </div>
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 900; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.8); z-index: 10;" id="level-progress-percent">0%</div>
-                        </div>
+            <div class="level-rating-container" style="margin-bottom: 6px;">
+                <div style="position: relative; background: linear-gradient(135deg, rgba(15,15,30,0.92), rgba(20,20,35,0.95)); border: 2px solid rgba(255,215,0,0.4); border-radius: 12px; padding: 8px 12px; box-shadow: 0 0 20px rgba(255,215,0,0.3), 0 2px 12px rgba(0,0,0,0.5); width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <!-- Level Display -->
+                    <div style="text-align: center; border-right: 1px solid rgba(255,215,0,0.2);">
+                        <div style="font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">⭐ Уровень</div>
+                        <div style="font-size: 16px; font-weight: 900; color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.7); font-variant-numeric: tabular-nums;" id="user-level">1</div>
                     </div>
                     
                     <!-- Rating Display -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,215,0,0.2);">
-                        <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-shadow: 0 0 8px rgba(148,163,184,0.5);">🏆 Рейтинг</div>
-                        <div style="font-size: 14px; font-weight: 900; color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.7); letter-spacing: 0.3px; font-variant-numeric: tabular-nums;" id="user-rating">0</div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">🏆 Рейтинг</div>
+                        <div style="font-size: 16px; font-weight: 900; color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.7); letter-spacing: 0.3px; font-variant-numeric: tabular-nums;" id="user-rating">0</div>
                     </div>
                 </div>
             </div>
