@@ -1574,36 +1574,60 @@
 
     <!-- Referrals Modal -->
     <div id="referralsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">👥 Реферальная система</div>
-                <button class="close-btn" onclick="closeModal('referralsModal')">✕</button>
-            </div>
-            <div class="referral-benefits">
-                <div class="benefit-item">✅ 5% пассивный доход от приглашенных</div>
-                <div class="benefit-item">🎁 100 🪙 за каждого реферала</div>
-                <div class="benefit-item">💰 Доход в реальном времени</div>
-            </div>
-            <div class="stats-window">
-                <div class="stats-row">
-                    <span class="stats-label">Рефералов</span>
-                    <span class="stats-value" id="refCount">0</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Реферальный доход</span>
-                    <span class="stats-value" id="refIncome">0 🪙</span>
-                </div>
-            </div>
-            <div style="margin-top: 20px;">
-                <div style="margin-bottom: 10px; font-weight: bold;">Ваша реферальная ссылка:</div>
-                <div class="referral-link" id="refLink">-</div>
-                <button class="btn" onclick="copyRefLink()">📋 Копировать ссылку</button>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, rgba(102,126,234,0.95), rgba(139,92,246,0.95)); border-bottom: 2px solid rgba(167,139,250,0.3);">
+                <div class="modal-title" style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">👥 Реферальная система</div>
+                <button class="close-btn" onclick="closeReferralsModal()" style="color: #fff;">✕</button>
             </div>
             
-            <!-- Стильная кнопка закрытия -->
-            <button class="category-close-btn" onclick="closeModal('referralsModal')">
-                ✕ Закрыть рефералы
-            </button>
+            <div style="padding: 20px; background: linear-gradient(135deg, rgba(15,15,30,0.98), rgba(20,20,35,0.98));">
+                <!-- Benefits Info -->
+                <div style="background: rgba(102,126,234,0.15); border: 2px solid rgba(102,126,234,0.4); border-radius: 12px; padding: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="color: #a78bfa; font-size: 13px; font-weight: 700;">
+                            ✅ Обычные рефералы: <span style="color: #4ade80;">5%</span> от их дохода
+                        </div>
+                        <div style="color: #fbbf24; font-size: 13px; font-weight: 700;">
+                            ⭐ VIP рефералы: <span style="color: #4ade80;">10%</span> от их дохода
+                        </div>
+                        <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">
+                            💰 Доход накапливается автоматически в реальном времени
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(139,92,246,0.2)); border: 2px solid rgba(102,126,234,0.4); border-radius: 12px; padding: 16px; text-align: center;">
+                        <div style="color: #a78bfa; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Рефералов</div>
+                        <div style="color: #fff; font-size: 24px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);" id="refCount">0</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.2)); border: 2px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 16px; text-align: center;">
+                        <div style="color: #4ade80; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Общий доход</div>
+                        <div style="color: #fff; font-size: 20px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);" id="refIncome">0 🪙</div>
+                    </div>
+                </div>
+                
+                <!-- Referrals List -->
+                <div style="margin-bottom: 20px;">
+                    <div style="color: #a78bfa; font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <span>📊 Список рефералов</span>
+                        <span style="color: #94a3b8; font-size: 11px; font-weight: 400;">(обновляется каждые 5 сек)</span>
+                    </div>
+                    <div id="referralsList" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="text-align: center; color: #94a3b8; padding: 20px;">
+                            Загрузка рефералов...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Referral Link -->
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <div style="color: #a78bfa; font-size: 13px; font-weight: 700; margin-bottom: 8px;">🔗 Ваша реферальная ссылка:</div>
+                    <div class="referral-link" id="refLink" style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; word-break: break-all; color: #fff; font-size: 12px; margin-bottom: 10px;">-</div>
+                    <button class="btn" onclick="copyRefLink()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-size: 13px;">📋 Копировать ссылку</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -6360,9 +6384,58 @@
             });
         }
         
-        function openReferrals(e) {
-            e.preventDefault();
-            document.getElementById('referralsModal').classList.add('active');
+        let referralsUpdateInterval = null;
+        
+        function updateReferralsList(data) {
+            const referralsList = document.getElementById('referralsList');
+            if (!referralsList) return;
+            
+            if (!data.referrals || data.referrals.length === 0) {
+                referralsList.innerHTML = `
+                    <div style="text-align: center; color: #94a3b8; padding: 30px;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Пока нет рефералов</div>
+                        <div style="font-size: 12px;">Пригласите друзей и получайте пассивный доход!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            referralsList.innerHTML = data.referrals.map(ref => {
+                const isVip = ref.is_vip || false;
+                const vipBadge = isVip ? '<span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">⭐ VIP</span>' : '';
+                const incomePercent = ref.referral_income_percent || (isVip ? 10 : 5);
+                
+                return `
+                    <div style="background: ${isVip ? 'linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,237,78,0.1))' : 'rgba(102,126,234,0.1)'}; border: 2px solid ${isVip ? 'rgba(255,215,0,0.4)' : 'rgba(102,126,234,0.3)'}; border-radius: 12px; padding: 14px; position: relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="font-size: 24px;">${isVip ? '⭐' : '👤'}</div>
+                                <div>
+                                    <div style="color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center;">
+                                        @${ref.username || 'User'}
+                                        ${vipBadge}
+                                    </div>
+                                    <div style="color: #94a3b8; font-size: 11px; margin-top: 2px;">
+                                        ${incomePercent}% от дохода
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: #4ade80; font-weight: 800; font-size: 16px;">
+                                    +${Math.floor(ref.income_from_ref || 0).toLocaleString()} 🪙
+                                </div>
+                                <div style="color: #94a3b8; font-size: 10px; margin-top: 2px;">
+                                    Заработано: ${Math.floor(ref.total_earned || 0).toLocaleString()} 🪙
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadReferralsData() {
             fetch('/api/referrals', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -6371,13 +6444,45 @@
             .then(res => res.json())
             .then(data => {
                 document.getElementById('refCount').textContent = data.referrals_count || 0;
-                document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
+                document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0).toLocaleString()} 🪙`;
+                
                 // Generate correct referral link using referral_code
-                const botUsername = 'qanexus_bot'; // Correct bot username
-                const refCode = data.referral_code || user?.id || 'no_code'; // Use referral_code from API
+                const botUsername = 'qanexus_bot';
+                const refCode = data.referral_code || window.user?.id || 'no_code';
                 const refLink = `https://t.me/${botUsername}?start=${refCode}`;
                 document.getElementById('refLink').textContent = refLink;
+                
+                // Update referrals list
+                updateReferralsList(data);
+            })
+            .catch(err => {
+                console.error('Error loading referrals:', err);
             });
+        }
+        
+        function openReferrals(e) {
+            e.preventDefault();
+            document.getElementById('referralsModal').classList.add('active');
+            
+            // Load data immediately
+            loadReferralsData();
+            
+            // Update every 5 seconds
+            if (referralsUpdateInterval) {
+                clearInterval(referralsUpdateInterval);
+            }
+            referralsUpdateInterval = setInterval(() => {
+                loadReferralsData();
+            }, 5000);
+        }
+        
+        // Clear interval when modal is closed
+        function closeReferralsModal() {
+            if (referralsUpdateInterval) {
+                clearInterval(referralsUpdateInterval);
+                referralsUpdateInterval = null;
+            }
+            closeModal('referralsModal');
         }
 
         function copyRefLink() {
