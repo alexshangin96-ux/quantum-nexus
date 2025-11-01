@@ -64,10 +64,10 @@ cd /root/quantum-nexus && git pull origin main && sudo cp web_app.html /var/www/
 ═══════════════════════════════════════════════════════════════════
 
 ✅ Изменения загружены в GitHub (origin/main)
-✅ Коммит: feat: VIP-styled currency purchase section + backup
+✅ Коммиты: f6dd6fc - Enhanced VIP modal styling
 ✅ Бэкап создан: Quantum-Nexus-Backup-2025-11-01-16-23
 ✅ Готово к развертыванию на Selectel
 
 Дата: 01.11.2025
-Версия: Quantum Nexus v4.3
+Версия: Quantum Nexus v4.4
 
