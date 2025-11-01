@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v20.0.0 - ABSOLUTE ZERO FLICKERING - LOCKED BUTTONS NEVER UPDATED - BUILD: 2024-12-29-ABSOLUTE-ZERO -->
+<!-- Quantum Nexus v21.0.0 - PRESERVE BUTTON STATES ON RECREATION - NO FLICKERING - BUILD: 2024-12-29-PRESERVE-STATES -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4239,6 +4239,25 @@
             const items = window.shopData[category].items;
             const list = document.getElementById('shopItemsList');
             
+            // If autobot category and autobot is active, save button states before recreating
+            const isAutobotCategory = (category === 'autobot' || category === 'autobot_vip');
+            const autobotButtonStates = {};
+            if (isAutobotCategory && window.autobotShopInterval) {
+                // Save all autobot button states before recreation
+                for (let i = 1; i <= 20; i++) {
+                    const btn = document.getElementById(`autobot-btn-${i}`);
+                    if (btn) {
+                        autobotButtonStates[i] = {
+                            text: btn.textContent,
+                            disabled: btn.disabled,
+                            background: btn.style.background,
+                            cursor: btn.style.cursor,
+                            locked: btn.dataset.autobotLocked === 'true'
+                        };
+                    }
+                }
+            }
+            
             // Get user's current level for this category from userData
             let userLevel = 0;
             if (window.userData) {
@@ -4448,20 +4467,37 @@
                 `;
             }).join('');
             
+            // If autobot category and autobot is active, restore button states immediately
+            if (isAutobotCategory && window.autobotShopInterval && Object.keys(autobotButtonStates).length > 0) {
+                // Restore button states after recreation (prevents flickering)
+                setTimeout(() => {
+                    for (let i = 1; i <= 20; i++) {
+                        if (autobotButtonStates[i]) {
+                            const btn = document.getElementById(`autobot-btn-${i}`);
+                            if (btn) {
+                                const state = autobotButtonStates[i];
+                                btn.textContent = state.text;
+                                btn.disabled = state.disabled;
+                                btn.style.background = state.background;
+                                btn.style.cursor = state.cursor;
+                                if (state.locked) {
+                                    btn.dataset.autobotLocked = 'true';
+                                }
+                            }
+                        }
+                    }
+                }, 0); // Immediate restore after DOM update
+            }
+            
             // Update VIP button for current category
             const vipButton = document.getElementById('vipButton');
             if (vipButton) {
                 vipButton.setAttribute('onclick', `openVIPModal('${category}')`);
             }
             
-            // Update autobot buttons if autobot category is loaded (only once, no blinking)
-            if (category === 'autobot' || category === 'autobot_vip') {
-                // Clear any existing interval to prevent blinking
-                if (window.autobotShopInterval) {
-                    clearInterval(window.autobotShopInterval);
-                    window.autobotShopInterval = null;
-                }
-                // Fetch current user data to update autobot buttons (only once)
+            // Update autobot buttons if autobot category is loaded (only if autobot is NOT active)
+            if (isAutobotCategory && !window.autobotShopInterval) {
+                // Only update if autobot is NOT active (prevents flickering)
                 fetch('/api/user_data', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -4469,7 +4505,10 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    updateAutobotShopButtons(data);
+                    // Double check - don't update if interval started meanwhile
+                    if (!window.autobotShopInterval) {
+                        updateAutobotShopButtons(data);
+                    }
                 })
                 .catch(err => console.error('Error loading user data for autobots:', err));
             }
