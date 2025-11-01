@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.4.9 - Profile purchases button renamed to "Мои покупки" - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.5.0 - Mining modal redesigned to match cards style - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4296,42 +4296,42 @@
             modal.className = 'modal active';
             modal.id = 'miningModal2';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;">
-                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 30px 60px 30px 30px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(102,126,234,0.4);">
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                            <div style="font-size: 45px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(102,126,234,0.8)); animation: pulse 2s infinite;">🏭</div>
-                            <div>
-                                <h2 style="font-size: 28px; color: #fff; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">МАЙНИНГ ФЕРМА</h2>
-                                <div style="font-size: 15px; color: rgba(255,255,255,0.9); margin-top: 6px; font-weight: 600;">⚡ Добывайте QuanHash автоматически</div>
-                            </div>
-                        </div>
+                <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff; font-weight: 800;">🏭 Майнинг</h2>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
                     
-                    <div style="padding: 25px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
-                            <button class="mining-cat-btn" onclick="loadMiningCategory('coins')" style="padding:14px;background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));color:#fff;border:2px solid #667eea;border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;transition:all 0.3s;">
-                                🪙 За коины
-                            </button>
-                            <button class="mining-cat-btn" onclick="loadMiningCategory('quanhash')" style="padding:14px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(16,185,129,0.2);border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;transition:all 0.3s;">
-                                💎 За QuanHash
-                            </button>
+                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
+                        <div style="font-size:13px;color:#94a3b8;line-height:1.6;">
+                            <strong style="color:#fff;">⚡ Пассивный доход 24/7:</strong> Добывайте QuanHash автоматически! Разные машины = разная мощность. Зарабатывайте даже оффлайн!
                         </div>
-                        
+                    </div>
+                    
+                    <div id="miningShopSection" style="margin-bottom:25px;">
+                        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;grid-column:1/-1;">
+                            <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;width:100%;text-align:center;">🛒 Магазин машин</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button class="mining-cat-btn" onclick="loadMiningCategory('coins')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">🪙 За коины</button>
+                            <button class="mining-cat-btn" onclick="loadMiningCategory('quanhash')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 За QuanHash</button>
+                        </div>
                         <div style="margin-bottom:15px;">
                             <button onclick="openVIPMiningModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:14px;cursor:pointer;font-weight:900;font-size:15px;box-shadow:0 4px 20px rgba(255,215,0,0.4);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;" onmousedown="this.style.transform='scale(0.97)'; this.style.boxShadow='0 6px 25px rgba(255,215,0,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'">
                                 <span style="font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
                                 <span>VIP Машины за Telegram Stars</span>
                             </button>
                         </div>
-                        
-                        <div id="miningShop" style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px;"></div>
-                        
-                        <div id="userMachines" style="margin-top:25px;padding-top:25px;border-top:2px solid rgba(102,126,234,0.3);">
-                            <h3 style="font-size:16px;margin-bottom:15px;color:#fff;text-align:center;font-weight:800;">🗃️ ВАШИ МАШИНЫ</h3>
-                            <div id="machinesList"></div>
-                        </div>
+                        <div id="miningShop" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+                        <div id="vipMiningSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
                     </div>
+                    
+                    <div id="miningInfo" style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(34,197,94,0.2));padding:20px;border-radius:15px;border:2px solid rgba(16,185,129,0.4);text-align:center;margin-top:20px;margin-bottom:15px;">
+                        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#10b981;">💎 Общий доход от майнинга</div>
+                        <div style="font-size:36px;font-weight:900;color:#10b981;text-shadow:0 0 20px rgba(16,185,129,0.5);">+0 💎/час</div>
+                    </div>
+                    
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;">Закрыть</button>
                 </div>
             `;
             document.body.appendChild(modal);
