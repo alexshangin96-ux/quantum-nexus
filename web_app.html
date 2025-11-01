@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.4.2 - Fixed close button positioning in all modals - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.4.3 - Top leaders UI improvements - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2194,8 +2194,8 @@
                             <button class="close-btn" onclick="const modal = this.closest('.modal'); modal.remove(); if(window.topLeadersInterval) clearInterval(window.topLeadersInterval); if(window.tournamentInterval) clearInterval(window.tournamentInterval);">✕</button>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-                            <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Автообновление каждые 2.5 сек</div>
-                            <button id="tournamentBtn" onclick="openTournamentModal();" style="padding:8px 16px;background:rgba(16,185,129,0.3);color:#10b981;border:2px solid rgba(16,185,129,0.5);border-radius:10px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s;" onmouseover="this.style.background='rgba(16,185,129,0.4)';this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(16,185,129,0.3)';this.style.transform='scale(1)'">🏆 Турнир</button>
+                            <div style="font-size:13px;color:rgba(255,255,255,0.8);">🔄 Автообновление</div>
+                            <button id="tournamentBtn" onclick="openTournamentModal();" style="margin-right:50px;padding:8px 16px;background:rgba(16,185,129,0.3);color:#10b981;border:2px solid rgba(16,185,129,0.5);border-radius:10px;cursor:pointer;font-weight:700;font-size:12px;transition:all 0.3s;" onmouseover="this.style.background='rgba(16,185,129,0.4)';this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(16,185,129,0.3)';this.style.transform='scale(1)'">🏆 Турнир</button>
                         </div>
                     </div>
                     
