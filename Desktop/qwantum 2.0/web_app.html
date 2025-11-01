@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v19.0.0 - RESTORED AUTOBOT LOGIC - TIMER ON PURCHASED, LOCKED OTHERS - BUILD: 2024-12-29-RESTORED -->
+<!-- Quantum Nexus v20.0.0 - ABSOLUTE ZERO FLICKERING - LOCKED BUTTONS NEVER UPDATED - BUILD: 2024-12-29-ABSOLUTE-ZERO -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2648,21 +2648,21 @@
                 // Update autobot toggle button
                 updateAutobotToggle(data);
                 
-                // Update autobot shop buttons (only if shop modal is open and category is autobot)
-                // BUT completely skip if autobot is active (prevent blinking during active autobot)
+                // Update autobot shop buttons (ONLY if autobot is NOT active and interval is NOT running)
+                // This prevents any flickering during active autobot
                 const shopModal = document.getElementById('shopModal2');
                 const isAutobotCategoryActive = shopModal && document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background.includes('linear-gradient');
                 const justPurchasedAutobot = window.justPurchasedAutobot || false;
                 const autobotIsActive = data.auto_tap_expires_at > Date.now() && data.auto_tap_level > 0;
-                
-                // NEVER update buttons if autobot is active (interval handles it)
+
+                // NEVER update buttons if autobot is active OR interval is running (interval handles everything)
                 if (isAutobotCategoryActive && !justPurchasedAutobot && !autobotIsActive && !window.autobotShopInterval) {
                     // Only update if autobot state changed (prevent unnecessary blinking)
                     const currentAutoTapLevel = window.currentAutoTapLevel || 0;
                     const currentAutoTapExpires = window.currentAutoTapExpires || 0;
                     const newAutoTapLevel = data.auto_tap_level || 0;
                     const newAutoTapExpires = data.auto_tap_expires_at || 0;
-                    
+
                     // Only update if state actually changed
                     if (currentAutoTapLevel !== newAutoTapLevel || currentAutoTapExpires !== newAutoTapExpires) {
                         window.currentAutoTapLevel = newAutoTapLevel;
@@ -2670,7 +2670,7 @@
                         updateAutobotShopButtons(data);
                     }
                 }
-                
+
                 // Clear the purchase flag after a delay
                 if (justPurchasedAutobot) {
                     setTimeout(() => {
@@ -2751,6 +2751,12 @@
                 return;
             }
             
+            // If interval is running, DO NOTHING - interval handles timer updates
+            // This prevents any flickering from external calls
+            if (window.autobotShopInterval) {
+                return; // Interval is already handling everything, don't interfere
+            }
+            
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
             const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
@@ -2773,34 +2779,31 @@
                 const seconds = Math.floor((remainingMs % 60000) / 1000);
                 const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                 
-                // Set buttons state ONCE (only if not already set) - prevents flickering
+                // Set buttons state ONCE (only if not already locked) - prevents flickering
                 for (let i = 1; i <= 20; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
-                    if (btn) {
-                        const shouldShowCountdown = i === autobotLevel;
-                        
-                        if (shouldShowCountdown) {
-                            // Purchased button - show countdown, disabled
-                            if (!btn.disabled || btn.style.background !== 'rgba(239,68,68,0.6)') {
-                                btn.disabled = true;
-                                btn.style.background = 'rgba(239,68,68,0.6)';
-                                btn.style.cursor = 'not-allowed';
-                            }
-                            // Update only text (timer updates will come from interval)
-                            const newText = `⏱️ Осталось: ${timeText}`;
-                            if (btn.textContent.trim() !== newText) {
-                                btn.textContent = newText;
-                            }
-                        } else {
-                            // Other buttons - set "Недоступно" ONCE, never update again
-                            if (!btn.dataset.autobotLocked) {
-                                btn.disabled = true;
-                                btn.style.background = 'rgba(148,163,184,0.3)';
-                                btn.style.cursor = 'not-allowed';
-                                btn.textContent = '🔒 Недоступно';
-                                btn.dataset.autobotLocked = 'true'; // Mark - never touch again
-                            }
-                        }
+                    if (!btn) continue;
+                    
+                    // NEVER touch locked buttons - they are frozen
+                    if (btn.dataset.autobotLocked === 'true') {
+                        continue; // Skip - this button is locked, don't touch it
+                    }
+                    
+                    const shouldShowCountdown = i === autobotLevel;
+                    
+                    if (shouldShowCountdown) {
+                        // Purchased button - show countdown, disabled (set once)
+                        btn.disabled = true;
+                        btn.style.background = 'rgba(239,68,68,0.6)';
+                        btn.style.cursor = 'not-allowed';
+                        btn.textContent = `⏱️ Осталось: ${timeText}`;
+                    } else {
+                        // Other buttons - set "Недоступно" ONCE, then lock forever
+                        btn.disabled = true;
+                        btn.style.background = 'rgba(148,163,184,0.3)';
+                        btn.style.cursor = 'not-allowed';
+                        btn.textContent = '🔒 Недоступно';
+                        btn.dataset.autobotLocked = 'true'; // Lock forever - never touch again
                     }
                 }
                 
@@ -2843,15 +2846,20 @@
                         const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
                         const newText = `⏱️ Осталось: ${timeText}`;
                         
-                        // Update ONLY the timer text on purchased button (don't touch other buttons)
+                        // Update ONLY textContent of purchased button (no style changes, no re-render)
                         const purchasedBtn = document.getElementById(`autobot-btn-${level}`);
-                        if (purchasedBtn && purchasedBtn.textContent.trim() !== newText) {
-                            purchasedBtn.textContent = newText;
+                        if (purchasedBtn) {
+                            // Only update if text changed (prevents unnecessary DOM manipulation)
+                            const currentText = purchasedBtn.textContent.trim();
+                            if (currentText !== newText) {
+                                purchasedBtn.textContent = newText;
+                            }
+                            // NEVER touch style or disabled state - they are set once
                         }
                     }, 1000);
                 }
             } else {
-                // Autobot is not active - restore all buttons
+                // Autobot is not active - restore all buttons (only if they were disabled)
                 if (window.autobotShopInterval) {
                     clearInterval(window.autobotShopInterval);
                     window.autobotShopInterval = null;
