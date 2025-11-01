@@ -2596,6 +2596,24 @@
                     window.energyRegenRate = energyRegenRate;
                 }
 
+                // Sync sound settings from server
+                if (data.sound_enabled !== undefined && data.sound_enabled !== null) {
+                    const serverSoundEnabled = data.sound_enabled === true || data.sound_enabled === 'true';
+                    localStorage.setItem('soundEnabled', serverSoundEnabled.toString());
+                    console.log('✅ Synced sound_enabled from server:', serverSoundEnabled);
+                    // Update toggle if it exists
+                    const soundToggle = document.getElementById('soundToggle');
+                    if (soundToggle) {
+                        soundToggle.checked = serverSoundEnabled;
+                        updateToggleVisual(soundToggle);
+                    }
+                } else {
+                    // If server doesn't have setting, default to true
+                    if (localStorage.getItem('soundEnabled') === null) {
+                        localStorage.setItem('soundEnabled', 'true');
+                    }
+                }
+                
                 // Update user level and rating
                 const level = data.level || 1;
                 const experience = data.experience || 0;
@@ -5876,11 +5894,34 @@
             // Save to localStorage first
             if(username) localStorage.setItem('username', username);
             if(soundEnabled !== undefined) {
-                localStorage.setItem('soundEnabled', soundEnabled);
+                localStorage.setItem('soundEnabled', soundEnabled.toString());
                 console.log('Saved soundEnabled to localStorage:', soundEnabled);
             }
-            if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
-            if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
+            if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled.toString());
+            if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled.toString());
+            
+            // Save sound settings to database
+            if(soundEnabled !== undefined && window.user?.id) {
+                fetch('/api/update_sound_settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: window.user.id,
+                        sound_enabled: soundEnabled === true || soundEnabled === 'true'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(!data.success) {
+                        console.error('Failed to update sound settings in database:', data.error);
+                    } else {
+                        console.log('✅ Sound settings saved to database:', soundEnabled);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error updating sound settings in database:', err);
+                });
+            }
             
             // Save username to database
             if(username && window.user?.id) {
