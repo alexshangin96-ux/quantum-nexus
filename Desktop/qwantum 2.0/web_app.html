@@ -5324,13 +5324,26 @@
                     
                     const config = colorConfig[category] || colorConfig['starter'];
                     
-                    // Apply VIP card styling
+                    // Apply VIP card styling with premium effects
                     card.style.background = `linear-gradient(135deg,${config.bg},${config.gradient})`;
                     card.style.border = `2px solid ${config.border}`;
-                    card.style.boxShadow = `0 4px 15px ${config.shadow}`;
+                    card.style.boxShadow = `0 4px 15px ${config.shadow}, 0 0 20px ${config.shadow}40`;
                     card.style.padding = '14px';
                     card.style.borderRadius = '12px';
                     card.style.marginBottom = '12px';
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.position = 'relative';
+                    card.style.overflow = 'hidden';
+                    
+                    // Add hover effect
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px) scale(1.02)';
+                        this.style.boxShadow = `0 8px 25px ${config.shadow}, 0 0 30px ${config.shadow}60`;
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0) scale(1)';
+                        this.style.boxShadow = `0 4px 15px ${config.shadow}, 0 0 20px ${config.shadow}40`;
+                    });
                     
                     // Wrap benefits in VIP style box if not already wrapped
                     const title = card.querySelector('div[style*="font-size:15px"]');
@@ -5363,15 +5376,30 @@
                         }
                     });
                     
-                    // Style buttons inside cards
+                    // Style buttons inside cards with premium effects
                     const buttons = card.querySelectorAll('button');
                     buttons.forEach(button => {
                         button.style.fontWeight = '900';
-                        button.style.padding = '10px';
+                        button.style.padding = '12px';
                         button.style.transition = 'all 0.3s ease';
+                        button.style.position = 'relative';
+                        button.style.overflow = 'hidden';
                         if (category === 'starter' || category === 'limited' || category === 'ultra') {
-                            button.style.boxShadow = `0 2px 8px ${config.shadow}30`;
+                            button.style.boxShadow = `0 4px 12px ${config.shadow}50, inset 0 1px 0 rgba(255,255,255,0.2)`;
+                        } else if (category === 'vip' || category === 'mega') {
+                            button.style.boxShadow = `0 4px 12px rgba(255,215,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)`;
                         }
+                        
+                        // Add hover effect for buttons
+                        button.addEventListener('mouseenter', function() {
+                            this.style.transform = 'scale(1.05)';
+                            this.style.filter = 'brightness(1.2)';
+                        });
+                        button.addEventListener('mouseleave', function() {
+                            this.style.transform = 'scale(1)';
+                            this.style.filter = 'brightness(1)';
+                        });
+                        
                         // Update button text to VIP style
                         const originalText = button.textContent;
                         if (!originalText.includes('Купить за')) {
