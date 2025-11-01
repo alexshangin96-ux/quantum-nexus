@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.5.1 - Unified VIP modal style across all sections - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.5.2 - Unified VIP buttons, improved shop icon, sound permission modal - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1418,7 +1418,7 @@
         </button>
         <div class="buttons">
             <a href="#" class="btn" onclick="openShop(event)">
-                <div class="btn-emoji">🛒</div>
+                <div class="btn-emoji">🛍️</div>
                 <div>Магазин</div>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
@@ -4317,10 +4317,13 @@
                             <button class="mining-cat-btn" onclick="loadMiningCategory('quanhash')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 За QuanHash</button>
                         </div>
                         <div style="margin-bottom:15px;">
-                            <button onclick="openVIPMiningModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:14px;cursor:pointer;font-weight:900;font-size:15px;box-shadow:0 4px 20px rgba(255,215,0,0.4);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;" onmousedown="this.style.transform='scale(0.97)'; this.style.boxShadow='0 6px 25px rgba(255,215,0,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'">
-                                <span style="font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
-                                <span>VIP Машины за Telegram Stars</span>
-                            </button>
+                            <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
+                                <button onclick="openVIPMiningModal()" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                    <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
+                                    <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
+                                    <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
+                                </button>
+                            </div>
                         </div>
                         <div id="miningShop" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
                         <div id="vipMiningSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
@@ -4685,10 +4688,13 @@
                             <button class="filter-btn shop-cat-btn" data-category="per_minute" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
                         </div>
                         <div style="margin-bottom:15px;">
-                            <button onclick="openVIPCardsModal()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:14px;cursor:pointer;font-weight:900;font-size:15px;box-shadow:0 4px 20px rgba(255,215,0,0.4);transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;" onmousedown="this.style.transform='scale(0.97)'; this.style.boxShadow='0 6px 25px rgba(255,215,0,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(255,215,0,0.4)'">
-                                <span style="font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
-                                <span>VIP Карточки за Telegram Stars</span>
-                            </button>
+                            <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
+                                <button onclick="openVIPCardsModal()" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                    <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
+                                    <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
+                                    <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
+                                </button>
+                            </div>
                         </div>
                         <div id="shopCardsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
                         <div id="vipCardsSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
@@ -5364,7 +5370,7 @@
                                             </div>
                                         </div>
                                         <label style="position:relative;display:inline-block;width:50px;height:28px;">
-                                            <input type="checkbox" id="soundToggle" ${savedSound ? 'checked' : ''} onchange="console.log('Sound toggle changed:', this.checked); localStorage.setItem('soundEnabled', this.checked); updateToggleVisual(this);" style="opacity:0;width:0;height:0;">
+                                            <input type="checkbox" id="soundToggle" ${savedSound ? 'checked' : ''} onchange="handleSoundToggle(this);" style="opacity:0;width:0;height:0;">
                                             <span class="toggle-track" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedSound ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
                                                 <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedSound ? '22px' : '0'});"></span>
                                             </span>
@@ -5506,6 +5512,31 @@
             // Trigger haptic feedback if enabled (use the value we just saved)
             if (hapticsEnabled === true && tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+        
+        function handleSoundToggle(checkbox) {
+            if (checkbox.checked) {
+                // Show permission request modal
+                const confirmModal = document.createElement('div');
+                confirmModal.className = 'modal active';
+                confirmModal.style.zIndex = '10001';
+                confirmModal.innerHTML = `
+                    <div style="background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(102,126,234,0.4);box-shadow:0 10px 40px rgba(102,126,234,0.3);max-width:400px;padding:30px;text-align:center;position:relative;">
+                        <div style="font-size:64px;margin-bottom:20px;">🎵</div>
+                        <h2 style="font-size:22px;color:#fff;margin:0 0 15px;font-weight:800;">Разрешить звуки?</h2>
+                        <p style="font-size:14px;color:#94a3b8;line-height:1.6;margin-bottom:25px;">Для включения звуковых эффектов нужно разрешение браузера на воспроизведение звука</p>
+                        <div style="display:flex;gap:10px;">
+                            <button onclick="document.getElementById('soundToggle').checked=false;this.closest('.modal').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;">Отмена</button>
+                            <button onclick="this.closest('.modal').remove();localStorage.setItem('soundEnabled', 'true');updateToggleVisual(document.getElementById('soundToggle'));initAudio();" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;">Разрешить</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(confirmModal);
+                confirmModal.onclick = (e) => {if(e.target === confirmModal) confirmModal.remove();};
+            } else {
+                localStorage.setItem('soundEnabled', 'false');
+                updateToggleVisual(checkbox);
             }
         }
         
