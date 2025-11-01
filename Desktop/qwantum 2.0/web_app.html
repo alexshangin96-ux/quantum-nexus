@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v7.0.0 - SHOP ICON 90px GOLD + SIMPLIFIED AUDIO - BUILD: 2024-12-29-ULTRA-VISIBLE -->
+<!-- Quantum Nexus v8.0.0 - CRYPTO SOUNDS + RESTORED SHOP BUTTON - BUILD: 2024-12-29-CRYPTO-STYLE -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1435,13 +1435,9 @@
             </svg>
         </button>
         <div class="buttons">
-            <a href="#" id="shop-button-v7" class="btn shop-btn-special-v7" onclick="openShop(event)" style="background:linear-gradient(135deg,#ffd700 0%,#ffed4e 50%,#ffd700 100%) !important;box-shadow:0 15px 60px rgba(255,215,0,1), 0 10px 40px rgba(255,215,0,0.98), 0 0 70px rgba(255,215,0,0.95), inset 0 0 50px rgba(255,215,0,0.5) !important;border:7px solid rgba(255,215,0,1) !important;position:relative !important;overflow:visible !important;transform:scale(1.15) !important;transition:all 0.3s !important;padding:25px !important;min-height:140px !important;display:flex !important;align-items:center !important;justify-content:center !important;gap:18px !important;border-radius:20px !important;">
-                <span id="shop-icon-v7" class="shop-icon-mega-v7" style="font-size:100px !important;line-height:1 !important;display:block !important;filter:drop-shadow(0 0 50px rgba(255,215,0,1)) drop-shadow(0 0 30px rgba(255,215,0,0.98)) drop-shadow(0 0 20px rgba(255,215,0,0.95)) drop-shadow(0 8px 15px rgba(0,0,0,0.8)) !important;animation:shop-glow 1s ease-in-out infinite !important;transform:scale(1.7) !important;z-index:10 !important;position:relative !important;text-shadow:0 0 40px rgba(255,215,0,1), 0 0 25px rgba(255,215,0,0.95) !important;">🛒</span>
-                <span id="shop-text-v7" class="shop-text-mega-v7" style="font-weight:900 !important;text-shadow:0 6px 30px rgba(0,0,0,1), 0 0 40px rgba(255,215,0,1), 0 0 50px rgba(255,215,0,0.98), 0 0 70px rgba(255,215,0,0.85) !important;font-size:26px !important;letter-spacing:4px !important;z-index:10 !important;position:relative !important;color:#fff !important;font-family:system-ui,-apple-system,sans-serif !important;white-space:nowrap !important;">МАГАЗИН</span>
-                <div style="position:absolute;top:-15px;left:-15px;right:-15px;bottom:-15px;background:radial-gradient(circle, rgba(255,215,0,0.7) 0%, rgba(255,215,0,0.4) 30%, rgba(255,215,0,0.2) 60%, transparent 90%);border-radius:inherit;animation:shop-glow 1.8s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:150px;height:150px;background:radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0.25) 40%, transparent 80%);border-radius:50%;animation:shop-glow 2.2s ease-in-out infinite;animation-delay:0.3s;pointer-events:none;z-index:0;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120px;height:120px;background:radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(255,215,0,0.2) 50%, transparent 75%);border-radius:50%;animation:shop-glow 1.5s ease-in-out infinite;animation-delay:0.7s;pointer-events:none;z-index:0;"></div>
-                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 65%);border-radius:50%;animation:shop-glow 1.2s ease-in-out infinite;animation-delay:1.2s;pointer-events:none;z-index:0;"></div>
+            <a href="#" id="shop-button" class="btn" onclick="openShop(event)">
+                <span style="font-size:24px;">🛒</span>
+                <span>Магазин</span>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
                 <div class="btn-emoji">🏭</div>
@@ -3149,21 +3145,21 @@
                 
                 let audioPlayed = false;
                 
-                // ULTRA-SIMPLIFIED - Direct sound generation for Telegram
+                // CRYPTO STYLE - Digital/Electronic sounds
                 const soundConfigs = {
-                    'tap': { freq: 440, dur: 0.12 },
-                    'mining': { freq: 554, dur: 0.25 },
-                    'purchase': { freq: 698, dur: 0.35 },
-                    'coin': { freq: 880, dur: 0.18 },
-                    'levelup': { freq: 660, dur: 0.6 },
-                    'success': { freq: 523, dur: 0.35 },
-                    'error': { freq: 220, dur: 0.35 }
+                    'tap': { freq: 880, dur: 0.1, type: 'square' }, // Crypto tap - high digital beep
+                    'mining': { freq: 523, dur: 0.2, type: 'sawtooth' }, // Mining - low digital processing
+                    'purchase': { freq: 698, dur: 0.3, type: 'triangle' }, // Purchase - ascending digital chime
+                    'coin': { freq: 1047, dur: 0.15, type: 'square' }, // Coin - sharp digital click
+                    'levelup': { freq: 784, dur: 0.5, type: 'triangle' }, // Level up - digital fanfare
+                    'success': { freq: 932, dur: 0.25, type: 'square' }, // Success - digital confirmation
+                    'error': { freq: 220, dur: 0.3, type: 'sawtooth' } // Error - low digital buzz
                 };
                 
-                const config = soundConfigs[type] || { freq: 440, dur: 0.2 };
+                const config = soundConfigs[type] || { freq: 880, dur: 0.1, type: 'square' };
                 
-                // IMMEDIATE play - no delays
-                playSimpleSound(config.freq, config.dur);
+                // IMMEDIATE play - no delays (with crypto wave type)
+                playSimpleSound(config.freq, config.dur, config.type || 'square');
                 
                 // Backup with full API (in case simple doesn't work)
                 if (audioContext && audioContext.state === 'running') {
@@ -3178,8 +3174,8 @@
             }
         }
         
-        // ULTRA SIMPLE SOUND FUNCTION for Telegram mobile (MAXIMUM RELIABILITY)
-        function playSimpleSound(frequency, duration) {
+        // ULTRA SIMPLE SOUND FUNCTION for Telegram mobile (MAXIMUM RELIABILITY) - CRYPTO STYLE
+        function playSimpleSound(frequency, duration, waveType) {
             try {
                 // Ensure context exists
                 if (!audioContext || audioContext.state === 'closed') {
@@ -3190,7 +3186,7 @@
                 if (audioContext.state === 'suspended') {
                     audioContext.resume().then(() => {
                         // Retry after resume
-                        setTimeout(() => playSimpleSound(frequency, duration), 20);
+                        setTimeout(() => playSimpleSound(frequency, duration, waveType), 20);
                     });
                     return;
                 }
@@ -3201,9 +3197,9 @@
                     const gain = audioContext.createGain();
                     osc.connect(gain);
                     gain.connect(audioContext.destination);
-                    osc.frequency.value = frequency || 440;
-                    osc.type = 'sine';
-                    gain.gain.setValueAtTime(0.7, audioContext.currentTime); // Louder
+                    osc.frequency.value = frequency || 880;
+                    osc.type = waveType || 'square'; // Use specified wave type for crypto style
+                    gain.gain.setValueAtTime(0.6, audioContext.currentTime); // Crypto style volume
                     gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (duration || 0.15));
                     osc.start(audioContext.currentTime);
                     osc.stop(audioContext.currentTime + (duration || 0.15));
@@ -3258,8 +3254,11 @@
                         
                         switch(type) {
                             case 'tap':
-                                oscillator.frequency.value = 440;
-                                oscillator.type = 'sine';
+                                // Crypto tap - high digital beep
+                                oscillator.frequency.value = 880;
+                                oscillator.type = 'square';
+                                oscillator.frequency.exponentialRampToValueAtTime(1108, audioContext.currentTime + 0.05);
+                                oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
                                 oscillator.stop(audioContext.currentTime + 0.1);
                                 break;
                             case 'coin':
@@ -3287,20 +3286,22 @@
                                 oscillator.stop(audioContext.currentTime + 0.3);
                                 break;
                             case 'purchase':
+                                // Crypto purchase - digital ascending chime
                                 oscillator.frequency.value = 698;
                                 oscillator.type = 'triangle';
                                 oscillator.frequency.setValueAtTime(698, audioContext.currentTime);
                                 oscillator.frequency.exponentialRampToValueAtTime(1397, audioContext.currentTime + 0.15);
-                                oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.3);
-                                oscillator.stop(audioContext.currentTime + 0.4);
-                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                                oscillator.frequency.exponentialRampToValueAtTime(932, audioContext.currentTime + 0.25);
+                                oscillator.stop(audioContext.currentTime + 0.3);
+                                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                                 break;
                             case 'mining':
-                                oscillator.frequency.value = 440;
-                                oscillator.type = 'square';
-                                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                                oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
-                                oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
+                                // Crypto mining - low digital processing sound
+                                oscillator.frequency.value = 523;
+                                oscillator.type = 'sawtooth';
+                                oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                                oscillator.frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.1);
+                                oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.2);
                                 oscillator.stop(audioContext.currentTime + 0.2);
                                 break;
                             case 'card':
@@ -3669,12 +3670,12 @@
                                 const gain = audioContext.createGain();
                                 osc.connect(gain);
                                 gain.connect(audioContext.destination);
-                                osc.frequency.value = 440;
-                                osc.type = 'sine';
-                                gain.gain.setValueAtTime(0.6, audioContext.currentTime);
-                                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                                osc.frequency.value = 880; // Crypto tap - higher digital frequency
+                                osc.type = 'square'; // Digital/electronic sound
+                                gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+                                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
                                 osc.start(audioContext.currentTime);
-                                osc.stop(audioContext.currentTime + 0.15);
+                                osc.stop(audioContext.currentTime + 0.1);
                             }
                         } catch(e) {}
                     }, 10);
