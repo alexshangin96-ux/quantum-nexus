@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v13.0.0 - FIXED AUTOBOT BUTTONS BLINKING - BUILD: 2024-12-29-FIX-BLINKING -->
+<!-- Quantum Nexus v14.0.0 - FIXED AUTOBOT BUTTONS BLINKING ON PURCHASE - BUILD: 2024-12-29-FIX-PURCHASE-BLINK -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4709,16 +4709,93 @@
                     document.body.appendChild(anim);
                     setTimeout(()=>{anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';setTimeout(()=>{anim.remove();},300);},800);
                     
-                    // Reload data and refresh shop display
-                    loadData();
-                    
-                    // Refresh current shop category to show updated levels
-                    setTimeout(() => {
-                        const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
-                        if (activeBtn && activeBtn.dataset.category) {
-                            loadShopCategory(activeBtn.dataset.category);
+                    // Special handling for autobot - update button immediately without blinking
+                    if (category === 'autobot' || category === 'autobot_vip') {
+                        // Update autobot state immediately to prevent blinking
+                        const autobotBtn = document.getElementById(`autobot-btn-${level}`);
+                        if (autobotBtn) {
+                            // Get expiration time from response or calculate it
+                            const duration = window.shopData?.autobot?.items?.[itemIndex]?.duration || 15; // minutes
+                            const expiresAt = Date.now() + (duration * 60 * 1000);
+                            window.currentAutoTapLevel = level;
+                            window.currentAutoTapExpires = expiresAt;
+                            
+                            // Update button state immediately without blinking
+                            autobotBtn.disabled = true;
+                            autobotBtn.style.background = 'rgba(239,68,68,0.6)';
+                            autobotBtn.style.cursor = 'not-allowed';
+                            
+                            // Start countdown immediately
+                            if (window.autobotShopInterval) {
+                                clearInterval(window.autobotShopInterval);
                             }
-                    }, 200);
+                            
+                            // Block all other autobot buttons
+                            for (let i = 1; i <= 20; i++) {
+                                const btn = document.getElementById(`autobot-btn-${i}`);
+                                if (btn && i !== level) {
+                                    btn.disabled = true;
+                                    btn.style.background = 'rgba(148,163,184,0.3)';
+                                    btn.style.cursor = 'not-allowed';
+                                    btn.innerHTML = '🔒 Недоступно';
+                                }
+                            }
+                            
+                            // Start countdown timer
+                            window.autobotShopInterval = setInterval(() => {
+                                const now = Date.now();
+                                const remainingMs = expiresAt - now;
+                                
+                                if (remainingMs <= 0) {
+                                    clearInterval(window.autobotShopInterval);
+                                    window.autobotShopInterval = null;
+                                    // Unblock all buttons
+                                    for (let i = 1; i <= 20; i++) {
+                                        const btn = document.getElementById(`autobot-btn-${i}`);
+                                        if (btn) {
+                                            btn.disabled = false;
+                                            btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                                            btn.style.cursor = 'pointer';
+                                            const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
+                                            btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
+                                        }
+                                    }
+                                    return;
+                                }
+                                
+                                const hours = Math.floor(remainingMs / 3600000);
+                                const minutes = Math.floor((remainingMs % 3600000) / 60000);
+                                const seconds = Math.floor((remainingMs % 60000) / 1000);
+                                const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                                
+                                // Update only the purchased button with countdown
+                                if (autobotBtn) {
+                                    autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                                }
+                            }, 1000);
+                            
+                            // Initial countdown display
+                            const hours = Math.floor((duration * 60) / 3600);
+                            const minutes = Math.floor(((duration * 60) % 3600) / 60);
+                            const seconds = 0;
+                            const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                            autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                        }
+                        
+                        // Reload data but don't refresh shop category to prevent blinking
+                        loadData();
+                    } else {
+                        // Reload data and refresh shop display for other categories
+                        loadData();
+                        
+                        // Refresh current shop category to show updated levels
+                        setTimeout(() => {
+                            const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
+                            if (activeBtn && activeBtn.dataset.category) {
+                                loadShopCategory(activeBtn.dataset.category);
+                            }
+                        }, 200);
+                    }
                     
                     
                     // Update passive income immediately
