@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Quantum Nexus v2.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -3145,34 +3148,55 @@
                 
                 let audioPlayed = false;
                 
-                // SIMPLIFIED APPROACH: Direct Web Audio API for Telegram (most reliable)
-                // Try Web Audio API first - it works better in Telegram WebView
-                playSoundWebAudio(type);
+                // ULTRA-SIMPLIFIED APPROACH for Telegram mobile
+                // Use simple immediate sound generation
+                const soundConfigs = {
+                    'tap': { freq: 440, dur: 0.1 },
+                    'mining': { freq: 554, dur: 0.2 },
+                    'purchase': { freq: 698, dur: 0.3 },
+                    'coin': { freq: 880, dur: 0.15 },
+                    'levelup': { freq: 660, dur: 0.5 },
+                    'success': { freq: 523, dur: 0.3 },
+                    'error': { freq: 220, dur: 0.3 }
+                };
                 
-                // Also try HTML5 Audio as secondary option
-                if (html5AudioSupported) {
-                    try {
-                        const audio = audioElements[type];
-                        if (audio && audio.src) {
-                            // Try to play HTML5 audio in parallel (may work in some cases)
-                            setTimeout(() => {
-                                try {
-                                    const audioClone = audio.cloneNode();
-                                    audioClone.volume = 0.4; // Lower volume for parallel play
-                                    audioClone.play().catch(() => {
-                                        // Silent fail - Web Audio is primary
-                                    });
-                                } catch (e) {
-                                    // Silent fail
-                                }
-                            }, 10);
-                        }
-                    } catch (html5Error) {
-                        // Silent fail - Web Audio is primary
-                    }
-                }
+                const config = soundConfigs[type] || { freq: 440, dur: 0.2 };
+                
+                // Try simple sound first
+                playSimpleSound(config.freq, config.dur);
+                
+                // Also try full Web Audio API as backup
+                setTimeout(() => {
+                    playSoundWebAudio(type);
+                }, 10);
             } catch(e) {
                 console.log('Sound playback error:', e);
+            }
+        }
+        
+        // SIMPLE SOUND FUNCTION for Telegram mobile (more reliable)
+        function playSimpleSound(frequency, duration) {
+            try {
+                if (!audioContext || audioContext.state === 'closed') {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                if (audioContext.state === 'running') {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.frequency.value = frequency;
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + duration);
+                }
+            } catch(e) {
+                // Silent fail
             }
         }
         
@@ -3603,17 +3627,29 @@
         function tap() {
             // Initialize audio on first tap (required for Telegram WebView)
             if (!userInteractionOccurred) {
+                userInteractionOccurred = true;
                 initAudioOnInteraction();
-                userInteractionOccurred = true; // Set immediately
             }
             
             // Always play haptic feedback (works even if sounds disabled)
             playHapticFeedback('light');
             
-            // Sound effect
+            // Sound effect - SIMPLIFIED for Telegram mobile
             const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
-                playSound('tap');
+                // Use simplified immediate sound
+                try {
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume().then(() => playSimpleSound(440, 0.1));
+                    } else {
+                        playSimpleSound(440, 0.1);
+                    }
+                } catch(e) {
+                    console.log('Sound error:', e);
+                }
             }
             
             const button = document.querySelector('.tap-button');
