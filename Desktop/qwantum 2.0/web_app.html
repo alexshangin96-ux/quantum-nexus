@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v21.0.0 - PRESERVE BUTTON STATES ON RECREATION - NO FLICKERING - BUILD: 2024-12-29-PRESERVE-STATES -->
+<!-- Quantum Nexus v22.0.0 - BEAUTIFUL REFERRAL SYSTEM - PREMIUM BONUSES - BUILD: 2024-12-29-REFERRAL-PREMIUM -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1574,58 +1574,104 @@
 
     <!-- Referrals Modal -->
     <div id="referralsModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header" style="background: linear-gradient(135deg, rgba(102,126,234,0.95), rgba(139,92,246,0.95)); border-bottom: 2px solid rgba(167,139,250,0.3);">
-                <div class="modal-title" style="color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">👥 Реферальная система</div>
-                <button class="close-btn" onclick="closeReferralsModal()" style="color: #fff;">✕</button>
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); border-bottom: 3px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(102,126,234,0.4);">
+                <div class="modal-title" style="color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.5); font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎁</span>
+                    <span>Пригласи друзей - получай доход!</span>
+                </div>
+                <button class="close-btn" onclick="closeReferralsModal()" style="color: #fff; background: rgba(0,0,0,0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(0,0,0,0.4)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">✕</button>
             </div>
             
-            <div style="padding: 20px; background: linear-gradient(135deg, rgba(15,15,30,0.98), rgba(20,20,35,0.98));">
-                <!-- Benefits Info -->
-                <div style="background: rgba(102,126,234,0.15); border: 2px solid rgba(102,126,234,0.4); border-radius: 12px; padding: 12px; margin-bottom: 20px;">
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="color: #a78bfa; font-size: 13px; font-weight: 700;">
-                            ✅ Обычные рефералы: <span style="color: #4ade80;">5%</span> от их дохода
+            <div style="padding: 24px; background: linear-gradient(135deg, rgba(15,15,30,0.98), rgba(20,20,35,0.98)); min-height: 400px;">
+                <!-- Welcome Bonus Info -->
+                <div style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.2)); border: 2px solid rgba(34,197,94,0.5); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(34,197,94,0.2);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <span style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎉</span>
+                        <div style="flex: 1;">
+                            <div style="color: #4ade80; font-size: 16px; font-weight: 800; margin-bottom: 4px;">Бонус при регистрации!</div>
+                            <div style="color: #86efac; font-size: 12px;">Твой друг получит стартовый бонус</div>
                         </div>
-                        <div style="color: #fbbf24; font-size: 13px; font-weight: 700;">
-                            ⭐ VIP рефералы: <span style="color: #4ade80;">10%</span> от их дохода
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+                        <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; text-align: center;">
+                            <div style="color: #a78bfa; font-size: 11px; font-weight: 700; margin-bottom: 4px;">👤 Обычный</div>
+                            <div style="color: #fff; font-size: 18px; font-weight: 800;">+500 🪙</div>
                         </div>
-                        <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">
-                            💰 Доход накапливается автоматически в реальном времени
+                        <div style="background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.2)); border: 2px solid rgba(255,215,0,0.4); border-radius: 10px; padding: 10px; text-align: center;">
+                            <div style="color: #ffd700; font-size: 11px; font-weight: 700; margin-bottom: 4px;">⭐ Premium</div>
+                            <div style="color: #fff; font-size: 18px; font-weight: 800;">+2000 🪙</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Passive Income Info -->
+                <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.15)); border: 2px solid rgba(102,126,234,0.5); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(102,126,234,0.2);">
+                    <div style="color: #a78bfa; font-size: 15px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <span>💰</span>
+                        <span>Твой пассивный доход</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">👤</span>
+                                <span style="color: #a78bfa; font-size: 13px; font-weight: 700;">От обычных друзей:</span>
+                            </div>
+                            <span style="color: #4ade80; font-size: 14px; font-weight: 800;">5%</span>
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,237,78,0.1)); border-radius: 8px; border: 1px solid rgba(255,215,0,0.3);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 20px;">⭐</span>
+                                <span style="color: #ffd700; font-size: 13px; font-weight: 700;">От Premium друзей:</span>
+                            </div>
+                            <span style="color: #4ade80; font-size: 14px; font-weight: 800;">10%</span>
+                        </div>
+                        <div style="color: #94a3b8; font-size: 11px; margin-top: 4px; padding-left: 28px;">
+                            💎 Доход накапливается автоматически от всех действий друзей
                         </div>
                     </div>
                 </div>
                 
                 <!-- Stats Cards -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                    <div style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(139,92,246,0.2)); border: 2px solid rgba(102,126,234,0.4); border-radius: 12px; padding: 16px; text-align: center;">
-                        <div style="color: #a78bfa; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Рефералов</div>
-                        <div style="color: #fff; font-size: 24px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);" id="refCount">0</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                    <div style="background: linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.25)); border: 2px solid rgba(102,126,234,0.5); border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 4px 15px rgba(102,126,234,0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; background: rgba(102,126,234,0.1); border-radius: 50%;"></div>
+                        <div style="color: #a78bfa; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">👥 Друзей</div>
+                        <div style="color: #fff; font-size: 32px; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.4); position: relative; z-index: 1;" id="refCount">0</div>
                     </div>
-                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(16,185,129,0.2)); border: 2px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 16px; text-align: center;">
-                        <div style="color: #4ade80; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Общий доход</div>
-                        <div style="color: #fff; font-size: 20px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);" id="refIncome">0 🪙</div>
+                    <div style="background: linear-gradient(135deg, rgba(34,197,94,0.25), rgba(16,185,129,0.25)); border: 2px solid rgba(34,197,94,0.5); border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 4px 15px rgba(34,197,94,0.2); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -20px; right: -20px; width: 60px; height: 60px; background: rgba(34,197,94,0.1); border-radius: 50%;"></div>
+                        <div style="color: #4ade80; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">💰 Доход</div>
+                        <div style="color: #fff; font-size: 24px; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.4); position: relative; z-index: 1;" id="refIncome">0 🪙</div>
                     </div>
                 </div>
                 
                 <!-- Referrals List -->
-                <div style="margin-bottom: 20px;">
-                    <div style="color: #a78bfa; font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <span>📊 Список рефералов</span>
-                        <span style="color: #94a3b8; font-size: 11px; font-weight: 400;">(обновляется каждые 5 сек)</span>
+                <div style="margin-bottom: 24px;">
+                    <div style="color: #fff; font-size: 16px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 24px;">📊</span>
+                            <span>Мои друзья</span>
+                        </div>
+                        <span style="color: #94a3b8; font-size: 10px; font-weight: 400; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px;">🔄 каждые 5 сек</span>
                     </div>
-                    <div id="referralsList" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
-                        <div style="text-align: center; color: #94a3b8; padding: 20px;">
-                            Загрузка рефералов...
+                    <div id="referralsList" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px;">
+                        <div style="text-align: center; color: #94a3b8; padding: 30px;">
+                            <div style="font-size: 48px; margin-bottom: 12px; opacity: 0.5;">👥</div>
+                            <div style="font-weight: 700; margin-bottom: 6px; color: #a78bfa;">Загрузка друзей...</div>
+                            <div style="font-size: 12px;">Подождите немного</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Referral Link -->
-                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(102,126,234,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
-                    <div style="color: #a78bfa; font-size: 13px; font-weight: 700; margin-bottom: 8px;">🔗 Ваша реферальная ссылка:</div>
-                    <div class="referral-link" id="refLink" style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; word-break: break-all; color: #fff; font-size: 12px; margin-bottom: 10px;">-</div>
-                    <button class="btn" onclick="copyRefLink()" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 8px; color: #fff; font-weight: 700; cursor: pointer; font-size: 13px;">📋 Копировать ссылку</button>
+                <div style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.15)); border: 2px solid rgba(102,126,234,0.5); border-radius: 16px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(102,126,234,0.15);">
+                    <div style="color: #a78bfa; font-size: 14px; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">🔗</span>
+                        <span>Твоя пригласительная ссылка</span>
+                    </div>
+                    <div class="referral-link" id="refLink" style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 10px; word-break: break-all; color: #fff; font-size: 11px; margin-bottom: 12px; border: 1px solid rgba(102,126,234,0.3); font-family: monospace;">Загрузка...</div>
+                    <button class="btn" onclick="copyRefLink()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: #fff; font-weight: 800; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(102,126,234,0.3); transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 15px rgba(102,126,234,0.3)'">📋 Скопировать ссылку</button>
                 </div>
             </div>
         </div>
@@ -6390,12 +6436,22 @@
             const referralsList = document.getElementById('referralsList');
             if (!referralsList) return;
             
+            // Обновить счетчик (используем реальное количество из списка)
+            const actualCount = data.referrals ? data.referrals.length : 0;
+            const refCountEl = document.getElementById('refCount');
+            if (refCountEl) {
+                refCountEl.textContent = actualCount;
+            }
+            
             if (!data.referrals || data.referrals.length === 0) {
                 referralsList.innerHTML = `
-                    <div style="text-align: center; color: #94a3b8; padding: 30px;">
-                        <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Пока нет рефералов</div>
-                        <div style="font-size: 12px;">Пригласите друзей и получайте пассивный доход!</div>
+                    <div style="text-align: center; color: #94a3b8; padding: 40px 20px;">
+                        <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.4;">👥</div>
+                        <div style="font-weight: 800; margin-bottom: 8px; color: #a78bfa; font-size: 16px;">Пока нет друзей</div>
+                        <div style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
+                            Поделись ссылкой и получай<br/>
+                            <span style="color: #4ade80; font-weight: 700;">5-10%</span> от дохода каждого друга!
+                        </div>
                     </div>
                 `;
                 return;
@@ -6403,30 +6459,33 @@
             
             referralsList.innerHTML = data.referrals.map(ref => {
                 const isVip = ref.is_vip || false;
-                const vipBadge = isVip ? '<span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 6px;">⭐ VIP</span>' : '';
+                const vipBadge = isVip ? '<span style="background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; margin-left: 8px; box-shadow: 0 2px 6px rgba(255,215,0,0.3);">⭐ Premium</span>' : '';
                 const incomePercent = ref.referral_income_percent || (isVip ? 10 : 5);
+                const incomeAmount = Math.floor(ref.income_from_ref || 0);
+                const earnedAmount = Math.floor(ref.total_earned || 0);
                 
                 return `
-                    <div style="background: ${isVip ? 'linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,237,78,0.1))' : 'rgba(102,126,234,0.1)'}; border: 2px solid ${isVip ? 'rgba(255,215,0,0.4)' : 'rgba(102,126,234,0.3)'}; border-radius: 12px; padding: 14px; position: relative;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="font-size: 24px;">${isVip ? '⭐' : '👤'}</div>
-                                <div>
-                                    <div style="color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center;">
-                                        @${ref.username || 'User'}
+                    <div style="background: ${isVip ? 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.12))' : 'linear-gradient(135deg, rgba(102,126,234,0.12), rgba(139,92,246,0.12))'}; border: 2px solid ${isVip ? 'rgba(255,215,0,0.5)' : 'rgba(102,126,234,0.4)'}; border-radius: 14px; padding: 16px; position: relative; box-shadow: 0 4px 12px ${isVip ? 'rgba(255,215,0,0.15)' : 'rgba(102,126,234,0.15)'}; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px ${isVip ? 'rgba(255,215,0,0.25)' : 'rgba(102,126,234,0.25)'}'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px ${isVip ? 'rgba(255,215,0,0.15)' : 'rgba(102,126,234,0.15)'}'">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                                <div style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${isVip ? '⭐' : '👤'}</div>
+                                <div style="flex: 1;">
+                                    <div style="color: #fff; font-weight: 800; font-size: 15px; display: flex; align-items: center; margin-bottom: 4px;">
+                                        <span>@${ref.username || 'User'}</span>
                                         ${vipBadge}
                                     </div>
-                                    <div style="color: #94a3b8; font-size: 11px; margin-top: 2px;">
-                                        ${incomePercent}% от дохода
+                                    <div style="color: #94a3b8; font-size: 11px; display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: ${isVip ? '#ffd700' : '#a78bfa'}; font-weight: 700;">${incomePercent}%</span>
+                                        <span>от дохода</span>
                                     </div>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
-                                <div style="color: #4ade80; font-weight: 800; font-size: 16px;">
-                                    +${Math.floor(ref.income_from_ref || 0).toLocaleString()} 🪙
+                            <div style="text-align: right; padding-left: 12px;">
+                                <div style="color: #4ade80; font-weight: 900; font-size: 18px; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                    +${incomeAmount.toLocaleString()} 🪙
                                 </div>
-                                <div style="color: #94a3b8; font-size: 10px; margin-top: 2px;">
-                                    Заработано: ${Math.floor(ref.total_earned || 0).toLocaleString()} 🪙
+                                <div style="color: #64748b; font-size: 10px; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; display: inline-block;">
+                                    Заработал: ${earnedAmount.toLocaleString()} 🪙
                                 </div>
                             </div>
                         </div>
@@ -6443,20 +6502,42 @@
             })
             .then(res => res.json())
             .then(data => {
-                document.getElementById('refCount').textContent = data.referrals_count || 0;
-                document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0).toLocaleString()} 🪙`;
+                // Исправить подсчет: использовать реальное количество из списка, а не из referrals_count
+                const actualCount = data.referrals ? data.referrals.length : (data.referrals_count || 0);
+                const refCountEl = document.getElementById('refCount');
+                if (refCountEl) {
+                    refCountEl.textContent = actualCount;
+                }
+                
+                const refIncomeEl = document.getElementById('refIncome');
+                if (refIncomeEl) {
+                    refIncomeEl.textContent = `${Math.floor(data.referral_income || 0).toLocaleString()} 🪙`;
+                }
                 
                 // Generate correct referral link using referral_code
                 const botUsername = 'qanexus_bot';
                 const refCode = data.referral_code || window.user?.id || 'no_code';
                 const refLink = `https://t.me/${botUsername}?start=${refCode}`;
-                document.getElementById('refLink').textContent = refLink;
+                const refLinkEl = document.getElementById('refLink');
+                if (refLinkEl) {
+                    refLinkEl.textContent = refLink;
+                }
                 
-                // Update referrals list
+                // Update referrals list (это обновит счетчик еще раз из списка)
                 updateReferralsList(data);
             })
             .catch(err => {
                 console.error('Error loading referrals:', err);
+                const referralsList = document.getElementById('referralsList');
+                if (referralsList) {
+                    referralsList.innerHTML = `
+                        <div style="text-align: center; color: #ef4444; padding: 20px;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+                            <div style="font-weight: 700;">Ошибка загрузки</div>
+                            <div style="font-size: 11px; margin-top: 4px; color: #94a3b8;">Попробуйте позже</div>
+                        </div>
+                    `;
+                }
             });
         }
         
