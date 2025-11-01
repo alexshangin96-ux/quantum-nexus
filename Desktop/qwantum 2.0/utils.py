@@ -152,3 +152,11 @@ def calculate_mining_reward(machine):
 
 
 
+
+
+
+
+
+
+
+

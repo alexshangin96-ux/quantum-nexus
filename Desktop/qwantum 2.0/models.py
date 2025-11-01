@@ -18,8 +18,10 @@ class User(Base):
     quanhash = Column(Float, default=0.0)
     
     # Energy
-    energy = Column(Integer, default=100)
-    max_energy = Column(Integer, default=100)
+    energy = Column(Integer, default=1000)
+    max_energy = Column(Integer, default=1000)
+    # Regen
+    energy_regen_rate = Column(Float, default=1.0)
     
     # Statistics
     total_taps = Column(Integer, default=0)
@@ -122,6 +124,9 @@ class Transaction(Base):
     currency = Column(String(20))  # coins or quanhash
     
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
 
 
 

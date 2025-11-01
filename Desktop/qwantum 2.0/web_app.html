@@ -4539,26 +4539,30 @@
                 tg.HapticFeedback.impactOccurred('light');
             } catch(err) {}
             
-            // Debug: Create simple modal
+            // Create VIP-styled modal
             const modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'buyCurrencyModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
-                    <!-- Simple Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 700;">⭐ Купить валюту</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(255,215,0,0.4);box-shadow: 0 10px 40px rgba(255,215,0,0.3);">
+                    <!-- VIP Golden Header -->
+                    <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:24px;border-radius:22px 22px 0 0;text-align:center;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                            <h2 style="font-size: 26px; color: #000; margin: 0; font-weight: 900;">⭐ КУПИТЬ ВАЛЮТУ</h2>
+                            <button class="close-btn" onclick="this.closest('.modal').remove()" style="color:#000;">✕</button>
+                        </div>
+                        <div style="font-size:14px;color:rgba(0,0,0,0.7);">Выберите пакет</div>
                     </div>
                     
+                    <div style="padding:20px;">
                     <!-- Category Buttons -->
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
-                        <button onclick="filterCategory('starter')" class="category-btn active" style="background: rgba(102,126,234,0.3); border: 2px solid rgba(102,126,234,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🎯 Старт</button>
-                        <button onclick="filterCategory('premium')" class="category-btn" style="background: rgba(234,179,8,0.3); border: 2px solid rgba(234,179,8,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🚀 Премиум</button>
-                        <button onclick="filterCategory('vip')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">⭐ Премиум</button>
-                        <button onclick="filterCategory('limited')" class="category-btn" style="background: rgba(255,0,0,0.3); border: 2px solid rgba(255,0,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🔮 QuanHash</button>
-                        <button onclick="filterCategory('ultra')" class="category-btn" style="background: rgba(128,0,128,0.3); border: 2px solid rgba(128,0,128,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🎁 Комбо</button>
-                        <button onclick="filterCategory('mega')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">👑 VIP функции</button>
+                        <button onclick="filterCategory('starter', this)" class="category-btn active" style="background: rgba(102,126,234,0.3); border: 2px solid rgba(102,126,234,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">🎯 Старт</button>
+                        <button onclick="filterCategory('premium', this)" class="category-btn" style="background: rgba(234,179,8,0.3); border: 2px solid rgba(234,179,8,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(234,179,8,0.3);">🚀 Премиум</button>
+                        <button onclick="filterCategory('vip', this)" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(255,215,0,0.3);">⭐ Премиум</button>
+                        <button onclick="filterCategory('limited', this)" class="category-btn" style="background: rgba(255,0,0,0.3); border: 2px solid rgba(255,0,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(255,0,0,0.3);">🔮 QuanHash</button>
+                        <button onclick="filterCategory('ultra', this)" class="category-btn" style="background: rgba(128,0,128,0.3); border: 2px solid rgba(128,0,128,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(128,0,128,0.3);">🎁 Комбо</button>
+                        <button onclick="filterCategory('mega', this)" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 900; font-size: 11px; box-shadow: 0 2px 8px rgba(255,215,0,0.3);">👑 VIP функции</button>
                     </div>
                     
                     <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;padding-right:5px;">
@@ -5295,22 +5299,61 @@
                         </div>
                         
                     </div>
+                    
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;margin-top:10px;">Закрыть</button>
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
             
-            // Set initial active category after modal is attached
+            // Apply VIP styling to all cards after modal is created
+            setTimeout(() => {
+                const cards = document.querySelectorAll('#buyCurrencyModal [data-category]');
+                cards.forEach(card => {
+                    if (!card.querySelector('button')) return; // Skip headers
+                    
+                    const category = card.dataset.category;
+                    const colorConfig = {
+                        'starter': { bg: 'rgba(102,126,234,0.4)', gradient: 'rgba(102,126,234,0.2)', border: 'rgba(102,126,234,0.6)', shadow: 'rgba(102,126,234,0.4)' },
+                        'premium': { bg: 'rgba(234,179,8,0.4)', gradient: 'rgba(234,179,8,0.2)', border: 'rgba(234,179,8,0.6)', shadow: 'rgba(234,179,8,0.4)' },
+                        'vip': { bg: 'rgba(255,215,0,0.4)', gradient: 'rgba(255,215,0,0.2)', border: 'rgba(255,215,0,0.6)', shadow: 'rgba(255,215,0,0.4)' },
+                        'limited': { bg: 'rgba(255,0,0,0.4)', gradient: 'rgba(255,0,0,0.2)', border: 'rgba(255,0,0,0.6)', shadow: 'rgba(255,0,0,0.4)' },
+                        'ultra': { bg: 'rgba(128,0,128,0.4)', gradient: 'rgba(128,0,128,0.2)', border: 'rgba(128,0,128,0.6)', shadow: 'rgba(128,0,128,0.4)' },
+                        'mega': { bg: 'rgba(255,215,0,0.4)', gradient: 'rgba(255,215,0,0.2)', border: 'rgba(255,215,0,0.6)', shadow: 'rgba(255,215,0,0.4)' }
+                    };
+                    
+                    const config = colorConfig[category] || colorConfig['starter'];
+                    
+                    card.style.background = `linear-gradient(135deg,${config.bg},${config.gradient})`;
+                    card.style.border = `2px solid ${config.border}`;
+                    card.style.boxShadow = `0 4px 15px ${config.shadow}`;
+                    card.style.padding = '14px';
+                    card.style.borderRadius = '12px';
+                    card.style.marginBottom = '12px';
+                    
+                    // Style buttons inside cards
+                    const buttons = card.querySelectorAll('button');
+                    buttons.forEach(button => {
+                        button.style.fontWeight = '900';
+                        button.style.transition = 'all 0.3s ease';
+                        if (category === 'starter' || category === 'limited' || category === 'ultra') {
+                            button.style.boxShadow = `0 2px 8px ${config.shadow}30`;
+                        }
+                    });
+                });
+            }, 50);
+            
             setTimeout(() => window.filterCategory('starter'), 100);
         }
         
-        window.filterCategory = function(category) {
+        window.filterCategory = function(category, btnElement) {
             try {
                 // Update button states
                 document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                if(event?.target) {
-                    event.target.classList.add('active');
+                if(btnElement) {
+                    btnElement.classList.add('active');
                 }
                 
                 // Filter and show products
