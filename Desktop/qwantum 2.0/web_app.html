@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v14.0.0 - FIXED AUTOBOT BUTTONS BLINKING ON PURCHASE - BUILD: 2024-12-29-FIX-PURCHASE-BLINK -->
+<!-- Quantum Nexus v15.0.0 - COMPLETELY FIXED AUTOBOT BUTTONS BLINKING - BUILD: 2024-12-29-NO-BLINK -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2649,9 +2649,12 @@
                 updateAutobotToggle(data);
                 
                 // Update autobot shop buttons (only if shop modal is open and category is autobot)
+                // BUT skip if we just purchased an autobot (prevent blinking during purchase)
                 const shopModal = document.getElementById('shopModal2');
                 const isAutobotCategoryActive = shopModal && document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background.includes('linear-gradient');
-                if (isAutobotCategoryActive) {
+                const justPurchasedAutobot = window.justPurchasedAutobot || false;
+                
+                if (isAutobotCategoryActive && !justPurchasedAutobot) {
                     // Only update if autobot state changed (prevent unnecessary blinking)
                     const currentAutoTapLevel = window.currentAutoTapLevel || 0;
                     const currentAutoTapExpires = window.currentAutoTapExpires || 0;
@@ -2664,6 +2667,13 @@
                         window.currentAutoTapExpires = newAutoTapExpires;
                         updateAutobotShopButtons(data);
                     }
+                }
+                
+                // Clear the purchase flag after a delay
+                if (justPurchasedAutobot) {
+                    setTimeout(() => {
+                        window.justPurchasedAutobot = false;
+                    }, 5000); // Allow 5 seconds for purchase to complete
                 }
 
                 // Show withdraw button if user has 500k+ quanhash
@@ -2734,6 +2744,11 @@
         }
         
         function updateAutobotShopButtons(data) {
+            // Skip update if we just purchased autobot (prevent blinking)
+            if (window.justPurchasedAutobot) {
+                return;
+            }
+            
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
             const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
@@ -4711,6 +4726,9 @@
                     
                     // Special handling for autobot - update button immediately without blinking
                     if (category === 'autobot' || category === 'autobot_vip') {
+                        // Set flag to prevent loadData from updating buttons (prevents blinking)
+                        window.justPurchasedAutobot = true;
+                        
                         // Update autobot state immediately to prevent blinking
                         const autobotBtn = document.getElementById(`autobot-btn-${level}`);
                         if (autobotBtn) {
@@ -4720,69 +4738,81 @@
                             window.currentAutoTapLevel = level;
                             window.currentAutoTapExpires = expiresAt;
                             
-                            // Update button state immediately without blinking
-                            autobotBtn.disabled = true;
-                            autobotBtn.style.background = 'rgba(239,68,68,0.6)';
-                            autobotBtn.style.cursor = 'not-allowed';
+                            // Save button state to prevent overwriting
+                            const originalHTML = autobotBtn.innerHTML;
+                            
+                            // Update button state immediately without blinking (use requestAnimationFrame for smooth update)
+                            requestAnimationFrame(() => {
+                                autobotBtn.disabled = true;
+                                autobotBtn.style.background = 'rgba(239,68,68,0.6)';
+                                autobotBtn.style.cursor = 'not-allowed';
+                            });
                             
                             // Start countdown immediately
                             if (window.autobotShopInterval) {
                                 clearInterval(window.autobotShopInterval);
                             }
                             
-                            // Block all other autobot buttons
-                            for (let i = 1; i <= 20; i++) {
-                                const btn = document.getElementById(`autobot-btn-${i}`);
-                                if (btn && i !== level) {
-                                    btn.disabled = true;
-                                    btn.style.background = 'rgba(148,163,184,0.3)';
-                                    btn.style.cursor = 'not-allowed';
-                                    btn.innerHTML = '🔒 Недоступно';
-                                }
-                            }
-                            
-                            // Start countdown timer
-                            window.autobotShopInterval = setInterval(() => {
-                                const now = Date.now();
-                                const remainingMs = expiresAt - now;
-                                
-                                if (remainingMs <= 0) {
-                                    clearInterval(window.autobotShopInterval);
-                                    window.autobotShopInterval = null;
-                                    // Unblock all buttons
-                                    for (let i = 1; i <= 20; i++) {
-                                        const btn = document.getElementById(`autobot-btn-${i}`);
-                                        if (btn) {
-                                            btn.disabled = false;
-                                            btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
-                                            btn.style.cursor = 'pointer';
-                                            const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
-                                            btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
-                                        }
+                            // Block all other autobot buttons (batch update to prevent flicker)
+                            requestAnimationFrame(() => {
+                                for (let i = 1; i <= 20; i++) {
+                                    const btn = document.getElementById(`autobot-btn-${i}`);
+                                    if (btn && i !== level) {
+                                        btn.disabled = true;
+                                        btn.style.background = 'rgba(148,163,184,0.3)';
+                                        btn.style.cursor = 'not-allowed';
+                                        btn.innerHTML = '🔒 Недоступно';
                                     }
-                                    return;
                                 }
                                 
-                                const hours = Math.floor(remainingMs / 3600000);
-                                const minutes = Math.floor((remainingMs % 3600000) / 60000);
-                                const seconds = Math.floor((remainingMs % 60000) / 1000);
+                                // Initial countdown display (after all buttons are updated)
+                                const hours = Math.floor((duration * 60) / 3600);
+                                const minutes = Math.floor(((duration * 60) % 3600) / 60);
+                                const seconds = 0;
                                 const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-                                
-                                // Update only the purchased button with countdown
                                 if (autobotBtn) {
                                     autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
                                 }
-                            }, 1000);
+                            });
                             
-                            // Initial countdown display
-                            const hours = Math.floor((duration * 60) / 3600);
-                            const minutes = Math.floor(((duration * 60) % 3600) / 60);
-                            const seconds = 0;
-                            const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
-                            autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                            // Start countdown timer (after initial display)
+                            setTimeout(() => {
+                                window.autobotShopInterval = setInterval(() => {
+                                    const now = Date.now();
+                                    const remainingMs = expiresAt - now;
+                                    
+                                    if (remainingMs <= 0) {
+                                        clearInterval(window.autobotShopInterval);
+                                        window.autobotShopInterval = null;
+                                        window.justPurchasedAutobot = false;
+                                        // Unblock all buttons
+                                        for (let i = 1; i <= 20; i++) {
+                                            const btn = document.getElementById(`autobot-btn-${i}`);
+                                            if (btn) {
+                                                btn.disabled = false;
+                                                btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                                                btn.style.cursor = 'pointer';
+                                                const price = window.autobotPricesCache[i] || window.shopData?.autobot?.items?.[i-1]?.price || 0;
+                                                btn.innerHTML = `Купить ${price.toLocaleString()} 🪙`;
+                                            }
+                                        }
+                                        return;
+                                    }
+                                    
+                                    const hours = Math.floor(remainingMs / 3600000);
+                                    const minutes = Math.floor((remainingMs % 3600000) / 60000);
+                                    const seconds = Math.floor((remainingMs % 60000) / 1000);
+                                    const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                                    
+                                    // Update only the purchased button with countdown (only if changed)
+                                    if (autobotBtn && autobotBtn.innerHTML !== `⏱️ Осталось: ${timeText}`) {
+                                        autobotBtn.innerHTML = `⏱️ Осталось: ${timeText}`;
+                                    }
+                                }, 1000);
+                            }, 50); // Small delay to ensure initial update is complete
                         }
                         
-                        // Reload data but don't refresh shop category to prevent blinking
+                        // Reload data but skip autobot button updates (flag prevents blinking)
                         loadData();
                     } else {
                         // Reload data and refresh shop display for other categories
