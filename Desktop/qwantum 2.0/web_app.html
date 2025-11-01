@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v10.0.0 - NEON COSMIC SOUNDS + CLEAN MODAL HEADER - BUILD: 2024-12-29-NEON-COSMIC -->
+<!-- Quantum Nexus v11.0.0 - BEAUTIFUL SHOP MODAL + NEON COSMIC SOUNDS - BUILD: 2024-12-29-SHOP-VISUAL -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -3874,25 +3874,30 @@
             };
             
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 450px; max-height: 85vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.98), rgba(15, 23, 42, 0.98));border-radius: 24px;border: 2px solid rgba(167,139,250,0.4);box-shadow: 0 10px 40px rgba(167,139,250,0.3);">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid rgba(255,255,255,0.1);">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <span style="font-size:24px;">🛒</span>
-                            <h2 style="font-size: 24px; color: #fff; margin: 0; font-weight: 700;">Магазин</h2>
-                        </div>
+                <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff; font-weight: 800;">🛒 Магазин</h2>
                         <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
                     </div>
-                    <div style="padding:20px;">
-                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
-                            <button class="shop-cat-btn" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">💪 Усилитель Тапа</button>
-                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">⚡ Восстановление Энергии</button>
-                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">📈 Расширение Энергии</button>
-                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:13px;">🤖 Автобот</button>
+                    
+                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
+                        <div style="font-size:13px;color:#94a3b8;line-height:1.6;">
+                            <strong style="color:#fff;">🛒 Улучшите игру:</strong> Покупайте усилители, энергию и автоматизацию! Разные улучшения = больше дохода. Развивайтесь быстрее!
                         </div>
-                        <!-- VIP Button Row -->
-                        <div id="vipButtonRow" style="margin-bottom:15px;">
+                    </div>
+                    
+                    <div id="shopShopSection" style="margin-bottom:25px;">
+                        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;grid-column:1/-1;">
+                            <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;width:100%;text-align:center;">📦 Категории товаров</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button class="shop-cat-btn" data-category="tap_boost" onclick="loadShopCategory('tap_boost')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💪 Усилитель Тапа</button>
+                            <button class="shop-cat-btn" data-category="energy_buy" onclick="loadShopCategory('energy_buy')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ Восстановление Энергии</button>
+                            <button class="shop-cat-btn" data-category="energy_expand" onclick="loadShopCategory('energy_expand')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">📈 Расширение Энергии</button>
+                            <button class="shop-cat-btn" data-category="autobot" onclick="loadShopCategory('autobot')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">🤖 Автобот</button>
+                        </div>
+                        <div style="margin-bottom:15px;">
                             <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
-                                <!-- Premium Button -->
                                 <button id="vipButton" onclick="openVIPModal('tap_boost')" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
                                     <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
                                     <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
@@ -3900,13 +3905,11 @@
                                 </button>
                             </div>
                         </div>
-                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
-                        
-                        <!-- Стильная кнопка закрытия -->
-                        <button class="category-close-btn" onclick="this.closest('.modal').remove()">
-                            ✕ Закрыть магазин
-                        </button>
+                        <div id="shopItemsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+                        <div id="vipShopSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
                     </div>
+                    
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;">Закрыть</button>
                 </div>
             `;
             document.body.appendChild(modal);
@@ -7592,4 +7595,5 @@
 
 
 </body>
+</html>
 </html>
