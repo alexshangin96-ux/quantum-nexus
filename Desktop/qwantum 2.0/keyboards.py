@@ -21,6 +21,9 @@ def get_main_menu():
             InlineKeyboardButton("🏆 Рейтинг", callback_data="rating"),
             InlineKeyboardButton("👥 Рефералы", callback_data="referrals"),
         ],
+        [
+            InlineKeyboardButton("⚙️ Профиль", callback_data="profile"),
+        ],
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -144,6 +147,32 @@ def get_user_cards_menu(db, user):
     return InlineKeyboardMarkup(keyboard)
 
 
+def get_profile_menu(sound_enabled):
+    """Profile/Settings menu"""
+    sound_status = "🔊 Вкл" if sound_enabled else "🔇 Выкл"
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                f"🔊 Звуки: {sound_status}",
+                callback_data="toggle_sound"
+            )
+        ],
+        [
+            InlineKeyboardButton("🔊 Тест звука 1", callback_data="test_sound_tap"),
+        ],
+        [
+            InlineKeyboardButton("🔊 Тест звука 2", callback_data="test_sound_mining"),
+        ],
+        [
+            InlineKeyboardButton("🔊 Тест звука 3", callback_data="test_sound_purchase"),
+        ],
+        [
+            InlineKeyboardButton("⬅️ Назад", callback_data="main_menu"),
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
 def get_back_button():
     """Back button"""
     return InlineKeyboardMarkup([[InlineKeyboardButton("⬅️ Назад", callback_data="main_menu")]])
@@ -158,6 +187,7 @@ def confirm_action(action_id):
         ]
     ]
     return InlineKeyboardMarkup(keyboard)
+
 
 
 

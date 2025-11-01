@@ -41,6 +41,9 @@ class User(Base):
     # Offline income
     last_active = Column(DateTime, default=datetime.utcnow)
     
+    # Settings
+    sound_enabled = Column(Boolean, default=True)  # Sound effects enabled/disabled
+    
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
