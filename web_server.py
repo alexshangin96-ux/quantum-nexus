@@ -945,9 +945,12 @@ def get_referrals():
                 user.referral_income = total_passive_income
                 db.commit()
             
+            # Use actual count from list, not from database (fixes incorrect count)
+            actual_referrals_count = len(referral_list)
+            
             return jsonify({
                 'referral_code': user.referral_code,
-                'referrals_count': user.referrals_count,
+                'referrals_count': actual_referrals_count,  # Use actual count from list
                 'referral_income': total_passive_income,
                 'referrals': referral_list
             })
