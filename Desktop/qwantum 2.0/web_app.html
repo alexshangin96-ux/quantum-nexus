@@ -1433,9 +1433,10 @@
         </button>
         <div class="buttons">
             <a href="#" class="btn" onclick="openShop(event)" style="background:linear-gradient(135deg,#667eea,#764ba2);box-shadow:0 8px 25px rgba(255,215,0,0.8), 0 4px 20px rgba(102,126,234,0.6), 0 0 30px rgba(255,215,0,0.4);border:4px solid rgba(255,215,0,1);position:relative;overflow:visible;">
-                <div class="btn-emoji" style="font-size:42px;filter:drop-shadow(0 0 20px rgba(255,215,0,1)) drop-shadow(0 0 12px rgba(255,215,0,0.9)) drop-shadow(0 0 6px rgba(255,215,0,0.7));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.2);z-index:2;position:relative;">🛒</div>
-                <div style="font-weight:900;text-shadow:0 2px 12px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.7), 0 0 30px rgba(255,215,0,0.5);font-size:17px;letter-spacing:0.5px;z-index:2;position:relative;">Магазин</div>
-                <div style="position:absolute;top:-5px;left:-5px;right:-5px;bottom:-5px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);border-radius:inherit;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+                <div class="btn-emoji" style="font-size:60px;filter:drop-shadow(0 0 25px rgba(255,215,0,1)) drop-shadow(0 0 15px rgba(255,215,0,0.9)) drop-shadow(0 0 8px rgba(255,215,0,0.7));animation:shop-glow 2s ease-in-out infinite;transform:scale(1.4);z-index:3;position:relative;display:inline-block;line-height:1;">🛒</div>
+                <div style="font-weight:900;text-shadow:0 3px 15px rgba(0,0,0,0.9), 0 0 25px rgba(255,215,0,0.8), 0 0 35px rgba(255,215,0,0.6);font-size:18px;letter-spacing:1px;z-index:3;position:relative;">Магазин</div>
+                <div style="position:absolute;top:-8px;left:-8px;right:-8px;bottom:-8px;background:radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0.2) 50%, transparent 80%);border-radius:inherit;animation:shop-glow 2s ease-in-out infinite;pointer-events:none;z-index:1;"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;background:radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);border-radius:50%;animation:shop-glow 2.5s ease-in-out infinite;animation-delay:0.5s;pointer-events:none;z-index:0;"></div>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
                 <div class="btn-emoji">🏭</div>
@@ -2847,22 +2848,129 @@
         let html5AudioSupported = false;
         let audioElements = {};
         
-        // Initialize HTML5 Audio elements for Telegram WebView compatibility
-        function initHTML5Audio() {
+        // Generate sound as blob URL for Telegram WebApp compatibility
+        function generateSoundBlob(frequency, duration, type = 'sine') {
+            return new Promise((resolve) => {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const sampleRate = ctx.sampleRate;
+                    const numSamples = Math.floor(sampleRate * duration);
+                    const buffer = ctx.createBuffer(1, numSamples, sampleRate);
+                    const data = buffer.getChannelData(0);
+                    
+                    let phase = 0;
+                    const phaseIncrement = (2 * Math.PI * frequency) / sampleRate;
+                    
+                    for (let i = 0; i < numSamples; i++) {
+                        let value = 0;
+                        if (type === 'sine') {
+                            value = Math.sin(phase);
+                        } else if (type === 'square') {
+                            value = Math.sin(phase) > 0 ? 1 : -1;
+                        } else if (type === 'triangle') {
+                            value = (2 / Math.PI) * Math.asin(Math.sin(phase));
+                        } else if (type === 'sawtooth') {
+                            // Sawtooth: linear ramp from -1 to 1, then reset
+                            value = 2 * ((phase / (2 * Math.PI)) % 1) - 1;
+                        }
+                        
+                        // Apply envelope (fade out)
+                        const envelope = Math.max(0, 1 - (i / numSamples));
+                        value *= envelope * 0.3; // Volume
+                        data[i] = value;
+                        phase += phaseIncrement;
+                    }
+                    
+                    // Convert to WAV
+                    const wav = audioBufferToWav(buffer);
+                    const blob = new Blob([wav], { type: 'audio/wav' });
+                    const url = URL.createObjectURL(blob);
+                    resolve(url);
+                } catch (e) {
+                    console.log('Sound generation failed:', e);
+                    resolve(null);
+                }
+            });
+        }
+        
+        // Convert AudioBuffer to WAV format
+        function audioBufferToWav(buffer) {
+            const length = buffer.length;
+            const arrayBuffer = new ArrayBuffer(44 + length * 2);
+            const view = new DataView(arrayBuffer);
+            const samples = buffer.getChannelData(0);
+            
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, buffer.sampleRate, true);
+            view.setUint32(28, buffer.sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, length * 2, true);
+            
+            // Convert float samples to 16-bit PCM
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                const sample = Math.max(-1, Math.min(1, samples[i]));
+                view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+                offset += 2;
+            }
+            
+            return arrayBuffer;
+        }
+        
+        // Initialize HTML5 Audio elements with blob URLs for Telegram WebView
+        async function initHTML5Audio() {
             try {
-                // Create audio elements for different sound types
-                const soundTypes = ['tap', 'mining', 'purchase', 'coin', 'levelup', 'success', 'error'];
-                soundTypes.forEach(type => {
-                    const audio = new Audio();
-                    audio.preload = 'auto';
-                    audio.volume = 0.6;
-                    // Try to load a data URI with a short beep (if needed, can use actual sound files)
-                    audioElements[type] = audio;
-                });
-                html5AudioSupported = true;
-                console.log('HTML5 Audio initialized for Telegram WebView');
+                html5AudioSupported = typeof Audio !== 'undefined';
+                if (!html5AudioSupported) {
+                    console.log('HTML5 Audio not supported');
+                    return;
+                }
+                
+                // Sound configurations
+                const soundConfigs = {
+                    'tap': { freq: 440, duration: 0.1, type: 'sine' },
+                    'mining': { freq: 554, duration: 0.2, type: 'square' },
+                    'purchase': { freq: 698, duration: 0.3, type: 'triangle' },
+                    'coin': { freq: 880, duration: 0.15, type: 'sine' },
+                    'levelup': { freq: 660, duration: 0.5, type: 'triangle' },
+                    'success': { freq: 523, duration: 0.3, type: 'triangle' },
+                    'error': { freq: 220, duration: 0.3, type: 'sawtooth' }
+                };
+                
+                // Generate and create audio elements
+                for (const [type, config] of Object.entries(soundConfigs)) {
+                    try {
+                        const blobUrl = await generateSoundBlob(config.freq, config.duration, config.type);
+                        if (blobUrl) {
+                            const audio = new Audio(blobUrl);
+                            audio.volume = 0.6;
+                            audio.preload = 'auto';
+                            audioElements[type] = audio;
+                            console.log(`✅ Generated sound for ${type}`);
+                        }
+                    } catch (e) {
+                        console.log(`Failed to generate sound for ${type}:`, e);
+                    }
+                }
+                
+                console.log('✅ HTML5 Audio initialized with blob URLs for Telegram WebView');
             } catch (e) {
-                console.log('HTML5 Audio initialization failed:', e);
+                console.log('❌ HTML5 Audio initialization failed:', e);
             }
         }
         
@@ -2905,7 +3013,7 @@
         }
         
         // Initialize audio on first user interaction (required for Telegram WebView)
-        function initAudioOnInteraction() {
+        async function initAudioOnInteraction() {
             if (!userInteractionOccurred) {
                 userInteractionOccurred = true;
                 console.log('🎵 Initializing audio on first user interaction...');
@@ -2913,8 +3021,8 @@
                 // Initialize Web Audio API
                 initAudio();
                 
-                // Initialize HTML5 Audio as fallback
-                initHTML5Audio();
+                // Initialize HTML5 Audio with blob URLs (primary method for Telegram mobile)
+                await initHTML5Audio();
                 
                 // Force resume AudioContext if suspended (critical for Telegram)
                 if (audioContext) {
@@ -2922,20 +3030,35 @@
                         console.log('⏸️ AudioContext suspended, resuming...');
                         audioContext.resume().then(() => {
                             console.log('✅ AudioContext resumed successfully, state:', audioContext.state);
-                            // Play a silent sound to unlock audio in Telegram WebView
+                            // Try playing a test sound to unlock audio in Telegram WebView
                             try {
-                                const oscillator = audioContext.createOscillator();
-                                const gainNode = audioContext.createGain();
-                                gainNode.gain.setValueAtTime(0.001, audioContext.currentTime); // Very quiet but not silent
-                                oscillator.connect(gainNode);
-                                gainNode.connect(audioContext.destination);
-                                oscillator.frequency.value = 20; // Below human hearing
-                                oscillator.type = 'sine';
-                                oscillator.start(audioContext.currentTime);
-                                oscillator.stop(audioContext.currentTime + 0.01);
-                                console.log('🔓 Audio unlocked with silent sound');
+                                // Use HTML5 Audio if available (more reliable in Telegram)
+                                const testAudio = audioElements['tap'] || audioElements['coin'];
+                                if (testAudio && testAudio.src) {
+                                    const testPlay = testAudio.cloneNode();
+                                    testPlay.volume = 0.01; // Very quiet
+                                    testPlay.play().then(() => {
+                                        console.log('🔓 Audio unlocked with HTML5 test sound');
+                                        testPlay.pause();
+                                        testPlay.currentTime = 0;
+                                    }).catch(e => {
+                                        console.log('⚠️ HTML5 test play failed:', e);
+                                    });
+                                } else {
+                                    // Fallback to Web Audio
+                                    const oscillator = audioContext.createOscillator();
+                                    const gainNode = audioContext.createGain();
+                                    gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
+                                    oscillator.connect(gainNode);
+                                    gainNode.connect(audioContext.destination);
+                                    oscillator.frequency.value = 20;
+                                    oscillator.type = 'sine';
+                                    oscillator.start(audioContext.currentTime);
+                                    oscillator.stop(audioContext.currentTime + 0.01);
+                                    console.log('🔓 Audio unlocked with Web Audio silent sound');
+                                }
                             } catch (e) {
-                                console.log('⚠️ Silent unlock failed:', e);
+                                console.log('⚠️ Audio unlock failed:', e);
                             }
                         }).catch(e => {
                             console.log('❌ Audio resume after interaction failed:', e);
@@ -3001,9 +3124,70 @@
                 
                 console.log('🔊 Playing sound:', type, 'soundEnabled:', soundEnabled);
                 
-                // Try Web Audio API first
-                initAudio();
                 let audioPlayed = false;
+                
+                // PRIMARY METHOD: Try HTML5 Audio with blob URLs first (best for Telegram mobile)
+                if (html5AudioSupported) {
+                    try {
+                        const audio = audioElements[type];
+                        if (audio && audio.src) {
+                            // Clone and play to allow overlapping sounds
+                            const audioClone = audio.cloneNode();
+                            audioClone.volume = 0.6;
+                            const playPromise = audioClone.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(() => {
+                                    console.log('✅ HTML5 Audio played (primary):', type);
+                                    audioPlayed = true;
+                                }).catch(e => {
+                                    console.log('⚠️ HTML5 Audio play failed, trying fallback:', e);
+                                    // Try Web Audio API as fallback
+                                    playSoundWebAudio(type);
+                                });
+                            } else {
+                                audioPlayed = true;
+                            }
+                            return; // Exit early if HTML5 Audio is available
+                        } else {
+                            console.log('⚠️ Audio element not ready for type:', type, '- generating on demand...');
+                            // Try to generate sound on demand
+                            const soundConfigs = {
+                                'tap': { freq: 440, duration: 0.1, type: 'sine' },
+                                'mining': { freq: 554, duration: 0.2, type: 'square' },
+                                'purchase': { freq: 698, duration: 0.3, type: 'triangle' },
+                                'coin': { freq: 880, duration: 0.15, type: 'sine' },
+                                'levelup': { freq: 660, duration: 0.5, type: 'triangle' },
+                                'success': { freq: 523, duration: 0.3, type: 'triangle' },
+                                'error': { freq: 220, duration: 0.3, type: 'sawtooth' }
+                            };
+                            const config = soundConfigs[type];
+                            if (config) {
+                                generateSoundBlob(config.freq, config.duration, config.type).then(blobUrl => {
+                                    if (blobUrl) {
+                                        const newAudio = new Audio(blobUrl);
+                                        newAudio.volume = 0.6;
+                                        newAudio.play().catch(err => console.log('On-demand play failed:', err));
+                                    }
+                                });
+                            }
+                            return;
+                        }
+                    } catch (html5Error) {
+                        console.log('❌ HTML5 Audio error, trying fallback:', html5Error);
+                    }
+                }
+                
+                // FALLBACK METHOD: Web Audio API (if HTML5 Audio not available or failed)
+                playSoundWebAudio(type);
+            } catch(e) {
+                console.log('Sound playback error:', e);
+            }
+        }
+        
+        // Web Audio API fallback function
+        function playSoundWebAudio(type) {
+            try {
+                initAudio();
                 
                 // Ensure AudioContext is ready
                 if (!audioContext) {
@@ -3013,6 +3197,7 @@
                         console.log('✅ AudioContext created');
                     } catch(e) {
                         console.log('❌ Failed to create AudioContext:', e);
+                        return;
                     }
                 }
                 
@@ -3022,7 +3207,7 @@
                     audioContext.resume().then(() => {
                         console.log('✅ AudioContext resumed, state:', audioContext.state);
                         // Retry playing sound after resume
-                        setTimeout(() => playSound(type), 50);
+                        setTimeout(() => playSoundWebAudio(type), 50);
                     }).catch(e => {
                         console.log('❌ Audio resume failed:', e);
                     });
@@ -3066,14 +3251,12 @@
                                 oscillator.stop(audioContext.currentTime + 0.3);
                                 break;
                             case 'success':
-                                // Success sound - ascending chime
                                 oscillator.frequency.value = 523;
                                 oscillator.type = 'triangle';
                                 oscillator.frequency.exponentialRampToValueAtTime(1046, audioContext.currentTime + 0.2);
                                 oscillator.stop(audioContext.currentTime + 0.3);
                                 break;
                             case 'purchase':
-                                // Purchase sound - satisfying bell
                                 oscillator.frequency.value = 698;
                                 oscillator.type = 'triangle';
                                 oscillator.frequency.setValueAtTime(698, audioContext.currentTime);
@@ -3083,7 +3266,6 @@
                                 gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
                                 break;
                             case 'mining':
-                                // Mining sound - tech beep
                                 oscillator.frequency.value = 440;
                                 oscillator.type = 'square';
                                 oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
@@ -3328,49 +3510,30 @@
                         console.log('Resuming AudioContext...');
                         audioContext.resume().then(() => {
                             console.log('AudioContext resumed, retrying sound');
-                            playSound(type);
+                            playSoundWebAudio(type); // Fix: call playSoundWebAudio, not playSound
                         }).catch(e => {
                             console.log('Audio resume failed:', e);
                         });
                         return;
                     }
-                    audioPlayed = false;
-                }
-                
-                // Fallback to HTML5 Audio if Web Audio API failed
-                if (!audioPlayed && html5AudioSupported) {
-                    try {
-                        const audio = audioElements[type];
-                        if (audio) {
-                            // Create a simple beep using data URI
-                            const beepFrequency = type === 'tap' ? 440 : type === 'purchase' ? 698 : type === 'mining' ? 554 : 523;
-                            // For now, use oscillator fallback (can be enhanced with actual audio files)
-                            if (!audio.src) {
-                                // Create a short beep using Web Audio as fallback
-                                try {
-                                    const fallbackContext = new (window.AudioContext || window.webkitAudioContext)();
-                                    const osc = fallbackContext.createOscillator();
-                                    const gain = fallbackContext.createGain();
-                                    osc.connect(gain);
-                                    gain.connect(fallbackContext.destination);
-                                    osc.frequency.value = beepFrequency;
-                                    osc.type = 'sine';
-                                    gain.gain.setValueAtTime(0.3, fallbackContext.currentTime);
-                                    gain.gain.exponentialRampToValueAtTime(0.01, fallbackContext.currentTime + 0.1);
-                                    osc.start();
-                                    osc.stop(fallbackContext.currentTime + 0.1);
-                                    console.log('HTML5 Audio fallback played:', type);
-                                } catch (fallbackError) {
-                                    console.log('HTML5 Audio fallback failed:', fallbackError);
-                                }
+                    // Final fallback to HTML5 Audio if Web Audio completely failed
+                    if (html5AudioSupported) {
+                        try {
+                            const audio = audioElements[type];
+                            if (audio && audio.src) {
+                                const audioClone = audio.cloneNode();
+                                audioClone.volume = 0.6;
+                                audioClone.play().catch(e => {
+                                    console.log('⚠️ Final HTML5 Audio fallback also failed:', e);
+                                });
                             }
+                        } catch (html5Error) {
+                            console.log('❌ Final HTML5 Audio fallback error:', html5Error);
                         }
-                    } catch (html5Error) {
-                        console.log('HTML5 Audio error:', html5Error);
                     }
                 }
             } catch(e) {
-                console.log('Sound playback error:', e);
+                console.log('Web Audio playback error:', e);
             }
         }
         
