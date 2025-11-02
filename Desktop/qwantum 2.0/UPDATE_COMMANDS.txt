@@ -1,0 +1,29 @@
+Команды для обновления на сервере Selectel:
+
+cd /root/quantum-nexus
+
+# 1. Обновить из GitHub (если надо)
+git pull origin main
+
+# 2. Скопировать файлы на правильные места
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /root/quantum-nexus/web_server.py
+sudo cp handlers.py /root/quantum-nexus/handlers.py
+
+# 3. Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+=========================================
+ЧТО СДЕЛАНО:
+✅ Версия v6.5.2 - с реферальной системой БЕЗ премиум бонусов
+✅ БЕЗ премиум бонусов для телеграм премиум аккаунтов
+✅ Исправная кодировка - русский текст работает правильно
+✅ Реферальная система работает с фиксированными бонусами (REFERRAL_BONUS)
+✅ Весь функционал работает
+✅ Изменения закоммичены (commit 04e977a) и запушены в GitHub (force push)
+
+СТАТУС: Все файлы готовы, можно выполнять git pull на сервере!
+
+=========================================
+
