@@ -7055,7 +7055,7 @@
                 
                 const colors = categoryColors[product.category];
                 html += `
-                    <div data-category="${product.category}" style="background: linear-gradient(135deg, ${colors.bg}); padding: 16px; border-radius: 16px; border: 1px solid ${colors.border}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px ${colors.border.replace('0.3)', '0.15)')}; transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.01)';this.style.boxShadow='0 10px 30px ${colors.border.replace('0.3)', '0.25)')}';this.style.background='linear-gradient(135deg, ${colors.hover})'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px ${colors.border.replace('0.3)', '0.15)')}';this.style.background='linear-gradient(135deg, ${colors.bg})'">
+                    <div data-category="${product.category}" style="background: linear-gradient(135deg, ${colors.bg}); padding: 16px; border-radius: 16px; border: 1px solid ${colors.border}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px ${colors.border.replace('0.3)', '0.15)')}; transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px ${colors.border.replace('0.3)', '0.25)')}';this.style.background='linear-gradient(135deg, ${colors.hover})'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px ${colors.border.replace('0.3)', '0.15)')}';this.style.background='linear-gradient(135deg, ${colors.bg})'">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                             <span style="font-size: 20px; filter: drop-shadow(0 0 4px ${colors.shadow});">${product.emoji}</span>
                             <div style="flex: 1;">
@@ -7069,7 +7069,7 @@
                             <span style="color: #fff; font-size: 12px; font-weight: 800;">${product.reward}</span>
                         </div>
                         <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_${product.id}')" style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, ${colors.btn}); color: ${product.category === 'vip' || product.category === 'mega' ? '#000' : '#fff'}; border: 1px solid ${colors.border}; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px ${colors.border.replace('0.3)', '0.3)')}; text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px ${colors.border.replace('0.3)', '0.4)')}" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px ${colors.border.replace('0.3)', '0.3)')}" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px ${colors.border.replace('0.3)', '0.3)')}">
-                            <span>💰 ${product.price} ⭐</span>
+                            <span>Купить за ${product.price}</span>
                             <span style="font-size: 16px; filter: drop-shadow(0 0 3px ${colors.shadow}); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
                             <span>Telegram Stars</span>
                         </button>
@@ -7080,7 +7080,7 @@
             return html;
         }
         
-        // v6.7.25 - Buy Currency modal: Single column layout (like VIP Mining), mobile-optimized, compact design
+        // v6.7.26 - Buy Currency modal: Identical to VIP Mining style, perfect button format, beautiful design
         window.openBuyCurrency = function(e) {
             try {
                 e.preventDefault();
