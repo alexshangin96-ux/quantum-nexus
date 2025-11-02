@@ -2713,30 +2713,13 @@
                             const oldCountdown = btn.querySelector('.autobot-countdown');
                             if (oldCountdown) oldCountdown.remove();
                             
-                            // Create separate text element for countdown (doesn't blink button)
-                            const countdownSpan = document.createElement('span');
-                            countdownSpan.className = 'autobot-countdown';
-                            countdownSpan.style.cssText = 'display: block; font-size: 11px; margin-top: 4px; color: #86efac;';
-                            countdownSpan.textContent = `⏱️ Осталось: ${timeText}`;
-                            
-                            // Keep button text, add countdown below
-                            const originalText = btn.childNodes[0]?.textContent || '🤖 Автобот активен';
-                            if (btn.childNodes.length === 0 || btn.childNodes[0].nodeType !== 3) {
-                                btn.innerHTML = '';
-                                const textNode = document.createTextNode(originalText);
-                                btn.appendChild(textNode);
-                            }
-                            btn.appendChild(countdownSpan);
+                            // Update button content: keep main text, add countdown as separate span
+                            btn.innerHTML = '🤖 Автобот активен<br><span class="autobot-countdown" style="display: block; font-size: 11px; margin-top: 4px; color: #86efac; font-weight: 600;">⏱️ Осталось: ' + timeText + '</span>';
                             
                             btn.style.background = 'rgba(16,185,129,0.6)';
                         } else {
-                            // Keep button structure, just update text node
-                            const textNode = btn.childNodes[0];
-                            if (textNode && textNode.nodeType === 3) {
-                                textNode.textContent = '🔒 Недоступно';
-                            } else {
-                                btn.textContent = '🔒 Недоступно';
-                            }
+                            // Update text content only (no innerHTML to avoid blinking)
+                            btn.textContent = '🔒 Недоступно';
                             // Remove countdown if exists
                             const oldCountdown = btn.querySelector('.autobot-countdown');
                             if (oldCountdown) oldCountdown.remove();
@@ -2759,14 +2742,9 @@
                         const oldCountdown = btn.querySelector('.autobot-countdown');
                         if (oldCountdown) oldCountdown.remove();
                         
-                        // Update text node only
+                        // Update text content only (no innerHTML to avoid blinking)
                         const price = window.shopData?.autobot?.items?.[i-1]?.price?.toLocaleString() || 0;
-                        const textNode = btn.childNodes[0];
-                        if (textNode && textNode.nodeType === 3) {
-                            textNode.textContent = `Купить ${price} 🪙`;
-                        } else {
-                            btn.textContent = `Купить ${price} 🪙`;
-                        }
+                        btn.textContent = `Купить ${price} 🪙`;
                     }
                 }
             }
