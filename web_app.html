@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.6 - Компактный информационный блок: пассивный доход, энергия, уровни в одном стильном блоке - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.7 - Балансировка VIP товаров: цены увеличены 1.5-2x, эффекты уменьшены 0.5-0.7x - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4191,46 +4191,46 @@
             };
         }
         
-        // VIP данные для каждой категории (глобальные)
+        // VIP данные для каждой категории (глобальные) - БАЛАНСИРОВКА: цены выше, эффекты ниже
         const vipData = {
             'tap_boost': {
                 name: '⭐ VIP Крипто-Бустеры',
                 items: [
-                    {level: 0, name: '🌠 Звездный Шторм', desc: 'VIP бустер, увеличивающий майнинг на +51 коин за тап. Использует энергию звездных вспышек для сверхмощного майнинга.', currency: 'stars', locked: false, basePrice: 100, baseEffect: 51},
-                    {level: 0, name: '🌑 Черная Дыра', desc: 'Эксклюзивный бустер, дающий +71 коин за тап. Поглощает энергию пространства-времени для невероятной производительности.', currency: 'stars', locked: false, basePrice: 200, baseEffect: 71},
-                    {level: 0, name: '✨ Абсолют', desc: 'Легендарный VIP бустер, увеличивающий майнинг на +101 коин за тап. Абсолютная власть над криптовалютными алгоритмами.', currency: 'stars', locked: false, basePrice: 350, baseEffect: 101},
-                    {level: 0, name: '👑 Имперский', desc: 'Императорский бустер, дающий +141 коин за тап. Технология, достойная крипто-императоров и блокчейн-королей.', currency: 'stars', locked: false, basePrice: 500, baseEffect: 141},
-                    {level: 0, name: '🌟 Легендарный', desc: 'Мифический VIP бустер, увеличивающий майнинг на +201 коин за тап. Легендарная технология из древних крипто-цивилизаций.', currency: 'stars', locked: false, basePrice: 750, baseEffect: 201}
+                    {level: 0, name: '🌠 Звездный Шторм', desc: 'VIP бустер, увеличивающий майнинг на +25 коин за тап. Использует энергию звездных вспышек для сверхмощного майнинга.', currency: 'stars', locked: false, basePrice: 200, baseEffect: 25},
+                    {level: 0, name: '🌑 Черная Дыра', desc: 'Эксклюзивный бустер, дающий +35 коин за тап. Поглощает энергию пространства-времени для невероятной производительности.', currency: 'stars', locked: false, basePrice: 400, baseEffect: 35},
+                    {level: 0, name: '✨ Абсолют', desc: 'Легендарный VIP бустер, увеличивающий майнинг на +50 коин за тап. Абсолютная власть над криптовалютными алгоритмами.', currency: 'stars', locked: false, basePrice: 700, baseEffect: 50},
+                    {level: 0, name: '👑 Имперский', desc: 'Императорский бустер, дающий +70 коин за тап. Технология, достойная крипто-императоров и блокчейн-королей.', currency: 'stars', locked: false, basePrice: 1000, baseEffect: 70},
+                    {level: 0, name: '🌟 Легендарный', desc: 'Мифический VIP бустер, увеличивающий майнинг на +100 коин за тап. Легендарная технология из древних крипто-цивилизаций.', currency: 'stars', locked: false, basePrice: 1500, baseEffect: 100}
                 ]
             },
             'energy_buy': {
                 name: '⭐ VIP Энерго-Генераторы',
                 items: [
-                    {level: 0, name: '☀️ Солнечная Корона', desc: 'VIP генератор, восстанавливающий +3.0 энергии в секунду. Использует энергию солнечной короны для сверхбыстрой подзарядки.', currency: 'stars', locked: false, basePrice: 120, baseEffect: 3.0},
-                    {level: 0, name: '🌌 Галактический Ядро', desc: 'Эксклюзивный генератор, дающий +4.5 энергии в секунду. Извлекает энергию из ядра галактики через квантовые туннели.', currency: 'stars', locked: false, basePrice: 200, baseEffect: 4.5},
-                    {level: 0, name: '💫 Новая Ера', desc: 'Революционный генератор, восстанавливающий +6.0 энергии в секунду. Технология новой эры криптовалютного будущего.', currency: 'stars', locked: false, basePrice: 300, baseEffect: 6.0},
-                    {level: 0, name: '⚛️ Квантовый Реактор', desc: 'Легендарный генератор, дающий +8.0 энергии в секунду. Использует квантовые флуктуации для неограниченной энергии.', currency: 'stars', locked: false, basePrice: 450, baseEffect: 8.0},
-                    {level: 0, name: '🌠 Небесный Портал', desc: 'Мифический генератор, восстанавливающий +10.0 энергии в секунду. Подключается к энергетическим порталам небесных сфер.', currency: 'stars', locked: false, basePrice: 600, baseEffect: 10.0}
+                    {level: 0, name: '☀️ Солнечная Корона', desc: 'VIP генератор, восстанавливающий +1.5 энергии в секунду. Использует энергию солнечной короны для сверхбыстрой подзарядки.', currency: 'stars', locked: false, basePrice: 240, baseEffect: 1.5},
+                    {level: 0, name: '🌌 Галактический Ядро', desc: 'Эксклюзивный генератор, дающий +2.25 энергии в секунду. Извлекает энергию из ядра галактики через квантовые туннели.', currency: 'stars', locked: false, basePrice: 400, baseEffect: 2.25},
+                    {level: 0, name: '💫 Новая Ера', desc: 'Революционный генератор, восстанавливающий +3.0 энергии в секунду. Технология новой эры криптовалютного будущего.', currency: 'stars', locked: false, basePrice: 600, baseEffect: 3.0},
+                    {level: 0, name: '⚛️ Квантовый Реактор', desc: 'Легендарный генератор, дающий +4.0 энергии в секунду. Использует квантовые флуктуации для неограниченной энергии.', currency: 'stars', locked: false, basePrice: 900, baseEffect: 4.0},
+                    {level: 0, name: '🌠 Небесный Портал', desc: 'Мифический генератор, восстанавливающий +5.0 энергии в секунду. Подключается к энергетическим порталам небесных сфер.', currency: 'stars', locked: false, basePrice: 1200, baseEffect: 5.0}
                 ]
             },
             'energy_expand': {
                 name: '⭐ VIP Энерго-Батареи',
                 items: [
-                    {level: 0, name: '🌌 Галактический Резервуар', desc: 'VIP накопитель, увеличивающий максимум энергии на +7500. Хранит энергию целой галактики в компактном кристалле.', currency: 'stars', locked: false, basePrice: 150, baseEffect: 7500},
-                    {level: 0, name: '⚛️ Квантовая Суперпозиция', desc: 'Эксклюзивный накопитель, расширяющий энергоемкость на +12500. Использует квантовую суперпозицию для бесконечного хранения.', currency: 'stars', locked: false, basePrice: 250, baseEffect: 12500},
-                    {level: 0, name: '🌠 Звездное Созвездие', desc: 'Легендарный накопитель, увеличивающий максимум энергии на +20000. Содержит энергию целого звездного созвездия.', currency: 'stars', locked: false, basePrice: 400, baseEffect: 20000},
-                    {level: 0, name: '🌑 Абсолютная Пустота', desc: 'Мифический накопитель, расширяющий энергоемкость на +37500. Использует энергию космической пустоты для хранения.', currency: 'stars', locked: false, basePrice: 600, baseEffect: 37500},
-                    {level: 0, name: '👑 Имперская Сокровищница', desc: 'Божественный накопитель, увеличивающий максимум энергии на +75000. Сокровищница крипто-императоров с неограниченной емкостью.', currency: 'stars', locked: false, basePrice: 800, baseEffect: 75000}
+                    {level: 0, name: '🌌 Галактический Резервуар', desc: 'VIP накопитель, увеличивающий максимум энергии на +3750. Хранит энергию целой галактики в компактном кристалле.', currency: 'stars', locked: false, basePrice: 300, baseEffect: 3750},
+                    {level: 0, name: '⚛️ Квантовая Суперпозиция', desc: 'Эксклюзивный накопитель, расширяющий энергоемкость на +6250. Использует квантовую суперпозицию для бесконечного хранения.', currency: 'stars', locked: false, basePrice: 500, baseEffect: 6250},
+                    {level: 0, name: '🌠 Звездное Созвездие', desc: 'Легендарный накопитель, увеличивающий максимум энергии на +10000. Содержит энергию целого звездного созвездия.', currency: 'stars', locked: false, basePrice: 800, baseEffect: 10000},
+                    {level: 0, name: '🌑 Абсолютная Пустота', desc: 'Мифический накопитель, расширяющий энергоемкость на +18750. Использует энергию космической пустоты для хранения.', currency: 'stars', locked: false, basePrice: 1200, baseEffect: 18750},
+                    {level: 0, name: '👑 Имперская Сокровищница', desc: 'Божественный накопитель, увеличивающий максимум энергии на +37500. Сокровищница крипто-императоров с неограниченной емкостью.', currency: 'stars', locked: false, basePrice: 1600, baseEffect: 37500}
                 ]
             },
             'autobot': {
                 name: '⭐ VIP Крипто-Боты',
                 items: [
-                    {level: 0, name: '⭐ VIP Базовый Бот', desc: 'VIP автотап на 5 дней', speed: 6, duration: 7200, currency: 'stars', locked: false, basePrice: 100},
-                    {level: 0, name: '⭐ VIP Улучшенный Бот', desc: 'VIP автотап на 7 дней', speed: 6.5, duration: 10080, currency: 'stars', locked: false, basePrice: 200},
-                    {level: 0, name: '⭐ VIP Продвинутый Бот', desc: 'VIP автотап на 10 дней', speed: 7, duration: 14400, currency: 'stars', locked: false, basePrice: 350},
-                    {level: 0, name: '⭐ VIP Элитный Бот', desc: 'VIP автотап на 14 дней', speed: 7.5, duration: 20160, currency: 'stars', locked: false, basePrice: 500},
-                    {level: 0, name: '⭐ VIP Премиум Бот', desc: 'VIP автотап на 20 дней', speed: 8, duration: 28800, currency: 'stars', locked: false, basePrice: 750}
+                    {level: 0, name: '⭐ VIP Базовый Бот', desc: 'VIP автотап на 5 дней', speed: 3, duration: 7200, currency: 'stars', locked: false, basePrice: 200},
+                    {level: 0, name: '⭐ VIP Улучшенный Бот', desc: 'VIP автотап на 7 дней', speed: 3.25, duration: 10080, currency: 'stars', locked: false, basePrice: 400},
+                    {level: 0, name: '⭐ VIP Продвинутый Бот', desc: 'VIP автотап на 10 дней', speed: 3.5, duration: 14400, currency: 'stars', locked: false, basePrice: 700},
+                    {level: 0, name: '⭐ VIP Элитный Бот', desc: 'VIP автотап на 14 дней', speed: 3.75, duration: 20160, currency: 'stars', locked: false, basePrice: 1000},
+                    {level: 0, name: '⭐ VIP Премиум Бот', desc: 'VIP автотап на 20 дней', speed: 4, duration: 28800, currency: 'stars', locked: false, basePrice: 1500}
                 ]
             }
         };
@@ -4933,13 +4933,14 @@
             document.body.appendChild(modal);
             loadMiningCategory('coins');
         }
+        // VIP Mining Cards - БАЛАНСИРОВКА: цены выше, доход ниже
         const vipMiningCards = [
-            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 50, baseHashPerHour: 120000, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
-            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 100, baseHashPerHour: 300000, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
-            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 150, baseHashPerHour: 750000, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
-            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 250, baseHashPerHour: 2000000, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
-            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 400, baseHashPerHour: 5000000, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
-            {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 750, baseHashPerHour: 12000000, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
+            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 100, baseHashPerHour: 60000, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
+            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 200, baseHashPerHour: 150000, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
+            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 300, baseHashPerHour: 375000, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
+            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 500, baseHashPerHour: 1000000, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
+            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 800, baseHashPerHour: 2500000, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
+            {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 1500, baseHashPerHour: 6000000, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
         ];
         
         const miningMachinesData = {
@@ -5502,23 +5503,23 @@
             const targetElement = vipCardsContent || vipCardsSection;
             if (!targetElement) return;
             
-            // VIP Card definitions
+            // VIP Card definitions - БАЛАНСИРОВКА: цены выше, доход ниже
             const vipCardsPerHour = [
-                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 5000, rarity: 'vip_silver', productId: 51},
-                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 15000, rarity: 'vip_gold', productId: 52},
-                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 35000, rarity: 'vip_platinum', productId: 53},
-                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 100000, rarity: 'vip_diamond', productId: 54},
-                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 300000, rarity: 'vip_elite', productId: 55},
-                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 750000, rarity: 'vip_ultimate', productId: 56}
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 200, baseIncome: 2500, rarity: 'vip_silver', productId: 51},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 500, baseIncome: 7500, rarity: 'vip_gold', productId: 52},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 1000, baseIncome: 17500, rarity: 'vip_platinum', productId: 53},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 2000, baseIncome: 50000, rarity: 'vip_diamond', productId: 54},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 5000, baseIncome: 150000, rarity: 'vip_elite', productId: 55},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 10000, baseIncome: 375000, rarity: 'vip_ultimate', productId: 56}
             ];
             
             const vipCardsPerMinute = [
-                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 300, rarity: 'vip_nova', productId: 61},
-                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 900, rarity: 'vip_quantum', productId: 62},
-                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 2000, rarity: 'vip_cosmic', productId: 63},
-                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 5000, rarity: 'vip_stellar', productId: 64},
-                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 15000, rarity: 'vip_galaxy', productId: 65},
-                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 40000, rarity: 'vip_infinity', productId: 66}
+                {name: 'VIP Nova', emoji: '✨', basePrice: 1000, baseIncome: 150, rarity: 'vip_nova', productId: 61},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 2500, baseIncome: 450, rarity: 'vip_quantum', productId: 62},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 5000, baseIncome: 1000, rarity: 'vip_cosmic', productId: 63},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 10000, baseIncome: 2500, rarity: 'vip_stellar', productId: 64},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 20000, baseIncome: 7500, rarity: 'vip_galaxy', productId: 65},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 40000, baseIncome: 20000, rarity: 'vip_infinity', productId: 66}
             ];
             
             const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
