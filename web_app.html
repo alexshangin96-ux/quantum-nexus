@@ -2610,8 +2610,17 @@
                 // Update autobot toggle button
                 updateAutobotToggle(data);
                 
-                // Update autobot shop buttons
-                updateAutobotShopButtons(data);
+                // Update autobot shop buttons only if autobot category is visible
+                // Don't update if shop modal is not open or autobot category is not active
+                const shopModal = document.querySelector('.modal.active');
+                const isAutobotCategoryActive = shopModal && 
+                    (document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background?.includes('linear-gradient') ||
+                     document.querySelector('.shop-cat-btn[data-category="autobot_vip"]')?.style.background?.includes('linear-gradient'));
+                
+                if (isAutobotCategoryActive || !shopModal) {
+                    // Only update if autobot category is active or shop is closed (to avoid unnecessary updates)
+                    updateAutobotShopButtons(data);
+                }
 
                 // Show withdraw button if user has 500k+ quanhash
                 
@@ -2681,6 +2690,13 @@
         }
         
         function updateAutobotShopButtons(data) {
+            // Debounce: don't update if called too frequently (prevent blinking on scroll)
+            const now = Date.now();
+            if (window.lastAutobotShopUpdate && (now - window.lastAutobotShopUpdate) < 2000) {
+                return; // Skip update if last update was less than 2 seconds ago
+            }
+            window.lastAutobotShopUpdate = now;
+            
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
             const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
@@ -2689,6 +2705,16 @@
             if (window.autobotShopInterval) {
                 clearInterval(window.autobotShopInterval);
                 window.autobotShopInterval = null;
+            }
+            
+            // Only update if autobot category is actually visible
+            const autobotModal = document.querySelector('.modal.active');
+            if (!autobotModal) return; // Don't update if shop modal is not open
+            
+            const isAutobotCategory = autobotModal.querySelector('#shopItemsList') && 
+                                      document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background?.includes('linear-gradient');
+            if (!isAutobotCategory && !autobotModal.querySelector('#shopItemsList')) {
+                return; // Don't update if autobot category is not active
             }
             
             // Check if autobot is active
@@ -2702,50 +2728,69 @@
                 // Block all autobot buttons - update once, no blinking
                 for (let i = 1; i <= 20; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.style.background = 'rgba(148,163,184,0.3)';
-                        btn.style.cursor = 'not-allowed';
-                        
-                        // Show countdown only on the purchased button - add separate text element
-                        if (i === autobotLevel) {
-                            // Remove old countdown text if exists
-                            const oldCountdown = btn.querySelector('.autobot-countdown');
-                            if (oldCountdown) oldCountdown.remove();
-                            
-                            // Update button content: keep main text, add countdown as separate span
-                            btn.innerHTML = '🤖 Автобот активен<br><span class="autobot-countdown" style="display: block; font-size: 11px; margin-top: 4px; color: #86efac; font-weight: 600;">⏱️ Осталось: ' + timeText + '</span>';
-                            
-                            btn.style.background = 'rgba(16,185,129,0.6)';
-                        } else {
-                            // Update text content only (no innerHTML to avoid blinking)
-                            btn.textContent = '🔒 Недоступно';
-                            // Remove countdown if exists
-                            const oldCountdown = btn.querySelector('.autobot-countdown');
-                            if (oldCountdown) oldCountdown.remove();
+                    if (!btn) continue; // Skip if button doesn't exist
+                    
+                    // Check if button state needs updating (avoid unnecessary DOM manipulation)
+                    const currentText = btn.textContent || '';
+                    const isPurchased = i === autobotLevel;
+                    
+                    if (isPurchased) {
+                        // Check if countdown needs updating
+                        const countdownSpan = btn.querySelector('.autobot-countdown');
+                        if (countdownSpan && countdownSpan.textContent.includes(timeText)) {
+                            continue; // Already showing correct time, skip update
+                        }
+                    } else {
+                        // Check if already showing "Недоступно"
+                        if (currentText.includes('Недоступно')) {
+                            continue; // Already blocked, skip update
                         }
                     }
+                    
+                    btn.disabled = true;
+                    btn.style.background = 'rgba(148,163,184,0.3)';
+                    btn.style.cursor = 'not-allowed';
+                    
+                    // Show countdown only on the purchased button
+                    if (isPurchased) {
+                        // Remove old countdown text if exists
+                        const oldCountdown = btn.querySelector('.autobot-countdown');
+                        if (oldCountdown) oldCountdown.remove();
+                        
+                        // Update button content: keep main text, add countdown as separate span
+                        btn.innerHTML = '🤖 Автобот активен<br><span class="autobot-countdown" style="display: block; font-size: 11px; margin-top: 4px; color: #86efac; font-weight: 600;">⏱️ Осталось: ' + timeText + '</span>';
+                        
+                        btn.style.background = 'rgba(16,185,129,0.6)';
+                    } else {
+                        // Update text content only (no innerHTML to avoid blinking)
+                        btn.textContent = '🔒 Недоступно';
+                        // Remove countdown if exists
+                        const oldCountdown = btn.querySelector('.autobot-countdown');
+                        if (oldCountdown) oldCountdown.remove();
+                    }
                 }
-                
-                // Update countdown text only (not button) - NO auto-update interval
-                // Countdown will update only when user data is refreshed manually
             } else {
                 // Unblock all buttons - update once
                 for (let i = 1; i <= 20; i++) {
                     const btn = document.getElementById(`autobot-btn-${i}`);
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
-                        btn.style.cursor = 'pointer';
-                        
-                        // Remove countdown if exists
-                        const oldCountdown = btn.querySelector('.autobot-countdown');
-                        if (oldCountdown) oldCountdown.remove();
-                        
-                        // Update text content only (no innerHTML to avoid blinking)
-                        const price = window.shopData?.autobot?.items?.[i-1]?.price?.toLocaleString() || 0;
-                        btn.textContent = `Купить ${price} 🪙`;
+                    if (!btn) continue;
+                    
+                    // Check if already unblocked
+                    if (!btn.disabled && btn.style.background.includes('linear-gradient')) {
+                        continue; // Already unblocked, skip update
                     }
+                    
+                    btn.disabled = false;
+                    btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                    btn.style.cursor = 'pointer';
+                    
+                    // Remove countdown if exists
+                    const oldCountdown = btn.querySelector('.autobot-countdown');
+                    if (oldCountdown) oldCountdown.remove();
+                    
+                    // Update text content only (no innerHTML to avoid blinking)
+                    const price = window.shopData?.autobot?.items?.[i-1]?.price?.toLocaleString() || 0;
+                    btn.textContent = `Купить ${price} 🪙`;
                 }
             }
         }
@@ -4457,19 +4502,30 @@
                 vipButton.setAttribute('onclick', `openVIPModal('${category}')`);
             }
             
-            // Update autobot buttons if autobot category is loaded
+            // Update autobot buttons if autobot category is loaded - only once, no repeated updates
             if (category === 'autobot' || category === 'autobot_vip') {
-                // Fetch current user data to update autobot buttons
-                fetch('/api/user_data', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({user_id: window.user?.id})
-                })
-                .then(res => res.json())
-                .then(data => {
-                    updateAutobotShopButtons(data);
-                })
-                .catch(err => console.error('Error loading user data for autobots:', err));
+                // Use existing userData if available to avoid extra fetch
+                if (window.userData) {
+                    // Small delay to ensure buttons are rendered first
+                    setTimeout(() => {
+                        updateAutobotShopButtons(window.userData);
+                    }, 100);
+                } else {
+                    // Fetch only if userData not available
+                    fetch('/api/user_data', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({user_id: window.user?.id})
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        window.userData = data; // Store for future use
+                        setTimeout(() => {
+                            updateAutobotShopButtons(data);
+                        }, 100);
+                    })
+                    .catch(err => console.error('Error loading user data for autobots:', err));
+                }
             }
         }
         
