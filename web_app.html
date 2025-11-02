@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.9 - Исправлено мигание кнопок автоботов при скролле (debounce + проверки состояния) - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.10 - Исправлены кнопки автоботов: обновляется только текст, добавлен таймер обратного отсчета - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2610,35 +2610,24 @@
                 // Update autobot toggle button
                 updateAutobotToggle(data);
                 
-                // Update autobot shop buttons only if autobot category is visible
-                // Don't update if shop modal is not open or autobot category is not active
-                const shopModal = document.querySelector('.modal.active');
-                const isAutobotCategoryActive = shopModal && 
-                    (document.querySelector('.shop-cat-btn[data-category="autobot"]')?.style.background?.includes('linear-gradient') ||
-                     document.querySelector('.shop-cat-btn[data-category="autobot_vip"]')?.style.background?.includes('linear-gradient'));
-                
-                if (isAutobotCategoryActive || !shopModal) {
-                    // Only update if autobot category is active or shop is closed (to avoid unnecessary updates)
-                    updateAutobotShopButtons(data);
-                }
+                // DON'T update autobot shop buttons from loadData() - causes blinking
+                // They are updated only when category is loaded via loadShopCategory()
 
                 // Show withdraw button if user has 500k+ quanhash
                 
                 // Load shop levels after user data is loaded
                 loadShopLevels();
                 
-                // Force refresh of current shop category if it's open (but not autobot to avoid blinking)
+                // Force refresh of current shop category if it's open (but NEVER autobot to avoid blinking)
                 setTimeout(() => {
                     const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
                     if (activeBtn && activeBtn.dataset.category) {
                         const category = activeBtn.dataset.category;
-                        // Don't reload autobot category automatically (causes blinking)
+                        // Never reload autobot category automatically (causes blinking)
                         if (category !== 'autobot' && category !== 'autobot_vip') {
                             loadShopCategory(category);
-                        } else {
-                            // For autobot, just update buttons once without reloading whole category
-                            updateAutobotShopButtons(data);
                         }
+                        // Do nothing for autobot - buttons are updated only on initial category load
                     }
                 }, 100);
             })
@@ -2697,6 +2686,12 @@
         }
         
         function updateAutobotShopButtons(data) {
+            // Prevent multiple simultaneous updates - check if update is in progress
+            if (window.autobotShopUpdateInProgress) {
+                return;
+            }
+            window.autobotShopUpdateInProgress = true;
+            
             const autobotExpiresAt = data.auto_tap_expires_at || 0;
             const autobotLevel = data.auto_tap_level || 0;
             const currentTime = Date.now();
@@ -2709,6 +2704,18 @@
             
             // Find all autobot buttons (they have data-autobot-level attribute)
             const allAutobotButtons = document.querySelectorAll('[data-autobot-level]');
+            
+            if (allAutobotButtons.length === 0) {
+                window.autobotShopUpdateInProgress = false;
+                return; // Buttons not rendered yet
+            }
+            
+            // Store current state to compare later (avoid unnecessary updates)
+            window.lastAutobotState = {
+                expiresAt: autobotExpiresAt,
+                level: autobotLevel,
+                currentTime: currentTime
+            };
             
             // Check if autobot is active
             if (autobotExpiresAt > currentTime && autobotLevel > 0) {
@@ -2753,8 +2760,12 @@
                     if (remainingMs <= 0) {
                         clearInterval(window.autobotShopInterval);
                         window.autobotShopInterval = null;
-                        // Reload buttons state
-                        updateAutobotShopButtons(data);
+                        window.autobotShopUpdateInProgress = false;
+                        // Reload buttons state only if category is still open
+                        const activeBtn = document.querySelector('.shop-cat-btn[data-category="autobot"], .shop-cat-btn[data-category="autobot_vip"]');
+                        if (activeBtn && activeBtn.style.background.includes('linear-gradient')) {
+                            updateAutobotShopButtons(data);
+                        }
                         return;
                     }
                     
@@ -2797,6 +2808,11 @@
                     if (countdownSpan) countdownSpan.style.display = 'none';
                 });
             }
+            
+            // Clear update flag after a short delay
+            setTimeout(() => {
+                window.autobotShopUpdateInProgress = false;
+            }, 100);
         }
 
         function checkOfflineIncome() {
