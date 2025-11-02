@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.14 - Исправлено: кнопки автоботов сразу показывают правильное состояние при загрузке категории (без показа цены) - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.22 - Buy Currency modal redesigned to match VIP Mining store style - Header, category buttons and cards all updated to VIP style -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -6974,36 +6974,55 @@
             modal.className = 'modal active';
             modal.id = 'buyCurrencyModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 420px; max-height: 90vh; overflow-y: auto;background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(15, 23, 42, 0.95));border-radius: 20px;">
-                    <!-- Simple Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="font-size: 20px; color: #fff; margin: 0; font-weight: 700;">⭐ Купить валюту</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                <div class="modal-content" style="max-width: 480px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <!-- VIP Style Header -->
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 36px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">КУПИТЬ ВАЛЮТУ</h2>
+                                <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 600;">Покупка валюты через Telegram Stars</div>
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.3); border: none; color: #000; font-size: 24px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; justify-content: center;">✕</button>
                     </div>
                     
-                    <!-- Category Buttons -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;">
-                        <button onclick="filterCategory('starter')" class="category-btn active" style="background: rgba(102,126,234,0.3); border: 2px solid rgba(102,126,234,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🎯 Старт</button>
-                        <button onclick="filterCategory('premium')" class="category-btn" style="background: rgba(234,179,8,0.3); border: 2px solid rgba(234,179,8,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🚀 Премиум</button>
-                        <button onclick="filterCategory('vip')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">⭐ Премиум</button>
-                        <button onclick="filterCategory('limited')" class="category-btn" style="background: rgba(255,0,0,0.3); border: 2px solid rgba(255,0,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🔮 QuanHash</button>
-                        <button onclick="filterCategory('ultra')" class="category-btn" style="background: rgba(128,0,128,0.3); border: 2px solid rgba(128,0,128,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">🎁 Комбо</button>
-                        <button onclick="filterCategory('mega')" class="category-btn" style="background: rgba(255,215,0,0.3); border: 2px solid rgba(255,215,0,0.6); padding: 10px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 700; font-size: 11px;">👑 VIP функции</button>
-                    </div>
+                    <div style="padding: 20px;">
                     
-                    <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;padding-right:5px;">
-                        <div data-category="starter" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🎯 СТАРТОВЫЕ НАБОРЫ</div>
+                        <!-- Category Buttons - VIP Style -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                            <button onclick="filterCategory('starter')" class="category-btn active" style="background: linear-gradient(135deg, rgba(102,126,234,0.4), rgba(139,92,246,0.4)); border: 2px solid rgba(102,126,234,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102,126,234,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)'">🎯 Старт</button>
+                            <button onclick="filterCategory('premium')" class="category-btn" style="background: linear-gradient(135deg, rgba(234,179,8,0.4), rgba(245,158,11,0.4)); border: 2px solid rgba(234,179,8,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(234,179,8,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(234,179,8,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(234,179,8,0.3)'">🚀 Премиум</button>
+                            <button onclick="filterCategory('vip')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">⭐ VIP</button>
+                            <button onclick="filterCategory('limited')" class="category-btn" style="background: linear-gradient(135deg, rgba(239,68,68,0.4), rgba(220,38,38,0.4)); border: 2px solid rgba(239,68,68,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(239,68,68,0.3)'">🔮 QuanHash</button>
+                            <button onclick="filterCategory('ultra')" class="category-btn" style="background: linear-gradient(135deg, rgba(168,85,247,0.4), rgba(139,92,246,0.4)); border: 2px solid rgba(168,85,247,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(168,85,247,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(168,85,247,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(168,85,247,0.3)'">🎁 Комбо</button>
+                            <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">👑 VIP Mega</button>
+                        </div>
+                    
+                    <div id="currencyProductsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-height:60vh;overflow-y:auto;padding-right:5px;">
+                        <div data-category="starter" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;padding:8px;background:linear-gradient(135deg,rgba(102,126,234,0.3),rgba(139,92,246,0.3));border-radius:12px;grid-column:1/-1;">🎯 СТАРТОВЫЕ НАБОРЫ</div>
 
-                        <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:12px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                <div style="font-size:32px;">🌟</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">💫 Первые шаги</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 200,000 коинов для старта игры</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Отличное начало игры</div>
+                        <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.12), rgba(139,92,246,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.25)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.2), rgba(139,92,246,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.15)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.12), rgba(139,92,246,0.18))'">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                                <span style="font-size: 24px; filter: drop-shadow(0 0 4px rgba(102,126,234,0.6));">🌟</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 800; font-size: 14px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">💫 Первые шаги</div>
+                                    <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">Получите 200,000 коинов для старта игры</div>
+                                </div>
+                                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #667eea; box-shadow: 0 3px 8px rgba(102,126,234,0.4); position: relative; overflow: hidden;">
+                                    <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                                    <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">СТАРТ</span>
                                 </div>
                             </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_1')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 50 ⭐</button>
+                            <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #4ade80; font-size: 12px; font-weight: 700;">💰 Награда:</span>
+                                <span style="color: #fff; font-size: 12px; font-weight: 800;">200,000 коинов</span>
+                            </div>
+                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_1')" style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: 1px solid #667eea; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(102,126,234,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.4)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)'">
+                                <span>💰 50 ⭐</span>
+                                <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(102,126,234,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                                <span>Telegram Stars</span>
+                            </button>
                         </div>
                         
                         <div data-category="starter" style="background:rgba(102,126,234,0.25);padding:12px;border-radius:10px;border:1px solid rgba(102,126,234,0.5);">
@@ -7114,7 +7133,7 @@
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_10')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 720 ⭐</button>
                         </div>
                         
-                        <div data-category="premium" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">🚀 ПРЕМИУМ НАБОРЫ</div>
+                        <div data-category="premium" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;padding:8px;background:linear-gradient(135deg,rgba(234,179,8,0.3),rgba(245,158,11,0.3));border-radius:12px;grid-column:1/-1;">🚀 ПРЕМИУМ НАБОРЫ</div>
 
                         <div data-category="premium" style="background:rgba(234,179,8,0.25);padding:12px;border-radius:10px;border:1px solid rgba(234,179,8,0.5);">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -7236,7 +7255,7 @@
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_20')" style="width:100%;padding:9px;background:linear-gradient(135deg,#f59e0b,#f59e0b);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 3000 ⭐</button>
                         </div>
                         
-                        <div data-category="vip" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">⭐ ПРЕМИУМ ФУНКЦИИ</div>
+                        <div data-category="vip" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;padding:8px;background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,237,78,0.3));border-radius:12px;grid-column:1/-1;">⭐ ПРЕМИУМ ФУНКЦИИ</div>
 
                         <div data-category="vip" style="background:rgba(255,215,0,0.25);padding:12px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -7601,7 +7620,7 @@
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_50')" style="width:100%;padding:9px;background:linear-gradient(135deg,#800080,#800080);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 24000 ⭐</button>
                         </div>
                         
-                        <div data-category="mega" style="display:block;text-align:center;font-size:13px;font-weight:700;color:#fff;margin:8px 0 4px;">👑 VIP ФУНКЦИИ</div>
+                        <div data-category="mega" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;padding:8px;background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,237,78,0.3));border-radius:12px;grid-column:1/-1;">👑 VIP ФУНКЦИИ</div>
 
                         <div data-category="mega" style="background:rgba(255,215,0,0.25);padding:12px;border-radius:10px;border:1px solid rgba(255,215,0,0.5);">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -7722,6 +7741,7 @@
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_60')" style="width:100%;padding:9px;background:linear-gradient(135deg,#ffd700,#ffd700);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 15000 ⭐</button>
                         </div>
                         
+                    </div>
                     </div>
                 </div>
             `;
