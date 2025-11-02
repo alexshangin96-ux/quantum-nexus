@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.11 - Полностью убраны обновления кнопок автоботов из loadData() для предотвращения мигания - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.12 - Исправлены кнопки автоботов: после покупки не пересоздаются, при активном - только "недоступно" или таймер - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4287,6 +4287,17 @@
                 }
             });
             
+            // SPECIAL HANDLING FOR AUTOBOT: Don't recreate buttons, only update state if needed
+            if (category === 'autobot' || category === 'autobot_vip') {
+                // Check if buttons already exist
+                const existingButtons = document.querySelectorAll('[data-autobot-level]');
+                if (existingButtons.length > 0 && window.userData) {
+                    // Buttons exist, just update their state (don't recreate)
+                    updateAutobotShopButtons(window.userData);
+                    return; // Don't recreate buttons!
+                }
+            }
+            
             const items = window.shopData[category].items;
             const list = document.getElementById('shopItemsList');
             
@@ -4565,10 +4576,15 @@
                             }
                         });
                         
-                        // Refresh current shop category if it's open
+                        // Refresh current shop category if it's open (but NOT autobot to prevent blinking)
                         const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
                         if (activeBtn && activeBtn.dataset.category) {
-                            loadShopCategory(activeBtn.dataset.category);
+                            const category = activeBtn.dataset.category;
+                            // Never reload autobot category - buttons should not be recreated
+                            if (category !== 'autobot' && category !== 'autobot_vip') {
+                                loadShopCategory(category);
+                            }
+                            // For autobot, do nothing - buttons are managed by updateAutobotShopButtons only
                         }
                     }
                 }
