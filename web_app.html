@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.3 - Fix: переменные объявлены до использования, исправлен баг с открытием магазина/майнинга - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.4 - Enhanced sounds: богатые гармоники, аккорды, вариации частот, музыкальные последовательности - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2877,8 +2877,16 @@
         }
         
         // Generate a simple tone as WAV data URI
-        function generateToneWAV(frequency, duration, volume = 0.1) {
+        // Enhanced WAV generator with harmonics, chords, and varied waveforms
+        function generateToneWAV(config) {
             const sampleRate = 44100;
+            const duration = config.duration || 0.1;
+            const volume = config.volume || 0.15;
+            const baseFreq = config.freq || 440;
+            const harmonics = config.harmonics || []; // Array of {freq: multiplier, volume: 0-1}
+            const waveform = config.waveform || 'sine'; // 'sine', 'triangle', 'sine2' (two sine waves)
+            const freqMod = config.freqMod || null; // {type: 'ramp'|'vibrato', to: freq, speed: rate}
+            
             const numSamples = Math.floor(sampleRate * duration);
             const buffer = new ArrayBuffer(44 + numSamples * 2);
             const view = new DataView(buffer);
@@ -2904,11 +2912,66 @@
             writeString(36, 'data');
             view.setUint32(40, numSamples * 2, true);
             
-            // Generate sine wave
+            // Generate rich, musical tones
             for (let i = 0; i < numSamples; i++) {
                 const t = i / sampleRate;
-                const fadeOut = 1 - (t / duration); // Linear fade out
-                const sample = Math.sin(2 * Math.PI * frequency * t) * volume * fadeOut;
+                const progress = t / duration;
+                
+                // Exponential fade out for smooth sound
+                const fadeOut = Math.pow(1 - progress, 1.5);
+                
+                let sample = 0;
+                
+                // Base frequency with optional modulation
+                let currentFreq = baseFreq;
+                if (freqMod) {
+                    if (freqMod.type === 'ramp') {
+                        currentFreq = baseFreq + (freqMod.to - baseFreq) * progress;
+                    } else if (freqMod.type === 'vibrato') {
+                        const vibratoAmount = (freqMod.to - baseFreq) * 0.1;
+                        currentFreq = baseFreq + Math.sin(2 * Math.PI * freqMod.speed * t) * vibratoAmount;
+                    }
+                }
+                
+                // Generate base waveform
+                if (waveform === 'sine') {
+                    sample = Math.sin(2 * Math.PI * currentFreq * t) * volume;
+                } else if (waveform === 'triangle') {
+                    const phase = (2 * Math.PI * currentFreq * t) % (2 * Math.PI);
+                    sample = (2 * Math.abs(2 * phase / Math.PI - 1) - 1) * volume;
+                } else if (waveform === 'sine2') {
+                    // Two sine waves with slight detuning for richness
+                    sample = (Math.sin(2 * Math.PI * currentFreq * t) * 0.6 + 
+                              Math.sin(2 * Math.PI * currentFreq * 1.005 * t) * 0.4) * volume;
+                } else if (waveform === 'bell') {
+                    // Bell-like sound with harmonics
+                    sample = Math.sin(2 * Math.PI * currentFreq * t) * 0.5 +
+                             Math.sin(2 * Math.PI * currentFreq * 2 * t) * 0.25 +
+                             Math.sin(2 * Math.PI * currentFreq * 3 * t) * 0.15 +
+                             Math.sin(2 * Math.PI * currentFreq * 4 * t) * 0.1;
+                    sample *= volume;
+                } else if (waveform === 'chord') {
+                    // Major chord (1:1.25:1.5 frequency ratios for major triad)
+                    sample = Math.sin(2 * Math.PI * currentFreq * t) * 0.4 +
+                             Math.sin(2 * Math.PI * currentFreq * 1.25 * t) * 0.35 +
+                             Math.sin(2 * Math.PI * currentFreq * 1.5 * t) * 0.25;
+                    sample *= volume;
+                } else {
+                    sample = Math.sin(2 * Math.PI * currentFreq * t) * volume;
+                }
+                
+                // Add harmonics
+                for (const harm of harmonics) {
+                    const harmFreq = baseFreq * harm.freq;
+                    sample += Math.sin(2 * Math.PI * harmFreq * t) * volume * harm.volume * 0.3;
+                }
+                
+                // Apply fade out
+                sample *= fadeOut;
+                
+                // Soft clipping for warmth
+                sample = Math.tanh(sample * 0.8) * 1.2;
+                
                 const intSample = Math.max(-32768, Math.min(32767, Math.floor(sample * 32768)));
                 view.setInt16(44 + i * 2, intSample, true);
             }
@@ -2917,51 +2980,255 @@
             return URL.createObjectURL(blob);
         }
         
-        // Play sound using HTML5 Audio
+        // Play sound using HTML5 Audio with rich, varied, musical sounds
         function playSoundHTML5(type) {
             try {
+                // Generate slight variation for taps to avoid monotony
+                const tapVariation = Math.random() * 0.1 - 0.05; // ±5% variation
+                
                 const soundConfigs = {
-                    'tap': { freq: 330, duration: 0.08 },
-                    'coin': { freq: 440, duration: 0.12 },
-                    'levelup': { freq: 330, duration: 0.2 },
-                    'error': { freq: 165, duration: 0.15 },
-                    'success': { freq: 330, duration: 0.15 },
-                    'purchase': { freq: 330, duration: 0.2 },
-                    'mining': { freq: 220, duration: 0.12 },
-                    'card': { freq: 440, duration: 0.15 },
-                    'energy_regen': { freq: 330, duration: 0.12 },
-                    'achievement': { freq: 262, duration: 0.2 },
-                    'click_boost': { freq: 440, duration: 0.1 },
-                    'vip_levelup': { freq: 262, duration: 0.25 },
-                    'collection': { freq: 330, duration: 0.15 },
-                    'bonus': { freq: 262, duration: 0.2 },
-                    'crypto_tap': { freq: 440, duration: 0.12 },
-                    'big_coin': { freq: 262, duration: 0.2 },
-                    'stars_collect': { freq: 440, duration: 0.15 },
-                    'machine_working': { freq: 110, duration: 0.3 },
-                    'rebirth': { freq: 220, duration: 0.4 },
-                    'powerup': { freq: 330, duration: 0.15 },
-                    'critical_hit': { freq: 110, duration: 0.12 },
-                    'level_milestone': { freq: 262, duration: 0.25 },
-                    'combo': { freq: 262, duration: 0.2 },
-                    'daily_bonus': { freq: 262, duration: 0.3 },
-                    'shop_hover': { freq: 440, duration: 0.05 },
-                    'scroll': { freq: 330, duration: 0.08 },
-                    'notification': { freq: 330, duration: 0.12 },
-                    'wrong_action': { freq: 100, duration: 0.12 },
-                    'open_menu': { freq: 220, duration: 0.12 },
-                    'close_menu': { freq: 165, duration: 0.12 },
-                    'click': { freq: 220, duration: 0.03 }
+                    'tap': {
+                        freq: 330 + tapVariation * 330,
+                        duration: 0.08,
+                        volume: 0.2,
+                        waveform: 'sine2',
+                        harmonics: [{freq: 2, volume: 0.15}],
+                        freqMod: {type: 'ramp', to: 380}
+                    },
+                    'coin': {
+                        freq: 440,
+                        duration: 0.12,
+                        volume: 0.22,
+                        waveform: 'bell',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'levelup': {
+                        freq: 262,
+                        duration: 0.35,
+                        volume: 0.25,
+                        waveform: 'chord',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'error': {
+                        freq: 165,
+                        duration: 0.18,
+                        volume: 0.18,
+                        waveform: 'triangle',
+                        freqMod: {type: 'ramp', to: 110}
+                    },
+                    'success': {
+                        freq: 330,
+                        duration: 0.2,
+                        volume: 0.22,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'purchase': {
+                        freq: 392,
+                        duration: 0.25,
+                        volume: 0.25,
+                        waveform: 'bell',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'mining': {
+                        freq: 220,
+                        duration: 0.15,
+                        volume: 0.2,
+                        waveform: 'sine2',
+                        harmonics: [{freq: 1.5, volume: 0.2}],
+                        freqMod: {type: 'vibrato', to: 262, speed: 5}
+                    },
+                    'card': {
+                        freq: 440,
+                        duration: 0.18,
+                        volume: 0.22,
+                        waveform: 'triangle',
+                        freqMod: {type: 'ramp', to: 330}
+                    },
+                    'energy_regen': {
+                        freq: 330,
+                        duration: 0.15,
+                        volume: 0.2,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'achievement': {
+                        freq: 262,
+                        duration: 0.5,
+                        volume: 0.28,
+                        waveform: 'chord',
+                        harmonics: [{freq: 2, volume: 0.3}, {freq: 3, volume: 0.2}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'click_boost': {
+                        freq: 440,
+                        duration: 0.12,
+                        volume: 0.22,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 880}
+                    },
+                    'vip_levelup': {
+                        freq: 262,
+                        duration: 0.6,
+                        volume: 0.3,
+                        waveform: 'chord',
+                        harmonics: [{freq: 2, volume: 0.25}, {freq: 3, volume: 0.15}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'collection': {
+                        freq: 392,
+                        duration: 0.18,
+                        volume: 0.22,
+                        waveform: 'bell',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'bonus': {
+                        freq: 262,
+                        duration: 0.4,
+                        volume: 0.25,
+                        waveform: 'chord',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'crypto_tap': {
+                        freq: 440,
+                        duration: 0.15,
+                        volume: 0.22,
+                        waveform: 'sine2',
+                        harmonics: [{freq: 1.5, volume: 0.15}],
+                        freqMod: {type: 'vibrato', to: 554, speed: 8}
+                    },
+                    'big_coin': {
+                        freq: 262,
+                        duration: 0.35,
+                        volume: 0.28,
+                        waveform: 'bell',
+                        harmonics: [{freq: 2, volume: 0.25}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'stars_collect': {
+                        freq: 523,
+                        duration: 0.3,
+                        volume: 0.25,
+                        waveform: 'bell',
+                        harmonics: [{freq: 2, volume: 0.2}, {freq: 3, volume: 0.15}],
+                        freqMod: {type: 'ramp', to: 659}
+                    },
+                    'machine_working': {
+                        freq: 110,
+                        duration: 0.35,
+                        volume: 0.18,
+                        waveform: 'sine2',
+                        harmonics: [{freq: 2, volume: 0.15}],
+                        freqMod: {type: 'vibrato', to: 131, speed: 3}
+                    },
+                    'rebirth': {
+                        freq: 110,
+                        duration: 1.0,
+                        volume: 0.3,
+                        waveform: 'chord',
+                        harmonics: [{freq: 2, volume: 0.2}, {freq: 3, volume: 0.15}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'powerup': {
+                        freq: 330,
+                        duration: 0.25,
+                        volume: 0.25,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 880}
+                    },
+                    'critical_hit': {
+                        freq: 110,
+                        duration: 0.15,
+                        volume: 0.25,
+                        waveform: 'triangle',
+                        harmonics: [{freq: 2, volume: 0.3}],
+                        freqMod: {type: 'ramp', to: 165}
+                    },
+                    'level_milestone': {
+                        freq: 262,
+                        duration: 0.6,
+                        volume: 0.3,
+                        waveform: 'chord',
+                        harmonics: [{freq: 2, volume: 0.25}, {freq: 3, volume: 0.2}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'combo': {
+                        freq: 262,
+                        duration: 0.35,
+                        volume: 0.25,
+                        waveform: 'chord',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'daily_bonus': {
+                        freq: 262,
+                        duration: 0.7,
+                        volume: 0.3,
+                        waveform: 'chord',
+                        harmonics: [{freq: 2, volume: 0.25}, {freq: 3, volume: 0.2}],
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'shop_hover': {
+                        freq: 554,
+                        duration: 0.06,
+                        volume: 0.15,
+                        waveform: 'sine'
+                    },
+                    'scroll': {
+                        freq: 330,
+                        duration: 0.1,
+                        volume: 0.15,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 392}
+                    },
+                    'notification': {
+                        freq: 392,
+                        duration: 0.15,
+                        volume: 0.22,
+                        waveform: 'bell',
+                        freqMod: {type: 'ramp', to: 523}
+                    },
+                    'wrong_action': {
+                        freq: 100,
+                        duration: 0.15,
+                        volume: 0.15,
+                        waveform: 'triangle',
+                        freqMod: {type: 'ramp', to: 80}
+                    },
+                    'open_menu': {
+                        freq: 220,
+                        duration: 0.15,
+                        volume: 0.18,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 165}
+                    },
+                    'close_menu': {
+                        freq: 165,
+                        duration: 0.15,
+                        volume: 0.18,
+                        waveform: 'sine2',
+                        freqMod: {type: 'ramp', to: 220}
+                    },
+                    'click': {
+                        freq: 220 + Math.random() * 40,
+                        duration: 0.04,
+                        volume: 0.15,
+                        waveform: 'sine'
+                    }
                 };
                 
-                const config = soundConfigs[type] || { freq: 220, duration: 0.1 };
+                const config = soundConfigs[type] || {
+                    freq: 220,
+                    duration: 0.1,
+                    volume: 0.2,
+                    waveform: 'sine'
+                };
                 
                 // Always create a new audio element for each play (better for mobile and Telegram)
-                const audioUrl = generateToneWAV(config.freq, config.duration, 0.25);
+                const audioUrl = generateToneWAV(config);
                 const audio = new Audio(audioUrl);
                 // Higher volume for Telegram WebApp and mobile
                 const isTelegram = isTelegramWebApp();
-                audio.volume = isTelegram ? 0.8 : 0.7;
+                audio.volume = isTelegram ? 0.85 : 0.75;
                 
                 // Try to play immediately
                 const playPromise = audio.play();
@@ -3034,299 +3301,432 @@
                 }
                 
                 console.log('Creating oscillator for sound:', type, 'AudioContext:', audioContext);
-                let oscillator = audioContext.createOscillator();
-                console.log('Oscillator created:', oscillator);
-                let gainNode = audioContext.createGain();
-                console.log('Gain node created:', gainNode);
                 
-                oscillator.connect(gainNode);
-                console.log('Oscillator connected to gain');
-                gainNode.connect(audioContext.destination);
-                console.log('Gain connected to destination:', audioContext.destination);
+                // Helper function to create multi-oscillator sounds (chords, harmonics)
+                const createRichSound = (freqs, types, volumes, duration, gainRamp = true) => {
+                    const gainNode = audioContext.createGain();
+                    const oscs = [];
+                    
+                    for (let i = 0; i < freqs.length; i++) {
+                        const osc = audioContext.createOscillator();
+                        osc.type = types[i] || 'sine';
+                        osc.frequency.value = freqs[i];
+                        const oscGain = audioContext.createGain();
+                        oscGain.gain.value = volumes[i] || 0.15;
+                        osc.connect(oscGain);
+                        oscGain.connect(gainNode);
+                        osc.start(audioContext.currentTime);
+                        osc.stop(audioContext.currentTime + duration);
+                        oscs.push(osc);
+                    }
+                    
+                    gainNode.connect(audioContext.destination);
+                    if (gainRamp) {
+                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                    } else {
+                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                    }
+                    
+                    return {oscs, gainNode};
+                };
                 
-                // Мягкие звуки для мобильных телефонов - ОЧЕНЬ тихо и мягко
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                console.log('Gain envelope set');
+                // Tap variation for less monotony
+                const tapVariation = Math.random() * 0.15 - 0.075; // ±7.5% variation
                 
                 switch(type) {
                     case 'tap':
-                        // Мягкий космический тап - низкая частота
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.08);
+                        // Rich tap sound with slight variation and harmonics
+                        const tapFreq = 330 + tapVariation * 330;
+                        createRichSound(
+                            [tapFreq, tapFreq * 2],
+                            ['sine', 'sine'],
+                            [0.2, 0.1],
+                            0.08
+                        );
+                        // Add frequency sweep for richness
+                        const osc1 = audioContext.createOscillator();
+                        const gain1 = audioContext.createGain();
+                        osc1.type = 'sine';
+                        osc1.frequency.value = tapFreq;
+                        osc1.frequency.exponentialRampToValueAtTime(tapFreq * 1.15, audioContext.currentTime + 0.08);
+                        osc1.connect(gain1);
+                        gain1.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+                        gain1.connect(audioContext.destination);
+                        osc1.start(audioContext.currentTime);
+                        osc1.stop(audioContext.currentTime + 0.08);
                         break;
                     case 'coin':
-                        // Мягкий космический коин - плавная частота
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.12);
+                        // Bell-like coin sound with harmonics
+                        createRichSound(
+                            [440, 880, 1320],
+                            ['sine', 'sine', 'sine'],
+                            [0.25, 0.15, 0.1],
+                            0.15
+                        );
+                        const coinOsc = audioContext.createOscillator();
+                        const coinGain = audioContext.createGain();
+                        coinOsc.type = 'sine';
+                        coinOsc.frequency.value = 440;
+                        coinOsc.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
+                        coinOsc.connect(coinGain);
+                        coinGain.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        coinGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        coinGain.connect(audioContext.destination);
+                        coinOsc.start(audioContext.currentTime);
+                        coinOsc.stop(audioContext.currentTime + 0.15);
                         break;
                     case 'levelup':
-                        // Мягкий космический левелап
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.3);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                        oscillator.stop(audioContext.currentTime + 0.5);
+                        // Majestic level up with chord progression
+                        const levelupChord = createRichSound(
+                            [262, 330, 392, 523],
+                            ['sine', 'sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.18, 0.22],
+                            0.5
+                        );
+                        // Frequency sweeps for each note
+                        levelupChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.5);
+                        levelupChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.5);
+                        levelupChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.5);
+                        levelupChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
                         break;
                     case 'error':
-                        // Мягкий космический эррор
-                        oscillator.frequency.value = 165;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
-                        oscillator.stop(audioContext.currentTime + 0.3);
+                        // Soft error with downward sweep
+                        const errorOsc = audioContext.createOscillator();
+                        const errorGain = audioContext.createGain();
+                        errorOsc.type = 'triangle';
+                        errorOsc.frequency.value = 165;
+                        errorOsc.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.2);
+                        errorOsc.connect(errorGain);
+                        errorGain.gain.setValueAtTime(0.18, audioContext.currentTime);
+                        errorGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        errorGain.connect(audioContext.destination);
+                        errorOsc.start(audioContext.currentTime);
+                        errorOsc.stop(audioContext.currentTime + 0.2);
                         break;
                     case 'success':
-                        // Soft cosmic success
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.2);
-                        oscillator.stop(audioContext.currentTime + 0.3);
+                        // Success with ascending chord
+                        createRichSound(
+                            [330, 392, 523],
+                            ['sine', 'sine', 'sine'],
+                            [0.2, 0.18, 0.22],
+                            0.25
+                        );
                         break;
                     case 'purchase':
-                        // Soft cosmic purchase bell
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(330, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.15);
-                        oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.3);
-                        oscillator.stop(audioContext.currentTime + 0.4);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        // Rich purchase bell with harmonics
+                        const purchaseChord = createRichSound(
+                            [392, 523, 659],
+                            ['sine', 'sine', 'sine'],
+                            [0.25, 0.22, 0.15],
+                            0.3
+                        );
+                        // Frequency sweep
+                        purchaseChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.3);
+                        purchaseChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.3);
+                        purchaseChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.3);
                         break;
                     case 'mining':
-                        // Mining sound - soft cosmic beep
-                        oscillator.frequency.value = 220;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
-                        oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.05);
-                        oscillator.frequency.setValueAtTime(220, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.2);
+                        // Rich mining sound with vibrato
+                        const miningOsc = audioContext.createOscillator();
+                        const miningGain = audioContext.createGain();
+                        miningOsc.type = 'sine';
+                        miningOsc.frequency.value = 220;
+                        miningOsc.frequency.setValueAtTime(220, audioContext.currentTime);
+                        miningOsc.frequency.setValueAtTime(262, audioContext.currentTime + 0.05);
+                        miningOsc.frequency.setValueAtTime(220, audioContext.currentTime + 0.1);
+                        miningOsc.connect(miningGain);
+                        miningGain.gain.setValueAtTime(0.18, audioContext.currentTime);
+                        miningGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
+                        miningGain.connect(audioContext.destination);
+                        miningOsc.start(audioContext.currentTime);
+                        miningOsc.stop(audioContext.currentTime + 0.18);
                         break;
                     case 'card':
-                        // Soft cosmic card flip
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.15);
-                        oscillator.stop(audioContext.currentTime + 0.2);
+                        // Rich card flip with harmonics
+                        createRichSound(
+                            [440, 660],
+                            ['triangle', 'sine'],
+                            [0.2, 0.15],
+                            0.2
+                        );
                         break;
                     case 'energy_regen':
-                        // Energy regeneration sound - soft shimmer
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
+                        // Energy regen with ascending shimmer
+                        createRichSound(
+                            [330, 523, 659],
+                            ['sine', 'sine', 'sine'],
+                            [0.18, 0.15, 0.12],
+                            0.18
+                        );
                         break;
                     case 'achievement':
-                        // Achievement unlock - soft cosmic fanfare
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(262, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.25);
-                        oscillator.stop(audioContext.currentTime + 0.4);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                        // Majestic achievement with full chord progression
+                        const achievementChord = createRichSound(
+                            [262, 330, 392, 523, 659],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.18, 0.22, 0.15],
+                            0.6
+                        );
+                        // Frequency sweeps for epic sound
+                        achievementChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.6);
+                        achievementChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.6);
+                        achievementChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.6);
+                        achievementChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
+                        achievementChord.oscs[4].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.6);
                         break;
                     case 'click_boost':
-                        // Click boost - soft cosmic zap
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.08);
-                        oscillator.stop(audioContext.currentTime + 0.15);
+                        // Rich click boost with ascending harmonic
+                        createRichSound(
+                            [440, 880],
+                            ['sine', 'sine'],
+                            [0.22, 0.18],
+                            0.15
+                        );
                         break;
                     case 'vip_levelup':
-                        // VIP level up - soft cosmic chime
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.15);
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.35);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        // Epic VIP level up with full chord
+                        const vipChord = createRichSound(
+                            [262, 330, 392, 523, 659],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.28, 0.22, 0.2, 0.25, 0.18],
+                            0.7
+                        );
+                        // Epic frequency progression
+                        vipChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.7);
+                        vipChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.7);
+                        vipChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.7);
+                        vipChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
+                        vipChord.oscs[4].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.7);
                         break;
                     case 'collection':
-                        // Collection - soft pickup
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.2);
+                        // Rich collection with bell-like harmonics
+                        createRichSound(
+                            [392, 523, 784],
+                            ['sine', 'sine', 'sine'],
+                            [0.22, 0.18, 0.12],
+                            0.2
+                        );
                         break;
                     case 'bonus':
-                        // Bonus - soft cosmic ring
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.25);
-                        oscillator.stop(audioContext.currentTime + 0.35);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+                        // Rich bonus with ascending chord
+                        const bonusChord = createRichSound(
+                            [262, 392, 523],
+                            ['sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.22],
+                            0.4
+                        );
+                        bonusChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.4);
+                        bonusChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.4);
+                        bonusChord.oscs[2].frequency.setValueAtTime(523, audioContext.currentTime);
                         break;
                     case 'crypto_tap':
-                        // Crypto tap sound - soft cosmic chime
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(554, audioContext.currentTime + 0.05);
-                        oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
+                        // Rich crypto tap with vibrato and harmonics
+                        createRichSound(
+                            [440, 659],
+                            ['sine', 'sine'],
+                            [0.22, 0.15],
+                            0.18
+                        );
                         break;
                     case 'big_coin':
-                        // Big coin collect - soft ching
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(262, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(393, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.2);
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        // Epic big coin with full bell chord
+                        const bigCoinChord = createRichSound(
+                            [262, 392, 523, 659, 1047],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.28, 0.22, 0.2, 0.15, 0.1],
+                            0.4
+                        );
+                        bigCoinChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.4);
+                        bigCoinChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.4);
+                        bigCoinChord.oscs[2].frequency.setValueAtTime(523, audioContext.currentTime);
+                        bigCoinChord.oscs[3].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.4);
                         break;
                     case 'stars_collect':
-                        // Stars collection - soft sparkle
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.05);
-                        oscillator.frequency.setValueAtTime(660, audioContext.currentTime + 0.1);
-                        oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.15);
-                        oscillator.stop(audioContext.currentTime + 0.25);
-                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+                        // Sparkling stars with ascending harmonics
+                        const starsChord = createRichSound(
+                            [523, 659, 784, 1047, 1319],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.18, 0.15, 0.1],
+                            0.35
+                        );
+                        starsChord.oscs[0].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.35);
+                        starsChord.oscs[1].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.35);
+                        starsChord.oscs[2].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.35);
+                        starsChord.oscs[3].frequency.setValueAtTime(1047, audioContext.currentTime);
                         break;
                     case 'machine_working':
-                        // Mining machine working - gentle cosmic hum
-                        oscillator.frequency.value = 110;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime);
-                        oscillator.frequency.setValueAtTime(131, audioContext.currentTime + 0.2);
-                        oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.4);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        // Rich machine working with harmonics and vibrato
+                        const machineChord = createRichSound(
+                            [110, 220],
+                            ['sine', 'sine'],
+                            [0.18, 0.12],
+                            0.4
+                        );
+                        machineChord.oscs[0].frequency.setValueAtTime(110, audioContext.currentTime);
+                        machineChord.oscs[0].frequency.setValueAtTime(131, audioContext.currentTime + 0.2);
+                        machineChord.oscs[0].frequency.setValueAtTime(110, audioContext.currentTime + 0.4);
                         break;
                     case 'rebirth':
-                        // Rebirth - soft transformation
-                        oscillator.frequency.value = 110;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.3);
-                        oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.6);
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.9);
-                        oscillator.stop(audioContext.currentTime + 1.0);
-                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+                        // Epic rebirth transformation with full progression
+                        const rebirthChord = createRichSound(
+                            [110, 220, 330, 523],
+                            ['sine', 'sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.18, 0.22],
+                            1.1
+                        );
+                        rebirthChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 1.1);
+                        rebirthChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 1.1);
+                        rebirthChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 1.1);
+                        rebirthChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
                         break;
                     case 'powerup':
-                        // Powerup - soft cosmic surge
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(660, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.2);
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        // Rich powerup surge with harmonics
+                        createRichSound(
+                            [330, 660, 880],
+                            ['sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.15],
+                            0.3
+                        );
                         break;
                     case 'critical_hit':
-                        // Critical hit - soft cosmic boom
-                        oscillator.frequency.value = 110;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 0.05);
-                        oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.2);
-                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        // Epic critical hit with powerful harmonics
+                        createRichSound(
+                            [110, 220],
+                            ['triangle', 'triangle'],
+                            [0.25, 0.2],
+                            0.2
+                        );
                         break;
                     case 'level_milestone':
-                        // Level milestone - soft fanfare
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(262, audioContext.currentTime);
-                        oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.1);
-                        oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.2);
-                        oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.35);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        // Epic level milestone with full fanfare chord
+                        const milestoneChord = createRichSound(
+                            [262, 330, 392, 523, 659],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.3, 0.25, 0.22, 0.28, 0.2],
+                            0.65
+                        );
+                        milestoneChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.65);
+                        milestoneChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.65);
+                        milestoneChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.65);
+                        milestoneChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
+                        milestoneChord.oscs[4].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.65);
                         break;
                     case 'combo':
-                        // Combo - soft rising pitch
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.08);
-                        oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.16);
-                        oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.24);
-                        oscillator.stop(audioContext.currentTime + 0.3);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        // Rich combo with ascending chord
+                        createRichSound(
+                            [262, 330, 392, 523],
+                            ['sine', 'sine', 'sine', 'sine'],
+                            [0.25, 0.2, 0.18, 0.22],
+                            0.35
+                        );
                         break;
                     case 'daily_bonus':
-                        // Daily bonus - soft celebration
-                        oscillator.frequency.value = 262;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(262, audioContext.currentTime);
-                        oscillator.frequency.setValueAtTime(330, audioContext.currentTime + 0.1);
-                        oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.2);
-                        oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.3);
-                        oscillator.frequency.setValueAtTime(392, audioContext.currentTime + 0.4);
-                        oscillator.stop(audioContext.currentTime + 0.6);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                        // Epic daily bonus celebration
+                        const dailyBonusChord = createRichSound(
+                            [262, 330, 392, 523, 659],
+                            ['sine', 'sine', 'sine', 'sine', 'sine'],
+                            [0.3, 0.25, 0.22, 0.28, 0.2],
+                            0.75
+                        );
+                        dailyBonusChord.oscs[0].frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.75);
+                        dailyBonusChord.oscs[1].frequency.exponentialRampToValueAtTime(659, audioContext.currentTime + 0.75);
+                        dailyBonusChord.oscs[2].frequency.exponentialRampToValueAtTime(784, audioContext.currentTime + 0.75);
+                        dailyBonusChord.oscs[3].frequency.setValueAtTime(523, audioContext.currentTime);
+                        dailyBonusChord.oscs[4].frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.75);
                         break;
                     case 'shop_hover':
-                        // Shop hover - soft tick
-                        oscillator.frequency.value = 440;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.05);
-                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                        // Quick tick
+                        const hoverOsc = audioContext.createOscillator();
+                        const hoverGain = audioContext.createGain();
+                        hoverOsc.type = 'sine';
+                        hoverOsc.frequency.value = 554;
+                        hoverOsc.connect(hoverGain);
+                        hoverGain.gain.setValueAtTime(0.12, audioContext.currentTime);
+                        hoverGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.06);
+                        hoverGain.connect(audioContext.destination);
+                        hoverOsc.start(audioContext.currentTime);
+                        hoverOsc.stop(audioContext.currentTime + 0.06);
                         break;
                     case 'scroll':
-                        // Scroll - soft swipe
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.05);
-                        oscillator.stop(audioContext.currentTime + 0.1);
-                        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        // Smooth scroll
+                        createRichSound(
+                            [330, 392],
+                            ['sine', 'sine'],
+                            [0.12, 0.1],
+                            0.12
+                        );
                         break;
                     case 'notification':
-                        // Notification - soft ping
-                        oscillator.frequency.value = 330;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(392, audioContext.currentTime + 0.08);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        // Rich notification bell
+                        createRichSound(
+                            [392, 523, 784],
+                            ['sine', 'sine', 'sine'],
+                            [0.22, 0.18, 0.12],
+                            0.18
+                        );
                         break;
                     case 'wrong_action':
-                        // Wrong action - soft buzz
-                        oscillator.frequency.value = 100;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        // Soft wrong action
+                        const wrongOsc = audioContext.createOscillator();
+                        const wrongGain = audioContext.createGain();
+                        wrongOsc.type = 'triangle';
+                        wrongOsc.frequency.value = 100;
+                        wrongOsc.frequency.exponentialRampToValueAtTime(80, audioContext.currentTime + 0.18);
+                        wrongOsc.connect(wrongGain);
+                        wrongGain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        wrongGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
+                        wrongGain.connect(audioContext.destination);
+                        wrongOsc.start(audioContext.currentTime);
+                        wrongOsc.stop(audioContext.currentTime + 0.18);
                         break;
                     case 'open_menu':
-                        // Open menu - soft whoosh
-                        oscillator.frequency.value = 220;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        // Smooth menu open
+                        createRichSound(
+                            [220, 165],
+                            ['sine', 'sine'],
+                            [0.18, 0.15],
+                            0.18
+                        );
                         break;
                     case 'close_menu':
-                        // Close menu - soft reverse whoosh
-                        oscillator.frequency.value = 165;
-                        oscillator.type = 'sine';
-                        oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
-                        oscillator.stop(audioContext.currentTime + 0.15);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                        // Smooth menu close
+                        createRichSound(
+                            [165, 220],
+                            ['sine', 'sine'],
+                            [0.18, 0.15],
+                            0.18
+                        );
                         break;
                     case 'click':
-                        // Soft click
-                        oscillator.frequency.value = 220;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.03);
-                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
+                        // Quick click with variation
+                        const clickFreq = 220 + Math.random() * 40;
+                        const clickOsc = audioContext.createOscillator();
+                        const clickGain = audioContext.createGain();
+                        clickOsc.type = 'sine';
+                        clickOsc.frequency.value = clickFreq;
+                        clickOsc.connect(clickGain);
+                        clickGain.gain.setValueAtTime(0.12, audioContext.currentTime);
+                        clickGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.04);
+                        clickGain.connect(audioContext.destination);
+                        clickOsc.start(audioContext.currentTime);
+                        clickOsc.stop(audioContext.currentTime + 0.04);
                         break;
                     default:
-                        oscillator.frequency.value = 220;
-                        oscillator.type = 'sine';
-                        oscillator.stop(audioContext.currentTime + 0.2);
+                        // Default rich sound
+                        const defaultOsc = audioContext.createOscillator();
+                        const defaultGain = audioContext.createGain();
+                        defaultOsc.type = 'sine';
+                        defaultOsc.frequency.value = 220;
+                        defaultOsc.connect(defaultGain);
+                        defaultGain.gain.setValueAtTime(0.15, audioContext.currentTime);
+                        defaultGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                        defaultGain.connect(audioContext.destination);
+                        defaultOsc.start(audioContext.currentTime);
+                        defaultOsc.stop(audioContext.currentTime + 0.2);
                 }
                 
-                oscillator.start(audioContext.currentTime);
                 console.log('Sound started successfully:', type);
             } catch(e) {
                 console.log('Audio error:', e);
