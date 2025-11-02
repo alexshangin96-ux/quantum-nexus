@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.29 - Enhanced Referral System Update
+# FIXED VERSION - Removed backup files conflict
+# Date: 2025-11-03
+# Update Instructions for Selectel Server
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.29 - Enhanced Referral System"
+echo "FIXED VERSION - Clean update"
+echo "=================================================="
+echo ""
+
+# Navigate to the application directory
+cd /root/quantum-nexus
+
+echo "Step 1: Remove backup files that conflict with git..."
+rm -f web_app.html.backup web_server.py.backup
+
+echo "Step 2: Pull latest changes from GitHub..."
+git pull origin main
+
+echo "Step 3: Backup current database..."
+sudo -u postgres pg_dump quantum_nexus > /root/quantum-nexus-backup-$(date +%Y%m%d-%H%M%S).sql
+
+echo "Step 4: Apply database migration..."
+cd /root/quantum-nexus
+sudo -u postgres psql quantum_nexus -f ADD_IS_PREMIUM.sql
+
+echo "Step 5: Copy updated files..."
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /var/www/quantum-nexus/web_server.py
+sudo cp handlers.py /var/www/quantum-nexus/handlers.py
+sudo cp models.py /var/www/quantum-nexus/models.py
+sudo cp config.py /var/www/quantum-nexus/config.py
+
+echo "Step 6: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 7: Check service status..."
+echo ""
+echo "quantum-nexus-web.service status:"
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+echo "quantum-nexus.service status:"
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ Deployment of v6.7.29 complete!"
+echo "=================================================="
+echo ""
+echo "New Features:"
+echo "  • Premium users give 10% referral income (vs 5%)"
+echo "  • 250 🪙 bonus for referring premium users"
+echo "  • Detailed referral stats and statistics"
+echo "  • Beautiful new UI with animations"
+echo "  • Toast notifications for copy actions"
+echo ""
+echo "Database migration applied: is_premium column added"
+echo ""
+
