@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.16 - Улучшенная сетка кнопок: 2 колонки, адаптация для Telegram мобильных, все по центру и стильно - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.17 - Карточки покупки валюты теперь с улучшенной анимацией shimmer как в VIP майнинге, увеличенные emoji, улучшенные тени и эффекты наведения - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7009,6 +7009,229 @@
         
         let currentCategory = 'all';
         
+        // Currency purchase products data - same structure as VIP machines
+        const currencyProductsData = {
+            'starter': [
+                {id: 'starter_1', emoji: '🌟', name: '💫 Первые шаги', desc: 'Для старта игры', coins: 200000, stars: 50, url: 'buy_stars_1'},
+                {id: 'starter_2', emoji: '✨', name: '✨ Базовый старт', desc: 'Для быстрого роста', coins: 500000, stars: 120, url: 'buy_stars_2'},
+                {id: 'starter_3', emoji: '⭐', name: '🌟 Начало пути', desc: 'Чтобы начать прогрессию', coins: 800000, stars: 180, url: 'buy_stars_3'},
+                {id: 'starter_4', emoji: '💎', name: '💎 Приветственный', desc: 'Великолепный старт', coins: 1000000, stars: 240, url: 'buy_stars_4'},
+                {id: 'starter_5', emoji: '🎁', name: '🎁 Добро пожаловать', desc: 'Для мощного старта', coins: 1500000, stars: 320, url: 'buy_stars_5'},
+                {id: 'starter_6', emoji: '💰', name: '💰 Стартовый пакет', desc: 'Для серьёзной игры', coins: 2000000, stars: 400, url: 'buy_stars_6'},
+                {id: 'starter_7', emoji: '⚡', name: '⚡ Быстрый старт', desc: 'Для молниеносного роста', coins: 2500000, stars: 480, url: 'buy_stars_7'},
+                {id: 'starter_8', emoji: '🎯', name: '🎯 Первый шаг', desc: 'Для уверенного начала', coins: 3000000, stars: 560, url: 'buy_stars_8'},
+                {id: 'starter_9', emoji: '🌈', name: '🌈 Радужный набор', desc: 'Для яркого старта', coins: 3500000, stars: 640, url: 'buy_stars_9'},
+                {id: 'starter_10', emoji: '💫', name: '💫 Волшебный старт', desc: 'Для магического начала', coins: 4000000, stars: 720, url: 'buy_stars_10'}
+            ],
+            'premium': [
+                {id: 'premium_1', emoji: '⚡', name: '⚡ Световой пакет', desc: 'Для яркого прогресса', coins: 1500000, stars: 300, url: 'buy_stars_11'},
+                {id: 'premium_2', emoji: '🎯', name: '🎯 Профессионал', desc: 'Для профессиональной игры', coins: 3000000, stars: 600, url: 'buy_stars_12'},
+                {id: 'premium_3', emoji: '🚀', name: '🚀 Мощный набор', desc: 'Для мощного рывка', coins: 4500000, stars: 900, url: 'buy_stars_13'},
+                {id: 'premium_4', emoji: '💎', name: '💎 Алмазный пакет', desc: 'Для алмазного прогресса', coins: 6000000, stars: 1200, url: 'buy_stars_14'},
+                {id: 'premium_5', emoji: '🔥', name: '🔥 Огненный набор', desc: 'Для огненной мощи', coins: 7500000, stars: 1500, url: 'buy_stars_15'},
+                {id: 'premium_6', emoji: '⚡', name: '⚡ Электронный', desc: 'Для электронного буста', coins: 9000000, stars: 1800, url: 'buy_stars_16'},
+                {id: 'premium_7', emoji: '🌟', name: '🌟 Звёздный пакет', desc: 'Для звёздного уровня', coins: 10500000, stars: 2100, url: 'buy_stars_17'},
+                {id: 'premium_8', emoji: '💫', name: '💫 Космический', desc: 'Для космического прогресса', coins: 12000000, stars: 2400, url: 'buy_stars_18'},
+                {id: 'premium_9', emoji: '🎁', name: '🎁 Подарочный VIP', desc: 'Для VIP статуса', coins: 13500000, stars: 2700, url: 'buy_stars_19'},
+                {id: 'premium_10', emoji: '🔮', name: '🔮 Магический', desc: 'Для магического роста', coins: 15000000, stars: 3000, url: 'buy_stars_20'}
+            ],
+            'vip': [
+                {id: 'vip_1', emoji: '💎', name: '💎 VIP стартовый', desc: 'Для начала VIP пути', coins: 5000000, stars: 1000, url: 'buy_stars_21'},
+                {id: 'vip_2', emoji: '🚀', name: '🚀 VIP ускорение', desc: 'Приоритетная обработка', coins: 8000000, stars: 1600, url: 'buy_stars_22'},
+                {id: 'vip_3', emoji: '👑', name: '👑 VIP статус', desc: 'Эксклюзивный бонус', coins: 12000000, stars: 2400, url: 'buy_stars_23'},
+                {id: 'vip_4', emoji: '⚡', name: '⚡ VIP турбо', desc: 'Для турбо ускорения', coins: 16000000, stars: 3200, url: 'buy_stars_24'},
+                {id: 'vip_5', emoji: '💎', name: '💎 VIP королевство', desc: 'Для королевского статуса', coins: 20000000, stars: 4000, url: 'buy_stars_25'},
+                {id: 'vip_6', emoji: '🔓', name: '🔓 VIP безлимит', desc: 'Максимальный бонус', coins: 25000000, stars: 5000, url: 'buy_stars_26'},
+                {id: 'vip_7', emoji: '🏆', name: '🏆 VIP чемпион', desc: 'Для чемпионского статуса', coins: 30000000, stars: 6000, url: 'buy_stars_27'},
+                {id: 'vip_8', emoji: '🌟', name: '🌟 VIP легенда', desc: 'Для легендарного статуса', coins: 35000000, stars: 7000, url: 'buy_stars_28'},
+                {id: 'vip_9', emoji: '💎', name: '💎 VIP алмаз', desc: 'Все VIP бонусы', coins: 40000000, stars: 8000, url: 'buy_stars_29'},
+                {id: 'vip_10', emoji: '👑', name: '👑 VIP император', desc: 'Максимальные премиум бонусы', coins: 45000000, stars: 9000, url: 'buy_stars_30'}
+            ],
+            'limited': [
+                {id: 'limited_1', emoji: '🔮', name: '🔮 Starter Hash', desc: 'Для начала майнинга', quanhash: 1000, stars: 2500, url: 'buy_stars_31'},
+                {id: 'limited_2', emoji: '💎', name: '💎 Basic Hash', desc: 'Для базового майнинга', quanhash: 5000, stars: 3200, url: 'buy_stars_32'},
+                {id: 'limited_3', emoji: '⚡', name: '⚡ Power Hash', desc: 'Для мощного майнинга', quanhash: 10000, stars: 3900, url: 'buy_stars_33'},
+                {id: 'limited_4', emoji: '🔥', name: '🔥 Fire Hash', desc: 'Для огненного майнинга', quanhash: 15000, stars: 4600, url: 'buy_stars_34'},
+                {id: 'limited_5', emoji: '💥', name: '💥 Blast Hash', desc: 'Для взрывного майнинга', quanhash: 25000, stars: 5300, url: 'buy_stars_35'},
+                {id: 'limited_6', emoji: '🌟', name: '🌟 Stellar Hash', desc: 'Для звёздного майнинга', quanhash: 50000, stars: 6000, url: 'buy_stars_36'},
+                {id: 'limited_7', emoji: '💎', name: '💎 Diamond Hash', desc: 'Для алмазного майнинга', quanhash: 100000, stars: 6700, url: 'buy_stars_37'},
+                {id: 'limited_8', emoji: '🚀', name: '🚀 Rocket Hash', desc: 'Для ракетного майнинга', quanhash: 250000, stars: 7400, url: 'buy_stars_38'},
+                {id: 'limited_9', emoji: '👑', name: '👑 Crown Hash', desc: 'Для королевского майнинга', quanhash: 500000, stars: 8100, url: 'buy_stars_39'},
+                {id: 'limited_10', emoji: '💫', name: '💫 Ultimate Hash', desc: 'Для абсолютного майнинга', quanhash: 1000000, stars: 9000, url: 'buy_stars_40'}
+            ],
+            'ultra': [
+                {id: 'ultra_1', emoji: '🎁', name: '🎁 Стартовый мегасет', desc: '10 карточек + 1M коинов', cards: 10, coins: 1000000, stars: 5000, url: 'buy_stars_41'},
+                {id: 'ultra_2', emoji: '🔥', name: '🔥 Горячий комбо', desc: '20 карточек + 10M коинов', cards: 20, coins: 10000000, stars: 7000, url: 'buy_stars_42'},
+                {id: 'ultra_3', emoji: '💎', name: '💎 Алмазный комбо', desc: '30 карточек + 25M коинов', cards: 30, coins: 25000000, stars: 9000, url: 'buy_stars_43'},
+                {id: 'ultra_4', emoji: '👑', name: '👑 Королевский комбо', desc: '50 карточек + 50M коинов', cards: 50, coins: 50000000, stars: 12000, url: 'buy_stars_44'},
+                {id: 'ultra_5', emoji: '🌟', name: '🌟 Легендарный комбо', desc: '100 карточек + 100M коинов', cards: 100, coins: 100000000, stars: 15000, url: 'buy_stars_45'}
+            ],
+            'mega': [
+                {id: 'mega_1', emoji: '⭐', name: '⭐ VIP Пакет', desc: 'Все VIP функции + 100M коинов', coins: 100000000, stars: 2000, url: 'buy_stars_46'},
+                {id: 'mega_2', emoji: '🚀', name: '🚀 Автопрокачка', desc: 'Всё автоматически + 300M коинов', coins: 300000000, stars: 10000, url: 'buy_stars_56'},
+                {id: 'mega_3', emoji: '💎', name: '💎 Золотой профиль', desc: 'Уникальный дизайн + 400M коинов', coins: 400000000, stars: 4500, url: 'buy_stars_58'},
+                {id: 'mega_4', emoji: '🌟', name: '🌟 Супер статус', desc: 'Премиум права везде + 450M коинов', coins: 450000000, stars: 7000, url: 'buy_stars_59'},
+                {id: 'mega_5', emoji: '🎯', name: '🎯 АБСОЛЮТ ВСЁ VIP', desc: 'Все премиум сразу + 500M коинов', coins: 500000000, stars: 15000, url: 'buy_stars_60'}
+            ]
+        };
+
+        // Category colors matching VIP machine style
+        const categoryColors = {
+            'starter': {
+                bgGradient: 'linear-gradient(135deg, rgba(102,126,234,0.12), rgba(139,92,246,0.18))',
+                borderColor: 'rgba(102,126,234,0.3)',
+                shadowColor: 'rgba(102,126,234,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(102,126,234,0.2), rgba(139,92,246,0.25))',
+                hoverShadow: 'rgba(102,126,234,0.25)',
+                buttonBg: 'linear-gradient(135deg, #667eea, #764ba2)',
+                buttonShadow: 'rgba(102,126,234,0.3)',
+                infoBg: 'rgba(167,139,250,0.2)',
+                infoColor: '#a78bfa',
+                emojiGlow: 'rgba(102,126,234,0.6)'
+            },
+            'premium': {
+                bgGradient: 'linear-gradient(135deg, rgba(234,179,8,0.12), rgba(245,158,11,0.18))',
+                borderColor: 'rgba(234,179,8,0.3)',
+                shadowColor: 'rgba(234,179,8,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(245,158,11,0.25))',
+                hoverShadow: 'rgba(234,179,8,0.25)',
+                buttonBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                buttonShadow: 'rgba(234,179,8,0.3)',
+                infoBg: 'rgba(251,191,36,0.2)',
+                infoColor: '#fbbf24',
+                emojiGlow: 'rgba(234,179,8,0.6)'
+            },
+            'vip': {
+                bgGradient: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))',
+                borderColor: 'rgba(255,215,0,0.3)',
+                shadowColor: 'rgba(255,215,0,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))',
+                hoverShadow: 'rgba(255,215,0,0.25)',
+                buttonBg: 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700)',
+                buttonShadow: 'rgba(255,215,0,0.3)',
+                infoBg: 'rgba(255,215,0,0.2)',
+                infoColor: '#ffd700',
+                emojiGlow: 'rgba(255,215,0,0.6)'
+            },
+            'limited': {
+                bgGradient: 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.18))',
+                borderColor: 'rgba(239,68,68,0.3)',
+                shadowColor: 'rgba(239,68,68,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(239,68,68,0.2), rgba(220,38,38,0.25))',
+                hoverShadow: 'rgba(239,68,68,0.25)',
+                buttonBg: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                buttonShadow: 'rgba(239,68,68,0.3)',
+                infoBg: 'rgba(239,68,68,0.2)',
+                infoColor: '#ef4444',
+                emojiGlow: 'rgba(239,68,68,0.6)'
+            },
+            'ultra': {
+                bgGradient: 'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(139,92,246,0.18))',
+                borderColor: 'rgba(168,85,247,0.3)',
+                shadowColor: 'rgba(168,85,247,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(139,92,246,0.25))',
+                hoverShadow: 'rgba(168,85,247,0.25)',
+                buttonBg: 'linear-gradient(135deg, #a855f7, #9333ea)',
+                buttonShadow: 'rgba(168,85,247,0.3)',
+                infoBg: 'rgba(168,85,247,0.2)',
+                infoColor: '#a855f7',
+                emojiGlow: 'rgba(168,85,247,0.6)'
+            },
+            'mega': {
+                bgGradient: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))',
+                borderColor: 'rgba(255,215,0,0.3)',
+                shadowColor: 'rgba(255,215,0,0.15)',
+                hoverBg: 'linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))',
+                hoverShadow: 'rgba(255,215,0,0.25)',
+                buttonBg: 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700)',
+                buttonShadow: 'rgba(255,215,0,0.3)',
+                infoBg: 'rgba(255,215,0,0.2)',
+                infoColor: '#ffd700',
+                emojiGlow: 'rgba(255,215,0,0.6)'
+            }
+        };
+
+        // Function to render currency cards in VIP machine style
+        function renderCurrencyCards(category) {
+            const products = currencyProductsData[category] || [];
+            const colors = categoryColors[category] || categoryColors['starter'];
+            if (!products.length) return '';
+
+            const categoryTitles = {
+                'starter': '🎯 СТАРТОВЫЕ НАБОРЫ',
+                'premium': '🚀 ПРЕМИУМ НАБОРЫ',
+                'vip': '⭐ ПРЕМИУМ ФУНКЦИИ',
+                'limited': '🔮 QUANHASH НАБОРЫ',
+                'ultra': '🎁 КОМБО СЕТЫ',
+                'mega': '👑 VIP ФУНКЦИИ'
+            };
+
+            let html = `<div data-category="${category}" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;text-shadow:0 2px 8px ${colors.shadowColor.replace('0.15','0.5')};letter-spacing:1px;">${categoryTitles[category]}</div>`;
+
+            html += products.map((product) => {
+                const isVIP = category === 'vip' || category === 'mega';
+                const vipBadge = isVIP ? `
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #ffd700; box-shadow: 0 3px 8px rgba(255,215,0,0.4); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                        <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">VIP</span>
+                    </div>
+                ` : '';
+
+                let infoHtml = '';
+                if (product.coins && !product.cards) {
+                    infoHtml = `
+                        <div style="background: ${colors.infoBg}; padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: ${colors.infoColor}; font-size: 12px; font-weight: 700;">💰 Бонус:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${product.coins.toLocaleString()} коинов</span>
+                        </div>
+                    `;
+                } else if (product.quanhash) {
+                    infoHtml = `
+                        <div style="background: ${colors.infoBg}; padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: ${colors.infoColor}; font-size: 12px; font-weight: 700;">🔮 QuanHash:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${product.quanhash.toLocaleString()}</span>
+                        </div>
+                    `;
+                } else if (product.cards && product.coins) {
+                    infoHtml = `
+                        <div style="background: ${colors.infoBg}; padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: ${colors.infoColor}; font-size: 12px; font-weight: 700;">🎁 Комбо:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${product.cards} карт + ${product.coins.toLocaleString()} коинов</span>
+                        </div>
+                    `;
+                }
+
+                const buttonColor = isVIP ? '#000' : '#fff';
+                const buttonTextShadow = isVIP ? '0 1px 2px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.3)';
+                const borderOpacity = isVIP ? '0.5' : '0.5';
+
+                return `
+                    <div data-category="${category}" style="background: ${colors.bgGradient}; padding: 16px; border-radius: 16px; border: 1px solid ${colors.borderColor}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px ${colors.shadowColor}; transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px ${colors.hoverShadow}';this.style.background='${colors.hoverBg}'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px ${colors.shadowColor}';this.style.background='${colors.bgGradient}'">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <span style="font-size: 24px; filter: drop-shadow(0 0 4px ${colors.emojiGlow});">${product.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 900; font-size: 15px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${product.name}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; font-weight: 600;">${product.desc}</div>
+                            </div>
+                            ${vipBadge}
+                        </div>
+                        ${infoHtml}
+                        <button onclick="window.open('https://t.me/qanexus_bot?start=${product.url}')" 
+                                style="width: 100%; padding: 12px; background: ${colors.buttonBg}; color: ${buttonColor}; border: 1px solid ${colors.borderColor.replace('0.3',borderOpacity)}; border-radius: 10px; cursor: pointer; font-weight: 900; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 15px ${colors.buttonShadow}; text-shadow: ${buttonTextShadow}; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                                onmousedown="this.style.transform='scale(0.96)'; this.style.boxShadow='0 6px 16px ${colors.buttonShadow.replace('0.3','0.4')}'"
+                                onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px ${colors.buttonShadow}'"
+                                onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px ${colors.buttonShadow}'">
+                            <span>Купить за ${product.stars}</span>
+                            <span style="font-size: 18px; filter: drop-shadow(0 0 3px rgba(255,215,0,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                            <span>Telegram Stars</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            return html;
+        }
+        
         window.openBuyCurrency = function(e) {
             try {
                 e.preventDefault();
@@ -7046,148 +7269,72 @@
                             <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 12px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">👑 VIP функции</button>
                         </div>
                     
-                            <div id="currencyProductsList" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:5px;">
-                            <div data-category="starter" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;text-shadow:0 2px 8px rgba(102,126,234,0.5);letter-spacing:1px;">🎯 СТАРТОВЫЕ НАБОРЫ</div>
+                        <div id="currencyProductsList" style="display:grid;gap:12px;max-height:60vh;overflow-y:auto;padding-right:5px;">
+                            ${Object.keys(currencyProductsData).map(cat => renderCurrencyCards(cat)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
 
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                    <div style="font-size:36px;filter: drop-shadow(0 0 8px rgba(102,126,234,0.6));">🌟</div>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:800;font-size:16px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.3);margin-bottom:4px;">💫 Первые шаги</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px;">Получите 200,000 коинов для старта игры</div>
-                                        <div style="font-size:11px;color:#a78bfa;margin-top:4px;font-weight:600;">✅ Отличное начало игры</div>
-                                    </div>
-                                </div>
-                                <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_1')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;transition:all 0.3s;box-shadow:0 4px 12px rgba(102,126,234,0.4);text-shadow:0 1px 2px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'"><span style="font-size:16px;">💰</span> 50 <span style="font-size:18px;filter:drop-shadow(0 0 4px rgba(255,215,0,0.8))">⭐</span> Stars</button>
-                            </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                    <div style="font-size:36px;filter: drop-shadow(0 0 8px rgba(102,126,234,0.6));">✨</div>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:800;font-size:16px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.3);margin-bottom:4px;">✨ Базовый старт</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px;">Получите 500,000 коинов для быстрого роста</div>
-                                        <div style="font-size:11px;color:#a78bfa;margin-top:4px;font-weight:600;">✅ Быстрый старт</div>
-                                    </div>
-                                </div>
-                                <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_2')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;transition:all 0.3s;box-shadow:0 4px 12px rgba(102,126,234,0.4);text-shadow:0 1px 2px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'"><span style="font-size:16px;">💰</span> 120 <span style="font-size:18px;filter:drop-shadow(0 0 4px rgba(255,215,0,0.8))">⭐</span> Stars</button>
-                            </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                    <div style="font-size:36px;filter: drop-shadow(0 0 8px rgba(102,126,234,0.6));">⭐</div>
-                                    <div style="flex:1;">
-                                        <div style="font-weight:800;font-size:16px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.3);margin-bottom:4px;">🌟 Начало пути</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:4px;">Получите 800,000 коинов чтобы начать прогрессию</div>
-                                        <div style="font-size:11px;color:#a78bfa;margin-top:4px;font-weight:600;">✅ Твёрдый фундамент</div>
-                                    </div>
-                                </div>
-                                <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_3')" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:800;font-size:13px;transition:all 0.3s;box-shadow:0 4px 12px rgba(102,126,234,0.4);text-shadow:0 1px 2px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.5)'" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'"><span style="font-size:16px;">💰</span> 180 <span style="font-size:18px;filter:drop-shadow(0 0 4px rgba(255,215,0,0.8))">⭐</span> Stars</button>
-                            </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">💎</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">💎 Приветственный</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 1,000,000 коинов - великолепный старт</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ VIP приветствие</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_4')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 240 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">🎁</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">🎁 Добро пожаловать</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 1,500,000 коинов для мощного старта</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Максимальная выгода</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_5')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 320 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">💰</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">💰 Стартовый пакет</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 2,000,000 коинов для серьёзной игры</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Серьёзный старт</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_6')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 400 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">⚡</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">⚡ Быстрый старт</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 2,500,000 коинов для молниеносного роста</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Максимальная скорость</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_7')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 480 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">🎯</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">🎯 Первый шаг</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 3,000,000 коинов для уверенного начала</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Точное попадание</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_8')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 560 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">🌈</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">🌈 Радужный набор</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 3,500,000 коинов для яркого старта</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Разноцветные возможности</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_9')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 640 ⭐</button>
-                        </div>
-                        
-                            <div data-category="starter" style="background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(102,126,234,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(102,126,234,0.3)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.25), rgba(139,92,246,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(102,126,234,0.2)';this.style.background='linear-gradient(135deg, rgba(102,126,234,0.15), rgba(139,92,246,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">💫</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">💫 Волшебный старт</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 4,000,000 коинов для магического начала</div>
-                                    <div style="font-size:10px;color:102,126,234;margin-top:4px;">✅ Волшебная сила</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_10')" style="width:100%;padding:9px;background:linear-gradient(135deg,#667eea,#667eea);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 720 ⭐</button>
-                        </div>
-                        
-                            <div data-category="premium" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;text-shadow:0 2px 8px rgba(234,179,8,0.5);letter-spacing:1px;">🚀 ПРЕМИУМ НАБОРЫ</div>
+            // Set initial active category after modal is attached
+            setTimeout(() => window.filterCategory('starter'), 100);
+        }
 
-                            <div data-category="premium" style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(245,158,11,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(234,179,8,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(234,179,8,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(234,179,8,0.3)';this.style.background='linear-gradient(135deg, rgba(234,179,8,0.25), rgba(245,158,11,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(234,179,8,0.2)';this.style.background='linear-gradient(135deg, rgba(234,179,8,0.15), rgba(245,158,11,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">⚡</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">⚡ Световой пакет</div>
-                                    <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 1,500,000 коинов для яркого прогресса</div>
-                                    <div style="font-size:10px;color:234,179,8;margin-top:4px;">✅ Световая скорость</div>
-                                </div>
-                            </div>
-                            <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_11')" style="width:100%;padding:9px;background:linear-gradient(135deg,#f59e0b,#f59e0b);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 300 ⭐</button>
-                        </div>
-                        
-                            <div data-category="premium" style="background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(245,158,11,0.2)); padding: 16px; border-radius: 16px; border: 1px solid rgba(234,179,8,0.4); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(234,179,8,0.2); transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(234,179,8,0.3)';this.style.background='linear-gradient(135deg, rgba(234,179,8,0.25), rgba(245,158,11,0.3))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(234,179,8,0.2)';this.style.background='linear-gradient(135deg, rgba(234,179,8,0.15), rgba(245,158,11,0.2))'">
-                                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <div style="font-size:32px;">🎯</div>
-                                <div style="flex:1;">
-                                    <div style="font-size:15px;font-weight:700;color:#fff;">🎯 Профессионал</div>
+        window.filterCategory = function(category) {
+            // Update button states
+            document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
+                const btnText = btn.textContent.toLowerCase();
+                const isActive = (category === 'starter' && btnText.includes('старт')) ||
+                                (category === 'premium' && btnText.includes('премиум')) ||
+                                (category === 'vip' && btnText.includes('vip') && !btnText.includes('функции')) ||
+                                (category === 'limited' && btnText.includes('quanhash')) ||
+                                (category === 'ultra' && btnText.includes('комбо')) ||
+                                (category === 'mega' && btnText.includes('функции'));
+                
+                if (isActive) {
+                    btn.classList.add('active');
+                    const colors = categoryColors[category] || categoryColors['starter'];
+                    btn.style.background = colors.buttonBg;
+                    btn.style.border = `2px solid ${colors.borderColor.replace('0.3','0.9')}`;
+                    btn.style.boxShadow = `0 4px 12px ${colors.buttonShadow}`;
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))';
+                    btn.style.border = '2px solid rgba(255,255,255,0.2)';
+                    btn.style.boxShadow = 'none';
+                }
+            });
+            
+            // Filter products by category
+            const productsList = document.getElementById('currencyProductsList');
+            if (productsList) {
+                const allItems = productsList.querySelectorAll('[data-category]');
+                allItems.forEach(item => {
+                    if (item.getAttribute('data-category') === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+        };
+        
+        // Add shimmer animation if not exists
+        if (!document.querySelector('#shimmerStyle')) {
+            const style = document.createElement('style');
+            style.id = 'shimmerStyle';
+            style.textContent = `
+                @keyframes shimmer {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+    </script>
                                     <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Получите 3,000,000 коинов для профессиональной игры</div>
                                     <div style="font-size:10px;color:234,179,8;margin-top:4px;">✅ Точность мастера</div>
                                 </div>
@@ -7776,7 +7923,6 @@
                             </div>
                             <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_60')" style="width:100%;padding:9px;background:linear-gradient(135deg,#ffd700,#ffd700);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;">💰 15000 ⭐</button>
                         </div>
-                        
                     </div>
                 </div>
             `;
@@ -7784,30 +7930,6 @@
             
             // Set initial active category after modal is attached
             setTimeout(() => window.filterCategory('starter'), 100);
-        }
-        
-        window.filterCategory = function(category) {
-            try {
-                // Update button states
-                document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                if(event?.target) {
-                    event.target.classList.add('active');
-                }
-                
-                // Filter and show products
-                const products = document.querySelectorAll('#currencyProductsList [data-category]');
-                products.forEach(product => {
-                    if(product.dataset.category === category) {
-                        product.style.display = 'block';
-                    } else {
-                        product.style.display = 'none';
-                    }
-                });
-            } catch(err) {
-                console.error('filterCategory error:', err);
-            }
         }
 
     </script>
