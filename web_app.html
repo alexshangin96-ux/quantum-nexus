@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7 - HTML5 Audio для мобильного Telegram, автоматическое определение устройства - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.1 - HTML5 Audio исправлен: звук включен по умолчанию, улучшена инициализация - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1589,6 +1589,11 @@
         tg.ready();
         tg.expand();
 
+        // Initialize sound enabled by default
+        if (localStorage.getItem('soundEnabled') === null) {
+            localStorage.setItem('soundEnabled', 'true');
+        }
+
         // Make user globally available
         window.user = tg.initDataUnsafe?.user;
         if (window.user) {
@@ -1599,6 +1604,11 @@
         }
 
         let energyRegenInterval;
+        
+        // Pre-initialize audio system for better mobile compatibility
+        setTimeout(() => {
+            initAudio();
+        }, 100);
         
 
         // VIP Status Management
@@ -2925,26 +2935,28 @@
                 
                 const config = soundConfigs[type] || { freq: 220, duration: 0.1 };
                 
-                // Create or reuse audio element
-                if (!sounds[type]) {
-                    const audioUrl = generateToneWAV(config.freq, config.duration, 0.1);
-                    sounds[type] = new Audio(audioUrl);
-                    sounds[type].volume = 0.3; // Telegram mobile volume control
-                    sounds[type].preload = 'auto';
+                // Always create a new audio element for each play (better for mobile)
+                const audioUrl = generateToneWAV(config.freq, config.duration, 0.15);
+                const audio = new Audio(audioUrl);
+                audio.volume = 0.5; // Increased volume for mobile
+                
+                // Try to play immediately
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('HTML5 Audio playing successfully:', type);
+                    }).catch(error => {
+                        console.log('HTML5 Audio play failed, trying again:', error);
+                        // Try again after a short delay
+                        setTimeout(() => {
+                            audio.play().catch(e => {
+                                console.log('HTML5 Audio retry failed:', e);
+                            });
+                        }, 100);
+                    });
                 }
                 
-                // Play the sound
-                const audio = sounds[type].cloneNode();
-                audio.volume = 0.3;
-                audio.play().catch(e => {
-                    console.log('HTML5 Audio play failed:', e);
-                    // Try to initialize on user interaction
-                    if (!audioInitialized) {
-                        initAudio();
-                    }
-                });
-                
-                console.log('HTML5 Audio playing:', type);
             } catch(e) {
                 console.log('HTML5 Audio error:', e);
             }
@@ -2952,7 +2964,13 @@
         
         function playSound(type) {
             try {
-                const soundSetting = localStorage.getItem('soundEnabled');
+                // Initialize sound enabled by default if not set
+                let soundSetting = localStorage.getItem('soundEnabled');
+                if (soundSetting === null) {
+                    soundSetting = 'true'; // Enable by default
+                    localStorage.setItem('soundEnabled', 'true');
+                }
+                
                 // Must be explicitly 'true' to play sound
                 const soundEnabled = soundSetting === 'true';
                 if (!soundEnabled) {
