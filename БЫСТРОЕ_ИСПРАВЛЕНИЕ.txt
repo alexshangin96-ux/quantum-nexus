@@ -1,0 +1,92 @@
+═══════════════════════════════════════════════════════════════
+БЫСТРОЕ ИСПРАВЛЕНИЕ ПРОБЛЕМЫ С GIT PUSH
+═══════════════════════════════════════════════════════════════
+
+На сервере выполните следующие команды:
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 1: Настроить credential helper (сохранит токен)      │
+└─────────────────────────────────────────────────────────────┘
+
+cd /root/quantum-nexus
+
+# Настроить сохранение credentials
+git config --global credential.helper store
+
+# Попробовать push (введите токен при запросе)
+git push origin main
+# Username: ваш_github_username
+# Password: ваш_personal_access_token
+
+# После этого токен сохранится и push будет работать автоматически
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 2: Использовать SSH (если SSH ключ уже настроен)     │
+└─────────────────────────────────────────────────────────────┘
+
+cd /root/quantum-nexus
+
+# Переключить на SSH
+git remote set-url origin git@github.com:alexshangin96-ux/quantum-nexus.git
+
+# Проверить SSH подключение
+ssh -T git@github.com
+
+# Push через SSH
+git push origin main
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 3: Push с токеном напрямую (одноразово)              │
+└─────────────────────────────────────────────────────────────┘
+
+cd /root/quantum-nexus
+
+# Замените YOUR_TOKEN на ваш Personal Access Token
+git push https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 4: Пропустить push и просто обновить файлы           │
+└─────────────────────────────────────────────────────────────┘
+
+# Push НЕ обязателен! Изменения уже применены локально
+# Просто скопируйте файлы и перезапустите сервисы:
+
+cd /root/quantum-nexus
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+# Push можно сделать позже, когда настроите авторизацию
+
+
+═══════════════════════════════════════════════════════════════
+КАК СОЗДАТЬ PERSONAL ACCESS TOKEN:
+═══════════════════════════════════════════════════════════════
+
+1. Откройте GitHub.com
+2. Settings > Developer settings > Personal access tokens > Tokens (classic)
+3. Generate new token (classic)
+4. Название: "Server Push"
+5. Выберите права: repo (все)
+6. Generate token
+7. СКОПИРУЙТЕ ТОКЕН (он показывается только один раз!)
+8. Используйте токен вместо пароля при git push
+
+═══════════════════════════════════════════════════════════════
+ПОСЛЕ НАСТРОЙКИ PUSH:
+═══════════════════════════════════════════════════════════════
+
+Завершите обновление:
+  cd /root/quantum-nexus
+  sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+  sudo systemctl restart quantum-nexus-web.service
+  sudo systemctl restart quantum-nexus.service
+
+═══════════════════════════════════════════════════════════════
+
+
+
+

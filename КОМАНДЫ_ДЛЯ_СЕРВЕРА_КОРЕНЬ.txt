@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+КОМАНДЫ ДЛЯ ОБНОВЛЕНИЯ НА СЕРВЕРЕ (из /root/quantum-nexus)
+═══════════════════════════════════════════════════════════════
+
+Выполните на сервере следующие команды:
+
+1. Переход в директорию и обновление из GitHub:
+   cd /root/quantum-nexus
+   git pull origin main
+
+   Если возникли конфликты при merge:
+   git checkout --ours web_server.py
+   git checkout --ours web_app.html
+   git checkout --ours handlers.py
+   git add web_server.py web_app.html handlers.py
+   git commit -m "Resolve merge conflicts - use fixed version"
+   git push origin main
+
+2. Копирование web_app.html в /var/www/quantum-nexus/:
+   sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+   (web_server.py и handlers.py уже находятся в /root/quantum-nexus/)
+
+3. Перезапуск сервисов:
+   sudo systemctl restart quantum-nexus-web.service
+   sudo systemctl restart quantum-nexus.service
+
+═══════════════════════════════════════════════════════════════
+ВСЕ КОМАНДЫ ОДНИМ БЛОКОМ:
+═══════════════════════════════════════════════════════════════
+
+cd /root/quantum-nexus && \
+git pull origin main && \
+(git checkout --ours web_server.py web_app.html handlers.py 2>/dev/null; git add web_server.py web_app.html handlers.py 2>/dev/null; git commit -m "Resolve conflicts" 2>/dev/null; git push origin main 2>/dev/null || true) && \
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html && \
+sudo systemctl restart quantum-nexus-web.service && \
+sudo systemctl restart quantum-nexus.service && \
+echo "✅ Обновление завершено!"
+
+═══════════════════════════════════════════════════════════════
+АЛЬТЕРНАТИВА: Использовать скрипт
+═══════════════════════════════════════════════════════════════
+
+На сервере выполните:
+   cd /root/quantum-nexus
+   bash UPDATE_SERVER_NOW.sh
+
+═══════════════════════════════════════════════════════════════
+ПРОВЕРКА ПОСЛЕ ОБНОВЛЕНИЯ:
+═══════════════════════════════════════════════════════════════
+
+Проверьте статус сервисов:
+   sudo systemctl status quantum-nexus-web.service
+   sudo systemctl status quantum-nexus.service
+
+Проверьте логи:
+   sudo journalctl -u quantum-nexus-web.service -f
+   sudo journalctl -u quantum-nexus.service -f
+
+═══════════════════════════════════════════════════════════════
+ЧТО БЫЛО ИСПРАВЛЕНО:
+═══════════════════════════════════════════════════════════════
+
+✅ web_server.py - Удален проблемный блок реферальной системы
+✅ web_app.html - Восстановлен из рабочей версии
+✅ handlers.py - Обновлен с исправлениями
+
+Все изменения уже в GitHub и готовы к pull.
+
+═══════════════════════════════════════════════════════════════
+
+
+
+

@@ -41,11 +41,15 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db_user = db.query(User).filter_by(telegram_id=user.id).first()
         
         if not db_user:
+            # Check if user has Telegram Premium
+            is_premium = getattr(user, 'is_premium', False)
+            
             # Create new user
             db_user = User(
                 telegram_id=user.id,
                 username=user.username,
                 referral_code=generate_referral_code(),
+                is_premium=is_premium
             )
             db.add(db_user)
             db.flush()  # Get the ID
@@ -71,9 +75,23 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if referrer and referrer.id != db_user.id:
                     db_user.referred_by = referrer.id
                     referrer.referrals_count += 1
-                    db_user.coins += REFERRAL_BONUS
-                    referrer.coins += REFERRAL_BONUS // 2
-                    logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
+                    
+                    # Give bonus based on premium status
+                    if is_premium:
+                        db_user.coins += REFERRAL_PREMIUM_BONUS
+                        referrer.coins += REFERRAL_PREMIUM_BONUS // 2
+                        logger.info(f"Premium user {db_user.telegram_id} was referred by {referrer.telegram_id} - bonus: {REFERRAL_PREMIUM_BONUS}")
+                    else:
+                        db_user.coins += REFERRAL_BONUS
+                        referrer.coins += REFERRAL_BONUS // 2
+                        logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id} - bonus: {REFERRAL_BONUS}")
+        
+        # Update premium status for existing users
+        else:
+            is_premium = getattr(user, 'is_premium', False)
+            if db_user.is_premium != is_premium:
+                db_user.is_premium = is_premium
+                logger.info(f"Updated premium status for user {db_user.telegram_id}: {is_premium}")
         
         # Calculate offline income
         offline_income = calculate_offline_income(db_user)

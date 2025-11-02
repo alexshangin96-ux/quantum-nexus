@@ -55,6 +55,7 @@ class User(Base):
     has_golden_profile = Column(Boolean, default=False)
     has_top_place = Column(Boolean, default=False)
     has_unique_design = Column(Boolean, default=False)
+    is_premium = Column(Boolean, default=False)  # Telegram Premium status
     
     # Auto-tap
     auto_tap_enabled = Column(Boolean, default=False)

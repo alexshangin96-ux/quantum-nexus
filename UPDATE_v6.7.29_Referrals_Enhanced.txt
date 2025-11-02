@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.29 - Enhanced Referral System Update
+# Date: 2025-11-03
+# Update Instructions for Selectel Server
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.29 - Enhanced Referral System"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Premium referral bonuses (10% vs 5%)"
+echo "  ✅ Beautiful new referral modal UI"
+echo "  ✅ Detailed referral list with stats"
+echo "  ✅ Premium/Regular user badges"
+echo "  ✅ Toast notification for copy link"
+echo "  ✅ Telegram Premium detection"
+echo ""
+
+# Navigate to the application directory
+cd /root/quantum-nexus
+
+echo "Step 1: Backup current database..."
+sudo -u postgres pg_dump quantum_nexus > /root/quantum-nexus-backup-$(date +%Y%m%d-%H%M%S).sql
+
+echo "Step 2: Pull latest changes from GitHub..."
+git pull origin main
+
+echo "Step 3: Apply database migration..."
+sudo -u postgres psql quantum_nexus -f /root/quantum-nexus/ADD_IS_PREMIUM.sql
+
+echo "Step 4: Copy updated files..."
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /var/www/quantum-nexus/web_server.py
+sudo cp handlers.py /var/www/quantum-nexus/handlers.py
+sudo cp models.py /var/www/quantum-nexus/models.py
+sudo cp config.py /var/www/quantum-nexus/config.py
+
+echo "Step 5: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 6: Check service status..."
+echo ""
+echo "quantum-nexus-web.service status:"
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+echo "quantum-nexus.service status:"
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ Deployment of v6.7.29 complete!"
+echo "=================================================="
+echo ""
+echo "New Features:"
+echo "  • Premium users give 10% referral income (vs 5%)"
+echo "  • 250 🪙 bonus for referring premium users"
+echo "  • Detailed referral stats and statistics"
+echo "  • Beautiful new UI with animations"
+echo "  • Toast notifications for copy actions"
+echo ""
+echo "Database migration applied: is_premium column added"
+echo ""
+
