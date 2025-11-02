@@ -4313,6 +4313,21 @@
             }
             }
             
+            // Check autobot state BEFORE creating buttons (to show correct state immediately)
+            let autobotState = null;
+            if ((category === 'autobot' || category === 'autobot_vip') && window.userData) {
+                const autobotExpiresAt = window.userData.auto_tap_expires_at || 0;
+                const autobotLevel = window.userData.auto_tap_level || 0;
+                const currentTime = Date.now();
+                if (autobotExpiresAt > currentTime && autobotLevel > 0) {
+                    autobotState = {
+                        expiresAt: autobotExpiresAt,
+                        level: autobotLevel,
+                        currentTime: currentTime
+                    };
+                }
+            }
+            
             // Calculate price and effect for each item based on its current level
             list.innerHTML = items.map((item, index) => {
                 const isLocked = false; // Remove locking - all items are available
@@ -4490,11 +4505,48 @@
                             </div>
                         `}
                         ${category === 'autobot' || category === 'autobot_vip' ? `
-                            <button id="autobot-btn-${item.level}" data-autobot-level="${item.level}" onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.basePrice || item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`}" 
-                                    style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
-                                <span class="autobot-btn-main-text">${isLocked ? '🔒 Заблокировано' : item.currency === 'stars' ? `Купить за ${item.basePrice || item.price} ⭐ Stars` : `Купить за ${item.price.toLocaleString()} 🪙`}</span>
-                                <span class="autobot-countdown" style="display:none;font-size:10px;color:#86efac;font-weight:600;"></span>
-                            </button>
+                            ${(() => {
+                                // Check if autobot is active and this is the purchased button
+                                const isPurchased = autobotState && autobotState.level === item.level;
+                                const isBlocked = autobotState && autobotState.level !== item.level;
+                                
+                                let mainText = '';
+                                let countdownHtml = '';
+                                let btnStyle = '';
+                                let btnDisabled = '';
+                                
+                                if (isPurchased) {
+                                    // Purchased button: show active state with countdown
+                                    const remainingMs = autobotState.expiresAt - autobotState.currentTime;
+                                    const hours = Math.floor(remainingMs / 3600000);
+                                    const minutes = Math.floor((remainingMs % 3600000) / 60000);
+                                    const seconds = Math.floor((remainingMs % 60000) / 1000);
+                                    const timeText = `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+                                    
+                                    mainText = '🤖 Автобот активен';
+                                    countdownHtml = `<span class="autobot-countdown" style="display:block;font-size:10px;color:#86efac;font-weight:600;">⏱️ Осталось: ${timeText}</span>`;
+                                    btnStyle = 'rgba(16,185,129,0.6)';
+                                    btnDisabled = 'disabled';
+                                } else if (isBlocked || autobotState) {
+                                    // Other buttons when autobot is active: show blocked
+                                    mainText = '🔒 Недоступно';
+                                    countdownHtml = `<span class="autobot-countdown" style="display:none;font-size:10px;color:#86efac;font-weight:600;"></span>`;
+                                    btnStyle = 'rgba(148,163,184,0.3)';
+                                    btnDisabled = 'disabled';
+                                } else {
+                                    // Autobot not active: show price
+                                    mainText = isLocked ? '🔒 Заблокировано' : (item.currency === 'stars' ? `Купить за ${item.basePrice || item.price} ⭐ Stars` : `Купить за ${item.price.toLocaleString()} 🪙`);
+                                    countdownHtml = `<span class="autobot-countdown" style="display:none;font-size:10px;color:#86efac;font-weight:600;"></span>`;
+                                    btnStyle = isLocked ? 'rgba(239,68,68,0.6)' : (item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)');
+                                    btnDisabled = '';
+                                }
+                                
+                                return `<button id="autobot-btn-${item.level}" data-autobot-level="${item.level}" ${btnDisabled} onclick="${isLocked || isBlocked || isPurchased ? 'return false;' : (item.currency === 'stars' ? `buyWithStars('${category}', ${item.level}, ${item.basePrice || item.price})` : `buyShopItem('${category}', ${item.level}, ${item.price})`)}" 
+                                    style="width:100%;padding:8px 12px;background:${btnStyle};color:${item.currency === 'stars' && !autobotState ? '#000' : '#fff'};border:${item.currency === 'stars' && !autobotState ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked || isBlocked || isPurchased ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' && !autobotState ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;">
+                                <span class="autobot-btn-main-text">${mainText}</span>
+                                ${countdownHtml}
+                            </button>`;
+                            })()}
                         ` : `
                             <button onclick="${isLocked ? 'tg.showAlert(\'🔒 Сначала купите предыдущий уровень\')' : item.currency === 'stars' ? `buyWithStars('${category}', ${currentLevel}, ${item.basePrice || item.price})` : `buyShopItem('${category}', ${currentLevel}, ${nextLevelPrice}, ${index})`}" 
                                     style="width:100%;padding:8px 12px;background:${isLocked ? 'rgba(239,68,68,0.6)' : item.currency === 'stars' ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#667eea,#764ba2)'};color:${item.currency === 'stars' ? '#000' : '#fff'};border:${item.currency === 'stars' ? '1px solid #ffd700' : 'none'};border-radius:10px;cursor:${isLocked ? 'not-allowed' : 'pointer'};font-weight:700;font-size:12px;transition:all 0.3s;position:relative;overflow:hidden;box-shadow:${item.currency === 'stars' ? '0 3px 10px rgba(255,215,0,0.3)' : '0 2px 6px rgba(102,126,234,0.3)'};display:flex;align-items:center;justify-content:center;gap:4px;"
@@ -4514,16 +4566,14 @@
                 vipButton.setAttribute('onclick', `openVIPModal('${category}')`);
             }
             
-            // Update autobot buttons if autobot category is loaded - only once, no repeated updates
+            // Update autobot buttons if autobot category is loaded - set up timer for countdown updates
             if (category === 'autobot' || category === 'autobot_vip') {
-                // Use existing userData if available to avoid extra fetch
+                // Buttons were just created, initialize state and timer
                 if (window.userData) {
-                    // Small delay to ensure buttons are rendered first
-                    setTimeout(() => {
-                        updateAutobotShopButtons(window.userData);
-                    }, 100);
+                    // Update immediately (buttons already have correct initial state from HTML generation)
+                    updateAutobotShopButtons(window.userData);
                 } else {
-                    // Fetch only if userData not available
+                    // Fetch userData if not available
                     fetch('/api/user_data', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -4532,9 +4582,8 @@
                     .then(res => res.json())
                     .then(data => {
                         window.userData = data; // Store for future use
-                        setTimeout(() => {
-                            updateAutobotShopButtons(data);
-                        }, 100);
+                        // Update immediately (buttons already have correct initial state from HTML generation)
+                        updateAutobotShopButtons(data);
                     })
                     .catch(err => console.error('Error loading user data for autobots:', err));
                 }
@@ -7743,4 +7792,5 @@
 
 
 </body>
+</html>
 </html>
