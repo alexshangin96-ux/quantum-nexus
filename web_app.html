@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.14 - Исправлено: кнопки автоботов сразу показывают правильное состояние при загрузке категории (без показа цены) - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.15 - Редизайн модального окна покупки валюты в VIP стиле, как в категориях магазина - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -516,31 +516,57 @@
 
         .buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             margin-bottom: 20px;
+            padding: 0 8px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            justify-items: center;
+            align-items: stretch;
+        }
+
+        @media (max-width: 480px) {
+            .buttons {
+                gap: 10px;
+                padding: 0 4px;
+            }
         }
 
         .btn {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(102, 126, 234, 0.4);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 16px 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: white;
             text-decoration: none;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
             position: relative;
             overflow: hidden;
+            width: 100%;
+            min-height: 70px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 480px) {
+            .btn {
+                padding: 14px 10px;
+                font-size: 13px;
+                min-height: 65px;
+                gap: 5px;
+            }
         }
 
         .btn::before {
@@ -559,14 +585,38 @@
         }
 
         .btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.02);
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
             border-color: rgba(102, 126, 234, 0.6);
             box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
         }
 
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        /* Special hover for currency button */
+        .btn[onclick*="openBuyCurrency"]:hover {
+            background: linear-gradient(135deg, rgba(255,215,0,0.35), rgba(255,237,78,0.4));
+            border-color: rgba(255,215,0,0.9);
+            box-shadow: 0 6px 24px rgba(255,215,0,0.45);
+        }
+
         .btn-emoji {
-            font-size: 32px;
+            font-size: 28px;
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .btn-emoji {
+                font-size: 24px;
+            }
+        }
+
+        .btn:hover .btn-emoji {
+            transform: scale(1.1);
+        }
             filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3));
         }
 
@@ -1441,9 +1491,9 @@
                 <div class="btn-emoji">🎁</div>
                 <div>Ежедневные задания</div>
             </a>
-            <a href="#" class="btn" onclick="openBuyCurrency(event)" style="background:linear-gradient(135deg,rgba(255,215,0,0.3),rgba(255,140,0,0.3));border:2px solid rgba(255,215,0,0.6);box-shadow:0 4px 15px rgba(255,215,0,0.3);">
-                <div class="btn-emoji">⭐</div>
-                <div style="font-weight:700;">Купить валюту</div>
+            <a href="#" class="btn" onclick="openBuyCurrency(event)" style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,237,78,0.3));border:2px solid rgba(255,215,0,0.7);box-shadow:0 4px 18px rgba(255,215,0,0.35);position:relative;overflow:hidden;">
+                <div class="btn-emoji" style="filter:drop-shadow(0 0 8px rgba(255,215,0,0.8));font-size:28px;">⭐</div>
+                <div style="font-weight:800;font-size:13px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.3);">Купить валюту</div>
             </a>
         </div>
     </div>
