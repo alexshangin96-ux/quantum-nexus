@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.5.2 - Unified VIP buttons, improved shop icon, sound permission modal - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.6 - Restored old shop icon 💰, ultra-soft cosmic sounds for mobile - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1418,7 +1418,7 @@
         </button>
         <div class="buttons">
             <a href="#" class="btn" onclick="openShop(event)">
-                <div class="btn-emoji">🛍️</div>
+                <div class="btn-emoji">💰</div>
                 <div>Магазин</div>
             </a>
             <a href="#" class="btn" onclick="openMining(event)">
@@ -1473,7 +1473,7 @@
     <div id="shopModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">🛒 Магазин</div>
+                <div class="modal-title">💰 Магазин</div>
                 <button class="close-btn" onclick="closeModal('shopModal')">✕</button>
             </div>
             <div class="shop-category">
@@ -2860,8 +2860,9 @@
                 gainNode.connect(audioContext.destination);
                 console.log('Gain connected to destination:', audioContext.destination);
                 
-                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                // Мягкие звуки для мобильных телефонов
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
                 console.log('Gain envelope set');
                 
                 switch(type) {
@@ -2872,7 +2873,7 @@
                         break;
                     case 'coin':
                         oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
+                        oscillator.type = 'sine';
                         oscillator.stop(audioContext.currentTime + 0.15);
                         break;
                     case 'levelup':
@@ -2884,7 +2885,7 @@
                         break;
                     case 'error':
                         oscillator.frequency.value = 220;
-                        oscillator.type = 'sawtooth';
+                        oscillator.type = 'sine';
                         oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.3);
                         oscillator.stop(audioContext.currentTime + 0.3);
                         break;
@@ -2906,9 +2907,9 @@
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
                         break;
                     case 'mining':
-                        // Mining sound - tech beep
+                        // Mining sound - soft cosmic beep
                         oscillator.frequency.value = 440;
-                        oscillator.type = 'square';
+                        oscillator.type = 'sine';
                         oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
                         oscillator.frequency.setValueAtTime(554, audioContext.currentTime + 0.05);
                         oscillator.frequency.setValueAtTime(440, audioContext.currentTime + 0.1);
@@ -2939,9 +2940,9 @@
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
                         break;
                     case 'click_boost':
-                        // Click boost activation sound - energizing zap
+                        // Click boost activation sound - gentle cosmic zap
                         oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
+                        oscillator.type = 'sine';
                         oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
                         oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.08);
                         oscillator.stop(audioContext.currentTime + 0.15);
@@ -2972,9 +2973,9 @@
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
                         break;
                     case 'crypto_tap':
-                        // Crypto tap sound - money drop
+                        // Crypto tap sound - soft cosmic chime
                         oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
+                        oscillator.type = 'sine';
                         oscillator.frequency.exponentialRampToValueAtTime(1108, audioContext.currentTime + 0.05);
                         oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.1);
                         oscillator.stop(audioContext.currentTime + 0.15);
@@ -2998,18 +2999,18 @@
                         oscillator.frequency.setValueAtTime(1760, audioContext.currentTime + 0.1);
                         oscillator.frequency.setValueAtTime(1319, audioContext.currentTime + 0.15);
                         oscillator.stop(audioContext.currentTime + 0.25);
-                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
                         break;
                     case 'machine_working':
-                        // Mining machine working - deep rumble
+                        // Mining machine working - gentle cosmic hum
                         oscillator.frequency.value = 110;
-                        oscillator.type = 'sawtooth';
+                        oscillator.type = 'sine';
                         oscillator.frequency.setValueAtTime(110, audioContext.currentTime);
                         oscillator.frequency.setValueAtTime(131, audioContext.currentTime + 0.2);
                         oscillator.frequency.setValueAtTime(110, audioContext.currentTime + 0.4);
                         oscillator.stop(audioContext.currentTime + 0.5);
-                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
                         break;
                     case 'rebirth':
@@ -3020,26 +3021,26 @@
                         oscillator.frequency.exponentialRampToValueAtTime(523, audioContext.currentTime + 0.6);
                         oscillator.frequency.exponentialRampToValueAtTime(1047, audioContext.currentTime + 0.9);
                         oscillator.stop(audioContext.currentTime + 1.0);
-                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
                         break;
                     case 'powerup':
-                        // Powerup activated - energy surge
+                        // Powerup activated - soft cosmic surge
                         oscillator.frequency.value = 880;
-                        oscillator.type = 'square';
+                        oscillator.type = 'sine';
                         oscillator.frequency.exponentialRampToValueAtTime(1760, audioContext.currentTime + 0.1);
                         oscillator.frequency.exponentialRampToValueAtTime(2637, audioContext.currentTime + 0.2);
                         oscillator.stop(audioContext.currentTime + 0.3);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                         break;
                     case 'critical_hit':
-                        // Critical hit - explosive boom
+                        // Critical hit - soft cosmic boom
                         oscillator.frequency.value = 220;
-                        oscillator.type = 'sawtooth';
+                        oscillator.type = 'sine';
                         oscillator.frequency.exponentialRampToValueAtTime(330, audioContext.currentTime + 0.05);
                         oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.1);
                         oscillator.stop(audioContext.currentTime + 0.2);
-                        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
                         break;
                     case 'level_milestone':
