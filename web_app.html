@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.2 - HTML5 Audio для Telegram WebApp: увеличенная громкость, принудительное использование для всех Telegram - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.3 - Fix: переменные объявлены до использования, исправлен баг с открытием магазина/майнинга - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1585,6 +1585,23 @@
     </div>
 
     <script>
+        // Declare audio variables FIRST before any code that uses them
+        let audioContext = null;
+        const sounds = {};
+        let useHTML5Audio = false;
+        let audioInitialized = false;
+        
+        // Detect if we're in Telegram WebApp (mobile or desktop)
+        function isTelegramWebApp() {
+            return window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.platform;
+        }
+        
+        // Detect if we're on mobile
+        function isMobile() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        }
+        
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -2811,21 +2828,7 @@
         }
 
         // Sound and audio management - optimized for Telegram WebApp mobile
-        let audioContext = null;
-        const sounds = {};
-        let useHTML5Audio = false;
-        let audioInitialized = false;
-        
-        // Detect if we're in Telegram WebApp (mobile or desktop)
-        function isTelegramWebApp() {
-            return window.Telegram && window.Telegram.WebApp && tg && tg.platform;
-        }
-        
-        // Detect if we're on mobile
-        function isMobile() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-        }
+        // (Variables declared at the top of the script)
         
         // Initialize audio system - try Web Audio API first, fallback to HTML5 Audio
         function initAudio() {
@@ -2957,7 +2960,8 @@
                 const audioUrl = generateToneWAV(config.freq, config.duration, 0.25);
                 const audio = new Audio(audioUrl);
                 // Higher volume for Telegram WebApp and mobile
-                audio.volume = isTelegramWebApp() ? 0.8 : 0.7;
+                const isTelegram = isTelegramWebApp();
+                audio.volume = isTelegram ? 0.8 : 0.7;
                 
                 // Try to play immediately
                 const playPromise = audio.play();
@@ -3402,10 +3406,7 @@
             // Sound effect
             const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
-                // Small delay to ensure audio is initialized
-                setTimeout(() => {
-                    playSound('tap');
-                }, 10);
+                playSound('tap');
             }
             
             // Haptic feedback
