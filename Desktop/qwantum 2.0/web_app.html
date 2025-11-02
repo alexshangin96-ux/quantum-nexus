@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.1 - HTML5 Audio исправлен: звук включен по умолчанию, улучшена инициализация - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.2 - HTML5 Audio для Telegram WebApp: увеличенная громкость, принудительное использование для всех Telegram - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1589,6 +1589,11 @@
         tg.ready();
         tg.expand();
 
+        // Initialize sound enabled by default
+        if (localStorage.getItem('soundEnabled') === null) {
+            localStorage.setItem('soundEnabled', 'true');
+        }
+
         // Make user globally available
         window.user = tg.initDataUnsafe?.user;
         if (window.user) {
@@ -1599,6 +1604,18 @@
         }
 
         let energyRegenInterval;
+        
+        // Pre-initialize audio system for better mobile and Telegram compatibility
+        // For Telegram WebApp, force HTML5 Audio immediately
+        if (window.Telegram && window.Telegram.WebApp) {
+            useHTML5Audio = true;
+            audioInitialized = true;
+            console.log('Telegram WebApp detected on load, HTML5 Audio will be used');
+        } else {
+            setTimeout(() => {
+                initAudio();
+            }, 100);
+        }
         
 
         // VIP Status Management
@@ -2793,34 +2810,186 @@
             });
         }
 
-        // Sound and audio management
+        // Sound and audio management - optimized for Telegram WebApp mobile
         let audioContext = null;
         const sounds = {};
+        let useHTML5Audio = false;
+        let audioInitialized = false;
         
+        // Detect if we're in Telegram WebApp (mobile or desktop)
+        function isTelegramWebApp() {
+            return window.Telegram && window.Telegram.WebApp && tg && tg.platform;
+        }
+        
+        // Detect if we're on mobile
+        function isMobile() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        }
+        
+        // Initialize audio system - try Web Audio API first, fallback to HTML5 Audio
         function initAudio() {
+            if (audioInitialized) return;
+            
+            // For ALL Telegram WebApp (mobile and desktop), prefer HTML5 Audio
+            if (isTelegramWebApp()) {
+                console.log('Telegram WebApp detected, using HTML5 Audio');
+                useHTML5Audio = true;
+                audioInitialized = true;
+                return;
+            }
+            
+            // Also use HTML5 Audio for mobile browsers
+            if (isMobile()) {
+                console.log('Mobile browser detected, using HTML5 Audio');
+                useHTML5Audio = true;
+                audioInitialized = true;
+                return;
+            }
+            
+            // Try Web Audio API for desktop
             if (!audioContext) {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     console.log('AudioContext created, state:', audioContext.state);
+                    useHTML5Audio = false;
+                    audioInitialized = true;
+                    
+                    // Resume AudioContext if suspended (required by modern browsers)
+                    if (audioContext.state === 'suspended') {
+                        console.log('AudioContext suspended, attempting to resume...');
+                        audioContext.resume().then(() => {
+                            console.log('AudioContext resumed successfully, state:', audioContext.state);
+                        }).catch(e => {
+                            console.log('Audio resume failed, falling back to HTML5 Audio:', e);
+                            useHTML5Audio = true;
+                        });
+                    }
                 } catch(e) {
-                    console.log('Audio not supported:', e);
-                    return;
+                    console.log('Web Audio API not supported, using HTML5 Audio:', e);
+                    useHTML5Audio = true;
+                    audioInitialized = true;
                 }
             }
-            // Resume AudioContext if suspended (required by modern browsers)
-            if (audioContext.state === 'suspended') {
-                console.log('AudioContext suspended, attempting to resume...');
-                audioContext.resume().then(() => {
-                    console.log('AudioContext resumed successfully, state:', audioContext.state);
-                }).catch(e => {
-                    console.log('Audio resume failed:', e);
-                });
+        }
+        
+        // Generate a simple tone as WAV data URI
+        function generateToneWAV(frequency, duration, volume = 0.1) {
+            const sampleRate = 44100;
+            const numSamples = Math.floor(sampleRate * duration);
+            const buffer = new ArrayBuffer(44 + numSamples * 2);
+            const view = new DataView(buffer);
+            
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + numSamples * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, numSamples * 2, true);
+            
+            // Generate sine wave
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                const fadeOut = 1 - (t / duration); // Linear fade out
+                const sample = Math.sin(2 * Math.PI * frequency * t) * volume * fadeOut;
+                const intSample = Math.max(-32768, Math.min(32767, Math.floor(sample * 32768)));
+                view.setInt16(44 + i * 2, intSample, true);
+            }
+            
+            const blob = new Blob([buffer], { type: 'audio/wav' });
+            return URL.createObjectURL(blob);
+        }
+        
+        // Play sound using HTML5 Audio
+        function playSoundHTML5(type) {
+            try {
+                const soundConfigs = {
+                    'tap': { freq: 330, duration: 0.08 },
+                    'coin': { freq: 440, duration: 0.12 },
+                    'levelup': { freq: 330, duration: 0.2 },
+                    'error': { freq: 165, duration: 0.15 },
+                    'success': { freq: 330, duration: 0.15 },
+                    'purchase': { freq: 330, duration: 0.2 },
+                    'mining': { freq: 220, duration: 0.12 },
+                    'card': { freq: 440, duration: 0.15 },
+                    'energy_regen': { freq: 330, duration: 0.12 },
+                    'achievement': { freq: 262, duration: 0.2 },
+                    'click_boost': { freq: 440, duration: 0.1 },
+                    'vip_levelup': { freq: 262, duration: 0.25 },
+                    'collection': { freq: 330, duration: 0.15 },
+                    'bonus': { freq: 262, duration: 0.2 },
+                    'crypto_tap': { freq: 440, duration: 0.12 },
+                    'big_coin': { freq: 262, duration: 0.2 },
+                    'stars_collect': { freq: 440, duration: 0.15 },
+                    'machine_working': { freq: 110, duration: 0.3 },
+                    'rebirth': { freq: 220, duration: 0.4 },
+                    'powerup': { freq: 330, duration: 0.15 },
+                    'critical_hit': { freq: 110, duration: 0.12 },
+                    'level_milestone': { freq: 262, duration: 0.25 },
+                    'combo': { freq: 262, duration: 0.2 },
+                    'daily_bonus': { freq: 262, duration: 0.3 },
+                    'shop_hover': { freq: 440, duration: 0.05 },
+                    'scroll': { freq: 330, duration: 0.08 },
+                    'notification': { freq: 330, duration: 0.12 },
+                    'wrong_action': { freq: 100, duration: 0.12 },
+                    'open_menu': { freq: 220, duration: 0.12 },
+                    'close_menu': { freq: 165, duration: 0.12 },
+                    'click': { freq: 220, duration: 0.03 }
+                };
+                
+                const config = soundConfigs[type] || { freq: 220, duration: 0.1 };
+                
+                // Always create a new audio element for each play (better for mobile and Telegram)
+                const audioUrl = generateToneWAV(config.freq, config.duration, 0.25);
+                const audio = new Audio(audioUrl);
+                // Higher volume for Telegram WebApp and mobile
+                audio.volume = isTelegramWebApp() ? 0.8 : 0.7;
+                
+                // Try to play immediately
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('HTML5 Audio playing successfully:', type);
+                    }).catch(error => {
+                        console.log('HTML5 Audio play failed, trying again:', error);
+                        // Try again after a short delay
+                        setTimeout(() => {
+                            audio.play().catch(e => {
+                                console.log('HTML5 Audio retry failed:', e);
+                            });
+                        }, 100);
+                    });
+                }
+                
+            } catch(e) {
+                console.log('HTML5 Audio error:', e);
             }
         }
         
         function playSound(type) {
             try {
-                const soundSetting = localStorage.getItem('soundEnabled');
+                // Initialize sound enabled by default if not set
+                let soundSetting = localStorage.getItem('soundEnabled');
+                if (soundSetting === null) {
+                    soundSetting = 'true'; // Enable by default
+                    localStorage.setItem('soundEnabled', 'true');
+                }
+                
                 // Must be explicitly 'true' to play sound
                 const soundEnabled = soundSetting === 'true';
                 if (!soundEnabled) {
@@ -2830,8 +2999,17 @@
                 
                 console.log('Playing sound:', type);
                 initAudio();
-                if (!audioContext) {
-                    console.log('AudioContext not available');
+                
+                // Force HTML5 Audio for Telegram WebApp
+                if (isTelegramWebApp()) {
+                    useHTML5Audio = true;
+                    playSoundHTML5(type);
+                    return;
+                }
+                
+                // Use HTML5 Audio for mobile or if Web Audio API is not available
+                if (useHTML5Audio || !audioContext) {
+                    playSoundHTML5(type);
                     return;
                 }
                 
@@ -2844,7 +3022,9 @@
                         console.log('AudioContext resumed, retrying sound');
                         playSound(type);
                     }).catch(e => {
-                        console.log('Audio resume failed:', e);
+                        console.log('Audio resume failed, using HTML5 Audio:', e);
+                        useHTML5Audio = true;
+                        playSoundHTML5(type);
                     });
                     return; // Exit and wait for resume to complete
                 }
@@ -3210,10 +3390,22 @@
         }
 
         function tap() {
+            // Initialize audio on first user interaction (required for mobile and Telegram)
+            if (!audioInitialized) {
+                initAudio();
+                // Force HTML5 Audio for Telegram WebApp
+                if (isTelegramWebApp()) {
+                    useHTML5Audio = true;
+                }
+            }
+            
             // Sound effect
             const soundEnabled = localStorage.getItem('soundEnabled') === 'true';
             if (soundEnabled) {
-                playSound('tap');
+                // Small delay to ensure audio is initialized
+                setTimeout(() => {
+                    playSound('tap');
+                }, 10);
             }
             
             // Haptic feedback
