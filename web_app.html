@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.8 - VIP цены восстановлены, эффекты уменьшены; Исправлено мигание автоботов (убраны автообновления) - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
+<!-- Quantum Nexus v6.7.9 - Исправлено мигание кнопок автоботов при скролле (debounce + проверки состояния) - ИНСТРУКЦИЯ: Выполните git pull и systemctl restart на сервере -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -2627,11 +2627,18 @@
                 // Load shop levels after user data is loaded
                 loadShopLevels();
                 
-                // Force refresh of current shop category if it's open
+                // Force refresh of current shop category if it's open (but not autobot to avoid blinking)
                 setTimeout(() => {
                     const activeBtn = document.querySelector('.shop-cat-btn[style*="linear-gradient"]');
                     if (activeBtn && activeBtn.dataset.category) {
-                        loadShopCategory(activeBtn.dataset.category);
+                        const category = activeBtn.dataset.category;
+                        // Don't reload autobot category automatically (causes blinking)
+                        if (category !== 'autobot' && category !== 'autobot_vip') {
+                            loadShopCategory(category);
+                        } else {
+                            // For autobot, just update buttons once without reloading whole category
+                            updateAutobotShopButtons(data);
+                        }
                     }
                 }, 100);
             })
