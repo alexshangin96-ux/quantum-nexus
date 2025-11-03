@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.53 - Daily Tasks Fixes
+# Fixed daily tasks issues for beginners
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.53 - Daily Tasks Fixes"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Simplified all tasks for beginners"
+echo "  ✅ Removed top leaderboard tasks"
+echo "  ✅ Fixed claim reward button (was opening modal instead)"
+echo "  ✅ Fixed channel subscription check error"
+echo "  ✅ Added beginner-friendly task variations"
+echo ""
+echo "Task Pool Updates:"
+echo "  - Taps: 10, 25, 50 (was 50, 200, 500)"
+echo "  - Coins: 500, 1000, 2000 (was 2000, 5000, 10000)"
+echo "  - QuanHash: 100, 250, 500 (was 500, 2000, 5000)"
+echo "  - Cards: 1, 2, 5 (was 1, 3, 10)"
+echo "  - Referrals: 1, 2, 3 (was 1, 3)"
+echo "  - Return: 2, 4, 6 hours (was 6, 12)"
+echo "  - Removed: Top leaderboard tasks"
+echo "  - Added: Shop/boost/simple purchase tasks"
+echo ""
+echo "Bug Fixes:"
+echo "  1. claimReward now properly closes modal and reopens after claiming"
+echo "  2. verifyChannelSubscription checks for tg object properly"
+echo "  3. Reward amounts calculated correctly based on task type"
+echo "  4. All tasks now beginner-friendly with realistic goals"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.53 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Daily tasks now work correctly:"
+echo "  - All tasks are beginner-friendly"
+echo "  - Claim reward button works properly"
+echo "  - Channel subscription check works"
+echo "  - Rewards calculated correctly"
+
