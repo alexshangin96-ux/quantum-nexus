@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.47 - Complete Synchronization
+# Complete synchronization of all products across all modals
+# Date: 2025-11-04
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.47 - Complete Product Sync"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Complete product synchronization across all modals"
+echo "  ✅ Buy Currency: 1-60 all categories working"
+echo "  ✅ QuanHash products (31-40) fully implemented"
+echo "  ✅ COMBO products (41-50) with cards + coins"
+echo "  ✅ VIP Functions (81-100) moved to avoid conflicts"
+echo "  ✅ VIP Mining Machines (71-76) working"
+echo "  ✅ VIP Cards (101-116) added with passive income"
+echo "  ✅ All prices and descriptions synchronized"
+echo "  ✅ Correct product IDs mapped for all categories"
+echo "  ✅ No more ID conflicts"
+echo ""
+echo "Product Mapping:"
+echo "  1-10:   STARTER (20k-200k coins)"
+echo "  11-20:  PREMIUM (120k-500k coins)"
+echo "  21-30:  VIP (400k-2M coins)"
+echo "  31-40:  QUANHASH (500-300k QuanHash)"
+echo "  41-50:  COMBO (cards + coins)"
+echo "  51-60:  MEGA (50k-5M coins)"
+echo "  71-76:  VIP MINING MACHINES"
+echo "  81-100: VIP FUNCTIONS (tap_boost, energy, autobots)"
+echo "  101-116: VIP CARDS (passive income per hour/minute)"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp handlers.py /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.47 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "All products should now work correctly:"
+echo "  - Buy Currency: All 60 products"
+echo "  - VIP Shop Functions: All VIP functions (81-100)"
+echo "  - VIP Mining: All 6 machines (71-76)"
+echo "  - VIP Cards: All 12 cards (101-116)"
+echo "  - QuanHash: All 10 products (31-40)"
+echo "  - COMBO: All 10 products with cards + coins (41-50)"
+

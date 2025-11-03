@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.44 - Combo: Cards restored, Absolute: 30k cards + 15M coins -->
+<!-- Quantum Nexus v6.7.48 - Fixed VIP button category selection and dynamic VIP mining price calculation -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4095,7 +4095,7 @@
                         <div id="vipButtonRow" style="margin-bottom:15px;">
                             <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
                                 <!-- Premium Button -->
-                                <button id="vipButton" onclick="openVIPModal('tap_boost')" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                <button id="vipButton" onclick="const currentCategory = window.currentShopCategory || 'tap_boost'; openVIPModal(currentCategory)" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
                                     <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
                                     <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
                                     <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
@@ -4227,7 +4227,7 @@
                                         </div>
                                     </div>
                                     
-                                    ${category === 'autobot' || category === 'autobot_vip' ? `
+                                    ${category === 'autobot' ? `
                                         <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⏱️ Длительность:</span>
                                             <span style="color: #fff; font-size: 12px; font-weight: 800;">${formatDuration(item.duration)}</span>
@@ -4263,15 +4263,15 @@
         }
         
         function buyWithStars(category, level, price) {
-            // Map VIP shop items to product IDs
+            // Map VIP shop items to product IDs (using 81-100 to avoid conflict with Buy Currency 21-40)
             const productIdMap = {
-                'tap_boost': {0: 21, 1: 22, 2: 23, 3: 24, 4: 25},
-                'energy_buy': {0: 26, 1: 27, 2: 28, 3: 29, 4: 30},
-                'energy_expand': {0: 31, 1: 32, 2: 33, 3: 34, 4: 35},
-                'autobot': {0: 36, 1: 37, 2: 38, 3: 39, 4: 40}
+                'tap_boost': {0: 81, 1: 82, 2: 83, 3: 84, 4: 85},
+                'energy_buy': {0: 86, 1: 87, 2: 88, 3: 89, 4: 90},
+                'energy_expand': {0: 91, 1: 92, 2: 93, 3: 94, 4: 95},
+                'autobot': {0: 96, 1: 97, 2: 98, 3: 99, 4: 100}
             };
             
-            const productId = productIdMap[category]?.[level] || 21;
+            const productId = productIdMap[category]?.[level] || 81;
             
             // Open Telegram payment (same as in currency purchase)
             const paymentUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
@@ -4358,6 +4358,9 @@
         }
         
         function loadShopCategory(category) {
+            // Store current category globally
+            window.currentShopCategory = category;
+            
             // Update button states
             document.querySelectorAll('.shop-cat-btn').forEach(btn => {
                 const btnCategory = btn.getAttribute('data-category');
@@ -5711,22 +5714,23 @@
             if (!targetElement) return;
             
             // VIP Card definitions - Доход от 300 до 20000 в час, от 15 до 1000 в минуту
+            // Using product IDs 101-116 to avoid conflict with Buy Currency (51-60)
             const vipCardsPerHour = [
-                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 51},
-                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 52},
-                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 53},
-                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 54},
-                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 55},
-                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 56}
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 101},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 102},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 103},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 104},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 105},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 106}
             ];
             
             const vipCardsPerMinute = [
-                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 61},
-                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 62},
-                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 63},
-                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 64},
-                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 65},
-                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 66}
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 111},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 112},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 113},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 114},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 115},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 116}
             ];
             
             const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
