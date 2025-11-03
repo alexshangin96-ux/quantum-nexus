@@ -1,4 +1,4 @@
-# Quantum Nexus v6.7.48 - Fixed VIP button category selection and dynamic VIP mining price calculation
+# Quantum Nexus v6.7.49 - Removed duplicate emoji from invoice title
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
@@ -976,7 +976,7 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             # For Telegram Stars, set provider_token to None
             invoice_result = await context.bot.send_invoice(
                 chat_id=update.effective_chat.id,
-                title=f"💎 {product['title']}",
+                title=product['title'],
                 description=product['description'],
                 payload=f"stars_{user.id}_{product_id}",
                 provider_token=None,  # None for Stars (not empty string!)
