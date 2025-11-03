@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.44 - Combo: Cards restored, Absolute: 30k cards + 15M coins -->
+<!-- Quantum Nexus v6.7.46 - Complete synchronization: All products working correctly -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4263,15 +4263,15 @@
         }
         
         function buyWithStars(category, level, price) {
-            // Map VIP shop items to product IDs
+            // Map VIP shop items to product IDs (using 81-100 to avoid conflict with Buy Currency 21-40)
             const productIdMap = {
-                'tap_boost': {0: 21, 1: 22, 2: 23, 3: 24, 4: 25},
-                'energy_buy': {0: 26, 1: 27, 2: 28, 3: 29, 4: 30},
-                'energy_expand': {0: 31, 1: 32, 2: 33, 3: 34, 4: 35},
-                'autobot': {0: 36, 1: 37, 2: 38, 3: 39, 4: 40}
+                'tap_boost': {0: 81, 1: 82, 2: 83, 3: 84, 4: 85},
+                'energy_buy': {0: 86, 1: 87, 2: 88, 3: 89, 4: 90},
+                'energy_expand': {0: 91, 1: 92, 2: 93, 3: 94, 4: 95},
+                'autobot': {0: 96, 1: 97, 2: 98, 3: 99, 4: 100}
             };
             
-            const productId = productIdMap[category]?.[level] || 21;
+            const productId = productIdMap[category]?.[level] || 81;
             
             // Open Telegram payment (same as in currency purchase)
             const paymentUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
