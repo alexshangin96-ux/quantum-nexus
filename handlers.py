@@ -647,6 +647,41 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     vip_levels[machine_id] = new_level
                     user.mining_vip_levels = json.dumps(vip_levels)
                     vip_message = f"\n\n🏭 VIP Машина улучшена!\n⚡ Уровень {new_level}/50"
+            elif product_id >= 101 and product_id <= 116:
+                # Handle VIP Cards (101-116): VIP cards with passive income
+                vip_cards_map = {
+                    # Per hour cards (101-106)
+                    101: {'income': 300, 'name': 'VIP Silver'},
+                    102: {'income': 800, 'name': 'VIP Gold'},
+                    103: {'income': 1800, 'name': 'VIP Platinum'},
+                    104: {'income': 4000, 'name': 'VIP Diamond'},
+                    105: {'income': 9000, 'name': 'VIP Elite'},
+                    106: {'income': 20000, 'name': 'VIP Ultimate'},
+                    # Per minute cards (111-116)
+                    111: {'income': 15, 'name': 'VIP Nova'},
+                    112: {'income': 50, 'name': 'VIP Quantum'},
+                    113: {'income': 150, 'name': 'VIP Cosmic'},
+                    114: {'income': 350, 'name': 'VIP Stellar'},
+                    115: {'income': 600, 'name': 'VIP Galaxy'},
+                    116: {'income': 1000, 'name': 'VIP Infinity'}
+                }
+                
+                card_info = vip_cards_map.get(product_id)
+                if card_info:
+                    # Add a UserCard for passive income
+                    import random
+                    new_card = UserCard(
+                        user_id=user.id,
+                        card_type='legendary',
+                        income_per_minute=float(card_info['income']) / 60.0 if product_id >= 101 and product_id <= 106 else float(card_info['income']),
+                        card_level=1,
+                        experience=0,
+                        experience_to_next_level=100,
+                        is_active=True
+                    )
+                    db.add(new_card)
+                    income_text = f"{card_info['income']:,} 🪙/час" if product_id >= 101 and product_id <= 106 else f"{card_info['income']:,} 🪙/мин"
+                    vip_message = f"\n\n🎴 VIP Карта получена!\n💎 {card_info['name']}: {income_text}"
             elif product_id >= 31 and product_id <= 40:
                 # Handle QuanHash products (31-40): QuanHash currency from Buy Currency
                 quanhash_to_add = quanhash_products.get(product_id, 0)
@@ -696,6 +731,8 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             if product_id in vip_products_info:
                 vip_name = vip_products_info[product_id]['name']
                 logger.info(f"✅ VIP Function Stars payment successful! User {user_id} bought VIP product {product_id}: {vip_name}")
+            elif product_id >= 101 and product_id <= 116:
+                logger.info(f"✅ VIP Card Stars payment successful! User {user_id} bought VIP card product {product_id}")
             elif product_id >= 31 and product_id <= 40:
                 quanhash_added = quanhash_products.get(product_id, 0)
                 logger.info(f"✅ QuanHash Stars payment successful! User {user_id} bought product {product_id} for {quanhash_added} QuanHash")
@@ -738,6 +775,14 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                 await update.message.reply_text(
                     f"✨ VIP Машина успешна!\n\n"
                     f"💎 Оплачено: {payment.total_amount} ⭐"
+                    + vip_message
+                )
+            elif product_id >= 101 and product_id <= 116:
+                # VIP Cards already have message in vip_message
+                await update.message.reply_text(
+                    f"✨ VIP Карта успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
                     + vip_message
                 )
             else:
@@ -856,7 +901,20 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
         97: {'title': '⭐ VIP Улучшенный Бот', 'description': 'VIP автотап на 12 часов', 'stars': 200, 'coins': 0, 'vip_type': 'autobot'},
         98: {'title': '⭐ VIP Продвинутый Бот', 'description': 'VIP автотап на 2 дня', 'stars': 350, 'coins': 0, 'vip_type': 'autobot'},
         99: {'title': '⭐ VIP Элитный Бот', 'description': 'VIP автотап на 5 дней', 'stars': 500, 'coins': 0, 'vip_type': 'autobot'},
-        100: {'title': '⭐ VIP Премиум Бот', 'description': 'VIP автотап на 10 дней', 'stars': 750, 'coins': 0, 'vip_type': 'autobot'}
+        100: {'title': '⭐ VIP Премиум Бот', 'description': 'VIP автотап на 10 дней', 'stars': 750, 'coins': 0, 'vip_type': 'autobot'},
+        # VIP CARDS for VIP Shop (101-116)
+        101: {'title': '⭐ VIP Silver', 'description': 'VIP карта: +300 🪙/час', 'stars': 100, 'coins': 0, 'vip_type': 'vip_card'},
+        102: {'title': '💎 VIP Gold', 'description': 'VIP карта: +800 🪙/час', 'stars': 250, 'coins': 0, 'vip_type': 'vip_card'},
+        103: {'title': '👑 VIP Platinum', 'description': 'VIP карта: +1,800 🪙/час', 'stars': 500, 'coins': 0, 'vip_type': 'vip_card'},
+        104: {'title': '💍 VIP Diamond', 'description': 'VIP карта: +4,000 🪙/час', 'stars': 1000, 'coins': 0, 'vip_type': 'vip_card'},
+        105: {'title': '🌟 VIP Elite', 'description': 'VIP карта: +9,000 🪙/час', 'stars': 2500, 'coins': 0, 'vip_type': 'vip_card'},
+        106: {'title': '⚡ VIP Ultimate', 'description': 'VIP карта: +20,000 🪙/час', 'stars': 5000, 'coins': 0, 'vip_type': 'vip_card'},
+        111: {'title': '✨ VIP Nova', 'description': 'VIP карта: +15 🪙/мин', 'stars': 500, 'coins': 0, 'vip_type': 'vip_card'},
+        112: {'title': '⚡ VIP Quantum', 'description': 'VIP карта: +50 🪙/мин', 'stars': 1250, 'coins': 0, 'vip_type': 'vip_card'},
+        113: {'title': '🔥 VIP Cosmic', 'description': 'VIP карта: +150 🪙/мин', 'stars': 2500, 'coins': 0, 'vip_type': 'vip_card'},
+        114: {'title': '🎆 VIP Stellar', 'description': 'VIP карта: +350 🪙/мин', 'stars': 5000, 'coins': 0, 'vip_type': 'vip_card'},
+        115: {'title': '🌌 VIP Galaxy', 'description': 'VIP карта: +600 🪙/мин', 'stars': 10000, 'coins': 0, 'vip_type': 'vip_card'},
+        116: {'title': '🌠 VIP Infinity', 'description': 'VIP карта: +1,000 🪙/мин', 'stars': 20000, 'coins': 0, 'vip_type': 'vip_card'}
     }
     
     product = products.get(product_id)

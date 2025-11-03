@@ -5711,22 +5711,23 @@
             if (!targetElement) return;
             
             // VIP Card definitions - Доход от 300 до 20000 в час, от 15 до 1000 в минуту
+            // Using product IDs 101-116 to avoid conflict with Buy Currency (51-60)
             const vipCardsPerHour = [
-                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 51},
-                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 52},
-                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 53},
-                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 54},
-                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 55},
-                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 56}
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 101},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 102},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 103},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 104},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 105},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 106}
             ];
             
             const vipCardsPerMinute = [
-                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 61},
-                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 62},
-                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 63},
-                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 64},
-                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 65},
-                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 66}
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 111},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 112},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 113},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 114},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 115},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 116}
             ];
             
             const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
