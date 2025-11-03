@@ -2546,10 +2546,10 @@ def get_daily_tasks():
                     ('Пригласите 2 друга', 2),
                     ('Пригласите 3 друга', 3),
                 ]},
-                {'emoji': '🎯', 'base_reward': 3000, 'descriptions': [
-                    ('Откройте магазин', 1),
-                    ('Используйте буст', 1),
-                    ('Купите любой товар', 1),
+                {'emoji': '🏆', 'base_reward': 3000, 'descriptions': [
+                    ('Получите VIP уровень 1', 1),
+                    ('Получите 100 опыта', 100),
+                    ('Заработайте 10,000 всего', 10000),
                 ]},
                 {'emoji': '🌙', 'base_reward': 3500, 'descriptions': [
                     ('Вернитесь через 2 часа', 2),
@@ -2616,10 +2616,15 @@ def get_daily_tasks():
                     else:
                         progress = 0
                         completed = False
-                elif 'Откройте магазин' in task_desc or 'Используйте буст' in task_desc or 'Купите любой товар' in task_desc:
-                    # Simple completion tasks - just mark as completed if user has activity
-                    progress = 1
-                    completed = True
+                elif 'VIP уровень' in task_desc:
+                    progress = min(user.vip_level, target)
+                    completed = user.vip_level >= target
+                elif 'опыта' in task_desc:
+                    progress = min(int(user.experience), target)
+                    completed = user.experience >= target
+                elif 'всего' in task_desc and target >= 10000:
+                    progress = min(int(user.total_earned), target)
+                    completed = user.total_earned >= target
                 else:
                     progress = 0
                     completed = False
