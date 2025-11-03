@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.30 - Enhanced Referral System: Increased bonuses (500/2000), beautiful detailed UI, premium indicators -->
+<!-- Quantum Nexus v6.7.31 - Referral System: Equal bonuses (500/2000), VIP-style header, link moved to top, full-width design -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1546,85 +1546,89 @@
 
     <!-- Referrals Modal -->
     <div id="referralsModal" class="modal">
-        <div class="modal-content" style="max-width: 550px; width: 95vw; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 16px 16px 0 0; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); pointer-events: none;"></div>
-                <div style="display: flex; align-items: center; gap: 12px; position: relative; z-index: 1;">
-                    <div style="font-size: 32px; animation: pulse 2s ease-in-out infinite;">👥</div>
-                    <div style="flex: 1;">
-                        <div class="modal-title" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">Реферальная система</div>
-                        <div style="font-size: 13px; color: rgba(255,255,255,0.9); margin-top: 4px;">Приглашайте друзей и зарабатывайте!</div>
+        <div class="modal-content" style="max-width: 580px; width: 98vw; max-height: 90vh; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; backdrop-filter: blur(20px);">
+            <!-- VIP Style Header -->
+            <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 24px 50px 24px 24px; border-radius: 22px 22px 0 0; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 14px;">
+                    <div style="font-size: 40px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 8px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">👥</div>
+                    <div>
+                        <h2 style="font-size: 26px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">РЕФЕРАЛЬНАЯ СИСТЕМА</h2>
+                        <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 700;">Приглашайте друзей и зарабатывайте!</div>
                     </div>
                 </div>
-                <button class="close-btn" onclick="closeModal('referralsModal')" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: bold; transition: all 0.3s; z-index: 2;">✕</button>
+                <button class="close-btn" onclick="closeModal('referralsModal')" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.3); color: #000; border: 2px solid rgba(0,0,0,0.2); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s;">✕</button>
             </div>
             
-            <div style="padding: 20px; overflow-y: auto; flex: 1;">
-                <!-- Benefits Banner -->
-                <div style="background: linear-gradient(135deg, rgba(76,222,128,0.2) 0%, rgba(34,197,94,0.15) 100%); border: 2px solid rgba(76,222,128,0.4); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(76,222,128,0.2);">
-                    <div style="font-size: 16px; font-weight: 800; color: #10b981; margin-bottom: 16px; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">💰 Система бонусов</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <!-- Regular User Bonus -->
-                        <div style="text-align: center; padding: 14px; background: rgba(102, 126, 234, 0.15); border: 2px solid rgba(102, 126, 234, 0.4); border-radius: 14px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 32px; margin-bottom: 6px;">✅</div>
-                            <div style="font-size: 13px; font-weight: 700; color: #a5b4fc; margin-bottom: 4px;">Обычный пользователь</div>
-                            <div style="font-size: 16px; font-weight: 900; color: #667eea; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(102,126,234,0.3);">500 🪙</div>
-                            <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8);">+ 5% пассивный доход</div>
+            <div style="padding: 24px; overflow-y: auto; max-height: calc(90vh - 200px);">
+                <!-- Referral Link Section - PROMINENT -->
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 16px; font-weight: 900; color: #ffd700; margin-bottom: 12px; text-align: center; text-shadow: 0 2px 8px rgba(255,215,0,0.5);">📎 Ваша реферальная ссылка</div>
+                    <div id="refLink" style="background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,200,0,0.15)); border: 2px solid rgba(255,215,0,0.5); border-radius: 16px; padding: 18px; font-size: 13px; color: #ffd700; word-break: break-all; font-weight: 700; margin-bottom: 16px; text-align: center; box-shadow: 0 4px 16px rgba(255,215,0,0.3);">-</div>
+                    <button onclick="copyRefLink()" style="width: 100%; padding: 18px; font-size: 17px; font-weight: 900; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 2px solid #ffd700; border-radius: 16px; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(255,215,0,0.5); text-shadow: 0 2px 4px rgba(0,0,0,0.1);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(255,215,0,0.7)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 6px 20px rgba(255,215,0,0.5)'">
+                        📋 Копировать ссылку
+                    </button>
+                </div>
+
+                <!-- System of Bonuses -->
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 18px; font-weight: 900; color: #10b981; margin-bottom: 16px; text-align: center; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 Система бонусов</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                        <!-- Regular User -->
+                        <div style="text-align: center; padding: 18px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.1)); border: 2px solid rgba(102, 126, 234, 0.5); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 4px 16px rgba(102,126,234,0.3);">
+                            <div style="font-size: 40px; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(102,126,234,0.5));">✅</div>
+                            <div style="font-size: 14px; font-weight: 800; color: #a5b4fc; margin-bottom: 6px;">Обычный</div>
+                            <div style="font-size: 20px; font-weight: 900; color: #667eea; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(102,126,234,0.4);">500 🪙</div>
+                            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9);">Каждый получает</div>
+                            <div style="font-size: 11px; font-weight: 600; color: #10b981; margin-top: 4px;">+ 5% пассивный</div>
                         </div>
                         
-                        <!-- Premium User Bonus -->
-                        <div style="text-align: center; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,200,0,0.15) 100%); border: 2px solid rgba(255,215,0,0.5); border-radius: 14px; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(255,215,0,0.2);">
-                            <div style="font-size: 32px; margin-bottom: 6px;">⭐</div>
-                            <div style="font-size: 13px; font-weight: 700; color: #ffd700; margin-bottom: 4px;">Premium пользователь</div>
-                            <div style="font-size: 16px; font-weight: 900; color: #ffd700; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(255,215,0,0.3);">2000 🪙</div>
-                            <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9);">+ 10% пассивный доход</div>
+                        <!-- Premium User -->
+                        <div style="text-align: center; padding: 18px; background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,200,0,0.2)); border: 2px solid rgba(255,215,0,0.7); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(255,215,0,0.4);">
+                            <div style="font-size: 40px; margin-bottom: 8px; filter: drop-shadow(0 2px 6px rgba(255,215,0,0.6));">⭐</div>
+                            <div style="font-size: 14px; font-weight: 800; color: #ffd700; margin-bottom: 6px;">Premium</div>
+                            <div style="font-size: 20px; font-weight: 900; color: #ffd700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(255,215,0,0.4);">2000 🪙</div>
+                            <div style="font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.95);">Каждый получает</div>
+                            <div style="font-size: 11px; font-weight: 600; color: #ffd700; margin-top: 4px;">+ 10% пассивный</div>
                         </div>
                     </div>
                     
-                    <!-- Info Box -->
-                    <div style="margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.5; text-align: center;">
-                            💡 Реферал получает полный бонус, вы получаете 50% от бонуса<br>
-                            📈 Пассивный доход начисляется автоматически от заработка реферала
+                    <div style="padding: 14px; background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px;">
+                        <div style="font-size: 12px; color: #ffd700; line-height: 1.6; text-align: center; font-weight: 700;">
+                            🎁 Оба получают одинаковый бонус! • 📈 Пассивный доход начисляется автоматически
                         </div>
                     </div>
                 </div>
 
                 <!-- Main Stats -->
-                <div class="stats-window" style="background: rgba(102, 126, 234, 0.1); border: 2px solid rgba(102, 126, 234, 0.3); border-radius: 16px; padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(102,126,234,0.15);">
-                    <div class="stats-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="stats-label" style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);">Всего рефералов</span>
-                        <span class="stats-value" id="refCount" style="font-size: 18px; font-weight: 900; color: #667eea; text-shadow: 0 2px 4px rgba(102,126,234,0.3);">0</span>
+                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1)); border: 2px solid rgba(102, 126, 234, 0.4); border-radius: 16px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(102,126,234,0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.95);">Всего рефералов</span>
+                        <span id="refCount" style="font-size: 20px; font-weight: 900; color: #667eea; text-shadow: 0 2px 8px rgba(102,126,234,0.4);">0</span>
                     </div>
-                    <div class="stats-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="stats-label" style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);">⭐ Premium:</span>
-                        <span class="stats-value" id="refPremiumCount" style="font-size: 16px; font-weight: 800; color: #ffd700; text-shadow: 0 2px 4px rgba(255,215,0,0.3);">0</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.95);">⭐ Premium:</span>
+                        <span id="refPremiumCount" style="font-size: 18px; font-weight: 900; color: #ffd700; text-shadow: 0 2px 8px rgba(255,215,0,0.4);">0</span>
                     </div>
-                    <div class="stats-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="stats-label" style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);">✅ Обычных:</span>
-                        <span class="stats-value" id="refRegularCount" style="font-size: 16px; font-weight: 800; color: #10b981; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">0</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <span style="font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.95);">✅ Обычных:</span>
+                        <span id="refRegularCount" style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.4);">0</span>
                     </div>
-                    <div class="stats-row" style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 2px solid rgba(102,126,234,0.3);">
-                        <span class="stats-label" style="font-size: 15px; font-weight: 800; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">💰 Общий доход</span>
-                        <span class="stats-value" id="refIncome" style="font-size: 20px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">0 🪙</span>
+                    <div style="border-top: 2px solid rgba(102,126,234,0.4); padding-top: 16px; margin-top: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 17px; font-weight: 900; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.5);">💰 Общий доход</span>
+                            <span id="refIncome" style="font-size: 24px; font-weight: 900; color: #10b981; text-shadow: 0 2px 12px rgba(16,185,129,0.6);">0 🪙</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Referral List -->
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <!-- Referrals List -->
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 17px; font-weight: 900; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
                         📊 <span>Ваши рефералы</span>
                     </div>
-                    <div id="referralsList" style="max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px;">
-                        <div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5); font-size: 14px;">Пока нет рефералов</div>
+                    <div id="referralsList" style="max-height: 280px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px;">
+                        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5); font-size: 15px; font-weight: 600;">Пока нет рефералов</div>
                     </div>
-                </div>
-
-                <!-- Referral Link -->
-                <div style="margin-bottom: 20px;">
-                    <div style="margin-bottom: 12px; font-weight: 700; font-size: 14px; color: #fff;">📎 Ваша реферальная ссылка:</div>
-                    <div class="referral-link" id="refLink" style="background: rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.4); border-radius: 12px; padding: 14px; font-size: 12px; color: #a5b4fc; word-break: break-all; font-weight: 600; margin-bottom: 12px;">-</div>
-                    <button class="btn" onclick="copyRefLink()" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 12px; color: #fff; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(102,126,234,0.4);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.4)'">📋 Копировать ссылку</button>
                 </div>
             </div>
         </div>
@@ -7225,6 +7229,8 @@
             
             return html;
         }
+        
+        // v6.7.31 - Referral System: Equal bonuses for both (500/2000), VIP header style, link on top, full-width design
         
         // v6.7.30 - Enhanced Referral System: Increased bonuses (500 regular/2000 premium), detailed premium indicators, beautiful cards
         

@@ -76,15 +76,15 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     db_user.referred_by = referrer.id
                     referrer.referrals_count += 1
                     
-                    # Give bonus based on premium status
+                    # Give bonus based on premium status - EQUAL bonuses for both
                     if is_premium:
-                        db_user.coins += REFERRAL_PREMIUM_BONUS
-                        referrer.coins += REFERRAL_PREMIUM_BONUS // 2
-                        logger.info(f"Premium user {db_user.telegram_id} was referred by {referrer.telegram_id} - bonus: {REFERRAL_PREMIUM_BONUS}")
+                        db_user.coins += REFERRAL_PREMIUM_BONUS  # Referral gets full bonus
+                        referrer.coins += REFERRAL_PREMIUM_BONUS  # Referrer gets FULL bonus too
+                        logger.info(f"Premium user {db_user.telegram_id} was referred by {referrer.telegram_id} - both get {REFERRAL_PREMIUM_BONUS}")
                     else:
-                        db_user.coins += REFERRAL_BONUS
-                        referrer.coins += REFERRAL_BONUS // 2
-                        logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id} - bonus: {REFERRAL_BONUS}")
+                        db_user.coins += REFERRAL_BONUS  # Referral gets full bonus
+                        referrer.coins += REFERRAL_BONUS  # Referrer gets FULL bonus too
+                        logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id} - both get {REFERRAL_BONUS}")
         
         # Update premium status for existing users
         else:
