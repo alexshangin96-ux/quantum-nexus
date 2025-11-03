@@ -14,6 +14,8 @@ echo "  ✅ Fixed overflow on hover"
 echo "  ✅ Proper box-sizing"
 echo "  ✅ No scale transform causing overflow"
 echo "  ✅ Column layout like referrals"
+echo "  ✅ Larger cards (20px padding, 28px emoji)"
+echo "  ✅ Better spacing and fonts"
 echo ""
 
 cd /root/quantum-nexus
