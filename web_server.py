@@ -2759,14 +2759,13 @@ def verify_channel_subscription():
             with get_db() as db:
                 user = db.query(User).filter_by(telegram_id=user_id).first()
                 if user:
-                    # Mark as subscribed and give reward
+                    # Mark as subscribed (but don't give reward here - that's done in claim_task)
                     if not user.channel_subscribed:
-                        print(f"Giving reward to user {user_id}")
+                        print(f"Marking user {user_id} as subscribed to channel")
                         user.channel_subscribed = True
                         user.channel_subscribed_at = datetime.datetime.utcnow()
-                        user.coins += 3000  # Give reward for subscription
                         db.commit()
-                        print(f"Reward given, new balance: {user.coins}")
+                        print(f"User marked as subscribed")
                     return jsonify({'success': True, 'subscribed': True})
                 else:
                     print(f"User {user_id} not found in database")
