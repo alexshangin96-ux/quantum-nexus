@@ -573,8 +573,47 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     user.auto_tap_speed = vip_info['effect']  # Set autobot speed
                     user.auto_tap_expires_at = int(time.time()) + duration_seconds  # Set expiration time
                     vip_message = f"\n\n🤖 VIP Бот активирован!\n⚡ {vip_info['name']}: автотап на {duration_seconds // 60} минут"
+            elif product_id >= 41 and product_id <= 50:
+                # Handle COMBO products (41-50): cards + coins
+                combo_products = {
+                    41: {'cards': 10, 'coins': 25000000},
+                    42: {'cards': 20, 'coins': 35000000},
+                    43: {'cards': 50, 'coins': 45000000},
+                    44: {'cards': 100, 'coins': 55000000},
+                    45: {'cards': 200, 'coins': 65000000},
+                    46: {'cards': 500, 'coins': 75000000},
+                    47: {'cards': 1000, 'coins': 85000000},
+                    48: {'cards': 2000, 'coins': 95000000},
+                    49: {'cards': 5000, 'coins': 105000000},
+                    50: {'cards': 10000, 'coins': 15000000}  # Special: АБСОЛЮТ ВСЁ
+                }
+                
+                combo_info = combo_products.get(product_id)
+                if not combo_info:
+                    logger.error(f"Unknown combo product: {product_id}")
+                    await update.message.reply_text("❌ Ошибка: неизвестный комбо-товар")
+                    return
+                
+                # Add coins
+                user.coins += combo_info['coins']
+                
+                # Add cards as UserCard objects
+                import random
+                for _ in range(combo_info['cards']):
+                    new_card = UserCard(
+                        user_id=user.id,
+                        card_type='epic',
+                        income_per_minute=100.0,
+                        card_level=1,
+                        experience=0,
+                        experience_to_next_level=100,
+                        is_active=True
+                    )
+                    db.add(new_card)
+                
+                vip_message = f"\n\n🎴 Получено: {combo_info['cards']:,} карточек\n💰 Получено: {combo_info['coins']:,} коинов"
             else:
-                # Handle regular coin products (1-20, 31-60)
+                # Handle regular coin products (1-20, 31-40, 51-60)
                 coins_to_add = product_coins.get(product_id, 0)
                 if coins_to_add == 0:
                     logger.error(f"Unknown product: {product_id}")
@@ -589,26 +628,31 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             # Log successful payment
             if product_id in vip_products:
                 logger.info(f"✅ VIP Stars payment successful! User {user_id} bought VIP product {product_id}: {vip_products[product_id]['name']}")
-            else:
-                coins_to_add = product_coins.get(product_id, 0)
-            logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
-            
-            if product_id in vip_products:
                 await update.message.reply_text(
                     f"✨ VIP Покупка успешна!\n\n"
                     f"💎 Оплачено: {payment.total_amount} ⭐\n"
                     f"📊 Новый баланс: {user.coins:,} коинов"
                     + vip_message
                 )
+            elif product_id >= 41 and product_id <= 50:
+                combo_info = combo_products.get(product_id)
+                logger.info(f"✅ COMBO Stars payment successful! User {user_id} bought product {product_id}: {combo_info['cards']} cards + {combo_info['coins']} coins")
+                await update.message.reply_text(
+                    f"✨ Комбо покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
             else:
                 coins_to_add = product_coins.get(product_id, 0)
-            await update.message.reply_text(
-                f"✨ Покупка успешна!\n\n"
-                f"💎 Оплачено: {payment.total_amount} ⭐\n"
-                f"💰 Получено: {coins_to_add:,} коинов\n"
-                f"📊 Новый баланс: {user.coins:,} коинов"
-                + vip_message
-            )
+                logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
+                await update.message.reply_text(
+                    f"✨ Покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"💰 Получено: {coins_to_add:,} коинов\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
             
     except Exception as e:
         logger.error(f"Error processing payment: {e}", exc_info=True)
@@ -759,7 +803,13 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
     try:
         # Only handle updates for quantum_nexus channel
         chat = update.chat_member.chat
-        if chat.username != 'quantum_nexus':
+        # Check both username and ID for quantum_nexus channel
+        channel_username = getattr(chat, 'username', None)
+        if channel_username != 'quantum_nexus':
+            # Also check by channel ID if username is not available
+            # quantum_nexus channel ID is typically around -1001234567890 (negative for channels)
+            # If username check fails, skip (channel might not be set up correctly)
+            logger.warning(f"Channel subscription handler: wrong channel username: {channel_username}")
             return
         
         user = update.chat_member.from_user

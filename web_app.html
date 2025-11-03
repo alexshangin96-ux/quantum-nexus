@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.56 - Daily Tasks Complete Fixes -->
+<!-- Quantum Nexus v6.7.57 - Fixed return timer, cards tracking, penalty handler -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7163,35 +7163,40 @@
                     
                     list.innerHTML = html;
                     
-                    // Start countdown timers for return tasks
-                    data.tasks.forEach((task, index) => {
-                        if (task.return_task && task.last_active && !task.completed) {
-                            const timerEl = document.getElementById('returnTimer_' + task.id);
-                            if (timerEl) {
-                                function updateReturnTimer() {
-                                    if (!timerEl.parentElement) return; // Element removed
+                    // Start countdown timers for return tasks - use setTimeout to ensure DOM is ready
+                    setTimeout(() => {
+                        data.tasks.forEach((task, index) => {
+                            if (task.return_task && !task.completed) {
+                                const timerEl = document.getElementById('returnTimer_' + task.id);
+                                if (timerEl && task.last_active) {
+                                    const lastActiveTime = new Date(task.last_active).getTime();
+                                    const targetHours = task.target || 2;
                                     
-                                    const lastActive = new Date(task.last_active);
-                                    const now = new Date();
-                                    const hoursPassed = (now - lastActive) / (1000 * 60 * 60);
-                                    const hoursNeeded = task.target;
-                                    const hoursRemaining = Math.max(0, hoursNeeded - hoursPassed);
-                                    
-                                    if (hoursRemaining > 0) {
-                                        const hours = Math.floor(hoursRemaining);
-                                        const minutes = Math.floor((hoursRemaining - hours) * 60);
-                                        const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
-                                        timerEl.textContent = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                                    } else {
-                                        timerEl.textContent = '✅ Задание выполнено!';
-                                        timerEl.style.color = '#10b981';
+                                    function updateReturnTimer() {
+                                        if (!timerEl.parentElement) return; // Element removed
+                                        
+                                        const now = new Date().getTime();
+                                        const hoursPassed = (now - lastActiveTime) / (1000 * 60 * 60);
+                                        const hoursRemaining = Math.max(0, targetHours - hoursPassed);
+                                        
+                                        if (hoursRemaining > 0) {
+                                            const hours = Math.floor(hoursRemaining);
+                                            const minutes = Math.floor((hoursRemaining - hours) * 60);
+                                            const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
+                                            timerEl.textContent = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                        } else {
+                                            timerEl.textContent = '✅ Задание выполнено!';
+                                            timerEl.style.color = '#10b981';
+                                        }
                                     }
+                                    updateReturnTimer();
+                                    setInterval(updateReturnTimer, 1000);
+                                } else if (timerEl && !task.last_active) {
+                                    timerEl.textContent = '⏳ Начните выполнение задания';
                                 }
-                                updateReturnTimer();
-                                setInterval(updateReturnTimer, 1000);
                             }
-                        }
-                    });
+                        });
+                    }, 100);
                 } else {
                     list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
                 }
