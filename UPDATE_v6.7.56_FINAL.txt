@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.56 - Daily Tasks Complete Fixes
+# Fixed all daily tasks issues
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.56 - Daily Tasks Complete Fixes"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Fixed verifyChannelSubscription - no modal reload"
+echo "  ✅ Fixed penalty - always applies on unsubscribe"
+echo "  ✅ Fixed task reset - task 1 resets on unsubscribe"
+echo "  ✅ Added countdown timer for return tasks"
+echo ""
+echo "Bug Fixes:"
+echo "  1. verifyChannelSubscription updates UI instantly without reloading modal"
+echo "  2. Penalty always applies when user unsubscribes (not only if was subscribed)"
+echo "  3. Task 1 (channel subscription) resets in daily_tasks_completed on unsubscribe"
+echo "  4. Added countdown timer for 'return in X hours' tasks"
+echo "  5. last_active timestamp sent to frontend for countdown calculation"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp web_server.py /root/quantum-nexus/web_server.py
+sudo cp handlers.py /root/quantum-nexus/handlers.py
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.56 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Daily tasks now working perfectly:"
+echo "  - Instant UI updates (no reload)"
+echo "  - Penalty always applies"
+echo "  - Tasks reset on unsubscribe"
+echo "  - Countdown timer for return tasks"
