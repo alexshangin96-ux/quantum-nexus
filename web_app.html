@@ -5140,13 +5140,13 @@
             document.body.appendChild(modal);
             loadMiningCategory('coins');
         }
-        // VIP Mining Cards - Доход 500 QuanHash
+        // VIP Mining Cards - Доход от 50 до 500 QuanHash
         const vipMiningCards = [
-            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 50, baseHashPerHour: 500, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
-            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 100, baseHashPerHour: 500, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
-            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 150, baseHashPerHour: 500, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
-            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 250, baseHashPerHour: 500, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
-            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 400, baseHashPerHour: 500, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
+            {id: 'vip_quantum_prime', name: 'Quantum Prime', emoji: '⚡', basePrice: 50, baseHashPerHour: 50, rarity: 'vip_prime', productId: 71, description: 'Элитный квантовый майнер'},
+            {id: 'vip_solar_core', name: 'Solar Core', emoji: '☀️', basePrice: 100, baseHashPerHour: 100, rarity: 'vip_solar', productId: 72, description: 'Солнечное ядро энергии'},
+            {id: 'vip_black_hole', name: 'Black Hole', emoji: '🕳️', basePrice: 150, baseHashPerHour: 200, rarity: 'vip_blackhole', productId: 73, description: 'Чёрная дыра энергии'},
+            {id: 'vip_nebula', name: 'Nebula Ферма', emoji: '🌫️', basePrice: 250, baseHashPerHour: 300, rarity: 'vip_nebula', productId: 74, description: 'Ферма в туманности'},
+            {id: 'vip_multiverse', name: 'Multiverse Станция', emoji: '🌐', basePrice: 400, baseHashPerHour: 400, rarity: 'vip_multiverse', productId: 75, description: 'Мультивселенная'},
             {id: 'vip_infinity', name: 'Infinity Альянс', emoji: '♾️', basePrice: 750, baseHashPerHour: 500, rarity: 'vip_infinity', productId: 76, description: 'Бесконечный альянс'}
         ];
         
@@ -5710,23 +5710,23 @@
             const targetElement = vipCardsContent || vipCardsSection;
             if (!targetElement) return;
             
-            // VIP Card definitions - Доход от 300 в час, от 10 в минуту
+            // VIP Card definitions - Доход от 300 до 20000 в час, от 15 до 1000 в минуту
             const vipCardsPerHour = [
                 {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 51},
-                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 450, rarity: 'vip_gold', productId: 52},
-                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 675, rarity: 'vip_platinum', productId: 53},
-                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 1012, rarity: 'vip_diamond', productId: 54},
-                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 1518, rarity: 'vip_elite', productId: 55},
-                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 2277, rarity: 'vip_ultimate', productId: 56}
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 52},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 53},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 54},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 55},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 56}
             ];
             
             const vipCardsPerMinute = [
-                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 10, rarity: 'vip_nova', productId: 61},
-                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 12, rarity: 'vip_quantum', productId: 62},
-                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 14, rarity: 'vip_cosmic', productId: 63},
-                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 17, rarity: 'vip_stellar', productId: 64},
-                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 20, rarity: 'vip_galaxy', productId: 65},
-                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 24, rarity: 'vip_infinity', productId: 66}
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 61},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 62},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 63},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 64},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 65},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 66}
             ];
             
             const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
