@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.52 - Daily Tasks Redesign
+# Complete redesign of daily tasks system with channel subscription
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.52 - Daily Tasks Redesign"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Complete redesign of daily tasks modal (VIP header style)"
+echo "  ✅ 24-hour countdown timer for task refresh"
+echo "  ✅ Permanent channel subscription task with validation"
+echo "  ✅ 7 dynamic tasks that rotate daily for a year"
+echo "  ✅ Real-time subscription/unsubscription tracking"
+echo "  ✅ Penalty system: -10,000 coins for unsubscribing"
+echo ""
+echo "Features:"
+echo "  1. Beautiful VIP-style modal with layered effect background"
+echo "  2. Countdown timer showing hours until task refresh"
+echo "  3. Channel subscription task @quantum_nexus (3000 coins reward)"
+echo "  4. Dynamic tasks: taps, coins, QuanHash, cards, referrals, leaderboard, return"
+echo "  5. Real validation via Telegram Bot API"
+echo "  6. Automatic penalty on unsubscription with notification"
+echo "  7. Daily rotation based on day of year for consistency"
+echo ""
+echo "Technical Details:"
+echo "  - New DB columns: channel_subscribed, channel_subscribed_at"
+echo "  - New API endpoint: /api/verify_channel_subscription"
+echo "  - New handler: channel_subscription_handler in bot.py"
+echo "  - Task generation uses day_of_year for same-day consistency"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Apply database migration..."
+sudo -u postgres psql -d quantum_nexus -f ADD_CHANNEL_SUBSCRIPTION_COLUMNS.sql
+
+echo "Step 3: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp web_server.py /root/quantum-nexus/
+sudo cp handlers.py /root/quantum-nexus/
+sudo cp bot.py /root/quantum-nexus/
+
+echo "Step 4: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 5: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.52 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Daily Tasks System is now live with:"
+echo "  - Beautiful VIP-style interface"
+echo "  - Channel subscription with validation"
+echo "  - 7 dynamic rotating tasks"
+echo "  - Penalty system for unsubscribing"
+echo "  - 24-hour automatic refresh"
+
