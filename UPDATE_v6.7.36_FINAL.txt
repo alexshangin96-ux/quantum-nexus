@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.36 - Buy Currency Fixed
+# Full-width cards, proper box-sizing, fixed overflow
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.36 - Buy Currency Fixed"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Full-width cards layout"
+echo "  ✅ Fixed overflow on hover"
+echo "  ✅ Proper box-sizing"
+echo "  ✅ No scale transform causing overflow"
+echo "  ✅ Column layout like referrals"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.36 deployed successfully!"
+echo "=================================================="
+
