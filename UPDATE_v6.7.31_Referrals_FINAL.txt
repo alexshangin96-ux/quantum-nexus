@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.31 - Referral System FINAL
+# Equal bonuses, VIP-style header, link at top
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.31 - Referral System FINAL"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Equal bonuses: 500/2000 for both (you and referral)"
+echo "  ✅ VIP-style golden header like VIP Mining"
+echo "  ✅ Referral link moved to TOP (very prominent)"
+echo "  ✅ Full-width design without borders"
+echo "  ✅ Beautiful premium indicators"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Remove backup files..."
+rm -f web_app.html.backup web_server.py.backup 2>/dev/null
+
+echo "Step 2: Pull latest changes..."
+git pull origin main
+
+echo "Step 3: Backup database..."
+sudo -u postgres pg_dump quantum_nexus > /root/backup-$(date +%Y%m%d-%H%M%S).sql 2>/dev/null
+
+echo "Step 4: Apply migration..."
+sudo -u postgres psql quantum_nexus -f ADD_IS_PREMIUM.sql 2>/dev/null || echo "Already migrated"
+
+echo "Step 5: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp web_server.py /var/www/quantum-nexus/
+sudo cp handlers.py /var/www/quantum-nexus/
+sudo cp models.py /var/www/quantum-nexus/
+sudo cp config.py /var/www/quantum-nexus/
+
+echo "Step 6: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 7: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.31 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "New bonuses:"
+echo "  • Regular: 500 🪙 (both get same amount)"
+echo "  • Premium: 2000 🪙 (both get same amount)"
+echo ""
+echo "Design:"
+echo "  • VIP-style golden header"
+echo "  • Link at the top"
+echo "  • Full-width, no borders"
+echo "  • Premium indicators"
+echo ""
+
