@@ -2493,6 +2493,7 @@ def get_daily_tasks():
     try:
         import random
         import datetime
+        import json
         
         data = request.json
         user_id = data.get('user_id')
@@ -2508,6 +2509,11 @@ def get_daily_tasks():
             
             # Count user cards
             cards_count = db.query(UserCard).filter_by(user_id=user.id).count()
+            
+            # Get already completed tasks for today
+            today_str = datetime.date.today().isoformat()
+            completed_tasks = json.loads(user.daily_tasks_completed or '{}')
+            today_completed = completed_tasks.get(today_str, [])
             
             # Dynamic tasks pool for a year (365 days worth of variety)
             today = datetime.date.today()
@@ -2560,6 +2566,7 @@ def get_daily_tasks():
             
             # Task 1: Permanent channel subscription
             is_channel_subscribed = getattr(user, 'channel_subscribed', False)
+            task_1_claimed = 1 in today_completed
             tasks.append({
                 'id': 1,
                 'name': 'Подписка на канал',
@@ -2569,6 +2576,7 @@ def get_daily_tasks():
                 'progress': 1 if is_channel_subscribed else 0,
                 'target': 1,
                 'completed': is_channel_subscribed,
+                'claimed': task_1_claimed,
                 'type': 'channel_subscription',
                 'channel_url': 'https://t.me/quantum_nexus',
                 'channel_name': '@quantum_nexus'
@@ -2579,6 +2587,9 @@ def get_daily_tasks():
                 desc_data = random.choice(task_template['descriptions'])
                 task_desc, target = desc_data
                 reward = task_template['base_reward']
+                
+                # Check if task was already claimed
+                task_claimed = idx in today_completed
                 
                 # Calculate progress based on task type
                 if 'тапов' in task_desc:
@@ -2621,7 +2632,8 @@ def get_daily_tasks():
                     'reward': reward,
                     'progress': progress,
                     'target': target,
-                    'completed': completed
+                    'completed': completed,
+                    'claimed': task_claimed
                 })
             
             return jsonify({'tasks': tasks})
@@ -2635,6 +2647,7 @@ def claim_task():
     try:
         import random
         import datetime
+        import json
         
         data = request.json
         user_id = data.get('user_id')
@@ -2648,6 +2661,15 @@ def claim_task():
             
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
+            
+            # Check if task was already completed today
+            today_str = datetime.date.today().isoformat()
+            completed_tasks = json.loads(user.daily_tasks_completed or '{}')
+            today_completed = completed_tasks.get(today_str, [])
+            
+            if task_id in today_completed:
+                print(f"Task {task_id} already completed today by user {user_id}")
+                return jsonify({'success': False, 'error': 'Task already completed today'})
             
             # Regenerate tasks to get the reward for this specific task
             today = datetime.date.today()
@@ -2680,12 +2702,20 @@ def claim_task():
             else:
                 reward = 0
             
-            # Add reward
+            # Add reward and mark task as completed
             user.coins += reward
+            today_completed.append(task_id)
+            completed_tasks[today_str] = today_completed
+            user.daily_tasks_completed = json.dumps(completed_tasks)
             db.commit()
+            
+            print(f"Task {task_id} claimed by user {user_id}, reward: {reward}, new balance: {user.coins}")
             
             return jsonify({'success': True, 'reward': reward})
     except Exception as e:
+        import traceback
+        print(f"Claim task error: {e}")
+        print(traceback.format_exc())
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/verify_channel_subscription', methods=['POST'])
@@ -2704,22 +2734,26 @@ def verify_channel_subscription():
         if not user_id:
             return jsonify({'success': False, 'error': 'Missing user_id'})
         
-        # Channel ID from the web search: @quantum_nexus
-        # Note: Channel username is 'quantum_nexus'
-        
         # Use async to check channel membership
         async def check_membership():
-            bot = Bot(token=BOT_TOKEN)
             try:
+                bot = Bot(token=BOT_TOKEN)
                 member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
                 # Check if user is a member, administrator, or creator
+                print(f"Channel membership check for user {user_id}: {member.status}")
                 return member.status in ['member', 'administrator', 'creator']
             except Exception as e:
                 print(f"Channel membership check error: {e}")
                 return False
         
         # Run async function
-        is_subscribed = asyncio.run(check_membership())
+        try:
+            is_subscribed = asyncio.run(check_membership())
+        except Exception as e:
+            print(f"Async run error: {e}")
+            is_subscribed = False
+        
+        print(f"User {user_id} subscription status: {is_subscribed}")
         
         if is_subscribed:
             with get_db() as db:
@@ -2727,18 +2761,24 @@ def verify_channel_subscription():
                 if user:
                     # Mark as subscribed and give reward
                     if not user.channel_subscribed:
+                        print(f"Giving reward to user {user_id}")
                         user.channel_subscribed = True
                         user.channel_subscribed_at = datetime.datetime.utcnow()
                         user.coins += 3000  # Give reward for subscription
                         db.commit()
+                        print(f"Reward given, new balance: {user.coins}")
                     return jsonify({'success': True, 'subscribed': True})
                 else:
+                    print(f"User {user_id} not found in database")
                     return jsonify({'success': False, 'error': 'User not found'})
         else:
+            print(f"User {user_id} is not subscribed")
             return jsonify({'success': True, 'subscribed': False})
             
     except Exception as e:
+        import traceback
         print(f"Channel verification error: {e}")
+        print(traceback.format_exc())
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/history', methods=['POST'])

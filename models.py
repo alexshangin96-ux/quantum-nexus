@@ -59,6 +59,10 @@ class User(Base):
     channel_subscribed = Column(Boolean, default=False)  # Quantum Nexus channel subscription
     channel_subscribed_at = Column(DateTime, nullable=True)  # When subscription was verified
     
+    # Daily tasks tracking
+    daily_tasks_completed = Column(Text, default='{}')  # JSON: {"2025-11-05": [1,2,3], ...}
+    last_daily_reset = Column(DateTime, nullable=True)  # When last daily tasks were reset
+    
     # Auto-tap
     auto_tap_enabled = Column(Boolean, default=False)
     auto_tap_level = Column(Integer, default=0)
