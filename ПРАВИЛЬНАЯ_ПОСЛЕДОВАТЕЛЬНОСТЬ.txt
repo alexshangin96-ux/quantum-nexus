@@ -1,0 +1,94 @@
+═══════════════════════════════════════════════════════════════
+ПРАВИЛЬНАЯ ПОСЛЕДОВАТЕЛЬНОСТЬ: PULL → РАЗРЕШЕНИЕ → PUSH
+═══════════════════════════════════════════════════════════════
+
+Ошибка возникла потому что в GitHub уже есть новые изменения.
+Нужно сначала получить их (pull), разрешить конфликты, затем push.
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 1: Использовать готовый скрипт (РЕКОМЕНДУЕТСЯ)     │
+└─────────────────────────────────────────────────────────────┘
+
+cd /root/quantum-nexus
+git pull origin main  # получить скрипт
+bash PULL_AND_PUSH.sh YOUR_TOKEN
+
+Скрипт автоматически:
+1. Сделает pull
+2. Разрешит конфликты
+3. Сделает push
+4. Скопирует файлы
+5. Перезапустит сервисы
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 2: Вручную (пошагово)                               │
+└─────────────────────────────────────────────────────────────┘
+
+cd /root/quantum-nexus
+
+# Шаг 1: Pull с токеном
+git pull https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main
+
+# Шаг 2: Если конфликты - разрешить их
+git checkout --ours web_server.py
+git checkout --ours web_app.html
+git checkout --ours handlers.py
+git add web_server.py web_app.html handlers.py
+git commit -m "Resolve conflicts"
+
+# Шаг 3: Push
+git push https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main
+
+# Шаг 4: Завершить обновление
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ ВАРИАНТ 3: Force push (если уверены что нужна наша версия)  │
+└─────────────────────────────────────────────────────────────┘
+
+⚠️  ВНИМАНИЕ: Force push перезапишет удалённый репозиторий!
+
+cd /root/quantum-nexus
+
+# Force push (используйте только если уверены!)
+git push --force https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main
+
+# Затем завершить обновление
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+
+═══════════════════════════════════════════════════════════════
+БЫСТРОЕ РЕШЕНИЕ (СКОПИРУЙТЕ И ВЫПОЛНИТЕ):
+═══════════════════════════════════════════════════════════════
+
+cd /root/quantum-nexus && \
+git pull https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main && \
+(git checkout --ours web_server.py web_app.html handlers.py 2>/dev/null; \
+ git add web_server.py web_app.html handlers.py 2>/dev/null; \
+ git commit -m "Resolve conflicts" 2>/dev/null || true) && \
+git push https://YOUR_TOKEN@github.com/alexshangin96-ux/quantum-nexus.git main && \
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html && \
+sudo systemctl restart quantum-nexus-web.service && \
+sudo systemctl restart quantum-nexus.service && \
+echo "✅ Готово!"
+
+
+═══════════════════════════════════════════════════════════════
+ИЛИ ПРОСТО ИСПОЛЬЗУЙТЕ СКРИПТ:
+═══════════════════════════════════════════════════════════════
+
+cd /root/quantum-nexus
+git pull origin main  # получить PULL_AND_PUSH.sh
+bash PULL_AND_PUSH.sh YOUR_TOKEN
+
+═══════════════════════════════════════════════════════════════
+
+
+
+

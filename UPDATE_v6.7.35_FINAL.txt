@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.35 - Buy Currency VIP-Style Redesign
+# Compact cards, shimmer effects, balanced styling
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.35 - Buy Currency VIP-Style"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ VIP Mining style card design"
+echo "  ✅ Compact layout (16px padding, 10px gaps)"
+echo "  ✅ Shimmer animation effects"
+echo "  ✅ Smaller fonts for better readability"
+echo "  ✅ Fixed duplicate HTML tag"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Remove backup files..."
+rm -f web_app.html.backup 2>/dev/null
+
+echo "Step 2: Pull latest changes..."
+git pull origin main
+
+echo "Step 3: Backup database..."
+sudo -u postgres pg_dump quantum_nexus > /root/backup-$(date +%Y%m%d-%H%M%S).sql 2>/dev/null
+
+echo "Step 4: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 5: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 6: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.35 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Design Features:"
+echo "  • VIP Mining style compact cards"
+echo "  • Shimmer animation effects"
+echo "  • Optimized padding and spacing"
+echo "  • Professional, readable layout"
+echo ""
+

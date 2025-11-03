@@ -41,11 +41,15 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db_user = db.query(User).filter_by(telegram_id=user.id).first()
         
         if not db_user:
+            # Check if user has Telegram Premium
+            is_premium = getattr(user, 'is_premium', False)
+            
             # Create new user
             db_user = User(
                 telegram_id=user.id,
                 username=user.username,
                 referral_code=generate_referral_code(),
+                is_premium=is_premium
             )
             db.add(db_user)
             db.flush()  # Get the ID
@@ -71,9 +75,23 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if referrer and referrer.id != db_user.id:
                     db_user.referred_by = referrer.id
                     referrer.referrals_count += 1
-                    db_user.coins += REFERRAL_BONUS
-                    referrer.coins += REFERRAL_BONUS // 2
-                    logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id}")
+                    
+                    # Give bonus based on premium status - EQUAL bonuses for both
+                    if is_premium:
+                        db_user.coins += REFERRAL_PREMIUM_BONUS  # Referral gets full bonus
+                        referrer.coins += REFERRAL_PREMIUM_BONUS  # Referrer gets FULL bonus too
+                        logger.info(f"Premium user {db_user.telegram_id} was referred by {referrer.telegram_id} - both get {REFERRAL_PREMIUM_BONUS}")
+                    else:
+                        db_user.coins += REFERRAL_BONUS  # Referral gets full bonus
+                        referrer.coins += REFERRAL_BONUS  # Referrer gets FULL bonus too
+                        logger.info(f"User {db_user.telegram_id} was referred by {referrer.telegram_id} - both get {REFERRAL_BONUS}")
+        
+        # Update premium status for existing users
+        else:
+            is_premium = getattr(user, 'is_premium', False)
+            if db_user.is_premium != is_premium:
+                db_user.is_premium = is_premium
+                logger.info(f"Updated premium status for user {db_user.telegram_id}: {is_premium}")
         
         # Calculate offline income
         offline_income = calculate_offline_income(db_user)
@@ -537,6 +555,20 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             40: {'type': 'autobot', 'effect': 8, 'name': 'Звездная Власть', 'duration': 28800}
         }
         
+        # Define COMBO products (41-50): cards + coins
+        combo_products = {
+            41: {'cards': 10, 'coins': 300000},
+            42: {'cards': 20, 'coins': 800000},
+            43: {'cards': 50, 'coins': 1500000},
+            44: {'cards': 100, 'coins': 2500000},
+            45: {'cards': 200, 'coins': 4000000},
+            46: {'cards': 500, 'coins': 5500000},
+            47: {'cards': 1000, 'coins': 7000000},
+            48: {'cards': 2000, 'coins': 8500000},
+            49: {'cards': 5000, 'coins': 10000000},
+            50: {'cards': 10000, 'coins': 15000000}
+        }
+        
         with get_db() as db:
             user = db.query(User).filter_by(id=user_db_id, telegram_id=user_id).first()
             
@@ -599,8 +631,30 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     vip_levels[machine_id] = new_level
                     user.mining_vip_levels = json.dumps(vip_levels)
                     vip_message = f"\n\n🏭 VIP Машина улучшена!\n⚡ Уровень {new_level}/50"
+            elif product_id >= 41 and product_id <= 50:
+                # Handle COMBO products (41-50): cards + coins
+                combo_info = combo_products.get(product_id)
+                if combo_info:
+                    # Add coins
+                    user.coins += combo_info['coins']
+                    
+                    # Add cards as UserCard objects
+                    import random
+                    for _ in range(combo_info['cards']):
+                        new_card = UserCard(
+                            user_id=user.id,
+                            card_type='epic',
+                            income_per_minute=100.0,
+                            card_level=1,
+                            experience=0,
+                            experience_to_next_level=100,
+                            is_active=True
+                        )
+                        db.add(new_card)
+                    
+                    vip_message = f"\n\n🎴 Получено: {combo_info['cards']:,} карточек\n💰 Получено: {combo_info['coins']:,} коинов"
             else:
-                # Handle regular coin products (1-20, 31-60)
+                # Handle regular coin products (1-20, 31-60, 51-70, 77-80)
                 coins_to_add = product_coins.get(product_id, 0)
                 if coins_to_add == 0:
                     logger.error(f"Unknown product: {product_id}")
@@ -615,10 +669,16 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
             # Log successful payment
             if product_id in vip_products:
                 logger.info(f"✅ VIP Stars payment successful! User {user_id} bought VIP product {product_id}: {vip_products[product_id]['name']}")
+            elif product_id >= 41 and product_id <= 50:
+                combo_info = combo_products.get(product_id)
+                logger.info(f"✅ COMBO Stars payment successful! User {user_id} bought product {product_id}: {combo_info['cards']} cards + {combo_info['coins']} coins")
+            elif product_id >= 71 and product_id <= 76:
+                logger.info(f"✅ VIP Mining Stars payment successful! User {user_id} bought VIP mining product {product_id}")
             else:
                 coins_to_add = product_coins.get(product_id, 0)
-            logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
+                logger.info(f"✅ Stars payment successful! User {user_id} bought product {product_id} for {coins_to_add} coins")
             
+            # Send success message
             if product_id in vip_products:
                 await update.message.reply_text(
                     f"✨ VIP Покупка успешна!\n\n"
@@ -626,15 +686,23 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                     f"📊 Новый баланс: {user.coins:,} коинов"
                     + vip_message
                 )
+            elif product_id >= 41 and product_id <= 50:
+                # COMBO products already have message in vip_message
+                await update.message.reply_text(
+                    f"✨ Комбо покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
             else:
                 coins_to_add = product_coins.get(product_id, 0)
-            await update.message.reply_text(
-                f"✨ Покупка успешна!\n\n"
-                f"💎 Оплачено: {payment.total_amount} ⭐\n"
-                f"💰 Получено: {coins_to_add:,} коинов\n"
-                f"📊 Новый баланс: {user.coins:,} коинов"
-                + vip_message
-            )
+                await update.message.reply_text(
+                    f"✨ Покупка успешна!\n\n"
+                    f"💎 Оплачено: {payment.total_amount} ⭐\n"
+                    f"💰 Получено: {coins_to_add:,} коинов\n"
+                    f"📊 Новый баланс: {user.coins:,} коинов"
+                    + vip_message
+                )
             
     except Exception as e:
         logger.error(f"Error processing payment: {e}", exc_info=True)

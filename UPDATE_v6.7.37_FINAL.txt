@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.37 - Buy Currency Mobile Optimized
+# Mobile-first responsive design, proper sizing
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.37 - Buy Currency Mobile"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Mobile optimized (95vw width)"
+echo "  ✅ Smaller card padding (18px)"
+echo "  ✅ Smaller fonts (15/12/13px)"
+echo "  ✅ Better spacing"
+echo "  ✅ Close button positioning fixed"
+echo "  ✅ No overflow hidden cutting content"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.37 deployed successfully!"
+echo "=================================================="
+

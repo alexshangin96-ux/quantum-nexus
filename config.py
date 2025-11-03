@@ -32,8 +32,10 @@ MAX_TAPS_PER_SECOND = 5
 TAP_COOLDOWN = 0.2  # seconds
 
 # Referral Configuration
-REFERRAL_BONUS = 100
-REFERRAL_INCOME_PERCENT = 0.05
+REFERRAL_BONUS = 500  # Bonus for regular users
+REFERRAL_PREMIUM_BONUS = 2000  # Bonus for premium users
+REFERRAL_INCOME_PERCENT = 0.05  # 5% from regular users
+REFERRAL_PREMIUM_INCOME_PERCENT = 0.10  # 10% from premium users
 
 # Shop Prices
 BOOST_PRICES = {

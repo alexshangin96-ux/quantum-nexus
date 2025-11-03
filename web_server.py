@@ -892,6 +892,9 @@ def get_cards():
 def get_referrals():
     """Get user referrals info with detailed list"""
     try:
+        # Import config values
+        from config import REFERRAL_INCOME_PERCENT, REFERRAL_PREMIUM_INCOME_PERCENT
+        
         data = request.json
         user_id = data.get('user_id')
         
@@ -910,22 +913,29 @@ def get_referrals():
             # Calculate passive income for each referral
             referral_list = []
             total_passive_income = 0.0
+            premium_count = 0
+            regular_count = 0
             
             for ref in referrals:
                 # Calculate referral's total earnings (coins earned from all sources)
                 ref_total_earned = ref.total_earned or 0.0
                 
-                # Base income percentage (5% for regular users, 10% for VIP)
-                base_percent = 0.05
-                if getattr(ref, 'vip_level', 0) > 0:
-                    base_percent = 0.10  # VIP users give 10% instead of 5%
+                # Determine income percentage based on premium status
+                is_premium_ref = getattr(ref, 'is_premium', False)
+                is_vip_ref = getattr(ref, 'vip_level', 0) > 0
+                
+                # Premium users give higher percentage
+                if is_premium_ref:
+                    base_percent = REFERRAL_PREMIUM_INCOME_PERCENT  # 10% from premium
+                    premium_count += 1
+                elif is_vip_ref:
+                    base_percent = 0.10  # 10% from VIP (old system)
+                else:
+                    base_percent = REFERRAL_INCOME_PERCENT  # 5% from regular
+                    regular_count += 1
                 
                 # Calculate income from this referral
-                # Income = 5% (or 10% for VIP) of referral's total_earned
                 ref_income = ref_total_earned * base_percent
-                
-                # Check if this referral is VIP
-                is_vip = getattr(ref, 'vip_level', 0) > 0
                 
                 referral_list.append({
                     'telegram_id': ref.telegram_id,
@@ -933,7 +943,8 @@ def get_referrals():
                     'coins': ref.coins or 0.0,
                     'total_earned': ref_total_earned,
                     'income_from_ref': ref_income,
-                    'is_vip': is_vip,
+                    'is_premium': is_premium_ref,
+                    'is_vip': is_vip_ref,
                     'referral_income_percent': base_percent * 100,
                     'joined_at': ref.created_at.isoformat() if hasattr(ref, 'created_at') and ref.created_at else None
                 })
@@ -950,7 +961,9 @@ def get_referrals():
             
             return jsonify({
                 'referral_code': user.referral_code,
-                'referrals_count': actual_referrals_count,  # Use actual count from list
+                'referrals_count': actual_referrals_count,
+                'premium_referrals_count': premium_count,
+                'regular_referrals_count': regular_count,
                 'referral_income': total_passive_income,
                 'referrals': referral_list
             })

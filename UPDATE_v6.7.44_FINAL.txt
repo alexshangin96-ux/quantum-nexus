@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.44 - Combo: Cards restored, Absolute: 30k cards + 15M coins
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.44 - Combo Cards Restored"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Combo category cards restored with 'X карточек'"
+echo "  ✅ Absolute card updated to 30,000 карточек + 15,000,000 коинов"
+echo ""
+echo "Categories:"
+echo "  ✅ Starter: 20,000 to 200,000 coins"
+echo "  ✅ Premium: 120,000 to 500,000 coins"
+echo "  ✅ VIP: 400,000 to 2,000,000 coins"
+echo "  ✅ QuanHash: 500 to 300,000 QuanHash"
+echo "  ✅ Combo: 300,000 to 10,000,000 coins + cards"
+echo "  ✅ Mega: 50,000 to 5,000,000 coins"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.44 deployed successfully!"
+echo "=================================================="
+
