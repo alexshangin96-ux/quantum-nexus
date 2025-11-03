@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.39 - Duration endings fixed, energy display labels
+# Duration endings, energy display labels fixed
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.39 - Duration endings fixed"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Duration endings: час/часа/часов, день/дня/дней"
+echo "  ✅ Energy display: У вас сейчас"
+echo "  ✅ Better readability"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.39 deployed successfully!"
+echo "=================================================="
+
