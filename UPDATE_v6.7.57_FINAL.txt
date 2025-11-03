@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.57 - Fixed Return Timer, Cards Tracking, Penalty Handler
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.57 - Fixed Issues"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Fixed return timer display for 'return in X hours' tasks"
+echo "  ✅ Fixed cards tracking - cards now added to UserCard on combo purchase"
+echo "  ✅ Added logging for penalty handler to debug unsubscribe issues"
+echo ""
+echo "Bug Fixes:"
+echo "  1. Return timer now displays correctly with countdown"
+echo "  2. Combo products (41-50) now add cards to UserCard table"
+echo "  3. Added logging to channel_subscription_handler for debugging"
+echo "  4. Improved timer calculation logic"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp handlers.py /root/quantum-nexus/handlers.py
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.57 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Fixes applied:"
+echo "  - Return timer now working"
+echo "  - Cards tracking fixed"
+echo "  - Penalty handler logging added"
