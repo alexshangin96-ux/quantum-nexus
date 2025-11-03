@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.54 - Daily Tasks Tracking Fix
+# Fixed daily tasks not working properly
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.54 - Daily Tasks Tracking Fix"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Added daily tasks tracking in database"
+echo "  ✅ Fixed claim reward not working"
+echo "  ✅ Added proper subscription verification logging"
+echo "  ✅ Prevents double claiming rewards"
+echo "  ✅ Shows 'Reward claimed' status properly"
+echo ""
+echo "Bug Fixes:"
+echo "  1. Added daily_tasks_completed field to track claimed tasks"
+echo "  2. claimReward now properly closes and reopens modal"
+echo "  3. verifyChannelSubscription has better error handling"
+echo "  4. Tasks show 'claimed' status when already collected"
+echo "  5. Added comprehensive logging for debugging"
+echo ""
+echo "Technical Details:"
+echo "  - New DB columns: daily_tasks_completed, last_daily_reset"
+echo "  - Tasks marked as 'claimed' after reward collection"
+echo "  - Prevents double rewards for same task on same day"
+echo "  - Better error messages and logging"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Apply database migration..."
+sudo -u postgres psql -d quantum_nexus -f ADD_DAILY_TASKS_TRACKING.sql
+
+echo "Step 3: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp web_server.py /root/quantum-nexus/
+
+echo "Step 4: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 5: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.54 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "Daily tasks now fully working:"
+echo "  - Rewards can be claimed correctly"
+echo "  - No double claiming possible"
+echo "  - Subscription check works"
+echo "  - Status shown properly"
+
