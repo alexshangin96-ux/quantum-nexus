@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.38 - Shop icon bold, VIP autobot duration
+# Shop icon enhanced, VIP autobot 4h-10d
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.38 - Shop & VIP Autobot"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Shop icon bold (28px, text-shadow)"
+echo "  ✅ VIP autobot duration: 4h - 10d"
+echo "  ✅ Better visibility and readability"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.38 deployed successfully!"
+echo "=================================================="
+
