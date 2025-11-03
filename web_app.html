@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.35 - Buy Currency: VIP-style redesign, balanced pricing -->
+<!-- Quantum Nexus v6.7.36 - Buy Currency: Full-width cards, fixed overflow, proper box-sizing -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7209,7 +7209,7 @@
                 
                 const colors = categoryColors[product.category];
                 html += `
-                    <div data-category="${product.category}" style="background: linear-gradient(135deg, ${colors.bg}); padding: 16px; border-radius: 16px; border: 1px solid ${colors.border}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px ${colors.border.replace('0.3)', '0.15)')}; transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px ${colors.border.replace('0.3)', '0.25)')}';this.style.background='linear-gradient(135deg, ${colors.hover})'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px ${colors.border.replace('0.3)', '0.15)')}';this.style.background='linear-gradient(135deg, ${colors.bg})'">
+                    <div data-category="${product.category}" style="background: linear-gradient(135deg, ${colors.bg}); padding: 16px; border-radius: 16px; border: 1px solid ${colors.border}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px ${colors.border.replace('0.3)', '0.15)')}; transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite; width: 100%; box-sizing: border-box;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px ${colors.border.replace('0.3)', '0.25)')}';this.style.background='linear-gradient(135deg, ${colors.hover})'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px ${colors.border.replace('0.3)', '0.15)')}';this.style.background='linear-gradient(135deg, ${colors.bg})'">
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                             <span style="font-size: 20px; filter: drop-shadow(0 0 4px ${colors.shadow});">${product.nameEmoji || product.emoji}</span>
                             <div style="flex: 1;">
@@ -7279,7 +7279,7 @@
                             <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(255,215,0,0.3)'">👑 VIP Mega</button>
                         </div>
                     
-                    <div id="currencyProductsList" style="display:grid;gap:14px;max-height:70vh;overflow-y:auto;padding-right:5px;">
+                    <div id="currencyProductsList" style="display: flex; flex-direction: column; gap: 14px; max-height: 70vh; overflow-y: auto; padding-right: 5px; width: 100%; box-sizing: border-box;">
                         <!-- Currency cards will be rendered dynamically by renderVIPCurrencyCards -->
                     </div>
                 </div>
