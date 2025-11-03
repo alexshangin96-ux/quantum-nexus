@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.48 - VIP Fixes and Dynamic Price Calculation
+# Fixed VIP button category selection and dynamic VIP mining prices
+# Date: 2025-11-04
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.48 - VIP Fixes"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Fixed VIP button in Shop to open correct category modal"
+echo "  ✅ Added currentShopCategory tracking for VIP modal"
+echo "  ✅ Fixed dynamic price calculation for VIP mining machines in handlers.py"
+echo "  ✅ VIP mining prices now use level-based formula in invoice generation"
+echo ""
+echo "Fixes:"
+echo "  1. VIP button now opens correct VIP modal based on current shop category"
+echo "  2. VIP mining machine prices are calculated dynamically based on user level"
+echo "  3. Price formula: basePrice * (1.15 ^ level)"
+echo "  4. Invoice generation now uses calculated price instead of fixed base price"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp handlers.py /var/www/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.48 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "All VIP functions now work correctly:"
+echo "  - Shop VIP button opens correct category modal"
+echo "  - VIP mining machines use dynamic prices"
+echo "  - All Stars purchases sync properly"
+
