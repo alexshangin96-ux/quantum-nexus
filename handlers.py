@@ -1002,3 +1002,53 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             f"   • Южная Корея\n"
             f"   • И другие (обновляется)"
         )
+
+
+async def channel_subscription_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle channel subscription/unsubscription events for daily tasks"""
+    try:
+        # Only handle updates for quantum_nexus channel
+        chat = update.chat_member.chat
+        if chat.username != 'quantum_nexus':
+            return
+        
+        user = update.chat_member.from_user
+        old_status = update.chat_member.old_chat_member.status
+        new_status = update.chat_member.new_chat_member.status
+        
+        # Check if user unsubscribed
+        was_member = old_status in ['member', 'administrator', 'creator']
+        is_now_member = new_status in ['member', 'administrator', 'creator']
+        
+        with get_db() as db:
+            db_user = db.query(User).filter_by(telegram_id=user.id).first()
+            
+            if db_user:
+                if was_member and not is_now_member:
+                    # User unsubscribed - apply penalty
+                    if db_user.channel_subscribed:
+                        penalty = 10000
+                        db_user.coins = max(0, db_user.coins - penalty)  # Can't go below 0
+                        db_user.channel_subscribed = False
+                        db.commit()
+                        
+                        # Notify user about penalty
+                        bot = context.bot
+                        notification = (
+                            f"⚠️ ПЕНАЛЬТИ ЗА ОТПИСКУ\n\n"
+                            f"❌ Вы отписались от канала @quantum_nexus\n"
+                            f"💰 Штраф: -{penalty:,} коинов\n\n"
+                            f"📢 Подпишитесь снова, чтобы избежать штрафов!"
+                        )
+                        await bot.send_message(chat_id=user.id, text=notification)
+                        logger.info(f"User {user.id} unsubscribed from channel, penalty applied")
+                elif not was_member and is_now_member:
+                    # User subscribed - update status
+                    if not db_user.channel_subscribed:
+                        db_user.channel_subscribed = True
+                        db_user.channel_subscribed_at = datetime.utcnow()
+                        db.commit()
+                        logger.info(f"User {user.id} subscribed to channel")
+                        
+    except Exception as e:
+        logger.error(f"Channel subscription handler error: {e}", exc_info=True)

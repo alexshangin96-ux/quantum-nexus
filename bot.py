@@ -7,8 +7,8 @@ Main bot file
 import asyncio
 import logging
 from telegram import Bot, Update
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, PreCheckoutQueryHandler, MessageHandler, filters
-from handlers import start_command, button_callback, pre_checkout_handler, successful_payment_handler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, PreCheckoutQueryHandler, MessageHandler, ChatMemberHandler, filters
+from handlers import start_command, button_callback, pre_checkout_handler, successful_payment_handler, channel_subscription_handler
 from database import init_db
 from config import BOT_TOKEN
 import sys
@@ -46,6 +46,7 @@ def main():
     application.add_handler(CallbackQueryHandler(button_callback))
     application.add_handler(PreCheckoutQueryHandler(pre_checkout_handler))
     application.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_handler))
+    application.add_handler(ChatMemberHandler(channel_subscription_handler, ChatMemberHandler.CHAT_MEMBER))
     
     # Add error handler
     application.add_error_handler(error_handler)

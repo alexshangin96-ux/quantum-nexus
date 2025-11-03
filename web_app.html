@@ -7034,15 +7034,62 @@
             modal.className = 'modal active';
             modal.id = 'dailyBonusModal';
             modal.innerHTML = `
-                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                        <h2 style="font-size: 24px; color: #fff;">🎁 Ежедневные задания</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                <div class="modal-content" style="max-width: 500px; width: 95vw; max-height: 90vh; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; backdrop-filter: blur(20px); padding: 0; border: 2px solid rgba(102,126,234,0.3);">
+                    <!-- VIP Style Header with Layered Effect -->
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 24px 50px 24px 24px; border-radius: 20px 20px 0 0; position: relative; box-shadow: 0 8px 30px rgba(102,126,234,0.4); overflow: hidden;">
+                        <!-- Background Window Effect -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(102,126,234,0.3) 0%, rgba(118,75,162,0.2) 50%, rgba(102,126,234,0.3) 100%); border-radius: 20px 20px 0 0; opacity: 0.5; pointer-events: none; filter: blur(20px);"></div>
+                        <div style="position: absolute; bottom: -30%; left: -20%; right: -20%; height: 80%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; position: relative; z-index: 1;">
+                            <div style="font-size: 38px; text-shadow: 0 4px 15px rgba(0,0,0,0.4); filter: drop-shadow(0 0 10px rgba(102,126,234,0.9)); animation: pulse 2s infinite;">🎁</div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h2 style="font-size: 22px; color: #fff; margin: 0; font-weight: 900; text-shadow: 0 3px 8px rgba(0,0,0,0.3); line-height: 1.2;">ЕЖЕДНЕВНЫЕ ЗАДАНИЯ</h2>
+                                <div style="font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px; font-weight: 700;">Выполняйте и получайте награды!</div>
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 3; flex-shrink: 0;">✕</button>
                     </div>
-                    <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
+                    
+                    <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 150px);">
+                        <!-- Countdown Timer -->
+                        <div id="dailyTasksCountdown" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.5); border-radius: 16px; padding: 18px; margin-bottom: 20px; text-align: center; box-shadow: 0 6px 25px rgba(102,126,234,0.3);">
+                            <div style="font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.9); margin-bottom: 8px;">⏰ Обновление через:</div>
+                            <div id="countdownTimer" style="font-size: 24px; font-weight: 900; color: #667eea; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">--:--:--</div>
+                        </div>
+                        
+                        <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
+            
+            // Start countdown timer
+            function updateCountdown() {
+                const countdownEl = document.getElementById('countdownTimer');
+                if (!countdownEl) return;
+                
+                // Get current time and next midnight
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                
+                const diff = tomorrow - now;
+                
+                if (diff > 0) {
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    countdownEl.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                } else {
+                    countdownEl.textContent = '00:00:00';
+                }
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
             
             // Load daily tasks
             fetch('/api/daily_tasks', {
@@ -7056,57 +7103,52 @@
                 if(data.tasks && data.tasks.length > 0) {
                     let html = '';
                     
-                    // Add VIP tasks section if VIP
-                    const checkVIPTasks = () => {
-                        fetch('/api/user_data', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({user_id: window.user?.id})
-                        })
-                        .then(res => res.json())
-                        .then(userData => {
-                            const vipLevel = userData.vip_level || 0;
-                            if (vipLevel >= 3) {
-                                list.innerHTML = `
-                                    ${vipLevel >= 4 ? `
-                                    <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:15px;border-radius:12px;border:3px solid #ffd700;margin-bottom:15px;">
-                                        <div style="font-size:16px;font-weight:800;color:#000;margin-bottom:8px;">🎉 VIP Турнир</div>
-                                        <div style="font-size:12px;color:rgba(0,0,0,0.7);margin-bottom:10px;">Соревнование только для VIP! Топ-3 получают эксклюзивные награды.</div>
-                                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                                            <span style="font-size:13px;color:#000;font-weight:700;">🏆 Награды:</span>
-                                            <span style="font-size:13px;color:#000;font-weight:800;">500M 🪙</span>
-                                        </div>
-                                        <button onclick="joinVIPTournament()" style="width:100%;padding:10px;background:#000;color:#ffd700;border:none;border-radius:8px;font-weight:800;cursor:pointer;">🎯 Участвовать</button>
+                    html += data.tasks.map((task, index) => {
+                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
+                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
+                        const textColor = task.completed ? '#4ade80' : '#f093fb';
+                        
+                        // Special handling for channel subscription
+                        const isChannelTask = task.type === 'channel_subscription';
+                        
+                        return `
+                            <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
+                                <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                                    <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${task.name}</div>
+                                        <div style="font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 10px;">${task.description}</div>
                                     </div>
-                                    ` : ''}
-                                    ${vipLevel >= 5 ? `
-                                    <div style="background:linear-gradient(135deg,#c084fc,#a78bfa);padding:15px;border-radius:12px;border:3px solid #c084fc;margin-bottom:15px;">
-                                        <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">💎 Diamond Challenge</div>
-                                        <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:10px;">Эксклюзивный челлендж для Diamond VIP!</div>
-                                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-                                            <span style="font-size:13px;color:#fff;font-weight:700;">💎 Бонус:</span>
-                                            <span style="font-size:13px;color:#fff;font-weight:800;">x50 на 24ч</span>
+                                    ${task.completed ? `
+                                        <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;">
+                                            ✅ ГОТОВО
                                         </div>
-                                        <button onclick="activateDiamondChallenge()" style="width:100%;padding:10px;background:#fff;color:#a78bfa;border:none;border-radius:8px;font-weight:800;cursor:pointer;">⚡ Активировать</button>
-                                    </div>
                                     ` : ''}
-                                    ` + list.innerHTML;
-                            }
-                        });
-                    };
-                    checkVIPTasks();
-                    
-                    html += data.tasks.map(task => `
-                        <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;border:2px solid ${task.completed ? 'rgba(74,222,128,0.5)' : 'rgba(102,126,234,0.5)'};">
-                            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">${task.emoji} ${task.name}</div>
-                            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">${task.description}</div>
-                            <div style="display:flex;justify-content:space-between;align-items:center;">
-                                <div style="font-size:14px;color:${task.completed ? '#4ade80' : '#f093fb'};">${task.completed ? '✅ Выполнено' : 'Прогресс: ' + task.progress + '/' + task.target}</div>
-                                <div style="font-size:16px;font-weight:700;">💰 +${task.reward}</div>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="font-size: 14px; color: ${textColor}; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                        ${task.completed ? '✅ Выполнено' : `📊 Прогресс: ${task.progress}/${task.target}`}
+                                    </div>
+                                    <div style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 +${task.reward.toLocaleString()}</div>
+                                </div>
+                                
+                                ${!task.completed && isChannelTask ? `
+                                    <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
+                                        📢 Подписаться на канал
+                                    </a>
+                                    <button onclick="verifyChannelSubscription(${task.id})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                        ✅ Проверить подписку
+                                    </button>
+                                ` : task.completed ? `
+                                    <button onclick="claimReward(${task.id})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                        🎁 Забрать награду
+                                    </button>
+                                ` : ''}
                             </div>
-                            ${task.completed ? '<button onclick="claimReward(' + task.id + ')" style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;">🎁 Забрать награду</button>' : ''}
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
+                    
                     list.innerHTML = html;
                 } else {
                     list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
@@ -7133,6 +7175,38 @@
                     openDailyBonus({preventDefault:()=>{}});
                     loadData();
                 }
+            });
+        }
+        
+        function verifyChannelSubscription(taskId) {
+            if (!window.tg) {
+                tg.showAlert('⚠️ Функция доступна только в Telegram');
+                return;
+            }
+            
+            tg.showAlert('🔍 Проверяем подписку...');
+            
+            fetch('/api/verify_channel_subscription', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, task_id: taskId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.subscribed) {
+                    tg.showAlert('✅ Подписка подтверждена! Награда начислена!');
+                    // Reload tasks to show completed state
+                    openDailyBonus({preventDefault:()=>{}});
+                    loadData();
+                } else if (data.success === false) {
+                    tg.showAlert('❌ Ошибка проверки подписки');
+                } else {
+                    tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus');
+                }
+            })
+            .catch(err => {
+                console.error('Verification error:', err);
+                tg.showAlert('❌ Ошибка проверки подписки');
             });
         }
         

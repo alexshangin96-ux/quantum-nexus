@@ -2491,6 +2491,9 @@ def set_vip():
 def get_daily_tasks():
     """Get daily tasks for user"""
     try:
+        import random
+        import datetime
+        
         data = request.json
         user_id = data.get('user_id')
         
@@ -2506,59 +2509,118 @@ def get_daily_tasks():
             # Count user cards
             cards_count = db.query(UserCard).filter_by(user_id=user.id).count()
             
-            # Get tasks with real progress
-            tasks = [
-                {
-                    'id': 1,
-                    'name': 'Ежедневный вход',
-                    'emoji': '🚪',
-                    'description': 'Зайдите в приложение',
-                    'reward': 100,
-                    'progress': 1,
-                    'target': 1,
-                    'completed': True
-                },
-                {
-                    'id': 2,
-                    'name': 'Тап мастер',
-                    'emoji': '👆',
-                    'description': f'Сделайте 100 тапов',
-                    'reward': 500,
-                    'progress': min(user.total_taps, 100),
-                    'target': 100,
-                    'completed': user.total_taps >= 100
-                },
-                {
-                    'id': 3,
-                    'name': 'Майнинг',
-                    'emoji': '⚡',
-                    'description': f'Заработайте 1000 QuanHash',
-                    'reward': 1000,
-                    'progress': min(int(user.quanhash), 1000),
-                    'target': 1000,
-                    'completed': user.quanhash >= 1000
-                },
-                {
-                    'id': 4,
-                    'name': 'Коллекционер',
-                    'emoji': '💳',
-                    'description': f'Купите 5 карточек',
-                    'reward': 1500,
-                    'progress': min(cards_count, 5),
-                    'target': 5,
-                    'completed': cards_count >= 5
-                },
-                {
-                    'id': 5,
-                    'name': 'Реферал',
-                    'emoji': '👥',
-                    'description': f'Пригласите 1 друга',
-                    'reward': 2000,
-                    'progress': min(user.referrals_count, 1),
-                    'target': 1,
-                    'completed': user.referrals_count >= 1
-                },
+            # Dynamic tasks pool for a year (365 days worth of variety)
+            today = datetime.date.today()
+            day_of_year = today.timetuple().tm_yday
+            random.seed(day_of_year)  # Same tasks for same day
+            
+            dynamic_task_pool = [
+                {'emoji': '👆', 'base_reward': 500, 'descriptions': [
+                    ('Сделайте 50 тапов', 50),
+                    ('Сделайте 200 тапов', 200),
+                    ('Сделайте 500 тапов', 500),
+                ]},
+                {'emoji': '⚡', 'base_reward': 1000, 'descriptions': [
+                    ('Заработайте 2000 коинов', 2000),
+                    ('Заработайте 5000 коинов', 5000),
+                    ('Заработайте 10000 коинов', 10000),
+                ]},
+                {'emoji': '💎', 'base_reward': 1500, 'descriptions': [
+                    ('Заработайте 500 QuanHash', 500),
+                    ('Заработайте 2000 QuanHash', 2000),
+                    ('Заработайте 5000 QuanHash', 5000),
+                ]},
+                {'emoji': '💳', 'base_reward': 2000, 'descriptions': [
+                    ('Купите 1 карточку', 1),
+                    ('Купите 3 карточки', 3),
+                    ('Купите 10 карточек', 10),
+                ]},
+                {'emoji': '👥', 'base_reward': 2500, 'descriptions': [
+                    ('Пригласите 1 друга', 1),
+                    ('Пригласите 3 друга', 3),
+                ]},
+                {'emoji': '🏆', 'base_reward': 3000, 'descriptions': [
+                    ('Займите топ-10', 10),
+                    ('Займите топ-5', 5),
+                    ('Займите топ-3', 3),
+                ]},
+                {'emoji': '🌙', 'base_reward': 3500, 'descriptions': [
+                    ('Вернитесь через 6 часов', 1),
+                    ('Вернитесь через 12 часов', 1),
+                ]},
             ]
+            
+            # Pick 7 random tasks
+            selected_tasks = random.sample(dynamic_task_pool, 7)
+            
+            # Build tasks list
+            tasks = []
+            
+            # Task 1: Permanent channel subscription
+            is_channel_subscribed = getattr(user, 'channel_subscribed', False)
+            tasks.append({
+                'id': 1,
+                'name': 'Подписка на канал',
+                'emoji': '📢',
+                'description': 'Подпишитесь на канал Quantum Nexus для эксклюзивных новостей',
+                'reward': 3000,
+                'progress': 1 if is_channel_subscribed else 0,
+                'target': 1,
+                'completed': is_channel_subscribed,
+                'type': 'channel_subscription',
+                'channel_url': 'https://t.me/quantum_nexus',
+                'channel_name': '@quantum_nexus'
+            })
+            
+            # Tasks 2-8: Dynamic tasks
+            for idx, task_template in enumerate(selected_tasks, 2):
+                desc_data = random.choice(task_template['descriptions'])
+                task_desc, target = desc_data
+                reward = task_template['base_reward']
+                
+                # Calculate progress based on task type
+                if 'тапов' in task_desc:
+                    progress = min(user.total_taps, target)
+                    completed = user.total_taps >= target
+                elif 'коинов' in task_desc:
+                    progress = min(int(user.coins), target)
+                    completed = user.coins >= target
+                elif 'QuanHash' in task_desc:
+                    progress = min(int(user.quanhash), target)
+                    completed = user.quanhash >= target
+                elif 'карточк' in task_desc:
+                    progress = min(cards_count, target)
+                    completed = cards_count >= target
+                elif 'друга' in task_desc:
+                    progress = min(user.referrals_count, target)
+                    completed = user.referrals_count >= target
+                elif 'топ-' in task_desc:
+                    # TODO: Implement leaderboard check
+                    progress = 0
+                    completed = False
+                elif 'Вернитесь' in task_desc:
+                    # Check last active time
+                    if user.last_active:
+                        hours_passed = (datetime.datetime.utcnow() - user.last_active).total_seconds() / 3600
+                        progress = 1 if hours_passed >= 6 else 0
+                        completed = hours_passed >= 6
+                    else:
+                        progress = 0
+                        completed = False
+                else:
+                    progress = 0
+                    completed = False
+                
+                tasks.append({
+                    'id': idx,
+                    'name': task_desc.split(' ')[0] + ' ' + task_desc.split(' ')[1] if len(task_desc.split(' ')) > 1 else task_desc,
+                    'emoji': task_template['emoji'],
+                    'description': task_desc,
+                    'reward': reward,
+                    'progress': progress,
+                    'target': target,
+                    'completed': completed
+                })
             
             return jsonify({'tasks': tasks})
     except Exception as e:
@@ -2584,10 +2646,64 @@ def claim_task():
             
             # Add reward (for task 1 - daily login)
             if task_id == 1:
-                user.coins += 100
+                user.coins += 3000
+                db.commit()
             
             return jsonify({'success': True})
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/verify_channel_subscription', methods=['POST'])
+def verify_channel_subscription():
+    """Verify user subscribed to channel"""
+    try:
+        from telegram import Bot
+        from config import BOT_TOKEN
+        import asyncio
+        import datetime
+        
+        data = request.json
+        user_id = data.get('user_id')
+        task_id = data.get('task_id')
+        
+        if not user_id:
+            return jsonify({'success': False, 'error': 'Missing user_id'})
+        
+        # Channel ID from the web search: @quantum_nexus
+        # Note: Channel username is 'quantum_nexus'
+        
+        # Use async to check channel membership
+        async def check_membership():
+            bot = Bot(token=BOT_TOKEN)
+            try:
+                member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
+                # Check if user is a member, administrator, or creator
+                return member.status in ['member', 'administrator', 'creator']
+            except Exception as e:
+                print(f"Channel membership check error: {e}")
+                return False
+        
+        # Run async function
+        is_subscribed = asyncio.run(check_membership())
+        
+        if is_subscribed:
+            with get_db() as db:
+                user = db.query(User).filter_by(telegram_id=user_id).first()
+                if user:
+                    # Mark as subscribed and give reward
+                    if not user.channel_subscribed:
+                        user.channel_subscribed = True
+                        user.channel_subscribed_at = datetime.datetime.utcnow()
+                        user.coins += 3000  # Give reward for subscription
+                        db.commit()
+                    return jsonify({'success': True, 'subscribed': True})
+                else:
+                    return jsonify({'success': False, 'error': 'User not found'})
+        else:
+            return jsonify({'success': True, 'subscribed': False})
+            
+    except Exception as e:
+        print(f"Channel verification error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/history', methods=['POST'])
