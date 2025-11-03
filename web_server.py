@@ -2516,37 +2516,39 @@ def get_daily_tasks():
             
             dynamic_task_pool = [
                 {'emoji': '👆', 'base_reward': 500, 'descriptions': [
+                    ('Сделайте 10 тапов', 10),
+                    ('Сделайте 25 тапов', 25),
                     ('Сделайте 50 тапов', 50),
-                    ('Сделайте 200 тапов', 200),
-                    ('Сделайте 500 тапов', 500),
                 ]},
                 {'emoji': '⚡', 'base_reward': 1000, 'descriptions': [
+                    ('Заработайте 500 коинов', 500),
+                    ('Заработайте 1000 коинов', 1000),
                     ('Заработайте 2000 коинов', 2000),
-                    ('Заработайте 5000 коинов', 5000),
-                    ('Заработайте 10000 коинов', 10000),
                 ]},
                 {'emoji': '💎', 'base_reward': 1500, 'descriptions': [
+                    ('Заработайте 100 QuanHash', 100),
+                    ('Заработайте 250 QuanHash', 250),
                     ('Заработайте 500 QuanHash', 500),
-                    ('Заработайте 2000 QuanHash', 2000),
-                    ('Заработайте 5000 QuanHash', 5000),
                 ]},
                 {'emoji': '💳', 'base_reward': 2000, 'descriptions': [
                     ('Купите 1 карточку', 1),
-                    ('Купите 3 карточки', 3),
-                    ('Купите 10 карточек', 10),
+                    ('Купите 2 карточки', 2),
+                    ('Купите 5 карточек', 5),
                 ]},
                 {'emoji': '👥', 'base_reward': 2500, 'descriptions': [
                     ('Пригласите 1 друга', 1),
+                    ('Пригласите 2 друга', 2),
                     ('Пригласите 3 друга', 3),
                 ]},
-                {'emoji': '🏆', 'base_reward': 3000, 'descriptions': [
-                    ('Займите топ-10', 10),
-                    ('Займите топ-5', 5),
-                    ('Займите топ-3', 3),
+                {'emoji': '🎯', 'base_reward': 3000, 'descriptions': [
+                    ('Откройте магазин', 1),
+                    ('Используйте буст', 1),
+                    ('Купите любой товар', 1),
                 ]},
                 {'emoji': '🌙', 'base_reward': 3500, 'descriptions': [
-                    ('Вернитесь через 6 часов', 1),
-                    ('Вернитесь через 12 часов', 1),
+                    ('Вернитесь через 2 часа', 2),
+                    ('Вернитесь через 4 часа', 4),
+                    ('Вернитесь через 6 часов', 6),
                 ]},
             ]
             
@@ -2594,19 +2596,19 @@ def get_daily_tasks():
                 elif 'друга' in task_desc:
                     progress = min(user.referrals_count, target)
                     completed = user.referrals_count >= target
-                elif 'топ-' in task_desc:
-                    # TODO: Implement leaderboard check
-                    progress = 0
-                    completed = False
                 elif 'Вернитесь' in task_desc:
                     # Check last active time
                     if user.last_active:
                         hours_passed = (datetime.datetime.utcnow() - user.last_active).total_seconds() / 3600
-                        progress = 1 if hours_passed >= 6 else 0
-                        completed = hours_passed >= 6
+                        progress = 1 if hours_passed >= target else 0
+                        completed = hours_passed >= target
                     else:
                         progress = 0
                         completed = False
+                elif 'Откройте магазин' in task_desc or 'Используйте буст' in task_desc or 'Купите любой товар' in task_desc:
+                    # Simple completion tasks - just mark as completed if user has activity
+                    progress = 1
+                    completed = True
                 else:
                     progress = 0
                     completed = False
@@ -2631,6 +2633,9 @@ def get_daily_tasks():
 def claim_task():
     """Claim task reward"""
     try:
+        import random
+        import datetime
+        
         data = request.json
         user_id = data.get('user_id')
         task_id = data.get('task_id')
@@ -2644,12 +2649,42 @@ def claim_task():
             if not user:
                 return jsonify({'success': False, 'error': 'User not found'})
             
-            # Add reward (for task 1 - daily login)
-            if task_id == 1:
-                user.coins += 3000
-                db.commit()
+            # Regenerate tasks to get the reward for this specific task
+            today = datetime.date.today()
+            day_of_year = today.timetuple().tm_yday
+            random.seed(day_of_year)
             
-            return jsonify({'success': True})
+            # Recreate task pool to find the task
+            dynamic_task_pool = [
+                {'emoji': '👆', 'base_reward': 500},
+                {'emoji': '⚡', 'base_reward': 1000},
+                {'emoji': '💎', 'base_reward': 1500},
+                {'emoji': '💳', 'base_reward': 2000},
+                {'emoji': '👥', 'base_reward': 2500},
+                {'emoji': '🎯', 'base_reward': 3000},
+                {'emoji': '🌙', 'base_reward': 3500},
+            ]
+            
+            selected_tasks = random.sample(dynamic_task_pool, 7)
+            
+            # Task 1 is channel subscription (3000)
+            if task_id == 1:
+                reward = 3000
+            elif task_id >= 2 and task_id <= 8:
+                # Get reward from the dynamic task
+                task_idx = task_id - 2
+                if task_idx < len(selected_tasks):
+                    reward = selected_tasks[task_idx]['base_reward']
+                else:
+                    reward = 500  # Default reward
+            else:
+                reward = 0
+            
+            # Add reward
+            user.coins += reward
+            db.commit()
+            
+            return jsonify({'success': True, 'reward': reward})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

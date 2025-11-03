@@ -7172,15 +7172,23 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    openDailyBonus({preventDefault:()=>{}});
+                    // Close modal first
+                    const modal = document.getElementById('dailyBonusModal');
+                    if (modal) {
+                        modal.remove();
+                    }
+                    // Reload data and reopen modal
                     loadData();
+                    setTimeout(() => {
+                        openDailyBonus({preventDefault:()=>{}});
+                    }, 300);
                 }
             });
         }
         
         function verifyChannelSubscription(taskId) {
-            if (!window.tg) {
-                tg.showAlert('⚠️ Функция доступна только в Telegram');
+            if (!window.tg || !tg.showAlert) {
+                alert('⚠️ Функция доступна только в Telegram');
                 return;
             }
             
@@ -7196,12 +7204,14 @@
                 if (data.subscribed) {
                     tg.showAlert('✅ Подписка подтверждена! Награда начислена!');
                     // Reload tasks to show completed state
-                    openDailyBonus({preventDefault:()=>{}});
-                    loadData();
+                    setTimeout(() => {
+                        openDailyBonus({preventDefault:()=>{}});
+                        loadData();
+                    }, 500);
                 } else if (data.success === false) {
                     tg.showAlert('❌ Ошибка проверки подписки');
                 } else {
-                    tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus');
+                    tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
                 }
             })
             .catch(err => {
