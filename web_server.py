@@ -2591,6 +2591,10 @@ def get_daily_tasks():
                 # Check if task was already claimed
                 task_claimed = idx in today_completed
                 
+                # Initialize return_task flag
+                return_task = False
+                last_active_iso = None
+                
                 # Calculate progress based on task type
                 if 'тапов' in task_desc:
                     progress = min(user.total_taps, target)
@@ -2609,13 +2613,16 @@ def get_daily_tasks():
                     completed = user.referrals_count >= target
                 elif 'Вернитесь' in task_desc:
                     # Check last active time
+                    return_task = True
                     if user.last_active:
                         hours_passed = (datetime.datetime.utcnow() - user.last_active).total_seconds() / 3600
                         progress = 1 if hours_passed >= target else 0
                         completed = hours_passed >= target
+                        last_active_iso = user.last_active.isoformat()
                     else:
                         progress = 0
                         completed = False
+                        last_active_iso = None
                 elif 'VIP уровень' in task_desc:
                     progress = min(user.vip_level, target)
                     completed = user.vip_level >= target
@@ -2629,7 +2636,7 @@ def get_daily_tasks():
                     progress = 0
                     completed = False
                 
-                tasks.append({
+                task_obj = {
                     'id': idx,
                     'name': task_desc.split(' ')[0] + ' ' + task_desc.split(' ')[1] if len(task_desc.split(' ')) > 1 else task_desc,
                     'emoji': task_template['emoji'],
@@ -2639,7 +2646,14 @@ def get_daily_tasks():
                     'target': target,
                     'completed': completed,
                     'claimed': task_claimed
-                })
+                }
+                
+                # Add return task info if it's a return task
+                if return_task:
+                    task_obj['last_active'] = last_active_iso
+                    task_obj['return_task'] = True
+                
+                tasks.append(task_obj)
             
             return jsonify({'tasks': tasks})
     except Exception as e:

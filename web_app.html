@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.55 - Daily Tasks UI Fixes -->
+<!-- Quantum Nexus v6.7.56 - Daily Tasks Complete Fixes -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7128,10 +7128,18 @@
                                 
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                     <div style="font-size: 14px; color: ${textColor}; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                                        ${task.completed ? '✅ Выполнено' : `📊 Прогресс: ${task.progress}/${task.target}`}
+                                        ${task.completed ? '✅ Выполнено' : task.description && task.description.includes('Вернитесь через') ? `
+                                            <span id="returnTimer_${task.id}">⏳ Расчет времени...</span>
+                                        ` : `📊 Прогресс: ${task.progress}/${task.target}`}
                                     </div>
                                     <div style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 +${task.reward.toLocaleString()}</div>
                                 </div>
+                                
+                                ${!task.completed && task.description && task.description.includes('Вернитесь через') ? `
+                                    <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); border-radius: 8px; padding: 8px; margin-top: 8px; text-align: center;">
+                                        <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Вернитесь через ${task.target} часов для получения награды</div>
+                                    </div>
+                                ` : ''}
                                 
                                 ${!task.completed && isChannelTask ? `
                                     <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
@@ -7154,6 +7162,36 @@
                     }).join('');
                     
                     list.innerHTML = html;
+                    
+                    // Start countdown timers for return tasks
+                    data.tasks.forEach((task, index) => {
+                        if (task.return_task && task.last_active && !task.completed) {
+                            const timerEl = document.getElementById('returnTimer_' + task.id);
+                            if (timerEl) {
+                                function updateReturnTimer() {
+                                    if (!timerEl.parentElement) return; // Element removed
+                                    
+                                    const lastActive = new Date(task.last_active);
+                                    const now = new Date();
+                                    const hoursPassed = (now - lastActive) / (1000 * 60 * 60);
+                                    const hoursNeeded = task.target;
+                                    const hoursRemaining = Math.max(0, hoursNeeded - hoursPassed);
+                                    
+                                    if (hoursRemaining > 0) {
+                                        const hours = Math.floor(hoursRemaining);
+                                        const minutes = Math.floor((hoursRemaining - hours) * 60);
+                                        const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
+                                        timerEl.textContent = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                    } else {
+                                        timerEl.textContent = '✅ Задание выполнено!';
+                                        timerEl.style.color = '#10b981';
+                                    }
+                                }
+                                updateReturnTimer();
+                                setInterval(updateReturnTimer, 1000);
+                            }
+                        }
+                    });
                 } else {
                     list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
                 }
@@ -7220,11 +7258,29 @@
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('✅ Подписка подтверждена! Теперь можете забрать награду!');
                         }
-                        // Reload tasks to show completed state
-                        setTimeout(() => {
-                            openDailyBonus({preventDefault:()=>{}});
-                            loadData();
-                        }, 500);
+                        // Update task UI instantly without reloading modal
+                        const taskElement = document.querySelector(`[onclick="verifyChannelSubscription(${taskId})"]`)?.parentElement;
+                        if (taskElement) {
+                            const button = taskElement.querySelector('button');
+                            if (button) {
+                                button.outerHTML = `
+                                    <button onclick="claimReward(${taskId})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                        🎁 Забрать награду
+                                    </button>
+                                `;
+                            }
+                            // Update progress indicator
+                            const progressBar = taskElement.querySelector('[style*="width"]');
+                            if (progressBar) {
+                                progressBar.style.width = '100%';
+                                progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
+                            }
+                            const progressText = taskElement.querySelector('div[style*="font-size: 12px"]');
+                            if (progressText) {
+                                progressText.textContent = '1 / 1';
+                                progressText.style.color = '#10b981';
+                            }
+                        }
                     } else if (data.success === false) {
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('❌ Ошибка проверки подписки');
