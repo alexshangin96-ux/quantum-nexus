@@ -4213,7 +4213,7 @@
                     
                     <div style="padding: 20px;">
                         <div style="display: grid; gap: 12px;">
-                            ${vipItems.items.map(item => `
+                            ${vipItems.items.map((item, index) => `
                                 <div style="background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(255,215,0,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(255,215,0,0.25)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(255,215,0,0.15)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))'">
                                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
                                         <span style="font-size: 20px; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));">${item.name.split(' ')[0]}</span>
@@ -4238,7 +4238,7 @@
                                         </div>
                                     ` : ''}
                                     
-                                    <button onclick="buyWithStars('${category}', ${item.level}, ${item.basePrice || item.price})" 
+                                    <button onclick="buyWithStars('${category}', ${index}, ${item.basePrice || item.price})" 
                                             style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 1px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(255,215,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;"
                                             onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'"
                                             onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'"
@@ -5453,6 +5453,1936 @@
                 } else {
                     // Error sound
                     if (soundEnabled) playSound('error');
+                    
+                    // Error notification - like in shop
+                    const errorText = data.error.includes('Недостаточно') || data.error.includes('Not enough') ? 'Недостаточно ' + (currency === 'coins' ? 'коинов' : 'QuanHash') : data.error;
+                    anim.innerHTML='<div style="background:linear-gradient(135deg,rgba(239,68,68,0.95),rgba(220,38,38,0.95));padding:8px 16px;border-radius:20px;font-size:14px;box-shadow:0 4px 15px rgba(239,68,68,0.5);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,0.2);"><span style="font-size:16px;">💰</span> ' + errorText + '</div>';
+                    setTimeout(()=>{
+                        anim.style.opacity='0';anim.style.transform='translate(-50%,-60%)';
+                        setTimeout(()=>{anim.remove();},300);
+                    },1500);
+                }
+            });
+        }
+
+        function openCards(e) {
+            e.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'cardsModal2';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 420px; max-height: 85vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff; font-weight: 800;">💳 Крипто-Карточки</h2>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+                    
+                    <div style="background:linear-gradient(135deg,rgba(102,126,234,0.15),rgba(118,75,162,0.15));padding:15px;border-radius:15px;margin-bottom:20px;border:2px solid rgba(102,126,234,0.3);">
+                        <div style="font-size:13px;color:#94a3b8;line-height:1.6;">
+                            <strong style="color:#fff;">📋 Пассивный доход 24/7:</strong> Крипто-карточки генерируют коины каждую минуту! Разные редкости = разный доход. Зарабатывайте даже оффлайн!
+                        </div>
+                    </div>
+                    
+                    <div id="cardsShopSection" style="margin-bottom:25px;">
+                        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:15px;display:flex;align-items:center;gap:8px;grid-column:1/-1;">
+                            <span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:6px 12px;border-radius:8px;width:100%;text-align:center;">🛒 Магазин карточек</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button class="filter-btn shop-cat-btn" data-category="per_hour" onclick="loadCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">⚡ В час (Основные)</button>
+                            <button class="filter-btn shop-cat-btn" data-category="per_minute" onclick="loadCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;">💎 В минуту (Премиум)</button>
+                        </div>
+                        <div style="margin-bottom:15px;">
+                            <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
+                                <button onclick="openVIPCardsModal()" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                    <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
+                                    <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
+                                    <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="shopCardsList" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+                        <div id="vipCardsSection" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
+                    </div>
+                    
+                    <div id="passiveInfo" style="background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(34,197,94,0.2));padding:20px;border-radius:15px;border:2px solid rgba(16,185,129,0.4);text-align:center;margin-top:20px;margin-bottom:15px;">
+                        <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:#10b981;">💰 Общий пассивный доход</div>
+                        <div style="font-size:36px;font-weight:900;color:#10b981;text-shadow:0 0 20px rgba(16,185,129,0.5);">+0 🪙/час</div>
+                    </div>
+                    
+                    <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:16px;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load cards function
+            window.loadCardsCategory = function(category) {
+                // Handle VIP cards section display
+                const shopCardsList = document.getElementById('shopCardsList');
+                const vipCardsSection = document.getElementById('vipCardsSection');
+                
+                shopCardsList.style.display = 'grid';
+                if (vipCardsSection) vipCardsSection.style.display = 'none';
+                
+                document.querySelectorAll('#cardsShopSection .shop-cat-btn').forEach(btn => {
+                    if(btn.textContent.toLowerCase().includes(category === 'per_hour' ? 'час' : 'минуту')) {
+                        btn.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+                        btn.style.border = 'none';
+                    } else {
+                        btn.style.background = 'rgba(255,255,255,0.1)';
+                        btn.style.border = '1px solid rgba(255,255,255,0.3)';
+                    }
+                });
+                loadCardsList(category);
+            };
+            
+            window.buyVIPCard = function(cardType) {
+                fetch('/api/buy_vip_card', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: user?.id,
+                        card_type: cardType
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        tg.showAlert('✅ VIP карточка куплена!');
+                        loadData();
+                    } else {
+                        tg.showAlert('❌ ' + data.error);
+                    }
+                })
+                .catch(err => tg.showAlert('❌ Ошибка покупки'));
+            };
+            
+            window.buyVIPCardWithStars = function(cardRarity, price, productId) {
+                // Open Telegram payment (same as in VIP shop)
+                const paymentUrl = `https://t.me/qanexus_bot?start=buy_stars_${productId}`;
+                window.open(paymentUrl, '_blank');
+                
+                // Show beautiful VIP confirmation message
+                const anim = document.createElement('div');
+                anim.style.cssText = 'position:fixed;top:20%;left:50%;transform:translate(-50%,-50%);z-index:10000;pointer-events:none;';
+                anim.innerHTML = '<div style="background:linear-gradient(135deg,rgba(255,215,0,0.95),rgba(255,237,78,0.95));padding:25px 50px;border-radius:25px;font-size:26px;box-shadow:0 15px 50px rgba(255,215,0,0.7);color:#000;font-weight:800;display:flex;align-items:center;gap:20px;border:3px solid rgba(255,215,0,0.8);"><span style="font-size:40px;">⭐</span><div><div style="font-size:28px;margin-bottom:8px;">VIP Покупка</div><div style="font-size:20px;opacity:0.8;">Открывается оплата за ' + price + ' ⭐ Telegram Stars</div></div></div>';
+                document.body.appendChild(anim);
+                setTimeout(() => {
+                    anim.style.opacity = '0';
+                    anim.style.transform = 'translate(-50%,-70%)';
+                    setTimeout(() => {anim.remove();}, 300);
+                }, 2000);
+            };
+            
+            function loadCardsList(category) {
+                fetch('/api/shop', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user?.id, category: 'cards'})
+                })
+                .then(res => res.json())
+                .then(shopData => {
+                    console.log('Cards shop data:', shopData);
+                    // Store cards data globally for buyShopItem function
+                    if (!window.shopData) {
+                        window.shopData = {};
+                    }
+                    window.shopData.items = shopData.items || [];
+                    
+                    const shopList = document.getElementById('shopCardsList');
+                    const cards = shopData.items.filter(item => item.type === 'card' && (category === 'all' || item.income_type === category));
+                    console.log('Filtered cards:', cards, 'category:', category);
+                    console.log('Updating shopList for category:', category);
+                    console.log('Cards data sample:', cards.slice(0, 2).map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        level: c.level,
+                        price: c.price,
+                        income: c.income,
+                        income_per_min: c.income_per_min,
+                        income_type: c.income_type
+                    })));
+                    console.log('All cards for category', category, ':', cards.map(c => ({
+                        id: c.id,
+                        level: c.level,
+                        price: c.price,
+                        income_per_min: c.income_per_min
+                    })));
+                    if(cards && cards.length > 0) {
+                        shopList.innerHTML = cards.map((card, i) => {
+                        // Skip locked cards
+                        // Remove locking - all cards are available
+                        const rarity = card.rarity || 'common';
+                        const rarityInfo = {
+                            'common': {emoji:'⚪', name:'Обычная', color:'rgba(255,255,255,0.15)', border:'rgba(255,255,255,0.4)'},
+                            'rare': {emoji:'🔵', name:'Редкая', color:'rgba(102,126,234,0.25)', border:'rgba(102,126,234,0.8)'},
+                            'epic': {emoji:'🟣', name:'Эпическая', color:'rgba(118,75,162,0.25)', border:'rgba(118,75,162,0.8)'},
+                            'legendary': {emoji:'🟡', name:'Легендарная', color:'rgba(234,179,8,0.25)', border:'rgba(234,179,8,0.8)'}
+                        };
+                        const info = rarityInfo[rarity];
+                        const income = card.income_type === 'per_minute' ? (card.income_per_min || 0) : (card.income || 0);
+                        const incomeType = card.income_type === 'per_minute' ? '/мин' : '/час';
+                        const level = card.level || 1;
+                        const nameParts = card.name || 'Карточка';
+                        const cardEmoji = nameParts.match(/[\u{1F600}-\u{1F9FF}]/u)?.[0] || '💳';
+                        const cardName = nameParts.replace(/[\u{1F600}-\u{1F9FF}]/u, '').trim();
+                        return `
+                            <div style="background:${info.color};padding:12px;border-radius:12px;border:2px solid ${info.border};">
+                                <div style="font-size:24px;text-align:center;margin-bottom:6px;">${cardEmoji}</div>
+                                <div style="font-size:10px;font-weight:700;color:#fff;text-align:center;margin-bottom:6px;">${cardName}</div>
+                                <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:6px;">${card.description}</div>
+                                <div style="font-size:12px;color:#10b981;text-align:center;margin-bottom:6px;font-weight:700;">+${income.toFixed(1)} 🪙${incomeType}</div>
+                                <div style="font-size:9px;color:#fbbf24;text-align:center;margin-bottom:8px;font-weight:600;">Lv.${level} ${info.name}</div>
+                                <button onclick="buyShopItem('card', ${card.level || 1}, ${card.price || 0}, '${card.id}')" style="width:100%;padding:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:11px;">
+                                    🪙 ${(card.price || 0).toLocaleString()}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    } else {
+                        shopList.innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:#94a3b8;background:rgba(255,255,255,0.05);border-radius:12px;">Карточки временно недоступны</div>';
+                    }
+                });
+            }
+            
+            // Load per_hour cards by default
+            loadCardsList('per_hour');
+            
+            // Update passive income immediately
+            updatePassiveIncome();
+        }
+        
+        // VIP Cards Modal - defined globally
+        window.openVIPCardsModal = function() {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.zIndex = '10000';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 480px; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 22px 22px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 36px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 24px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">VIP КАРТОЧКИ</h2>
+                                <div style="font-size: 14px; color: rgba(0,0,0,0.7); margin-top: 4px; font-weight: 600;">Эксклюзивный пассивный доход</div>
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+                    
+                    <div style="padding: 20px;">
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:15px;">
+                            <button id="vipCardsBtnHour" onclick="loadVIPCardsCategory('per_hour')" style="padding:10px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15));color:#fff;border:2px solid #ffd700;border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;transition:all 0.3s;">
+                                ⚡ В час
+                            </button>
+                            <button id="vipCardsBtnMin" onclick="loadVIPCardsCategory('per_minute')" style="padding:10px;background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(167,139,250,0.3);border-radius:10px;cursor:pointer;font-weight:600;font-size:12px;transition:all 0.3s;">
+                                💎 В минуту
+                            </button>
+                        </div>
+                        
+                        <div id="vipCardsContent" style="display:grid;gap:12px;"></div>
+                        
+                        <!-- VIP стильная кнопка закрытия -->
+                        <button class="vip-close-btn" onclick="this.closest('.modal').remove()" style="margin-top:20px;">
+                            👑 Закрыть VIP функции
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            loadVIPCardsCategory('per_hour');
+            
+            // Update passive income after modal is opened
+            setTimeout(() => {
+                if (typeof updatePassiveIncome === 'function') {
+                    updatePassiveIncome();
+                }
+            }, 100);
+        };
+        
+        window.loadVIPCardsCategory = function(category) {
+            document.getElementById('vipCardsBtnHour').style.background = category === 'per_hour' ? 'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,237,78,0.15))' : 'rgba(255,255,255,0.05)';
+            document.getElementById('vipCardsBtnHour').style.border = category === 'per_hour' ? '2px solid #ffd700' : '2px solid rgba(167,139,250,0.3)';
+            document.getElementById('vipCardsBtnMin').style.background = category === 'per_minute' ? 'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(167,139,250,0.15))' : 'rgba(255,255,255,0.05)';
+            document.getElementById('vipCardsBtnMin').style.border = category === 'per_minute' ? '2px solid #8b5cf6' : '2px solid rgba(167,139,250,0.3)';
+            window.showVIPCardsList(category);
+        };
+        
+        window.showVIPCardsList = function(category = 'per_hour') {
+            const vipCardsContent = document.getElementById('vipCardsContent');
+            const vipCardsSection = document.getElementById('vipCardsSection');
+            const targetElement = vipCardsContent || vipCardsSection;
+            if (!targetElement) return;
+            
+            // VIP Card definitions - Доход от 300 до 20000 в час, от 15 до 1000 в минуту
+            // Using product IDs 101-116 to avoid conflict with Buy Currency (51-60)
+            const vipCardsPerHour = [
+                {name: 'VIP Silver', emoji: '⭐', basePrice: 100, baseIncome: 300, rarity: 'vip_silver', productId: 101},
+                {name: 'VIP Gold', emoji: '💎', basePrice: 250, baseIncome: 800, rarity: 'vip_gold', productId: 102},
+                {name: 'VIP Platinum', emoji: '👑', basePrice: 500, baseIncome: 1800, rarity: 'vip_platinum', productId: 103},
+                {name: 'VIP Diamond', emoji: '💍', basePrice: 1000, baseIncome: 4000, rarity: 'vip_diamond', productId: 104},
+                {name: 'VIP Elite', emoji: '🌟', basePrice: 2500, baseIncome: 9000, rarity: 'vip_elite', productId: 105},
+                {name: 'VIP Ultimate', emoji: '⚡', basePrice: 5000, baseIncome: 20000, rarity: 'vip_ultimate', productId: 106}
+            ];
+            
+            const vipCardsPerMinute = [
+                {name: 'VIP Nova', emoji: '✨', basePrice: 500, baseIncome: 15, rarity: 'vip_nova', productId: 111},
+                {name: 'VIP Quantum', emoji: '⚡', basePrice: 1250, baseIncome: 50, rarity: 'vip_quantum', productId: 112},
+                {name: 'VIP Cosmic', emoji: '🔥', basePrice: 2500, baseIncome: 150, rarity: 'vip_cosmic', productId: 113},
+                {name: 'VIP Stellar', emoji: '🎆', basePrice: 5000, baseIncome: 350, rarity: 'vip_stellar', productId: 114},
+                {name: 'VIP Galaxy', emoji: '🌌', basePrice: 10000, baseIncome: 600, rarity: 'vip_galaxy', productId: 115},
+                {name: 'VIP Infinity', emoji: '🌠', basePrice: 20000, baseIncome: 1000, rarity: 'vip_infinity', productId: 116}
+            ];
+            
+            const cards = category === 'per_hour' ? vipCardsPerHour : vipCardsPerMinute;
+            let html = '';
+            
+            cards.forEach((card, index) => {
+                const level = 1;
+                const price = category === 'per_hour' 
+                    ? Math.floor(card.basePrice * Math.pow(1.2, level - 1))
+                    : Math.floor(card.basePrice * Math.pow(1.3, level - 1));
+                const income = category === 'per_hour'
+                    ? Math.floor(card.baseIncome * Math.pow(1.15, level - 1))
+                    : Math.floor(card.baseIncome * Math.pow(1.2, level - 1));
+                const incomeText = category === 'per_hour' ? `+${income.toLocaleString()} 🪙/час` : `+${income.toLocaleString()} 🪙/мин`;
+                const isHour = category === 'per_hour';
+                const borderColor = isHour ? '#ffd700' : '#8b5cf6';
+                const bgGradient = isHour ? 'linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,237,78,0.25))' : 'linear-gradient(135deg,rgba(139,92,246,0.25),rgba(167,139,250,0.25))';
+                const badgeBg = isHour ? '#ffd700' : '#8b5cf6';
+                const badgeColor = isHour ? '#000' : '#fff';
+                const buttonGradient = isHour ? 'linear-gradient(135deg,#ffd700,#ffed4e,#ffd700)' : 'linear-gradient(135deg,#8b5cf6,#a78bfa,#8b5cf6)';
+                const buttonColor = isHour ? '#000' : '#fff';
+                const incomeColor = isHour ? '#4ade80' : '#a78bfa';
+                
+                html += `
+                    <div style="background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18)); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,215,0,0.3); position: relative; backdrop-filter: blur(8px); box-shadow: 0 6px 20px rgba(255,215,0,0.15); transition: all 0.3s ease; overflow: hidden; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)';this.style.boxShadow='0 10px 30px rgba(255,215,0,0.25)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.25))'" onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 6px 20px rgba(255,215,0,0.15)';this.style.background='linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,237,78,0.18))'">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span style="font-size: 20px; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));">${card.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 800; font-size: 14px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${card.name}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.8); margin-top: 2px;">Пассивный доход 24/7</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid #ffd700; box-shadow: 0 3px 8px rgba(255,215,0,0.4); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div>
+                                <span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">VIP</span>
+                            </div>
+                        </div>
+                        <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #4ade80; font-size: 12px; font-weight: 700;">💰 Доход:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${incomeText}</span>
+                        </div>
+                        <button onclick="buyVIPCardWithStars('${card.rarity}', ${price}, ${card.productId})" 
+                                style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); color: #000; border: 1px solid #ffd700; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px rgba(255,215,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;"
+                                onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px rgba(255,215,0,0.4)'"
+                                onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'"
+                                onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(255,215,0,0.3)'">
+                            <span>Купить за ${price}</span>
+                            <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(255,215,0,0.8)); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                            <span>Telegram Stars</span>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            targetElement.innerHTML = html;
+        };
+        
+        function updatePassiveIncome() {
+            fetch('/api/cards', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Update passive info display with rounded whole numbers
+                const totalPassive = Math.round(data.total_passive_per_hour || 0);
+                const passiveInfo = document.getElementById('passiveInfo');
+                if(passiveInfo && passiveInfo.querySelector('div:last-child')) {
+                    passiveInfo.querySelector('div:last-child').textContent = `+${totalPassive.toLocaleString()} 🪙/час`;
+                }
+            })
+            .catch(err => console.error('Error updating passive income:', err));
+        }
+        
+        // Update passive income every second when cards modal is open
+        let passiveIncomeInterval = null;
+        document.addEventListener('click', function(e) {
+            if(e.target.textContent && e.target.textContent.includes('Карточки')) {
+                if(!passiveIncomeInterval) {
+                    updatePassiveIncome();
+                    passiveIncomeInterval = setInterval(updatePassiveIncome, 1000);
+                }
+            }
+        });
+        function openStats(e) {
+            e.preventDefault();
+            document.getElementById('statsModal').classList.add('active');
+            fetch('/api/stats', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const statsHtml = `
+                    <div class="stats-row">
+                        <span class="stats-label">👆 Всего тапов</span>
+                        <span class="stats-value">${data.total_taps || 0}</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">💰 Заработано</span>
+                        <span class="stats-value">${Math.floor(data.total_earned || 0)} 🪙</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">💎 Добыто</span>
+                        <span class="stats-value">${Math.floor(data.total_mined || 0)} ⚡</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">💰 Баланс</span>
+                        <span class="stats-value">${Math.floor(data.coins || 0)} 🪙</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="stats-label">💎 QuanHash</span>
+                        <span class="stats-value">${Math.floor(data.quanhash || 0)} ⚡</span>
+                    </div>
+                `;
+                document.getElementById('statsContent').innerHTML = statsHtml;
+            });
+        }
+
+        // Generate all 165 achievements dynamically
+        function generateAllAchievements(data) {
+            const achievements = [];
+            
+            // Taps (20 achievements)
+            const tapsList = [[1,'👆'],[10,'🎯'],[50,'⚡'],[100,'🔥'],[500,'💫'],[1000,'🌊'],[5000,'🚀'],[10000,'💥'],[25000,'⚡'],[50000,'🔥'],[100000,'👑'],[250000,'💀'],[500000,'😈'],[1000000,'∞'],[2500000,'🌌'],[5000000,'🌀'],[10000000,'💫'],[25000000,'⭐'],[50000000,'✨'],[100000000,'🌟']];
+            const tapsTitlesRu = ['Первый тап','Новичок','Активист','Мастер','Эксперт','Профи','Ветеран','Легенда','Гуру','Титан','Бог','Демон','Абсолют','Бесконечность','Вселенная','Мультивселенная','Космос','Звезда','Супер','МАКСИМУМ'];
+            tapsList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`taps_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + tapsTitlesRu[idx],
+                    desc: `Сделайте ${thresh} тапов`,
+                    unlocked: data.total_taps >= thresh,
+                    category: 'taps', color: '#60a5fa'
+                });
+            });
+            
+            // Coins (20 achievements)
+            const coinsList = [[1000000,'💰'],[2500000,'💸'],[5000000,'💵'],[10000000,'💎'],[25000000,'🏆'],[50000000,'👑'],[100000000,'⭐'],[250000000,'🌟'],[500000000,'✨'],[1000000000,'💫'],[2500000000,'🔥'],[5000000000,'⚡'],[10000000000,'🌌'],[25000000000,'🌀'],[50000000000,'⭐'],[100000000000,'✨'],[250000000000,'💫'],[500000000000,'🌟'],[1000000000000,'🔥'],[10000000000000,'👑']];
+            const coinsTitlesRu = ['Миллионер','Барон','Тиран','Магнат','Король','Олигарх','Империя','Федерация','Конгломерат','Галактика','Космос','Бесконечность','Вселенная','Мультивселенная','Супер','Гипер','Ультра','Мета','Транс','ВСЕЛЕННАЯ'];
+            coinsList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`coins_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + coinsTitlesRu[idx],
+                    desc: `Заработайте ${thresh/1000000}M коинов`,
+                    unlocked: data.total_earned >= thresh,
+                    category: 'coins', color: '#fbbf24'
+                });
+            });
+            
+            // Cards (15 achievements)
+            const cardsList = [[1,'🃏'],[5,'🎴'],[10,'🃏'],[25,'🎴'],[50,'🃏'],[100,'🎴'],[150,'🃏'],[250,'🎴'],[350,'🃏'],[500,'🎴'],[750,'🃏'],[1000,'🎴'],[1500,'🃏'],[2500,'🎴'],[5000,'🃏']];
+            const cardsTitlesRu = ['Первая карта','Коллекционер','Коллекционер+','Мастер','Мастер карт','Легенда','Мифический','Бог карт','Божественный','Космос','Вселенная','Мультивселенная','Бесконечность','Максимальный','КОСМИЧЕСКИЙ'];
+            cardsList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`cards_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + cardsTitlesRu[idx],
+                    desc: `Купите ${thresh} карт`,
+                    unlocked: (data.cards && data.cards.length >= thresh),
+                    category: 'cards', color: '#8b5cf6'
+                });
+            });
+            
+            // Mining (15 achievements)
+            const miningList = [[1,'⛏️'],[5,'🏭'],[10,'🏗️'],[25,'⚙️'],[50,'🏭'],[100,'🏗️'],[150,'⚙️'],[250,'🏭'],[350,'🏗️'],[500,'⚙️'],[750,'🏭'],[1000,'🏗️'],[1500,'⚙️'],[2500,'🏭'],[5000,'🏗️']];
+            const miningTitlesRu = ['Первая машина','Цех','Фабрика','Завод','Мегафабрика','Корпорация','Конгломерат','Альянс','Империя','Космос','Вселенная','Мультивселенная','Бесконечность','Максимальный','КОСМИЧЕСКИЙ'];
+            miningList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`mining_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + miningTitlesRu[idx],
+                    desc: `Купите ${thresh} машин`,
+                    unlocked: (data.machines && data.machines.length >= thresh),
+                    category: 'mining', color: '#10b981'
+                });
+            });
+            
+            // Levels (15 achievements)
+            const levelsList = [[5,'🌟'],[10,'⭐'],[15,'✨'],[20,'💫'],[25,'🌟'],[30,'⭐'],[35,'✨'],[40,'💫'],[50,'🌟'],[60,'⭐'],[70,'✨'],[80,'💫'],[90,'🌟'],[95,'⭐'],[100,'💫']];
+            const levelsTitlesRu = ['Уровень 5','Уровень 10','Уровень 15','Уровень 20','Уровень 25','Уровень 30','Уровень 35','Уровень 40','Уровень 50','Уровень 60','Уровень 70','Уровень 80','Уровень 90','Уровень 95','МАКСИМУМ'];
+            levelsList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`level_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + levelsTitlesRu[idx],
+                    desc: `Достигните ${thresh} уровня`,
+                    unlocked: data.level >= thresh,
+                    category: 'level', color: '#a78bfa'
+                });
+            });
+            
+            // VIP (15 achievements)
+            const vipList = [[1,'🥉'],[2,'🥈'],[3,'🥇'],[4,'💎'],[5,'👑'],[6,'⭐'],[7,'✨'],[8,'💫'],[9,'🌟'],[10,'🔥'],[11,'⚡'],[12,'🌌'],[13,'🌀'],[14,'⭐'],[15,'👑']];
+            const vipTitlesRu = ['VIP Бронза','VIP Серебро','VIP Золото','VIP Платина','VIP ДИАМОНД','VIP ЗВЕЗДА','VIP КОСМОС','VIP ВСЕЛЕННАЯ','VIP МУЛЬТИ','VIP БОГ','VIP АБСОЛЮТ','VIP ГАЛАКТИКА','VIP КОСМОС','VIP УЛЬТРА','VIP ВСЕЛЕННАЯ'];
+            vipList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`vip_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + vipTitlesRu[idx],
+                    desc: `VIP уровень ${thresh}`,
+                    unlocked: (data.vip_level || 0) >= thresh,
+                    category: 'vip', color: '#ffd700'
+                });
+            });
+            
+            // Social (15 achievements)
+            const socialList = [[1,'👥'],[5,'👫'],[10,'🌐'],[15,'👬'],[25,'👭'],[50,'🤝'],[75,'🙌'],[100,'👍'],[150,'🤝'],[250,'🙏'],[500,'👑'],[1000,'🌟'],[2500,'✨'],[5000,'💫'],[10000,'🔥']];
+            const socialTitlesRu = ['Первый друг','Маг','Мастер','Лидер','Капитан','Легенда','Профи','Гуру','Титан','Бог','Космос','Вселенная','Мультивселенная','Бесконечность','ВСЕЛЕННАЯ'];
+            socialList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`social_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + socialTitlesRu[idx],
+                    desc: `Пригласите ${thresh} друзей`,
+                    unlocked: (data.referrals_count || 0) >= thresh,
+                    category: 'social', color: '#ec4899'
+                });
+            });
+            
+            // Energy (10 achievements)
+            const energyList = [[10,'⚡'],[50,'🔋'],[100,'⚡'],[500,'🔋'],[1000,'⚡'],[2500,'🔋'],[5000,'⚡'],[10000,'🔋'],[25000,'⚡'],[50000,'🔋']];
+            const energyTitlesRu = ['Энергия 10','Энергия 50','Энергия 100','Энергия 500','Энергия 1000','Энергия 2500','Энергия 5000','Энергия 10K','Энергия 25K','Энергия 50K'];
+            energyList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`energy_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + energyTitlesRu[idx],
+                    desc: `Накапливайте ${thresh} энергии`,
+                    unlocked: false, // Placeholder - energy tracking not implemented yet
+                    category: 'energy', color: '#f59e0b'
+                });
+            });
+            
+            // Shop (10 achievements)
+            const shopList = [[1,'🛍️'],[10,'💳'],[25,'🛒'],[50,'🛍️'],[100,'💳'],[250,'🛒'],[500,'🛍️'],[1000,'💳'],[2500,'🛒'],[5000,'🛍️']];
+            const shopTitlesRu = ['Первая покупка','Покупатель','Шопер','Покупатель+','Мастер','Эксперт','Профи','Легенда','Бог','КОСМОС'];
+            shopList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`shop_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + shopTitlesRu[idx],
+                    desc: `Сделайте ${thresh} покупок`,
+                    unlocked: false, // Placeholder - shop purchase tracking not implemented yet
+                    category: 'shop', color: '#6366f1'
+                });
+            });
+            
+            // QuanHash (10 achievements)
+            const quanhashList = [[100,'💎'],[1000,'💠'],[10000,'💎'],[100000,'💠'],[1000000,'💎'],[10000000,'💠'],[100000000,'💎'],[1000000000,'💠'],[10000000000,'💎'],[100000000000,'💠']];
+            const quanhashTitlesRu = ['100 QuanHash','1K QuanHash','10K QuanHash','100K QuanHash','1M QuanHash','10M QuanHash','100M QuanHash','1B QuanHash','10B QuanHash','100B QuanHash'];
+            quanhashList.forEach(([thresh, icon], idx) => {
+                const display = thresh >= 1000 ? thresh/1000 + 'K' : thresh;
+                achievements.push({
+                    id:`quanhash_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + quanhashTitlesRu[idx],
+                    desc: `Добыть ${display} QuanHash`,
+                    unlocked: (data.quanhash || 0) >= thresh,
+                    category: 'quanhash', color: '#a855f7'
+                });
+            });
+            
+            // Time (10 achievements)
+            const timeList = [[1,'📅'],[7,'📆'],[30,'🗓️'],[60,'📅'],[100,'📆'],[180,'🗓️'],[365,'📅'],[730,'📆'],[1095,'🗓️'],[1825,'📅']];
+            const timeTitlesRu = ['1 день','1 неделя','1 месяц','2 месяца','100 дней','6 месяцев','1 год','2 года','3 года','5 лет'];
+            timeList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`time_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + timeTitlesRu[idx],
+                    desc: `Играйте ${thresh} дней`,
+                    unlocked: false, // Placeholder - time tracking not implemented yet
+                    category: 'time', color: '#06b6d4'
+                });
+            });
+            
+            // Premium (10 achievements)
+            const premiumList = [[1,'🎁'],[5,'🎉'],[10,'🎁'],[25,'🎉'],[50,'🎁'],[100,'🎉'],[250,'🎁'],[500,'🎉'],[1000,'🎁'],[2500,'🎉']];
+            const premiumTitlesRu = ['Первый бонус','Бонус x5','Бонус x10','Бонус x25','Бонус x50','Бонус x100','Бонус x250','Бонус x500','Бонус x1K','Бонус x2.5K'];
+            premiumList.forEach(([thresh, icon], idx) => {
+                achievements.push({
+                    id:`premium_${thresh}`, threshold:thresh, icon:icon,
+                    title: icon + ' ' + premiumTitlesRu[idx],
+                    desc: `Получите ${thresh} бонусов`,
+                    unlocked: false, // Placeholder - premium tracking not implemented yet
+                    category: 'premium', color: '#ef4444'
+                });
+            });
+            
+            return achievements;
+        }
+        
+        function openAchievements() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10000';
+                
+                const achievements = generateAllAchievements(data);
+                
+                const unlockedCount = achievements.filter(a => a.unlocked).length;
+                const totalCount = achievements.length;
+                const progress = (unlockedCount / totalCount * 100).toFixed(0);
+                
+                // Group achievements by category
+                const categories = {
+                    taps: {icon:'👆', title:'Тапы', color:'#60a5fa'},
+                    coins: {icon:'💰', title:'Доход', color:'#fbbf24'},
+                    cards: {icon:'🃏', title:'Карты', color:'#8b5cf6'},
+                    mining: {icon:'⛏️', title:'Майнинг', color:'#10b981'},
+                    level: {icon:'🌟', title:'Уровни', color:'#a78bfa'},
+                    vip: {icon:'👑', title:'VIP', color:'#ffd700'},
+                    social: {icon:'👥', title:'Социальное', color:'#ec4899'},
+                    energy: {icon:'⚡', title:'Энергия', color:'#f59e0b'},
+                    shop: {icon:'🛍️', title:'Магазин', color:'#6366f1'},
+                    quanhash: {icon:'💎', title:'QuanHash', color:'#a855f7'},
+                    time: {icon:'📅', title:'Время', color:'#06b6d4'},
+                    premium: {icon:'🎁', title:'Премиум', color:'#ef4444'}
+                };
+                
+                const grouped = {};
+                achievements.forEach(ach => {
+                    if(!grouped[ach.category]) grouped[ach.category] = [];
+                    grouped[ach.category].push(ach);
+                });
+                
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:500px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(167,139,250,0.4);box-shadow:0 10px 40px rgba(167,139,250,0.3);">
+                        <div style="background:linear-gradient(135deg,#667eea,#764ba2);padding:24px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">🏆 ДОСТИЖЕНИЯ</h2>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                            </div>
+                            <div style="background:rgba(0,0,0,0.3);padding:12px;border-radius:12px;color:#fff;">
+                                <div style="font-size:14px;font-weight:700;margin-bottom:8px;">Прогресс: ${unlockedCount}/${totalCount}</div>
+                                <div style="background:rgba(255,255,255,0.2);height:10px;border-radius:10px;overflow:hidden;">
+                                    <div style="width:${progress}%;height:100%;background:linear-gradient(90deg,#10b981,#4ade80);transition:width 0.5s;box-shadow:0 0 10px rgba(16,185,129,0.6);"></div>
+                                </div>
+                                <div style="font-size:11px;margin-top:8px;opacity:0.9;">${progress}% завершено</div>
+                            </div>
+                        </div>
+                        <div style="padding:20px;">
+                            ${Object.keys(grouped).map(catKey => {
+                                const cat = categories[catKey];
+                                const catAchievements = grouped[catKey];
+                                const unlockedInCat = catAchievements.filter(a => a.unlocked).length;
+                                const totalInCat = catAchievements.length;
+                                const catProgress = (unlockedInCat / totalInCat * 100).toFixed(0);
+                                
+                                return `
+                                    <div style="margin-bottom:20px;background:linear-gradient(135deg,${cat.color}15,${cat.color}05);border:2px solid ${cat.color}40;border-radius:16px;overflow:hidden;">
+                                        <div style="background:linear-gradient(135deg,${cat.color},${cat.color}cc);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+                                            <div style="display:flex;align-items:center;gap:10px;">
+                                                <span style="font-size:24px;">${cat.icon}</span>
+                                                <span style="font-size:16px;font-weight:800;color:#fff;">${cat.title}</span>
+                                            </div>
+                                            <span style="font-size:13px;font-weight:700;color:#fff;background:rgba(0,0,0,0.2);padding:4px 10px;border-radius:8px;">${unlockedInCat}/${totalInCat}</span>
+                                        </div>
+                                        <div style="padding:12px;">
+                                            ${catAchievements.map(ach => `
+                                                <div style="margin-bottom:10px;background:${ach.unlocked ? `linear-gradient(135deg,${ach.color}20,${ach.color}05)` : 'rgba(0,0,0,0.3)'};padding:14px;border-radius:12px;border:2px solid ${ach.unlocked ? `${ach.color}50` : 'rgba(255,255,255,0.1)'};transition:all 0.3s;position:relative;overflow:hidden;">
+                                                    ${ach.unlocked ? `<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${ach.color},transparent);"></div>` : ''}
+                                                    <div style="display:flex;align-items:center;gap:14px;">
+                                                        <div style="font-size:36px;filter:${ach.unlocked ? 'none' : 'grayscale(100%) opacity(0.4)'};transform:${ach.unlocked ? 'scale(1)' : 'scale(0.9)'};transition:all 0.3s;">${ach.icon}</div>
+                                                        <div style="flex:1;">
+                                                            <div style="font-size:15px;font-weight:800;color:${ach.unlocked ? '#fff' : '#94a3b8'};margin-bottom:5px;display:flex;align-items:center;gap:6px;">
+                                                                ${ach.title}
+                                                                ${ach.unlocked ? '<span style="font-size:12px;color:#86efac;">✨</span>' : ''}
+                                                            </div>
+                                                            <div style="font-size:12px;color:${ach.unlocked ? '#86efac' : '#64748b'};font-weight:500;">${ach.desc}</div>
+                                                        </div>
+                                                        ${ach.unlocked ? `
+                                                            <div style="font-size:28px;animation:pulse 2s ease-in-out infinite;">✅</div>
+                                                        ` : `
+                                                            <div style="font-size:28px;opacity:0.2;">🔒</div>
+                                                        `}
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+            });
+        }
+        
+        function openSettingsModal() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.style.zIndex = '10000';
+                
+                // Get saved settings from localStorage or use defaults (disabled by default)
+                const savedSound = localStorage.getItem('soundEnabled') === 'true';
+                const savedHaptics = localStorage.getItem('hapticsEnabled') === 'true';
+                const savedNotifications = localStorage.getItem('notificationsEnabled') === 'true';
+                const savedUsername = localStorage.getItem('username') || data.username || data.first_name || 'Игрок';
+                
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width:450px;max-height:85vh;overflow-y:auto;background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(75,85,99,0.4);box-shadow:0 10px 40px rgba(75,85,99,0.3);">
+                        <div style="background:linear-gradient(135deg,#4b5563,#374151);padding:24px;border-radius:22px 22px 0 0;text-align:center;position:relative;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <h2 style="font-size:24px;color:#fff;margin:0;font-weight:900;">⚙️ НАСТРОЙКИ</h2>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                            </div>
+                        </div>
+                        <div style="padding:20px;">
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">👤 ПРОФИЛЬ</div>
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">Имя пользователя</div>
+                                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                                        <input type="text" id="usernameInput" value="${savedUsername}" style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(102,126,234,0.3);border-radius:8px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;" 
+                                               onfocus="this.style.borderColor='#667eea';this.style.background='rgba(102,126,234,0.1)';" 
+                                               onblur="this.style.borderColor='rgba(102,126,234,0.3)';this.style.background='rgba(255,255,255,0.05)';">
+                                        <button onclick="saveUsername();" style="padding:10px 14px;background:linear-gradient(135deg,#667eea,#764ba2);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;flex-shrink:0;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">✓</button>
+                                    </div>
+                                    <div id="usernameError" style="display:none;margin-top:8px;padding:8px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.5);border-radius:8px;color:#ef4444;font-size:12px;font-weight:600;"></div>
+                                    <div id="usernameSuccess" style="display:none;margin-top:8px;padding:8px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);border-radius:8px;color:#10b981;font-size:12px;font-weight:600;"></div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔊 ЗВУК И ВИБРАЦИЯ</div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);margin-bottom:10px;">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">🔊</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Звуки</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Включить звуковые эффекты</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="soundToggle" ${savedSound ? 'checked' : ''} onchange="handleSoundToggle(this);" style="opacity:0;width:0;height:0;">
+                                            <span class="toggle-track" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedSound ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedSound ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">📳</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Вибрация</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Тактильная обратная связь</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="hapticsToggle" ${savedHaptics ? 'checked' : ''} onchange="localStorage.setItem('hapticsEnabled', this.checked); updateToggleVisual(this);" style="opacity:0;width:0;height:0;">
+                                            <span class="toggle-track" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedHaptics ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedHaptics ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom:20px;">
+                                <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.1);">🔔 УВЕДОМЛЕНИЯ</div>
+                                
+                                <div style="background:rgba(0,0,0,0.2);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <span style="font-size:24px;">🔔</span>
+                                            <div>
+                                                <div style="font-size:13px;font-weight:700;color:#fff;">Уведомления</div>
+                                                <div style="font-size:11px;color:#94a3b8;">Получать push-уведомления</div>
+                                            </div>
+                                        </div>
+                                        <label style="position:relative;display:inline-block;width:50px;height:28px;">
+                                            <input type="checkbox" id="notificationsToggle" ${savedNotifications ? 'checked' : ''} onchange="localStorage.setItem('notificationsEnabled', this.checked); updateToggleVisual(this);" style="opacity:0;width:0;height:0;">
+                                            <span class="toggle-track" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:${savedNotifications ? '#667eea' : '#4b5563'};border-radius:34px;transition:all 0.3s;">
+                                                <span style="position:absolute;content:'';height:22px;width:22px;left:3px;bottom:3px;background-color:#fff;border-radius:50%;transition:all 0.3s;transform:translateX(${savedNotifications ? '22px' : '0'});"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                            <button onclick="saveSettings(); this.closest('.modal').remove();" style="width:100%;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border-radius:12px;cursor:pointer;font-weight:800;font-size:15px;color:#fff;margin-bottom:10px;border:none;box-shadow:0 4px 12px rgba(16,185,129,0.3);transition:all 0.3s;" onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 6px 16px rgba(16,185,129,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(16,185,129,0.3)'">
+                                💾 Сохранить настройки
+                            </button>
+                            
+                            <button onclick="this.closest('.modal').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#64748b,#475569);border-radius:12px;cursor:pointer;font-weight:700;font-size:15px;color:#fff;border:none;">Отмена</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                modal.onclick = (e) => {if(e.target === modal) modal.remove();};
+            });
+        }
+        
+        function updateToggleVisual(checkbox) {
+            const track = checkbox.parentElement.querySelector('.toggle-track');
+            const thumb = track ? track.querySelector('span') : null;
+            if (track && thumb) {
+                if (checkbox.checked) {
+                    track.style.backgroundColor = '#667eea';
+                    thumb.style.transform = 'translateX(22px)';
+                } else {
+                    track.style.backgroundColor = '#4b5563';
+                    thumb.style.transform = 'translateX(0)';
+                }
+            }
+        }
+        
+        function saveSettings() {
+            const username = document.getElementById('usernameInput')?.value;
+            const soundEnabled = document.getElementById('soundToggle')?.checked;
+            const hapticsEnabled = document.getElementById('hapticsToggle')?.checked;
+            const notificationsEnabled = document.getElementById('notificationsToggle')?.checked;
+            
+            console.log('saveSettings - soundEnabled:', soundEnabled, 'hapticsEnabled:', hapticsEnabled);
+            
+            // Save to localStorage first
+            if(username) localStorage.setItem('username', username);
+            if(soundEnabled !== undefined) {
+                localStorage.setItem('soundEnabled', soundEnabled);
+                console.log('Saved soundEnabled to localStorage:', soundEnabled);
+            }
+            if(hapticsEnabled !== undefined) localStorage.setItem('hapticsEnabled', hapticsEnabled);
+            if(notificationsEnabled !== undefined) localStorage.setItem('notificationsEnabled', notificationsEnabled);
+            
+            // Save username to database
+            if(username && window.user?.id) {
+                fetch('/api/update_username', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_id: window.user.id,
+                        username: username
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(!data.success) {
+                        console.error('Failed to update username in database:', data.error);
+                    } else {
+                        // Username updated successfully, update window.user for immediate profile refresh
+                        if(window.user) {
+                            window.user.username = username;
+                            window.user.first_name = username;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error updating username in database:', err);
+                });
+            }
+            
+            // Show success message
+            tg.showAlert('✅ Настройки сохранены!');
+            
+            // Initialize AudioContext if not already done (for immediate sound feedback)
+            initAudio();
+            
+            // Play success sound if enabled (use the value we just saved)
+            console.log('About to play success sound, soundEnabled === true?', soundEnabled === true);
+            if (soundEnabled === true) {
+                console.log('Playing success sound after settings save');
+                // Wait a moment for AudioContext to resume if needed
+                setTimeout(() => {
+                    playSound('success');
+                }, 100);
+            } else {
+                console.log('Sound not enabled, skipping success sound');
+            }
+            
+            // Trigger haptic feedback if enabled (use the value we just saved)
+            if (hapticsEnabled === true && tg?.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+        
+        function handleSoundToggle(checkbox) {
+            if (checkbox.checked) {
+                // Show permission request modal
+                const confirmModal = document.createElement('div');
+                confirmModal.className = 'modal active';
+                confirmModal.style.zIndex = '10001';
+                confirmModal.innerHTML = `
+                    <div style="background:linear-gradient(135deg,rgba(10,14,39,0.98),rgba(15,23,42,0.98));border-radius:24px;border:2px solid rgba(102,126,234,0.4);box-shadow:0 10px 40px rgba(102,126,234,0.3);max-width:400px;padding:30px;text-align:center;position:relative;">
+                        <div style="font-size:64px;margin-bottom:20px;">🎵</div>
+                        <h2 style="font-size:22px;color:#fff;margin:0 0 15px;font-weight:800;">Разрешить звуки?</h2>
+                        <p style="font-size:14px;color:#94a3b8;line-height:1.6;margin-bottom:25px;">Для включения звуковых эффектов нужно разрешение браузера на воспроизведение звука</p>
+                        <div style="display:flex;gap:10px;">
+                            <button onclick="document.getElementById('soundToggle').checked=false;this.closest('.modal').remove()" style="flex:1;padding:12px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;">Отмена</button>
+                            <button onclick="this.closest('.modal').remove();localStorage.setItem('soundEnabled', 'true');updateToggleVisual(document.getElementById('soundToggle'));initAudio();" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;">Разрешить</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(confirmModal);
+                confirmModal.onclick = (e) => {if(e.target === confirmModal) confirmModal.remove();};
+            } else {
+                localStorage.setItem('soundEnabled', 'false');
+                updateToggleVisual(checkbox);
+            }
+        }
+        
+        function saveUsername() {
+            const input = document.getElementById('usernameInput');
+            const errorDiv = document.getElementById('usernameError');
+            const successDiv = document.getElementById('usernameSuccess');
+            const username = input?.value?.trim();
+            
+            if (!username) {
+                errorDiv.textContent = 'Имя пользователя не может быть пустым';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (username.length < 3) {
+                errorDiv.textContent = 'Имя пользователя должно содержать минимум 3 символа';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!window.user?.id) {
+                errorDiv.textContent = 'Ошибка авторизации';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            fetch('/api/update_username', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: window.user.id,
+                    username: username
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('username', username);
+                    if (window.user) {
+                        window.user.username = username;
+                        window.user.first_name = username;
+                    }
+                    errorDiv.style.display = 'none';
+                    successDiv.textContent = '✅ Имя пользователя успешно сохранено!';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        successDiv.style.display = 'none';
+                    }, 3000);
+                } else {
+                    errorDiv.textContent = data.error || '❌ Такое имя пользователя уже существует';
+                    errorDiv.style.display = 'block';
+                    successDiv.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                errorDiv.textContent = '❌ Ошибка подключения к серверу';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            });
+        }
+        
+        function openReferrals(e) {
+            e.preventDefault();
+            try { tg.HapticFeedback.impactOccurred('light'); } catch(err) {}
+            document.getElementById('referralsModal').classList.add('active');
+            fetch('/api/referrals', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('refCount').textContent = data.referrals_count || 0;
+                document.getElementById('refPremiumCount').textContent = data.premium_referrals_count || 0;
+                document.getElementById('refRegularCount').textContent = data.regular_referrals_count || 0;
+                document.getElementById('refIncome').textContent = `${Math.floor(data.referral_income || 0)} 🪙`;
+                
+                // Generate correct referral link
+                const botUsername = 'qanexus_bot';
+                const refCode = data.referral_code || window.user?.id || 'no_code';
+                const refLink = `https://t.me/${botUsername}?start=${refCode}`;
+                document.getElementById('refLink').textContent = refLink;
+                
+                // Render referrals list
+                renderReferralsList(data.referrals || []);
+            })
+            .catch(err => {
+                console.error('Error loading referrals:', err);
+            });
+        }
+        
+        function renderReferralsList(referrals) {
+            const listContainer = document.getElementById('referralsList');
+            if (!referrals || referrals.length === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; padding: 30px; color: rgba(255,255,255,0.5); font-size: 14px;">Пока нет рефералов</div>';
+                return;
+            }
+            
+            listContainer.innerHTML = referrals.map(ref => {
+                const isPremium = ref.is_premium || false;
+                const isVIP = ref.is_vip || false;
+                const badge = isPremium ? '⭐ Premium' : isVIP ? '👑 VIP' : '✅';
+                const badgeColor = isPremium ? '#ffd700' : isVIP ? '#667eea' : '#10b981';
+                const borderColor = isPremium ? 'rgba(255,215,0,0.5)' : isVIP ? 'rgba(102,126,234,0.5)' : 'rgba(16,185,129,0.4)';
+                const bgColor = isPremium ? 'rgba(255,215,0,0.1)' : isVIP ? 'rgba(102,126,234,0.1)' : 'rgba(16,185,129,0.1)';
+                const percent = ref.referral_income_percent || (isPremium ? 10 : isVIP ? 10 : 5);
+                const earned = Math.floor(ref.total_earned || 0);
+                const income = Math.floor(ref.income_from_ref || 0);
+                const coins = Math.floor(ref.coins || 0);
+                const joinedDate = ref.joined_at ? new Date(ref.joined_at).toLocaleDateString('ru-RU') : 'Неизвестно';
+                
+                return `
+                    <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 14px; padding: 16px; margin-bottom: 12px; transition: all 0.3s; box-shadow: 0 2px 8px ${badgeColor}20;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px ${badgeColor}40';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px ${badgeColor}20';">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 24px; filter: drop-shadow(0 2px 4px ${badgeColor}40);">${badge}</div>
+                                <div style="font-weight: 900; color: #fff; font-size: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${ref.username}</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, ${badgeColor} 0%, ${badgeColor}dd 100%); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px ${badgeColor}60; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                ${percent}%
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 13px;">
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💰 Заработал:
+                            </div>
+                            <div style="font-weight: 800; color: #10b981; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                ${earned.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💵 Ваш доход:
+                            </div>
+                            <div style="font-weight: 800; color: #ffd700; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(255,215,0,0.3);">
+                                ${income.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💳 Баланс:
+                            </div>
+                            <div style="font-weight: 800; color: #667eea; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(102,126,234,0.3);">
+                                ${coins.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                📅 Присоединился:
+                            </div>
+                            <div style="font-weight: 800; color: rgba(255,255,255,0.95); text-align: right; font-size: 14px;">
+                                ${joinedDate}
+                            </div>
+                        </div>
+                        ${isPremium ? `
+                        <div style="margin-top: 10px; padding: 8px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; font-weight: 700; color: #ffd700;">
+                                ⭐ Premium пользователь - удвоенный доход!
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyRefLink() {
+            const link = document.getElementById('refLink').textContent;
+            if (link === '-') return;
+            
+            navigator.clipboard.writeText(link).then(() => {
+                try { tg.HapticFeedback.impactOccurred('light'); } catch(err) {}
+                
+                // Show beautiful toast notification
+                const toast = document.getElementById('copyToast');
+                toast.style.transform = 'translate(-50%, -50%) scale(1)';
+                
+                setTimeout(() => {
+                    toast.style.transform = 'translate(-50%, -50%) scale(0)';
+                }, 2000);
+            });
+        }
+
+        function openWithdrawModal(e) {
+            if(e && e.preventDefault) e.preventDefault();
+            document.getElementById('withdrawModal').classList.add('active');
+            
+            // Check if user has enough QuanHash
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const quanhash = Math.floor(data.quanhash || 0);
+                const hasEnough = quanhash >= 500000;
+                const vipLevel = data.vip_level || 0;
+                const isVIP = vipLevel >= 3;
+                const isDiamond = vipLevel >= 5;
+                
+                // VIP bonuses
+                const feePercent = isDiamond ? 0 : isVIP ? 2 : 5;
+                const minWithdraw = isDiamond ? 100000 : isVIP ? 250000 : 500000;
+                const withdrawMultiplier = isDiamond ? 2 : isVIP ? 1.5 : 1;
+                
+                document.getElementById('withdrawContent').innerHTML = `
+                    <div style="padding: 15px;">
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <div style="font-size: 40px; margin-bottom: 8px;">💎</div>
+                            <div style="font-size: 16px; font-weight: bold;">Вывод средств</div>
+                            <div style="font-size: 13px; opacity: 0.7; margin-top: 4px;">У вас: ${quanhash.toLocaleString()} 💎</div>
+                            ${isVIP ? `
+                            <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:12px;font-weight:800;color:#000;border:2px solid #ffd700;">
+                                👑 VIP БОНУС: ${feePercent === 0 ? '0% комиссия!' : feePercent + '% комиссия • x' + withdrawMultiplier + ' лимит'}
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+                            <div style="font-size: 13px; opacity: 0.8; margin-bottom: 4px;">Обмен</div>
+                            <div style="font-size: 16px; font-weight: bold;">500,000 💎 = $1 USDT</div>
+                            ${feePercent === 0 ? `
+                            <div style="font-size:12px;color:#ffd700;font-weight:700;margin-top:4px;">✨ НЕТ КОМИССИИ (Diamond VIP)</div>
+                            ` : ''}
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="margin-bottom: 6px; font-weight: 500; font-size: 13px;">Количество QuanHash (мин. 500,000):</div>
+                            <input type="number" id="quanhashAmount" value="${minWithdraw}" min="${minWithdraw}" step="1000" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px;" oninput="updateUSDTAmount()">
+                            <div id="usdtAmount" style="margin-top: 6px; font-size: 13px; font-weight: bold; color: #10b981;">Получите: $1.00 USDT</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="margin-bottom: 6px; font-weight: 500; font-size: 13px;">BEP20 адрес:</div>
+                            <input type="text" id="usdtAddress" placeholder="0x0000...0000" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 10px; color: white; font-size: 14px; font-weight: 600;">
+                        </div>
+                        <button id="withdrawBtn" class="action-btn" onclick="withdraw()" style="width: 100%; margin-bottom: 15px; padding: 12px; ${hasEnough ? '' : 'opacity: 0.5; cursor: not-allowed;'}" ${hasEnough ? '' : 'disabled'}>${hasEnough ? '💸 Вывести' : '⚠️ Нет QuanHash'}</button>
+                        <div style="border-top: 2px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+                            <div style="font-size: 15px; font-weight: bold; margin-bottom: 12px; text-align: center;">📜 История выводов</div>
+                            <div id="withdrawHistory" style="max-height: 120px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                `;
+                    
+                    // Load transaction history
+                    loadWithdrawHistory();
+            });
+        }
+
+        function loadWithdrawHistory() {
+            fetch('/api/history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const historyDiv = document.getElementById('withdrawHistory');
+                if(!historyDiv) return;
+                
+                console.log('Withdrawal history data:', data);
+                
+                const withdrawals = data.history || [];
+                console.log('Withdrawals found:', withdrawals.length);
+                
+                if(withdrawals.length > 0) {
+                    historyDiv.innerHTML = withdrawals.map(w => {
+                        const date = new Date(w.date);
+                        // Status in Russian from server
+                        const statusText = w.status || 'В процессе';
+                        const statusEmoji = statusText === 'В процессе' ? '⏳' : statusText === 'Выплачено' ? '✅' : statusText === 'Отклонено' ? '❌' : '⏳';
+                        const statusColor = statusText === 'В процессе' ? '#f59e0b' : statusText === 'Выплачено' ? '#10b981' : statusText === 'Отклонено' ? '#ef4444' : '#94a3b8';
+                        return `
+                            <div style="background:rgba(0,0,0,0.2);padding:10px;border-radius:8px;margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                                    <span style="font-size:12px;font-weight:600;">${statusEmoji} $${Math.floor(w.amount || 0)}</span>
+                                    <span style="font-size:11px;opacity:0.7;">${date.toLocaleDateString('ru')}</span>
+                                </div>
+                                <div style="font-size:10px;opacity:0.6;margin-bottom:5px;">${w.address ? (w.address.substring(0,10) + '...') : ''}</div>
+                                <div style="font-size:10px;color:${statusColor};font-weight:600;">${statusText}</div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    historyDiv.innerHTML = '<div style="text-align:center;opacity:0.5;font-size:12px;padding:10px;">История пуста</div>';
+                }
+            })
+            .catch(err => {
+                console.error('Error loading history:', err);
+                const historyDiv = document.getElementById('withdrawHistory');
+                if(historyDiv) {
+                    historyDiv.innerHTML = '<div style="text-align:center;opacity:0.5;font-size:12px;padding:10px;">Ошибка загрузки</div>';
+                }
+            });
+        }
+
+        function updateUSDTAmount() {
+            const amount = parseInt(document.getElementById('quanhashAmount').value) || 500000;
+            const usdtAmount = amount / 500000;
+            document.getElementById('usdtAmount').textContent = `Получите: $${usdtAmount.toFixed(2)} USDT`;
+        }
+        
+        function withdraw() {
+            const address = document.getElementById('usdtAddress').value.trim();
+            const amount = parseInt(document.getElementById('quanhashAmount').value) || 500000;
+            
+            if (!address || !address.match(/^0x[a-fA-F0-9]{40}$/)) {
+                tg.showAlert('⚠️ Введите правильный BEP20 адрес');
+                return;
+            }
+            
+            if (amount < 500000) {
+                tg.showAlert('⚠️ Минимум 500,000 QuanHash');
+                return;
+            }
+
+            fetch('/api/withdraw', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id, 
+                    address: address,
+                    amount: amount
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert('✅ Запрос на вывод отправлен!');
+                    loadData();
+                    // Reload withdrawal history after successful request
+                    setTimeout(() => {
+                        openWithdrawModal({preventDefault: () => {}});
+                    }, 500);
+                } else {
+                    tg.showAlert('⚠️ ' + data.error);
+                }
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        loadData();
+        checkOfflineIncome();
+        startEnergyRegen();
+        startAutoTap();
+        updateSupportBadge();
+        
+        // Create loadUserDataOnly function to update stats without flickering autobot
+        function loadUserDataOnly() {
+            fetch('/api/user_data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Update only stats, don't touch autobot button
+                const coins = Math.floor(data.coins || 0);
+                const quanhash = Math.floor(data.quanhash || 0);
+                const energy = parseInt(data.energy || 0);
+                const maxEnergy = parseInt(data.max_energy || 1000);
+                const passiveCoins = Math.floor(data.passive_coins_per_hour || 0);
+                const passiveHash = Math.floor(data.passive_hash_per_hour || 0);
+                
+                document.getElementById('coins').textContent = coins.toLocaleString();
+                document.getElementById('quanhash').textContent = quanhash.toLocaleString();
+                document.getElementById('energy-text').textContent = `${energy}/${maxEnergy}`;
+                document.getElementById('passiveCoins').textContent = `+${passiveCoins.toLocaleString()}/час`;
+                document.getElementById('passiveHash').textContent = `+${passiveHash.toLocaleString()}/час`;
+                
+                const energyPercent = Math.min(100, Math.max(0, (energy / maxEnergy) * 100));
+                const fillBar = document.getElementById('energy-bar-fill');
+                const percentText = document.getElementById('energy-percent');
+                if (fillBar) {
+                    fillBar.style.width = energyPercent + '%';
+                }
+                if (percentText) {
+                    percentText.textContent = Math.round(energyPercent) + '%';
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+        
+        // Auto-update data every 2 seconds
+        setInterval(() => {
+            loadUserDataOnly();
+        }, 2000);
+        
+        // Update support badge every 5 seconds
+        setInterval(() => {
+            updateSupportBadge();
+        }, 5000);
+        
+        function updateSupportBadge() {
+            fetch('/api/user_support', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const answeredTickets = (data.tickets || []).filter(t => t.status === 'answered' && t.answer && !t.is_read).length;
+                const badge = document.getElementById('supportBadge');
+                if(answeredTickets > 0) {
+                    badge.textContent = answeredTickets;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(() => {});
+        }
+        
+        // Auto-tap function - Constantly running to check status
+        function startAutoTap() {
+            // Check status every 2 seconds to restart if needed
+            setInterval(() => {
+                fetch('/api/user_data', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: window.user?.id})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const isEnabled = data.auto_tap_enabled;
+                    const hasMinEnergy = data.energy > 10;
+                    const autobotExpiresAt = data.auto_tap_expires_at || 0;
+                    const isStillValid = autobotExpiresAt > Date.now();
+                    
+                    // Start or restart auto-tap interval if conditions are met
+                    if(isEnabled && hasMinEnergy && isStillValid && !window.autoTapInterval) {
+                        const speed = 1000 / (data.auto_tap_speed || 1); // taps per second
+                        window.autoTapInterval = setInterval(() => {
+                            fetch('/api/user_data', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({user_id: window.user?.id})
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                const isEnabled = data.auto_tap_enabled;
+                                const hasMinEnergy = data.energy > 10;
+                                const autobotExpiresAt = data.auto_tap_expires_at || 0;
+                                const isStillValid = autobotExpiresAt > Date.now();
+                                
+                                if(isEnabled && hasMinEnergy && isStillValid) {
+                                    // Perform tap
+                                    fetch('/api/tap', {
+                                        method: 'POST',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({user_id: window.user?.id, is_auto: true})
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if(data.success) {
+                                            // Show animation for autobot
+                                            const hasOpenModal = document.querySelector('.modal.active');
+                                            if (!hasOpenModal) {
+                                                const button = document.querySelector('.tap-button');
+                                                if(button) {
+                                                    const rect = button.getBoundingClientRect();
+                                                    const centerX = rect.left + rect.width / 2;
+                                                    const centerY = rect.top + rect.height / 2;
+                                                    
+                                                    const coinAnimation = document.createElement('div');
+                                                    coinAnimation.className = 'coin-animation';
+                                                    coinAnimation.textContent = '+' + data.reward;
+                                                    coinAnimation.style.left = centerX + 'px';
+                                                    coinAnimation.style.top = centerY + 'px';
+                                                    coinAnimation.style.transform = 'translate(-50%, -50%)';
+                                                    coinAnimation.style.zIndex = '999';
+                                                    document.body.appendChild(coinAnimation);
+                                                    setTimeout(() => {
+                                                        if(document.body.contains(coinAnimation)) {
+                                                            document.body.removeChild(coinAnimation);
+                                                        }
+                                                    }, 1000);
+                                                }
+                                                loadUserDataOnly(); // Silent update
+                                            } else {
+                                                loadUserDataOnly();
+                                            }
+                                        }
+                                    })
+                                    .catch(err => console.error('Auto-tap error:', err));
+                                } else {
+                                    // Stop auto-tap if conditions not met
+                                    clearInterval(window.autoTapInterval);
+                                    window.autoTapInterval = null;
+                                }
+                            })
+                            .catch(err => console.error('Status check error:', err));
+                        }, speed);
+                    } else if((!isEnabled || !hasMinEnergy || !isStillValid) && window.autoTapInterval) {
+                        // Stop if conditions no longer met
+                        clearInterval(window.autoTapInterval);
+                        window.autoTapInterval = null;
+                    }
+                })
+                .catch(err => console.error('Auto-tap status error:', err));
+            }, 2000); // Check status every 2 seconds
+        }
+        
+        // Support functions
+        function openSupport(event) {
+            event.preventDefault();
+            tg.HapticFeedback.impactOccurred('light');
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'supportModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size:20px;color:#fff;font-weight:700;">💬 Поддержка</h2>
+                        <button class="close-btn" onclick="document.getElementById('supportModal').remove()">✕</button>
+                    </div>
+                    
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#94a3b8;">Тема обращения</label>
+                        <select id="supportTopic" style="width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;">
+                            <option value="Общие вопросы">❓ Общие вопросы</option>
+                            <option value="Проблемы с балансом">💳 Проблемы с балансом</option>
+                            <option value="Вывод средств">💸 Вывод средств</option>
+                            <option value="Майнинг">⚡ Майнинг</option>
+                            <option value="Карточки">💳 Карточки</option>
+                            <option value="Реферальная программа">👥 Реферальная программа</option>
+                            <option value="Технические проблемы">🔧 Технические проблемы</option>
+                            <option value="Предложения">💡 Предложения</option>
+                            <option value="Жалобы">⚠️ Жалобы</option>
+                            <option value="Другое">📝 Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom:25px;">
+                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:#94a3b8;">Сообщение</label>
+                        <textarea id="supportMessage" placeholder="Опишите подробно ваш вопрос или проблему..." rows="5" style="width:100%;padding:14px 16px;background:rgba(0,0,0,0.4);border:2px solid rgba(102,126,234,0.3);border-radius:14px;color:#fff;font-size:14px;outline:none;transition:all 0.3s;resize:vertical;font-family:inherit;"></textarea>
+                    </div>
+                    
+                    <div style="display:flex;gap:12px;">
+                        <button onclick="sendSupport()" style="flex:1;padding:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:14px;cursor:pointer;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(102,126,234,0.4);transition:all 0.3s;">📤 Отправить</button>
+                        <button onclick="document.getElementById('supportModal').remove()" style="flex:1;padding:16px;background:rgba(255,255,255,0.1);color:#fff;border:2px solid rgba(255,255,255,0.3);border-radius:14px;cursor:pointer;font-weight:600;font-size:15px;transition:all 0.3s;">Отмена</button>
+                    </div>
+                    
+                    <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);">
+                        <p style="font-size:11px;opacity:0.5;">⏱️ Среднее время ответа: 24 часа</p>
+                    </div>
+                    
+                    <button onclick="loadMyTickets()" style="width:100%;margin-top:15px;padding:12px;background:rgba(102,126,234,0.2);color:#667eea;border:1px solid rgba(102,126,234,0.4);border-radius:12px;cursor:pointer;font-weight:600;">📋 Мои обращения</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add focus effects
+            const topicSelect = document.getElementById('supportTopic');
+            const messageText = document.getElementById('supportMessage');
+            
+            if(topicSelect) {
+                topicSelect.addEventListener('focus', () => {
+                    topicSelect.style.borderColor = 'rgba(102,126,234,0.8)';
+                    topicSelect.style.boxShadow = '0 0 20px rgba(102,126,234,0.3)';
+                });
+                topicSelect.addEventListener('blur', () => {
+                    topicSelect.style.borderColor = 'rgba(102,126,234,0.3)';
+                    topicSelect.style.boxShadow = 'none';
+                });
+            }
+            
+            if(messageText) {
+                messageText.addEventListener('focus', () => {
+                    messageText.style.borderColor = 'rgba(102,126,234,0.8)';
+                    messageText.style.boxShadow = '0 0 20px rgba(102,126,234,0.3)';
+                });
+                messageText.addEventListener('blur', () => {
+                    messageText.style.borderColor = 'rgba(102,126,234,0.3)';
+                    messageText.style.boxShadow = 'none';
+                });
+            }
+        }
+        
+        function sendSupport() {
+            const topicEl = document.querySelector('[id*="supportTopic"]');
+            const messageEl = document.querySelector('[id*="supportMessage"]');
+            
+            if (!topicEl || !messageEl) {
+                console.error('Support form elements not found');
+                return;
+            }
+            
+            const topic = topicEl.value;
+            const message = messageEl.value;
+            
+            if (!topic) {
+                alert('⚠️ Выберите тему');
+                return;
+            }
+            
+            if (!message) {
+                alert('⚠️ Введите сообщение');
+                return;
+            }
+            
+            fetch('/api/support', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    user_id: user?.id,
+                    topic: topic,
+                    message: message
+                })
+            })
+            .then(res => {
+                console.log('Support response status:', res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('Support response data:', data);
+                if (data.success) {
+                    alert('✅ Сообщение отправлено!');
+                    const modal = document.querySelector('#supportModal') || document.querySelector('.modal.active');
+                    if (modal) modal.remove();
+                } else {
+                    alert('❌ Ошибка: ' + (data.error || 'неизвестная'));
+                }
+            })
+            .catch(err => {
+                console.error('Support send error:', err);
+                alert('❌ Ошибка при отправке: ' + err.message);
+            });
+        }
+        
+        function loadMyTickets() {
+            // Hide badge when opening my tickets
+            const badge = document.getElementById('supportBadge');
+            badge.style.display = 'none';
+            
+            // Mark all answered tickets as read
+            fetch('/api/mark_tickets_read', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            });
+            
+            fetch('/api/user_support', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.tickets && data.tickets.length > 0) {
+                    const ticketsList = data.tickets.map(t => `
+                        <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;margin-bottom:10px;border-left:4px solid ${t.status === 'answered' ? '#10b981' : '#f59e0b'};">
+                            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
+                                <div>
+                                    <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:4px;">${t.topic}</div>
+                                    <div style="font-size:11px;color:#94a3b8;">${new Date(t.created_at).toLocaleString()}</div>
+                                </div>
+                                <div style="padding:4px 10px;background:${t.status === 'answered' ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'};border-radius:8px;font-size:11px;font-weight:700;color:${t.status === 'answered' ? '#10b981' : '#f59e0b'};">
+                                    ${t.status === 'answered' ? '✅ Готово' : '⏳ В процессе'}
+                                </div>
+                            </div>
+                            <div style="font-size:12px;color:#fff;margin-bottom:10px;opacity:0.9;">${t.message}</div>
+                            ${t.answer ? `<div style="background:rgba(16,185,129,0.15);padding:10px;border-radius:8px;margin-top:10px;border-left:3px solid #10b981;"><div style="font-size:11px;color:#10b981;font-weight:700;margin-bottom:6px;">📝 Ответ:</div><div style="font-size:12px;color:#fff;">${t.answer}</div></div>` : ''}
+                        </div>
+                    `).join('');
+                    
+                    const modal = document.createElement('div');
+                    modal.className = 'modal active';
+                    modal.innerHTML = `
+                        <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                                <h2 style="font-size: 20px; color: #fff;">📋 Мои обращения</h2>
+                                <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                            </div>
+                            <div>${ticketsList}</div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                } else {
+                    alert('📭 У вас пока нет обращений');
+                }
+            })
+            .catch(() => alert('❌ Ошибка загрузки'));
+        }
+    </script>
+    
+    <script>
+        function openDailyBonus(e) {
+            e.preventDefault();
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'dailyBonusModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h2 style="font-size: 24px; color: #fff;">🎁 Ежедневные задания</h2>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+                    <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Load daily tasks
+            fetch('/api/daily_tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('dailyTasksList');
+                if(data.tasks && data.tasks.length > 0) {
+                    let html = '';
+                    
+                    // Add VIP tasks section if VIP
+                    const checkVIPTasks = () => {
+                        fetch('/api/user_data', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: window.user?.id})
+                        })
+                        .then(res => res.json())
+                        .then(userData => {
+                            const vipLevel = userData.vip_level || 0;
+                            if (vipLevel >= 3) {
+                                list.innerHTML = `
+                                    ${vipLevel >= 4 ? `
+                                    <div style="background:linear-gradient(135deg,#ffd700,#ffed4e);padding:15px;border-radius:12px;border:3px solid #ffd700;margin-bottom:15px;">
+                                        <div style="font-size:16px;font-weight:800;color:#000;margin-bottom:8px;">🎉 VIP Турнир</div>
+                                        <div style="font-size:12px;color:rgba(0,0,0,0.7);margin-bottom:10px;">Соревнование только для VIP! Топ-3 получают эксклюзивные награды.</div>
+                                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                                            <span style="font-size:13px;color:#000;font-weight:700;">🏆 Награды:</span>
+                                            <span style="font-size:13px;color:#000;font-weight:800;">500M 🪙</span>
+                                        </div>
+                                        <button onclick="joinVIPTournament()" style="width:100%;padding:10px;background:#000;color:#ffd700;border:none;border-radius:8px;font-weight:800;cursor:pointer;">🎯 Участвовать</button>
+                                    </div>
+                                    ` : ''}
+                                    ${vipLevel >= 5 ? `
+                                    <div style="background:linear-gradient(135deg,#c084fc,#a78bfa);padding:15px;border-radius:12px;border:3px solid #c084fc;margin-bottom:15px;">
+                                        <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:8px;">💎 Diamond Challenge</div>
+                                        <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:10px;">Эксклюзивный челлендж для Diamond VIP!</div>
+                                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                                            <span style="font-size:13px;color:#fff;font-weight:700;">💎 Бонус:</span>
+                                            <span style="font-size:13px;color:#fff;font-weight:800;">x50 на 24ч</span>
+                                        </div>
+                                        <button onclick="activateDiamondChallenge()" style="width:100%;padding:10px;background:#fff;color:#a78bfa;border:none;border-radius:8px;font-weight:800;cursor:pointer;">⚡ Активировать</button>
+                                    </div>
+                                    ` : ''}
+                                    ` + list.innerHTML;
+                            }
+                        });
+                    };
+                    checkVIPTasks();
+                    
+                    html += data.tasks.map(task => `
+                        <div style="background:rgba(0,0,0,0.3);padding:15px;border-radius:12px;border:2px solid ${task.completed ? 'rgba(74,222,128,0.5)' : 'rgba(102,126,234,0.5)'};">
+                            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">${task.emoji} ${task.name}</div>
+                            <div style="font-size:12px;color:#94a3b8;margin-bottom:8px;">${task.description}</div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="font-size:14px;color:${task.completed ? '#4ade80' : '#f093fb'};">${task.completed ? '✅ Выполнено' : 'Прогресс: ' + task.progress + '/' + task.target}</div>
+                                <div style="font-size:16px;font-weight:700;">💰 +${task.reward}</div>
+                            </div>
+                            ${task.completed ? '<button onclick="claimReward(' + task.id + ')" style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;">🎁 Забрать награду</button>' : ''}
+                        </div>
+                    `).join('');
+                    list.innerHTML = html;
+                } else {
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
+                }
+            });
+        }
+        
+        function joinVIPTournament() {
+            tg.showAlert('🎉 Вы присоединились к VIP Турниру! Сразитесь за топ-3 места!');
+        }
+        
+        function activateDiamondChallenge() {
+            tg.showAlert('⚡ Diamond Challenge активирован! Получайте x50 бонус к доходам на 24 часа!');
+        }
+        function claimReward(taskId) {
+            fetch('/api/claim_task', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user?.id, task_id: taskId})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    openDailyBonus({preventDefault:()=>{}});
+                    loadData();
+                }
+            });
+        }
+        
+        let currentCategory = 'all';
+        
+        // Currency Products Data - VIP Style
+        const currencyProductsData = [
+            // STARTER CATEGORY - От 20,000 до 200,000 коинов
+            {id: 1, category: 'starter', name: 'Первые шаги', nameEmoji: '💫', emoji: '🌟', reward: '20,000 коинов', rewardIcon: '💰', price: 50, description: '🌟 Стартовый пакет для новичков с базовым капиталом', badge: 'СТАРТ', badgeColor: '#667eea', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 2, category: 'starter', name: 'Базовый старт', nameEmoji: '✨', emoji: '🚀', reward: '40,000 коинов', rewardIcon: '💰', price: 120, description: '🚀 Ускоренный вход в игру с выгодным бонусом', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 3, category: 'starter', name: 'Начало пути', nameEmoji: '⭐', emoji: '💎', reward: '60,000 коинов', rewardIcon: '💰', price: 180, description: '💎 Солидный капитал для уверенного прогресса', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 4, category: 'starter', name: 'Приветственный', nameEmoji: '💎', emoji: '🎁', reward: '80,000 коинов', rewardIcon: '💰', price: 240, description: '🎁 Приветственный бонус для новых игроков', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 5, category: 'starter', name: 'Добро пожаловать', nameEmoji: '🎁', emoji: '⚡', reward: '100,000 коинов', rewardIcon: '💰', price: 320, description: '⚡ Мощный стартовый импульс в квантовой вселенной', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 6, category: 'starter', name: 'Стартовый пакет', nameEmoji: '💰', emoji: '🏆', reward: '120,000 коинов', rewardIcon: '💰', price: 400, description: '🏆 Профессиональный набор для серьёзных игроков', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 7, category: 'starter', name: 'Быстрый старт', nameEmoji: '⚡', emoji: '🌟', reward: '140,000 коинов', rewardIcon: '💰', price: 480, description: '🌟 Молниеносный рост с премиум капиталом', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 8, category: 'starter', name: 'Первый шаг', nameEmoji: '🎯', emoji: '💫', reward: '160,000 коинов', rewardIcon: '💰', price: 560, description: '💫 Точно в цель - идеальный старт для амбициозных', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 9, category: 'starter', name: 'Радужный набор', nameEmoji: '🌈', emoji: '💖', reward: '180,000 коинов', rewardIcon: '💰', price: 640, description: '💖 Разнообразие возможностей и ярких перспектив', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            {id: 10, category: 'starter', name: 'Волшебный старт', nameEmoji: '💫', emoji: '🔮', reward: '200,000 коинов', rewardIcon: '💰', price: 720, description: '🔮 Магическое начало вашего квантового путешествия', badge: '', badgeColor: '', cardColor: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(102,126,234,0.3)', hoverColor: 'rgba(102,126,234,0.25)', btnColor: '#667eea,#764ba2', iconShadow: 'rgba(102,126,234,0.6)'},
+            // PREMIUM CATEGORY - От 120,000 до 500,000 коинов
+            {id: 11, category: 'premium', name: 'Световой пакет', nameEmoji: '⚡', emoji: '🌟', reward: '120,000 коинов', rewardIcon: '💰', price: 300, description: '🌟 Яркий свет вашего успеха и быстрого прогресса', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 12, category: 'premium', name: 'Профессионал', nameEmoji: '🎯', emoji: '🏅', reward: '160,000 коинов', rewardIcon: '💰', price: 600, description: '🏅 Профессиональный уровень игры с премиум бонусами', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 13, category: 'premium', name: 'Мощный набор', nameEmoji: '🚀', emoji: '💥', reward: '220,000 коинов', rewardIcon: '💰', price: 900, description: '💥 Мощный рывок к вершинам квантового успеха', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 14, category: 'premium', name: 'Алмазный пакет', nameEmoji: '💎', emoji: '✨', reward: '280,000 коинов', rewardIcon: '💰', price: 1200, description: '✨ Непревзойдённое качество и алмазная прочность', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 15, category: 'premium', name: 'Огненный набор', nameEmoji: '🔥', emoji: '⚡', reward: '340,000 коинов', rewardIcon: '💰', price: 1500, description: '⚡ Пламенная энергия для мгновенного роста', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 16, category: 'premium', name: 'Электронный', nameEmoji: '⚡', emoji: '💻', reward: '380,000 коинов', rewardIcon: '💰', price: 1800, description: '💻 Максимальный технологический буст производительности', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 17, category: 'premium', name: 'Звёздный пакет', nameEmoji: '🌟', emoji: '⭐', reward: '420,000 коинов', rewardIcon: '💰', price: 2100, description: '⭐ Достигните звёздного уровня в квантовой системе', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 18, category: 'premium', name: 'Космический', nameEmoji: '💫', emoji: '🌌', reward: '450,000 коинов', rewardIcon: '💰', price: 2400, description: '🌌 Запуск в космические просторы квантового мира', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 19, category: 'premium', name: 'Подарочный VIP', nameEmoji: '🎁', emoji: '👑', reward: '480,000 коинов', rewardIcon: '💰', price: 2700, description: '👑 Особый подарочный VIP статус с эксклюзивом', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            {id: 20, category: 'premium', name: 'Магический', nameEmoji: '🔮', emoji: '✨', reward: '500,000 коинов', rewardIcon: '💰', price: 3000, description: '✨ Волшебная трансформация вашего квантового будущего', badge: '', badgeColor: '', cardColor: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', borderColor: 'rgba(234,179,8,0.3)', hoverColor: 'rgba(234,179,8,0.25)', btnColor: '#f59e0b,#f59e0b', iconShadow: 'rgba(234,179,8,0.6)'},
+            // VIP CATEGORY - От 400,000 до 2,000,000 коинов
+            {id: 21, category: 'vip', name: 'VIP стартовый', nameEmoji: '💎', emoji: '👑', reward: '400,000 коинов', rewardIcon: '💰', price: 1000, description: '👑 Привилегированное начало VIP путешествия', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 22, category: 'vip', name: 'VIP ускорение', nameEmoji: '🚀', emoji: '⚡', reward: '600,000 коинов', rewardIcon: '💰', price: 1600, description: '⚡ Приоритетная обработка и турбо-режим VIP', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 23, category: 'vip', name: 'VIP статус', nameEmoji: '👑', emoji: '🌟', reward: '800,000 коинов', rewardIcon: '💰', price: 2400, description: '🌟 Эксклюзивный статус с максимальными привилегиями', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 24, category: 'vip', name: 'VIP турбо', nameEmoji: '⚡', emoji: '💥', reward: '1,000,000 коинов', rewardIcon: '💰', price: 3200, description: '💥 Максимальная скорость и VIP турбо-буст', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 25, category: 'vip', name: 'VIP королевство', nameEmoji: '💎', emoji: '🏰', reward: '1,200,000 коинов', rewardIcon: '💰', price: 4000, description: '🏰 Королевский уровень с безграничными возможностями', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 26, category: 'vip', name: 'VIP безлимит', nameEmoji: '🔓', emoji: '♾️', reward: '1,400,000 коинов', rewardIcon: '💰', price: 5000, description: '♾️ Неограниченная мощь и бескрайние горизонты', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 27, category: 'vip', name: 'VIP чемпион', nameEmoji: '🏆', emoji: '⭐', reward: '1,600,000 коинов', rewardIcon: '💰', price: 6000, description: '⭐ Чемпионский статус в квантовой лиге', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 28, category: 'vip', name: 'VIP легенда', nameEmoji: '🌟', emoji: '🌠', reward: '1,800,000 коинов', rewardIcon: '💰', price: 7000, description: '🌠 Легендарное имя в истории квантового мира', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 29, category: 'vip', name: 'VIP алмаз', nameEmoji: '💎', emoji: '🔷', reward: '1,900,000 коинов', rewardIcon: '💰', price: 8000, description: '🔷 Алмазная чистота и совершенство VIP класса', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 30, category: 'vip', name: 'VIP император', nameEmoji: '👑', emoji: '🌍', reward: '2,000,000 коинов', rewardIcon: '💰', price: 9000, description: '🌍 Имперское влияние во всей квантовой вселенной', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            // LIMITED/QUANHASH CATEGORY - От 500 до 300,000 QuanHash
+            {id: 31, category: 'limited', name: 'Starter Hash', nameEmoji: '🔮', emoji: '🔮', description: '🌱 Первые шаги в квантовом майнинге с базовым капиталом', reward: '500 QuanHash', rewardIcon: '💎', price: 150, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 32, category: 'limited', name: 'Basic Hash', nameEmoji: '💎', emoji: '💎', description: '⚛️ Базовая мощность для стабильного квантового майнинга', reward: '7,000 QuanHash', rewardIcon: '💎', price: 300, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 33, category: 'limited', name: 'Power Hash', nameEmoji: '⚡', emoji: '⚡', description: '🔥 Повышенная энергия квантовых вычислений', reward: '15,000 QuanHash', rewardIcon: '💎', price: 600, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 34, category: 'limited', name: 'Fire Hash', nameEmoji: '🔥', emoji: '🔥', description: '💥 Огненная мощь квантовой добычи ресурсов', reward: '30,000 QuanHash', rewardIcon: '💎', price: 900, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 35, category: 'limited', name: 'Blast Hash', nameEmoji: '💥', emoji: '💥', description: '🌟 Взрывной рост майнинговых мощностей', reward: '60,000 QuanHash', rewardIcon: '💎', price: 1500, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 36, category: 'limited', name: 'Stellar Hash', nameEmoji: '🌟', emoji: '🌟', description: '⭐ Звёздная производительность квантового майнера', reward: '100,000 QuanHash', rewardIcon: '💎', price: 2400, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 37, category: 'limited', name: 'Diamond Hash', nameEmoji: '💎', emoji: '💎', description: '🔷 Алмазная чистота квантовых вычислений', reward: '150,000 QuanHash', rewardIcon: '💎', price: 3600, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 38, category: 'limited', name: 'Rocket Hash', nameEmoji: '🚀', emoji: '🚀', description: '🌌 Ракетный запуск в космический майнинг', reward: '200,000 QuanHash', rewardIcon: '💎', price: 5100, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 39, category: 'limited', name: 'Crown Hash', nameEmoji: '👑', emoji: '👑', description: '🏰 Королевская мощь квантовых ферм', reward: '250,000 QuanHash', rewardIcon: '💎', price: 7200, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            {id: 40, category: 'limited', name: 'Ultimate Hash', nameEmoji: '💫', emoji: '💫', description: '♾️ Абсолютная мощь квантового майнинга', reward: '300,000 QuanHash', rewardIcon: '💎', price: 10000, badge: '', cardColor: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', borderColor: 'rgba(239,68,68,0.3)', hoverColor: 'rgba(239,68,68,0.25)', btnColor: '#ef4444,#ef4444', iconShadow: 'rgba(239,68,68,0.6)'},
+            // ULTRA/COMBO CATEGORY - С карточками и коинами
+            {id: 41, category: 'ultra', name: 'Стартовый мегасет', nameEmoji: '🎁', emoji: '💎', reward: '10 карточек + 300,000 коинов', rewardIcon: '💰', price: 5000, description: '💎 Универсальный набор для комплексного старта', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 42, category: 'ultra', name: 'Горячий комбо', nameEmoji: '🔥', emoji: '⚡', reward: '20 карточек + 800,000 коинов', rewardIcon: '💰', price: 7000, description: '⚡ Огненная связка карт и мощных бонусов', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 43, category: 'ultra', name: 'Элитный набор', nameEmoji: '💎', emoji: '👑', reward: '50 карточек + 1,500,000 коинов', rewardIcon: '💰', price: 9000, description: '👑 Элитный комбо с VIP преимуществами', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 44, category: 'ultra', name: 'Мега связка', nameEmoji: '🚀', emoji: '🌟', reward: '100 карточек + 2,500,000 коинов', rewardIcon: '💰', price: 11000, description: '🌟 Мега-комбо для космического прогресса', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 45, category: 'ultra', name: 'Легендарный мегасет', nameEmoji: '🌟', emoji: '🏆', reward: '200 карточек + 4,000,000 коинов', rewardIcon: '💰', price: 13000, description: '🏆 Легендарная коллекция для чемпионов', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 46, category: 'ultra', name: 'Бриллиантовая связка', nameEmoji: '💎', emoji: '🔷', reward: '500 карточек + 5,500,000 коинов', rewardIcon: '💰', price: 15000, description: '🔷 Бриллиантовая чистота безграничных возможностей', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 47, category: 'ultra', name: 'Королевский комбо', nameEmoji: '👑', emoji: '🏰', reward: '1000 карточек + 7,000,000 коинов', rewardIcon: '💰', price: 17000, description: '🏰 Королевское великолепие квантового набора', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 48, category: 'ultra', name: 'Огненный мегасет', nameEmoji: '🔥', emoji: '💥', reward: '2000 карточек + 8,500,000 коинов', rewardIcon: '💰', price: 19000, description: '💥 Пламенная мощь мегасета с безграничным потенциалом', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 49, category: 'ultra', name: 'Космический комбо', nameEmoji: '💫', emoji: '🌌', reward: '5000 карточек + 10,000,000 коинов', rewardIcon: '💰', price: 21000, description: '🌌 Космические масштабы квантового прогресса', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            {id: 50, category: 'ultra', name: 'АБСОЛЮТ ВСЁ', nameEmoji: '🎯', emoji: '♾️', reward: '10,000 карточек + 15,000,000 коинов', rewardIcon: '💰', price: 24000, description: '♾️ Абсолютная полнота всех возможностей игры', badge: '', cardColor: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', borderColor: 'rgba(168,85,247,0.3)', hoverColor: 'rgba(168,85,247,0.25)', btnColor: '#a855f7,#8b5cf6', iconShadow: 'rgba(168,85,247,0.6)'},
+            // MEGA CATEGORY - От 50,000 до 5,000,000 коинов
+            {id: 51, category: 'mega', name: 'VIP Всё включено', nameEmoji: '👑', emoji: '🌟', reward: '50,000 коинов', rewardIcon: '💰', price: 1800, description: '🌟 Максимальный VIP пакет со всеми функциями', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 52, category: 'mega', name: 'Эксклюзивный бейдж', nameEmoji: '⭐', emoji: '✨', reward: '600,000 коинов', rewardIcon: '💰', price: 2500, description: '✨ Уникальная метка вашего VIP статуса', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 53, category: 'mega', name: 'Гарантирован топ', nameEmoji: '🏆', emoji: '🎯', reward: '1,100,000 коинов', rewardIcon: '💰', price: 4000, description: '🎯 Гарантированное место среди лучших игроков', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 54, category: 'mega', name: 'Мгновенный доход', nameEmoji: '⚡', emoji: '💥', reward: '1,800,000 коинов', rewardIcon: '💰', price: 6000, description: '💥 Стохократное ускорение всех процессов', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 55, category: 'mega', name: 'Снять лимиты', nameEmoji: '🔓', emoji: '♾️', reward: '2,500,000 коинов', rewardIcon: '💰', price: 8000, description: '♾️ Полная свобода без каких-либо ограничений', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 56, category: 'mega', name: 'Автопрокачка', nameEmoji: '🚀', emoji: '🤖', reward: '3,300,000 коинов', rewardIcon: '💰', price: 10000, description: '🤖 Автоматизация всех игровых процессов', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 57, category: 'mega', name: 'Приоритет помощь', nameEmoji: '💎', emoji: '👑', reward: '3,800,000 коинов', rewardIcon: '💰', price: 3500, description: '👑 Приоритетная VIP поддержка круглосуточно', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 58, category: 'mega', name: 'Золотой профиль', nameEmoji: '👑', emoji: '✨', reward: '4,400,000 коинов', rewardIcon: '💰', price: 4500, description: '✨ Уникальный дизайн золотого профиля VIP', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 59, category: 'mega', name: 'Супер статус', nameEmoji: '🌟', emoji: '🏅', reward: '4,700,000 коинов', rewardIcon: '💰', price: 7000, description: '🏅 Супер-права во всех игровых системах', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+            {id: 60, category: 'mega', name: 'АБСОЛЮТ ВСЁ VIP', nameEmoji: '🎯', emoji: '♾️', reward: '5,000,000 коинов', rewardIcon: '💰', price: 15000, description: '♾️ Абсолютная полнота всех премиум функций', badge: '', cardColor: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', borderColor: 'rgba(255,215,0,0.3)', hoverColor: 'rgba(255,215,0,0.25)', btnColor: '#ffd700,#ffd700', iconShadow: 'rgba(255,215,0,0.6)'},
+        ];
+        
+        // Function to render VIP Currency Cards dynamically
+        function renderVIPCurrencyCards(products) {
+            const categoryColors = {
+                'starter': {bg: 'rgba(102,126,234,0.12),rgba(139,92,246,0.18)', border: 'rgba(102,126,234,0.3)', hover: 'rgba(102,126,234,0.25)', btn: '#667eea,#764ba2', shadow: 'rgba(102,126,234,0.6)', title: '🎯 СТАРТОВЫЕ НАБОРЫ'},
+                'premium': {bg: 'rgba(234,179,8,0.12),rgba(245,158,11,0.18)', border: 'rgba(234,179,8,0.3)', hover: 'rgba(234,179,8,0.25)', btn: '#f59e0b,#f59e0b', shadow: 'rgba(234,179,8,0.6)', title: '🚀 ПРЕМИУМ НАБОРЫ'},
+                'vip': {bg: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', border: 'rgba(255,215,0,0.3)', hover: 'rgba(255,215,0,0.25)', btn: '#ffd700,#ffd700', shadow: 'rgba(255,215,0,0.6)', title: '⭐ ПРЕМИУМ ФУНКЦИИ'},
+                'limited': {bg: 'rgba(239,68,68,0.12),rgba(220,38,38,0.18)', border: 'rgba(239,68,68,0.3)', hover: 'rgba(239,68,68,0.25)', btn: '#ef4444,#ef4444', shadow: 'rgba(239,68,68,0.6)', title: '🔮 QUANHASH НАБОРЫ'},
+                'ultra': {bg: 'rgba(168,85,247,0.12),rgba(139,92,246,0.18)', border: 'rgba(168,85,247,0.3)', hover: 'rgba(168,85,247,0.25)', btn: '#a855f7,#8b5cf6', shadow: 'rgba(168,85,247,0.6)', title: '🎁 КОМБО СЕТЫ'},
+                'mega': {bg: 'rgba(255,215,0,0.12),rgba(255,237,78,0.18)', border: 'rgba(255,215,0,0.3)', hover: 'rgba(255,215,0,0.25)', btn: '#ffd700,#ffd700', shadow: 'rgba(255,215,0,0.6)', title: '👑 VIP ФУНКЦИИ'}
+            };
+            
+            let html = '';
+            let currentCategory = '';
+            
+            products.forEach(product => {
+                if(currentCategory !== product.category) {
+                    currentCategory = product.category;
+                    const colors = categoryColors[product.category];
+                    // Убираем заголовки категорий для более компактного вида (как в VIP майнинге)
+                    // html += `<div data-category="${product.category}" style="display:block;text-align:center;font-size:16px;font-weight:900;color:#fff;margin:8px 0 8px;padding:8px;background:linear-gradient(135deg,${colors.bg});border-radius:12px;grid-column:1/-1;">${colors.title}</div>`;
+                }
+                
+                const colors = categoryColors[product.category];
+                html += `
+                    <div data-category="${product.category}" style="background: linear-gradient(135deg, ${colors.bg}); padding: 18px; border-radius: 16px; border: 2px solid ${colors.border}; position: relative; backdrop-filter: blur(8px); box-shadow: 0 8px 25px ${colors.border.replace('0.3)', '0.15)')}; transition: all 0.3s ease; background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite; width: 100%; box-sizing: border-box;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 35px ${colors.border.replace('0.3)', '0.25)')}';this.style.background='linear-gradient(135deg, ${colors.hover})'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 25px ${colors.border.replace('0.3)', '0.15)')}';this.style.background='linear-gradient(135deg, ${colors.bg})'">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                            <span style="font-size: 26px; filter: drop-shadow(0 0 4px ${colors.shadow});">${product.nameEmoji || product.emoji}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 800; font-size: 15px; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${product.name}</div>
+                                <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 2px; line-height: 1.4;">${product.description}</div>
+                            </div>
+                            ${product.badge ? `<div style="background: linear-gradient(135deg, ${colors.btn}); color: ${product.category === 'vip' || product.category === 'mega' ? '#000' : '#fff'}; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; text-shadow: 0 1px 3px rgba(0,0,0,0.3); border: 1px solid ${colors.border}; box-shadow: 0 3px 8px ${colors.shadow.replace('0.6)', '0.4)')}; position: relative; overflow: hidden;"><div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;"></div><span style="font-size: 12px; font-weight: 900; text-shadow: 0 1px 2px rgba(0,0,0,0.4);">${product.badge}</span></div>` : ''}
+                        </div>
+                        <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #4ade80; font-size: 12px; font-weight: 700;">${product.rewardIcon || '💰'} Награда:</span>
+                            <span style="color: #fff; font-size: 12px; font-weight: 800;">${product.reward}</span>
+                        </div>
+                        <button onclick="window.open('https://t.me/qanexus_bot?start=buy_stars_${product.id}')" style="width: 100%; padding: 10px 12px; background: linear-gradient(135deg, ${colors.btn}); color: ${product.category === 'vip' || product.category === 'mega' ? '#000' : '#fff'}; border: 1px solid ${colors.border}; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 13px; transition: all 0.3s; position: relative; overflow: hidden; box-shadow: 0 4px 12px ${colors.border.replace('0.3)', '0.3)')}; text-shadow: 0 1px 2px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 6px;" onmousedown="this.style.transform='scale(0.98)'; this.style.boxShadow='0 6px 16px ${colors.border.replace('0.3)', '0.4)')}" onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px ${colors.border.replace('0.3)', '0.3)')}" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px ${colors.border.replace('0.3)', '0.3)')}">
+                            <span>Купить за ${product.price}</span>
+                            <span style="font-size: 16px; filter: drop-shadow(0 0 3px ${colors.shadow}); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">⭐</span>
+                            <span>Telegram Stars</span>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            return html;
+        }
+        
+        // v6.7.31 - Referral System: Equal bonuses for both (500/2000), VIP header style, link on top, full-width design
+        
+        // v6.7.30 - Enhanced Referral System: Increased bonuses (500 regular/2000 premium), detailed premium indicators, beautiful cards
+        
+        // v6.7.29 - Enhanced Referral System: Premium bonuses, detailed stats, beautiful UI
+        
+        // v6.7.28 - Buy Currency modal: Larger wider cards, improved spacing and sizing for better visibility
+        window.openBuyCurrency = function(e) {
+            try {
+                e.preventDefault();
+            } catch(err) {}
+            try {
+                tg.HapticFeedback.impactOccurred('light');
+            } catch(err) {}
+            
+            // Debug: Create simple modal
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'buyCurrencyModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; width: 95vw; max-height: 90vh; overflow-y: auto; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; border: 2px solid rgba(255,215,0,0.7); box-shadow: 0 20px 60px rgba(255,215,0,0.3), 0 0 0 1px rgba(255,255,255,0.1); backdrop-filter: blur(20px);">
+                    <!-- VIP Style Header -->
+                    <div style="background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); padding: 20px 50px 20px 20px; border-radius: 20px 20px 0 0; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(255,215,0,0.4);">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 34px; text-shadow: 0 3px 10px rgba(0,0,0,0.3); filter: drop-shadow(0 0 6px rgba(255,215,0,0.8)); animation: pulse 2s infinite;">⭐</div>
+                            <div>
+                                <h2 style="font-size: 20px; color: #000; margin: 0; font-weight: 900; text-shadow: 0 2px 6px rgba(0,0,0,0.2);">КУПИТЬ ВАЛЮТУ</h2>
+                                <div style="font-size: 12px; color: rgba(0,0,0,0.7); margin-top: 2px; font-weight: 600;">Покупка через Telegram Stars</div>
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.3); border: 2px solid rgba(0,0,0,0.2); color: #000; font-size: 20px; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-weight: 700; transition: all 0.3s; display: flex; align-items: center; justify-content: center; z-index: 3; flex-shrink: 0;">✕</button>
+                    </div>
+                    
+                    <div style="padding: 16px;">
+                    
+                        <!-- Category Buttons - VIP Style -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                            <button onclick="filterCategory('starter')" class="category-btn active" style="background: linear-gradient(135deg, rgba(102,126,234,0.4), rgba(139,92,246,0.4)); border: 2px solid rgba(102,126,234,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(102,126,234,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(102,126,234,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(102,126,234,0.3)'">🎯 Старт</button>
+                            <button onclick="filterCategory('premium')" class="category-btn" style="background: linear-gradient(135deg, rgba(234,179,8,0.4), rgba(245,158,11,0.4)); border: 2px solid rgba(234,179,8,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(234,179,8,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(234,179,8,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(234,179,8,0.3)'">🚀 Премиум</button>
+                            <button onclick="filterCategory('vip')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(255,215,0,0.3)'">⭐ VIP</button>
+                            <button onclick="filterCategory('limited')" class="category-btn" style="background: linear-gradient(135deg, rgba(239,68,68,0.4), rgba(220,38,38,0.4)); border: 2px solid rgba(239,68,68,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(239,68,68,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(239,68,68,0.3)'">🔮 QuanHash</button>
+                            <button onclick="filterCategory('ultra')" class="category-btn" style="background: linear-gradient(135deg, rgba(168,85,247,0.4), rgba(139,92,246,0.4)); border: 2px solid rgba(168,85,247,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(168,85,247,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(168,85,247,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(168,85,247,0.3)'">🎁 Комбо</button>
+                            <button onclick="filterCategory('mega')" class="category-btn" style="background: linear-gradient(135deg, rgba(255,215,0,0.4), rgba(255,237,78,0.4)); border: 2px solid rgba(255,215,0,0.7); padding: 12px 8px; border-radius: 10px; color: #fff; cursor: pointer; font-weight: 800; font-size: 11px; transition: all 0.3s; box-shadow: 0 3px 10px rgba(255,215,0,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(255,215,0,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 10px rgba(255,215,0,0.3)'">👑 VIP Mega</button>
+                        </div>
+                    
+                    <div id="currencyProductsList" style="display: flex; flex-direction: column; gap: 14px; max-height: 70vh; overflow-y: auto; padding: 5px 5px 5px 0; width: 100%; box-sizing: border-box;">
+                        <!-- Currency cards will be rendered dynamically by renderVIPCurrencyCards -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Render all currency cards dynamically using VIP style
+        const currencyProductsContainer = document.getElementById('currencyProductsList');
+        if (currencyProductsContainer) {
+            currencyProductsContainer.innerHTML = renderVIPCurrencyCards(currencyProductsData);
+        }
+        
+        // Set initial active category after modal is attached
+        setTimeout(() => window.filterCategory('starter'), 100);
+    }
+    
+    window.filterCategory = function(category) {
+        try {
+            // Update button states
+            document.querySelectorAll('#buyCurrencyModal .category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if(event?.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Filter and show products
+            const products = document.querySelectorAll('#currencyProductsList [data-category]');
+            products.forEach(product => {
+                if(product.dataset.category === category) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        } catch(err) {
+            console.error('filterCategory error:', err);
+        }
+    }
+
+    </script>
+
+    <!-- Initialize on page load -->
+    <script>
+        // Initialize default settings if not already set (enabled by default)
+        // Don't set explicit values - let the check for null handle defaults
+        // This way the logic "null || 'true' || true" will work correctly
+        
+        // Initialize audio on first user interaction
+        // Use capture phase to ensure AudioContext is ready before handlers run
+        function initAudioOnClick(e) {
+            initAudio();
+            // Remove this listener after first click
+            document.removeEventListener('click', initAudioOnClick, true);
+        }
+        document.addEventListener('click', initAudioOnClick, true);
+        
+        // Start periodic updates
+        loadData();
+        setInterval(loadData, 3000); // Reload every 3 seconds
+        startEnergyRegen();
+        
+        // Initialize shop and other components
+        window.addEventListener('load', () => {
+            if (window.shopData) {
+                const firstCategory = Object.keys(window.shopData).find(key => 
+                    window.shopData[key] && window.shopData[key].items && window.shopData[key].items.length > 0
+                );
+                if (firstCategory) {
+                    loadShopCategory(firstCategory);
+                }
+            }
+        });
+    </script>
+
+
+</body>
+</html>
                     
                     // Error notification - like in shop
                     const errorText = data.error.includes('Недостаточно') || data.error.includes('Not enough') ? 'Недостаточно ' + (currency === 'coins' ? 'коинов' : 'QuanHash') : data.error;
