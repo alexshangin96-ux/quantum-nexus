@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.47 - Complete synchronization: All products including VIP Cards working correctly -->
+<!-- Quantum Nexus v6.7.48 - Fixed VIP button category selection and dynamic VIP mining price calculation -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -4095,7 +4095,7 @@
                         <div id="vipButtonRow" style="margin-bottom:15px;">
                             <div style="padding:6px;background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,237,78,0.2),rgba(255,215,0,0.2));border:2px solid rgba(255,215,0,0.7);border-radius:12px;position:relative;box-shadow:0 4px 15px rgba(255,215,0,0.3);">
                                 <!-- Premium Button -->
-                                <button id="vipButton" onclick="openVIPModal('tap_boost')" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
+                                <button id="vipButton" onclick="const currentCategory = window.currentShopCategory || 'tap_boost'; openVIPModal(currentCategory)" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,#ffd700,#ffed4e,#ffd700);color:#000;border:2px solid #ffd700;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;transition:all 0.3s;box-shadow:0 3px 10px rgba(255,215,0,0.4);position:relative;display:flex;align-items:center;justify-content:center;" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'" onmouseleave="this.style.transform='scale(1)'">
                                     <span style="font-size:18px;margin-right:8px;text-shadow:0 2px 4px rgba(0,0,0,0.3);filter:drop-shadow(0 0 3px rgba(255,215,0,0.8));">⭐</span>
                                     <span style="flex:1;text-align:center;">Купить VIP функции за Telegram Stars</span>
                                     <div style="background:linear-gradient(135deg,#000,#333);color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:900;margin-left:8px;">VIP</div>
@@ -4227,7 +4227,7 @@
                                         </div>
                                     </div>
                                     
-                                    ${category === 'autobot' || category === 'autobot_vip' ? `
+                                    ${category === 'autobot' ? `
                                         <div style="background: rgba(74,222,128,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="color: #4ade80; font-size: 12px; font-weight: 700;">⏱️ Длительность:</span>
                                             <span style="color: #fff; font-size: 12px; font-weight: 800;">${formatDuration(item.duration)}</span>
@@ -4358,6 +4358,9 @@
         }
         
         function loadShopCategory(category) {
+            // Store current category globally
+            window.currentShopCategory = category;
+            
             // Update button states
             document.querySelectorAll('.shop-cat-btn').forEach(btn => {
                 const btnCategory = btn.getAttribute('data-category');

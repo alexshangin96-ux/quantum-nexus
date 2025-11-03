@@ -1,3 +1,4 @@
+# Quantum Nexus v6.7.48 - Fixed VIP button category selection and dynamic VIP mining price calculation
 from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta
@@ -928,25 +929,48 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
     user_id = update.effective_user.id
     logger.info(f"User ID: {user_id}")
     
-    with get_db() as db:
-        user = db.query(User).filter_by(telegram_id=user_id).first()
-        
-        if not user:
-            logger.error(f"User {user_id} not found in database")
-            await update.message.reply_text("❌ Пользователь не найден")
-            return
-        
-        logger.info(f"User found: {user.username}, DB ID: {user.id}")
-        
-        try:
+    try:
+        with get_db() as db:
+            user = db.query(User).filter_by(telegram_id=user_id).first()
+            
+            if not user:
+                logger.error(f"User {user_id} not found in database")
+                await update.message.reply_text("❌ Пользователь не найден")
+                return
+            
+            logger.info(f"User found: {user.username}, DB ID: {user.id}")
+            
+            # Calculate dynamic price for VIP mining machines based on current level
+            final_stars_amount = product['stars']
+            if product_id >= 71 and product_id <= 76:
+                # VIP Mining Machines - calculate price based on current level
+                vip_mining_map = {
+                    71: 'vip_quantum_prime',
+                    72: 'vip_solar_core',
+                    73: 'vip_black_hole',
+                    74: 'vip_nebula',
+                    75: 'vip_multiverse',
+                    76: 'vip_infinity'
+                }
+                machine_id = vip_mining_map.get(product_id)
+                if machine_id:
+                    import json
+                    vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    current_level = vip_levels.get(machine_id, 0)
+                    
+                    # Calculate price using same formula as frontend: basePrice * (1.15 ^ level)
+                    base_price = product['stars']
+                    final_stars_amount = int(base_price * (1.15 ** current_level))
+                    logger.info(f"VIP Mining Machine {machine_id}: level {current_level}, base price {base_price}, final price {final_stars_amount}")
+            
             # Send invoice with Telegram Stars
             prices = [LabeledPrice(
                 label=f"{product['title']} - {product['description']}",
-                amount=product['stars']
+                amount=final_stars_amount
             )]
             
             logger.info(f"Creating invoice with title: {product['title']}")
-            logger.info(f"Stars amount: {product['stars']}")
+            logger.info(f"Stars amount: {final_stars_amount}")
             logger.info(f"Chat ID: {update.effective_chat.id}")
             
             # For Telegram Stars, set provider_token to None
@@ -965,16 +989,16 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
             # Invoice is displayed by Telegram automatically, no extra message needed
             return  # Exit function without sending extra message
             
-        except Exception as e:
-            logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
-            
-            # If Stars are not available, show alternative
-            await update.message.reply_text(
-                f"❌ Ошибка: {str(e)}\n\n"
-                f"💡 Telegram Stars недоступны в вашем регионе.\n\n"
-                f"📦 Telegram Stars работают только в:\n"
-                f"   • США\n"
-                f"   • Япония\n"
-                f"   • Южная Корея\n"
-                f"   • И другие (обновляется)"
-            )
+    except Exception as e:
+        logger.error(f"❌ Failed to send Stars invoice: {e}", exc_info=True)
+        
+        # If Stars are not available, show alternative
+        await update.message.reply_text(
+            f"❌ Ошибка: {str(e)}\n\n"
+            f"💡 Telegram Stars недоступны в вашем регионе.\n\n"
+            f"📦 Telegram Stars работают только в:\n"
+            f"   • США\n"
+            f"   • Япония\n"
+            f"   • Южная Корея\n"
+            f"   • И другие (обновляется)"
+        )
