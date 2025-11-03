@@ -801,15 +801,25 @@ async def send_stars_invoice(update: Update, context: ContextTypes.DEFAULT_TYPE,
 async def channel_subscription_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle channel subscription/unsubscription events for daily tasks"""
     try:
+        logger.info(f"Channel subscription handler called: update={update}")
+        
+        # Check if update has chat_member
+        if not update.chat_member:
+            logger.warning("Channel subscription handler: no chat_member in update")
+            return
+            
         # Only handle updates for quantum_nexus channel
         chat = update.chat_member.chat
+        logger.info(f"Channel subscription handler: chat={chat}, chat.id={chat.id}, chat.username={getattr(chat, 'username', None)}")
+        
         # Check both username and ID for quantum_nexus channel
         channel_username = getattr(chat, 'username', None)
-        if channel_username != 'quantum_nexus':
-            # Also check by channel ID if username is not available
-            # quantum_nexus channel ID is typically around -1001234567890 (negative for channels)
-            # If username check fails, skip (channel might not be set up correctly)
-            logger.warning(f"Channel subscription handler: wrong channel username: {channel_username}")
+        channel_id = getattr(chat, 'id', None)
+        
+        # Accept if username matches OR if we need to check by ID
+        # Note: For now, accept all channel updates to debug
+        if channel_username and channel_username != 'quantum_nexus':
+            logger.warning(f"Channel subscription handler: wrong channel username: {channel_username}, skipping")
             return
         
         user = update.chat_member.from_user
@@ -826,7 +836,9 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
             if db_user:
                 if was_member and not is_now_member:
                     # User unsubscribed - apply penalty ALWAYS
+                    logger.info(f"User {user.id} unsubscribed: was_member={was_member}, is_now_member={is_now_member}")
                     penalty = 10000
+                    old_coins = db_user.coins
                     db_user.coins = max(0, db_user.coins - penalty)  # Can't go below 0
                     db_user.channel_subscribed = False
                     db_user.channel_subscribed_at = None
@@ -835,24 +847,30 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
                     import json
                     try:
                         daily_completed = json.loads(db_user.daily_tasks_completed or '{}')
+                        logger.info(f"Before reset: daily_tasks_completed={daily_completed}")
                         if '1' in daily_completed or 1 in daily_completed:
-                            daily_completed = {k: v for k, v in daily_completed.items() if str(k) != '1'}
+                            daily_completed = {k: v for k, v in daily_completed.items() if str(k) != '1' and k != 1}
                             db_user.daily_tasks_completed = json.dumps(daily_completed)
-                    except:
-                        pass
+                            logger.info(f"After reset: daily_tasks_completed={daily_completed}")
+                    except Exception as e:
+                        logger.error(f"Error resetting daily_tasks_completed: {e}")
                     
                     db.commit()
+                    logger.info(f"Penalty applied: user {user.id}, coins {old_coins} -> {db_user.coins}")
                     
                     # Notify user about penalty immediately
-                    bot = context.bot
-                    notification = (
-                        f"⚠️ Штраф за отписку от канала!\n\n"
-                        f"❌ Вы отписались от канала @quantum_nexus\n"
-                        f"💸 Штраф: -{penalty:,} коинов\n\n"
-                        f"📢 Подпишитесь снова, чтобы вернуть задание!"
-                    )
-                    await bot.send_message(chat_id=user.id, text=notification)
-                    logger.info(f"User {user.id} unsubscribed from channel, penalty {penalty} applied")
+                    try:
+                        bot = context.bot
+                        notification = (
+                            f"⚠️ Штраф за отписку от канала!\n\n"
+                            f"❌ Вы отписались от канала @quantum_nexus\n"
+                            f"💸 Штраф: -{penalty:,} коинов\n\n"
+                            f"📢 Подпишитесь снова, чтобы вернуть задание!"
+                        )
+                        await bot.send_message(chat_id=user.id, text=notification)
+                        logger.info(f"Notification sent to user {user.id}")
+                    except Exception as e:
+                        logger.error(f"Error sending notification to user {user.id}: {e}")
                 elif not was_member and is_now_member:
                     # User subscribed - update status
                     if not db_user.channel_subscribed:

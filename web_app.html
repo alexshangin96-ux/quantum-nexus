@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.57 - Fixed return timer, cards tracking, penalty handler -->
+<!-- Quantum Nexus v6.7.58 - Fixed all daily tasks issues: return timer, cards progress, channel subscription penalty -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7166,33 +7166,48 @@
                     // Start countdown timers for return tasks - use setTimeout to ensure DOM is ready
                     setTimeout(() => {
                         data.tasks.forEach((task, index) => {
-                            if (task.return_task && !task.completed) {
+                            if (task.return_task) {
                                 const timerEl = document.getElementById('returnTimer_' + task.id);
-                                if (timerEl && task.last_active) {
-                                    const lastActiveTime = new Date(task.last_active).getTime();
-                                    const targetHours = task.target || 2;
-                                    
-                                    function updateReturnTimer() {
-                                        if (!timerEl.parentElement) return; // Element removed
+                                if (timerEl) {
+                                    if (task.completed) {
+                                        // Task already completed
+                                        timerEl.textContent = '✅ Задание выполнено!';
+                                        timerEl.style.color = '#10b981';
+                                    } else if (task.last_active) {
+                                        const lastActiveTime = new Date(task.last_active).getTime();
+                                        const targetHours = parseFloat(task.target) || 2;
                                         
-                                        const now = new Date().getTime();
-                                        const hoursPassed = (now - lastActiveTime) / (1000 * 60 * 60);
-                                        const hoursRemaining = Math.max(0, targetHours - hoursPassed);
-                                        
-                                        if (hoursRemaining > 0) {
-                                            const hours = Math.floor(hoursRemaining);
-                                            const minutes = Math.floor((hoursRemaining - hours) * 60);
-                                            const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
-                                            timerEl.textContent = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                                        } else {
-                                            timerEl.textContent = '✅ Задание выполнено!';
-                                            timerEl.style.color = '#10b981';
+                                        function updateReturnTimer() {
+                                            if (!timerEl || !timerEl.parentElement) {
+                                                return; // Element removed
+                                            }
+                                            
+                                            const now = new Date().getTime();
+                                            const hoursPassed = (now - lastActiveTime) / (1000 * 60 * 60);
+                                            const hoursRemaining = Math.max(0, targetHours - hoursPassed);
+                                            
+                                            if (hoursRemaining > 0) {
+                                                const hours = Math.floor(hoursRemaining);
+                                                const minutes = Math.floor((hoursRemaining - hours) * 60);
+                                                const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
+                                                timerEl.textContent = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                                timerEl.style.color = '#fbbf24';
+                                            } else {
+                                                timerEl.textContent = '✅ Время вышло! Можно забрать награду';
+                                                timerEl.style.color = '#10b981';
+                                                // Reload tasks to update status
+                                                setTimeout(() => {
+                                                    openDailyBonus();
+                                                }, 1000);
+                                            }
                                         }
+                                        updateReturnTimer();
+                                        const intervalId = setInterval(updateReturnTimer, 1000);
+                                        // Store interval ID for cleanup if needed
+                                        timerEl.dataset.intervalId = intervalId;
+                                    } else {
+                                        timerEl.textContent = '⏳ Начните выполнение задания (активируйте приложение)';
                                     }
-                                    updateReturnTimer();
-                                    setInterval(updateReturnTimer, 1000);
-                                } else if (timerEl && !task.last_active) {
-                                    timerEl.textContent = '⏳ Начните выполнение задания';
                                 }
                             }
                         });

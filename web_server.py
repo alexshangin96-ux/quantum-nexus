@@ -2606,8 +2606,9 @@ def get_daily_tasks():
                     progress = min(int(user.quanhash), target)
                     completed = user.quanhash >= target
                 elif 'карточк' in task_desc:
-                    progress = min(cards_count, target)
+                    progress = cards_count  # Show actual count, not capped
                     completed = cards_count >= target
+                    logger.info(f"Cards task: user {user_id}, cards={cards_count}, target={target}, progress={progress}, completed={completed}")
                 elif 'друга' in task_desc:
                     progress = min(user.referrals_count, target)
                     completed = user.referrals_count >= target

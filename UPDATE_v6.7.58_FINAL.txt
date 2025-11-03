@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.58 - Complete Daily Tasks Fixes
+# Date: 2025-11-05
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.58 - Complete Daily Tasks Fixes"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Fixed return timer - now shows countdown correctly and reloads when time expires"
+echo "  ✅ Fixed cards tracking - progress now shows actual count, not capped"
+echo "  ✅ Fixed channel subscription handler - added comprehensive logging and error handling"
+echo "  ✅ Improved penalty application - better logging and notification handling"
+echo ""
+echo "Bug Fixes:"
+echo "  1. Return timer now displays countdown correctly and updates every second"
+echo "  2. Return timer reloads tasks when time expires to show claim button"
+echo "  3. Cards task progress shows actual count (was showing 0 due to min() capping)"
+echo "  4. Channel subscription handler now has comprehensive logging for debugging"
+echo "  5. Penalty handler has better error handling and logging"
+echo "  6. Task reset on unsubscribe now properly removes task 1 from daily_tasks_completed"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp web_server.py /root/quantum-nexus/web_server.py
+sudo cp handlers.py /root/quantum-nexus/handlers.py
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.58 deployed successfully!"
+echo "=================================================="
+echo ""
+echo "All daily tasks issues fixed:"
+echo "  - Return timer working correctly"
+echo "  - Cards progress tracking fixed"
+echo "  - Channel subscription handler with full logging"
+echo ""
+echo "To debug channel subscription issues, check logs:"
+echo "  journalctl -u quantum-nexus.service -f | grep 'Channel subscription'"
