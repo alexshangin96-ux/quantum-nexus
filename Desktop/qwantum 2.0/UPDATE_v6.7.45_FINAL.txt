@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Quantum Nexus v6.7.45 - Combo products: cards + coins
+# Date: 2025-11-03
+
+echo "=================================================="
+echo "Quantum Nexus v6.7.45 - Combo Products Complete"
+echo "=================================================="
+echo ""
+echo "Changes:"
+echo "  ✅ Combo products (41-50) now give cards + coins"
+echo "  ✅ Absolute card updated to 10,000 cards + 15M coins"
+echo "  ✅ Card creation logic added to handlers.py"
+echo ""
+echo "Combo Products:"
+echo "  Product 41: 10 cards + 300,000 coins"
+echo "  Product 42: 20 cards + 800,000 coins"
+echo "  Product 43: 50 cards + 1,500,000 coins"
+echo "  Product 44: 100 cards + 2,500,000 coins"
+echo "  Product 45: 200 cards + 4,000,000 coins"
+echo "  Product 46: 500 cards + 5,500,000 coins"
+echo "  Product 47: 1,000 cards + 7,000,000 coins"
+echo "  Product 48: 2,000 cards + 8,500,000 coins"
+echo "  Product 49: 5,000 cards + 10,000,000 coins"
+echo "  Product 50: 10,000 cards + 15,000,000 coins"
+echo ""
+
+cd /root/quantum-nexus
+
+echo "Step 1: Pull latest changes..."
+git pull origin main
+
+echo "Step 2: Copy files..."
+sudo cp web_app.html /var/www/quantum-nexus/
+sudo cp handlers.py /root/quantum-nexus/
+
+echo "Step 3: Restart services..."
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+echo "Step 4: Check status..."
+sudo systemctl status quantum-nexus-web.service --no-pager
+echo ""
+sudo systemctl status quantum-nexus.service --no-pager
+
+echo ""
+echo "=================================================="
+echo "✅ v6.7.45 deployed successfully!"
+echo "=================================================="
+
