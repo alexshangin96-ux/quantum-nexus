@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Quantum Nexus v6.7.29 - Enhanced Referral System: Premium bonuses, detailed stats, beautiful UI -->
+<!-- Quantum Nexus v6.7.30 - Enhanced Referral System: Increased bonuses (500/2000), beautiful detailed UI, premium indicators -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -1561,20 +1561,31 @@
             
             <div style="padding: 20px; overflow-y: auto; flex: 1;">
                 <!-- Benefits Banner -->
-                <div style="background: linear-gradient(135deg, rgba(76,222,128,0.2) 0%, rgba(34,197,94,0.15) 100%); border: 2px solid rgba(76,222,128,0.4); border-radius: 16px; padding: 16px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(76,222,128,0.2);">
-                    <div style="font-size: 15px; font-weight: 800; color: #10b981; margin-bottom: 12px; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">💰 Ваши бонусы</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
-                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 24px; margin-bottom: 4px;">✅</div>
-                            <div style="font-size: 12px; font-weight: 700; color: #fff;">5% от обычных</div>
+                <div style="background: linear-gradient(135deg, rgba(76,222,128,0.2) 0%, rgba(34,197,94,0.15) 100%); border: 2px solid rgba(76,222,128,0.4); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(76,222,128,0.2);">
+                    <div style="font-size: 16px; font-weight: 800; color: #10b981; margin-bottom: 16px; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">💰 Система бонусов</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <!-- Regular User Bonus -->
+                        <div style="text-align: center; padding: 14px; background: rgba(102, 126, 234, 0.15); border: 2px solid rgba(102, 126, 234, 0.4); border-radius: 14px; backdrop-filter: blur(10px);">
+                            <div style="font-size: 32px; margin-bottom: 6px;">✅</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #a5b4fc; margin-bottom: 4px;">Обычный пользователь</div>
+                            <div style="font-size: 16px; font-weight: 900; color: #667eea; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(102,126,234,0.3);">500 🪙</div>
+                            <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8);">+ 5% пассивный доход</div>
                         </div>
-                        <div style="text-align: center; padding: 10px; background: rgba(255,215,0,0.2); border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255,215,0,0.4);">
-                            <div style="font-size: 24px; margin-bottom: 4px;">⭐</div>
-                            <div style="font-size: 12px; font-weight: 700; color: #ffd700;">10% от Premium</div>
+                        
+                        <!-- Premium User Bonus -->
+                        <div style="text-align: center; padding: 14px; background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,200,0,0.15) 100%); border: 2px solid rgba(255,215,0,0.5); border-radius: 14px; backdrop-filter: blur(10px); box-shadow: 0 4px 12px rgba(255,215,0,0.2);">
+                            <div style="font-size: 32px; margin-bottom: 6px;">⭐</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #ffd700; margin-bottom: 4px;">Premium пользователь</div>
+                            <div style="font-size: 16px; font-weight: 900; color: #ffd700; margin-bottom: 2px; text-shadow: 0 2px 4px rgba(255,215,0,0.3);">2000 🪙</div>
+                            <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9);">+ 10% пассивный доход</div>
                         </div>
-                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 24px; margin-bottom: 4px;">🎁</div>
-                            <div style="font-size: 12px; font-weight: 700; color: #fff;">100 🪙 бонус</div>
+                    </div>
+                    
+                    <!-- Info Box -->
+                    <div style="margin-top: 12px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.5; text-align: center;">
+                            💡 Реферал получает полный бонус, вы получаете 50% от бонуса<br>
+                            📈 Пассивный доход начисляется автоматически от заработка реферала
                         </div>
                     </div>
                 </div>
@@ -6407,6 +6418,8 @@
                 const isVIP = ref.is_vip || false;
                 const badge = isPremium ? '⭐ Premium' : isVIP ? '👑 VIP' : '✅';
                 const badgeColor = isPremium ? '#ffd700' : isVIP ? '#667eea' : '#10b981';
+                const borderColor = isPremium ? 'rgba(255,215,0,0.5)' : isVIP ? 'rgba(102,126,234,0.5)' : 'rgba(16,185,129,0.4)';
+                const bgColor = isPremium ? 'rgba(255,215,0,0.1)' : isVIP ? 'rgba(102,126,234,0.1)' : 'rgba(16,185,129,0.1)';
                 const percent = ref.referral_income_percent || (isPremium ? 10 : isVIP ? 10 : 5);
                 const earned = Math.floor(ref.total_earned || 0);
                 const income = Math.floor(ref.income_from_ref || 0);
@@ -6414,26 +6427,49 @@
                 const joinedDate = ref.joined_at ? new Date(ref.joined_at).toLocaleDateString('ru-RU') : 'Неизвестно';
                 
                 return `
-                    <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 12px; padding: 14px; margin-bottom: 10px; transition: all 0.3s;" onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'; this.style.borderColor='rgba(102, 126, 234, 0.5)';" onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'; this.style.borderColor='rgba(102, 126, 234, 0.3)';">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="font-size: 20px;">${badge}</div>
-                                <div style="font-weight: 800; color: #fff; font-size: 14px;">${ref.username}</div>
+                    <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 14px; padding: 16px; margin-bottom: 12px; transition: all 0.3s; box-shadow: 0 2px 8px ${badgeColor}20;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px ${badgeColor}40';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px ${badgeColor}20';">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 24px; filter: drop-shadow(0 2px 4px ${badgeColor}40);">${badge}</div>
+                                <div style="font-weight: 900; color: #fff; font-size: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${ref.username}</div>
                             </div>
-                            <div style="background: ${badgeColor}; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; box-shadow: 0 2px 8px ${badgeColor}40;">
+                            <div style="background: linear-gradient(135deg, ${badgeColor} 0%, ${badgeColor}dd 100%); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px ${badgeColor}60; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
                                 ${percent}%
                             </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px;">
-                            <div style="color: rgba(255,255,255,0.7);">Заработал:</div>
-                            <div style="font-weight: 700; color: #10b981; text-align: right;">${earned.toLocaleString()} 🪙</div>
-                            <div style="color: rgba(255,255,255,0.7);">Ваш доход:</div>
-                            <div style="font-weight: 700; color: #ffd700; text-align: right;">${income.toLocaleString()} 🪙</div>
-                            <div style="color: rgba(255,255,255,0.7);">Баланс:</div>
-                            <div style="font-weight: 700; color: #667eea; text-align: right;">${coins.toLocaleString()} 🪙</div>
-                            <div style="color: rgba(255,255,255,0.7);">Присоединился:</div>
-                            <div style="font-weight: 700; color: rgba(255,255,255,0.9); text-align: right;">${joinedDate}</div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 13px;">
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💰 Заработал:
+                            </div>
+                            <div style="font-weight: 800; color: #10b981; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                ${earned.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💵 Ваш доход:
+                            </div>
+                            <div style="font-weight: 800; color: #ffd700; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(255,215,0,0.3);">
+                                ${income.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                💳 Баланс:
+                            </div>
+                            <div style="font-weight: 800; color: #667eea; text-align: right; font-size: 14px; text-shadow: 0 2px 4px rgba(102,126,234,0.3);">
+                                ${coins.toLocaleString()} 🪙
+                            </div>
+                            <div style="color: rgba(255,255,255,0.75); font-weight: 600; display: flex; align-items: center;">
+                                📅 Присоединился:
+                            </div>
+                            <div style="font-weight: 800; color: rgba(255,255,255,0.95); text-align: right; font-size: 14px;">
+                                ${joinedDate}
+                            </div>
                         </div>
+                        ${isPremium ? `
+                        <div style="margin-top: 10px; padding: 8px; background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; font-weight: 700; color: #ffd700;">
+                                ⭐ Premium пользователь - удвоенный доход!
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -7189,6 +7225,8 @@
             
             return html;
         }
+        
+        // v6.7.30 - Enhanced Referral System: Increased bonuses (500 regular/2000 premium), detailed premium indicators, beautiful cards
         
         // v6.7.29 - Enhanced Referral System: Premium bonuses, detailed stats, beautiful UI
         
