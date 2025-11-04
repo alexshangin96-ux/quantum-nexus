@@ -1,15 +1,52 @@
-КОМАНДЫ ДЛЯ ОБНОВЛЕНИЯ СЕРВЕРА
-================================
+==================================================
+Quantum Nexus - Команды для обновления
+==================================================
 
-ВЫПОЛНИТЕ НА СЕРВЕРЕ:
+Скопируйте и выполните на сервере:
 
-cd ~/quantum-nexus
+cd /root/quantum-nexus && \
+git merge --abort 2>/dev/null; \
+git reset --hard HEAD && \
+git fetch origin && \
+git pull origin main && \
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html && \
+sudo systemctl restart quantum-nexus-web.service && \
+echo "✅ Обновление завершено!" && \
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -10
+
+==================================================
+Или по шагам:
+==================================================
+
+# Шаг 1: Перейти в директорию
+cd /root/quantum-nexus
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
 git pull origin main
-sudo cp web_app.html /var/www/quantum-nexus/
-sudo systemctl restart quantum-nexus-web.service
-sudo systemctl restart quantum-nexus
 
-ГОТОВО!
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
 
 
 
