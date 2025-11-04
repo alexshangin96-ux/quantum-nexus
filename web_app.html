@@ -7105,10 +7105,16 @@
                     
                     html += data.tasks.map((task, index) => {
                         // Check if task card already exists and is marked as claimed locally
-                        const existingCard = document.querySelector(`[data-task-id="${task.id}"][data-claimed="true"]`);
+                        // IMPORTANT: Check in the current modal, not globally
+                        const existingCard = list ? list.querySelector(`[data-task-id="${task.id}"][data-claimed="true"]`) : null;
                         if (existingCard && task.id === 1) {
                             // Don't recreate this task card if it's already claimed - preserve local state
                             return '';
+                        }
+                        // If task is claimed on server, show claimed state
+                        if (task.claimed && task.id === 1) {
+                            // Override to show claimed state
+                            task.completed = true;
                         }
                         const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
                         const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
@@ -7178,8 +7184,35 @@
                             const taskId = newCard.getAttribute('data-task-id');
                             const existingCard = list.querySelector(`[data-task-id="${taskId}"][data-claimed="true"]`);
                             if (existingCard && taskId === '1') {
-                                // Preserve existing claimed card for task 1
+                                // Preserve existing claimed card for task 1 - DO NOT REPLACE
                                 return;
+                            }
+                            // Check if task is claimed on server
+                            const taskData = data.tasks.find(t => t.id == taskId);
+                            if (taskData && taskData.claimed && taskId === '1') {
+                                // Task is claimed on server - don't show verify button
+                                // Update existing card or create new one with claimed state
+                                const oldCard = list.querySelector(`[data-task-id="${taskId}"]`);
+                                if (oldCard) {
+                                    // Update existing card to claimed state
+                                    oldCard.setAttribute('data-claimed', 'true');
+                                    oldCard.setAttribute('data-completed', 'true');
+                                    // Remove all buttons
+                                    const buttons = oldCard.querySelectorAll('button');
+                                    buttons.forEach(btn => btn.remove());
+                                    // Remove subscription link
+                                    const subLink = oldCard.querySelector('a[target="_blank"]');
+                                    if (subLink) subLink.remove();
+                                    // Add success message if not present
+                                    if (!oldCard.querySelector('[data-claimed-message="true"]')) {
+                                        const successDiv = document.createElement('div');
+                                        successDiv.textContent = '✅ Награда получена!';
+                                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                                        successDiv.setAttribute('data-claimed-message', 'true');
+                                        oldCard.appendChild(successDiv);
+                                    }
+                                    return; // Don't replace
+                                }
                             }
                             // Replace or add new card
                             const oldCard = list.querySelector(`[data-task-id="${taskId}"]`);
