@@ -843,17 +843,30 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
                     db_user.channel_subscribed = False
                     db_user.channel_subscribed_at = None
                     
-                    # Reset task 1 (channel subscription) in daily_tasks_completed
+                    # Reset task 1 (channel subscription) in daily_tasks_completed for TODAY
                     import json
+                    from datetime import date
                     try:
+                        today_str = date.today().isoformat()
                         daily_completed = json.loads(db_user.daily_tasks_completed or '{}')
-                        logger.info(f"Before reset: daily_tasks_completed={daily_completed}")
-                        if '1' in daily_completed or 1 in daily_completed:
-                            daily_completed = {k: v for k, v in daily_completed.items() if str(k) != '1' and k != 1}
-                            db_user.daily_tasks_completed = json.dumps(daily_completed)
-                            logger.info(f"After reset: daily_tasks_completed={daily_completed}")
+                        logger.info(f"Before reset: daily_tasks_completed={daily_completed}, today={today_str}")
+                        
+                        # daily_tasks_completed structure: {"2025-11-05": [1, 2, 3], ...}
+                        if today_str in daily_completed:
+                            today_tasks = daily_completed[today_str]
+                            if isinstance(today_tasks, list) and 1 in today_tasks:
+                                today_tasks.remove(1)
+                                daily_completed[today_str] = today_tasks
+                                db_user.daily_tasks_completed = json.dumps(daily_completed)
+                                logger.info(f"After reset: daily_tasks_completed={daily_completed}, removed task 1 from {today_str}")
+                            elif isinstance(today_tasks, list):
+                                logger.info(f"Task 1 not in today's completed tasks: {today_tasks}")
+                        else:
+                            logger.info(f"Today {today_str} not in daily_tasks_completed")
                     except Exception as e:
                         logger.error(f"Error resetting daily_tasks_completed: {e}")
+                        import traceback
+                        logger.error(traceback.format_exc())
                     
                     db.commit()
                     logger.info(f"Penalty applied: user {user.id}, coins {old_coins} -> {db_user.coins}")
