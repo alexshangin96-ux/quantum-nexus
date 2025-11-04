@@ -1,0 +1,54 @@
+==================================================
+Quantum Nexus - Manual Update Commands
+Tasks Preload & Subscription Animation Fix
+==================================================
+
+Copy and paste these commands on your server:
+
+cd /root/quantum-nexus && \
+git merge --abort 2>/dev/null; \
+git reset --hard HEAD && \
+git fetch origin && \
+git pull origin main && \
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html && \
+sudo systemctl restart quantum-nexus-web.service && \
+echo "✅ Update complete!" && \
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -10
+
+==================================================
+Or step by step:
+==================================================
+
+# Step 1: Navigate to directory
+cd /root/quantum-nexus
+
+# Step 2: Resolve conflicts
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Step 3: Get latest code
+git fetch origin
+git pull origin main
+
+# Step 4: Copy files to production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Step 5: Restart services
+sudo systemctl restart quantum-nexus-web.service
+
+# Step 6: Check status
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+What's Updated:
+==================================================
+
+✅ Tasks now preload BEFORE modal opens - no "Задания загружаются..." message
+✅ Loading animation (⏳ Проверка...) on subscription check button for 1 second
+✅ Better notifications:
+   - "✅ Подписались и успешно!" when subscribed
+   - "❌ Вы не подписались" when not subscribed
+   - "❌ Ошибка при проверке" on error
+✅ Tasks list reloads after successful subscription check to show "Получить награду" button
+
+==================================================
