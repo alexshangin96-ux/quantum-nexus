@@ -7034,6 +7034,16 @@
             // Remove existing modal if any
             const existingModal = document.getElementById('dailyBonusModal');
             if (existingModal) {
+                // Clear all intervals before removing
+                if (window.dailyTasksCountdownInterval) {
+                    clearInterval(window.dailyTasksCountdownInterval);
+                    window.dailyTasksCountdownInterval = null;
+                }
+                if (window.dailyTasksReturnIntervals) {
+                    window.dailyTasksReturnIntervals.forEach(id => clearInterval(id));
+                    window.dailyTasksReturnIntervals = [];
+                }
+                window.dailyTasksLoading = false;
                 existingModal.remove();
             }
             
@@ -7071,10 +7081,37 @@
             `;
             document.body.appendChild(modal);
             
+            // Clear any existing countdown intervals
+            if (window.dailyTasksCountdownInterval) {
+                clearInterval(window.dailyTasksCountdownInterval);
+                window.dailyTasksCountdownInterval = null;
+            }
+            
+            // Clear all return timer intervals
+            if (window.dailyTasksReturnIntervals) {
+                window.dailyTasksReturnIntervals.forEach(id => clearInterval(id));
+                window.dailyTasksReturnIntervals = [];
+            } else {
+                window.dailyTasksReturnIntervals = [];
+            }
+            
+            // Prevent multiple simultaneous fetch requests
+            if (window.dailyTasksLoading) {
+                return; // Already loading
+            }
+            window.dailyTasksLoading = true;
+            
             // Start countdown timer
             function updateCountdown() {
                 const countdownEl = document.getElementById('countdownTimer');
-                if (!countdownEl) return;
+                if (!countdownEl) {
+                    // Clear interval if element removed
+                    if (window.dailyTasksCountdownInterval) {
+                        clearInterval(window.dailyTasksCountdownInterval);
+                        window.dailyTasksCountdownInterval = null;
+                    }
+                    return;
+                }
                 
                 // Get current time and next midnight
                 const now = new Date();
@@ -7096,7 +7133,7 @@
             }
             
             updateCountdown();
-            setInterval(updateCountdown, 1000);
+            window.dailyTasksCountdownInterval = setInterval(updateCountdown, 1000);
             
             // Load daily tasks
             fetch('/api/daily_tasks', {
@@ -7111,6 +7148,7 @@
                 return res.json();
             })
             .then(data => {
+                window.dailyTasksLoading = false; // Reset loading flag
                 const list = document.getElementById('dailyTasksList');
                 if (!list) return; // Modal was closed
                 
@@ -7222,8 +7260,11 @@
                                         }
                                         updateReturnTimer();
                                         const intervalId = setInterval(updateReturnTimer, 1000);
-                                        // Store interval ID for cleanup if needed
+                                        // Store interval ID for cleanup
                                         timerEl.dataset.intervalId = intervalId;
+                                        if (window.dailyTasksReturnIntervals) {
+                                            window.dailyTasksReturnIntervals.push(intervalId);
+                                        }
                                     } else {
                                         timerEl.textContent = '⏳ Начните выполнение задания (активируйте приложение)';
                                     }
@@ -7236,6 +7277,7 @@
                 }
             })
             .catch(err => {
+                window.dailyTasksLoading = false; // Reset loading flag
                 console.error('Error loading daily tasks:', err);
                 const list = document.getElementById('dailyTasksList');
                 if (list) {
