@@ -7508,6 +7508,26 @@
                             // Silent fail
                         }
                     }
+                } else if (data.already_claimed) {
+                    // Task was already claimed - update UI to show "Награда получена"
+                    if (taskCard) {
+                        const claimButton = taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`);
+                        if (claimButton) {
+                            claimButton.outerHTML = `
+                                <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                    ✅ Награда получена!
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    if (window.tg && tg.showAlert) {
+                        try {
+                            tg.showAlert('ℹ️ Награда за это задание уже была получена сегодня');
+                        } catch(e) {
+                            // Silent fail
+                        }
+                    }
                 } else {
                     // Restore button on error
                     if (taskCard && claimButton) {
@@ -7600,49 +7620,89 @@
                 
                 try {
                     if (data.subscribed === true) {
-                        // Update UI instantly - show "Claim reward" button immediately
-                        if (verifyButton && taskCard) {
-                            // Remove verify button and subscription link
-                            const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
-                            if (subscriptionLink) {
-                                subscriptionLink.style.display = 'none';
+                        // Check if reward was already claimed by fetching current task status
+                        fetch('/api/daily_tasks', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: user?.id})
+                        })
+                        .then(res => res.json())
+                        .then(tasksData => {
+                            const task1 = tasksData.tasks?.find(t => t.id === 1);
+                            const isAlreadyClaimed = task1?.claimed === true;
+                            
+                            // Update UI instantly - show appropriate button
+                            if (verifyButton && taskCard) {
+                                // Remove verify button and subscription link
+                                const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
+                                if (subscriptionLink) {
+                                    subscriptionLink.style.display = 'none';
+                                }
+                                
+                                if (isAlreadyClaimed) {
+                                    // Already claimed - show "Награда получена"
+                                    verifyButton.outerHTML = `
+                                        <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                            ✅ Награда получена!
+                                        </div>
+                                    `;
+                                } else {
+                                    // Not claimed yet - show "Claim reward" button
+                                    verifyButton.outerHTML = `
+                                        <button onclick="claimReward(${taskId})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                            🎁 Забрать награду
+                                        </button>
+                                    `;
+                                }
+                                
+                                // Update task status
+                                const statusText = taskCard.querySelector('div[style*="font-size: 14px"]');
+                                if (statusText) {
+                                    statusText.innerHTML = '<div style="font-size: 14px; color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 6px;">✅ Выполнено</div>';
+                                }
+                                
+                                // Add "Готово" badge if not present
+                                const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                                if (header && !header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]')) {
+                                    const badge = document.createElement('div');
+                                    badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                                    badge.textContent = '✅ Готово';
+                                    header.appendChild(badge);
+                                }
+                                
+                                // Update card background to completed style
+                                taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
                             }
                             
-                            // Replace verify button with claim button
-                            verifyButton.outerHTML = `
-                                <button onclick="claimReward(${taskId})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
-                                    🎁 Забрать награду
-                                </button>
-                            `;
-                            
-                            // Update task status
-                            const statusText = taskCard.querySelector('div[style*="font-size: 14px"]');
-                            if (statusText) {
-                                statusText.innerHTML = '<div style="font-size: 14px; color: #4ade80; font-weight: 700; display: flex; align-items: center; gap: 6px;">✅ Выполнено</div>';
+                            // Show brief notification
+                            if (window.tg && tg.showAlert) {
+                                try {
+                                    if (isAlreadyClaimed) {
+                                        tg.showAlert('✅ Подписка подтверждена! Награда уже была получена ранее.');
+                                    } else {
+                                        tg.showAlert('✅ Подписка подтверждена! Теперь можете забрать награду!');
+                                    }
+                                } catch(e) {
+                                    // Silent fail
+                                }
                             }
-                            
-                            // Add "Готово" badge if not present
-                            const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
-                            if (header && !header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]')) {
-                                const badge = document.createElement('div');
-                                badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
-                                badge.textContent = '✅ Готово';
-                                header.appendChild(badge);
+                        })
+                        .catch(err => {
+                            console.error('Error checking task status:', err);
+                            // Fallback: show claim button anyway
+                            if (verifyButton && taskCard) {
+                                const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
+                                if (subscriptionLink) {
+                                    subscriptionLink.style.display = 'none';
+                                }
+                                verifyButton.outerHTML = `
+                                    <button onclick="claimReward(${taskId})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                        🎁 Забрать награду
+                                    </button>
+                                `;
                             }
-                            
-                            // Update card background to completed style
-                            taskCard.style.background = 'rgba(16,185,129,0.15)';
-                            taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
-                        }
-                        
-                        // Show brief notification
-                        if (window.tg && tg.showAlert) {
-                            try {
-                                tg.showAlert('✅ Подписка подтверждена! Теперь можете забрать награду!');
-                            } catch(e) {
-                                // Silent fail
-                            }
-                        }
+                        });
                     } else if (data.subscribed === false || (data.success !== undefined && !data.subscribed)) {
                         // User is not subscribed
                         restoreButton();

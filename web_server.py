@@ -2537,33 +2537,6 @@ def set_vip():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
-def check_channel_subscription_real(user_id):
-    """Check if user is really subscribed to channel via Telegram API"""
-    try:
-        from telegram import Bot
-        from config import BOT_TOKEN
-        import asyncio
-        
-        async def check_membership():
-            try:
-                bot = Bot(token=BOT_TOKEN)
-                member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
-                is_member = member.status in ['member', 'administrator', 'creator']
-                print(f"check_channel_subscription_real: Real check for user {user_id}: status={member.status}, is_member={is_member}")
-                return is_member
-            except Exception as e:
-                print(f"check_channel_subscription_real: Channel membership check error for user {user_id}: {e}")
-                return False
-        
-        try:
-            return asyncio.run(check_membership())
-        except Exception as e:
-            print(f"check_channel_subscription_real: Async run error for user {user_id}: {e}")
-            return False
-    except Exception as e:
-        print(f"check_channel_subscription_real: Error for user {user_id}: {e}")
-        return False
-
 @app.route('/api/daily_tasks', methods=['POST'])
 def get_daily_tasks():
     """Get daily tasks for user"""
@@ -2641,24 +2614,8 @@ def get_daily_tasks():
             # Build tasks list
             tasks = []
             
-            # Task 1: Permanent channel subscription - CHECK REAL SUBSCRIPTION
-            is_channel_subscribed_real = check_channel_subscription_real(user_id)
-            
-            # Update database flag to match reality
-            if user.channel_subscribed != is_channel_subscribed_real:
-                user.channel_subscribed = is_channel_subscribed_real
-                if is_channel_subscribed_real:
-                    user.channel_subscribed_at = datetime.datetime.utcnow()
-                else:
-                    user.channel_subscribed_at = None
-                    # Remove task 1 from completed if user unsubscribed
-                    if 1 in today_completed:
-                        today_completed.remove(1)
-                        completed_tasks[today_str] = today_completed
-                        user.daily_tasks_completed = json.dumps(completed_tasks)
-                db.commit()
-            
-            is_channel_subscribed = is_channel_subscribed_real
+            # Task 1: Permanent channel subscription
+            is_channel_subscribed = getattr(user, 'channel_subscribed', False)
             task_1_claimed = 1 in today_completed
             tasks.append({
                 'id': 1,
@@ -2782,7 +2739,37 @@ def claim_task():
             
             if task_id in today_completed:
                 print(f"Task {task_id} already completed today by user {user_id}")
-                return jsonify({'success': False, 'error': 'Task already completed today'})
+                # For task 1 (channel subscription), also verify subscription status
+                if task_id == 1:
+                    # Check if user is still subscribed
+                    from telegram import Bot
+                    from config import BOT_TOKEN
+                    import asyncio
+                    
+                    async def check_membership():
+                        try:
+                            bot = Bot(token=BOT_TOKEN)
+                            member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
+                            return member.status in ['member', 'administrator', 'creator']
+                        except Exception as e:
+                            print(f"Channel membership check error: {e}")
+                            return False
+                    
+                    try:
+                        is_subscribed = asyncio.run(check_membership())
+                        if not is_subscribed:
+                            # Remove from completed if unsubscribed
+                            today_completed.remove(task_id)
+                            completed_tasks[today_str] = today_completed
+                            user.daily_tasks_completed = json.dumps(completed_tasks)
+                            user.channel_subscribed = False
+                            db.commit()
+                            return jsonify({'success': False, 'error': 'Вы отписались от канала. Подпишитесь снова, чтобы получить награду.'})
+                    except Exception as e:
+                        print(f"Error checking subscription: {e}")
+                
+                # Task already completed and reward already claimed
+                return jsonify({'success': False, 'error': 'Task already completed today', 'already_claimed': True})
             
             # Regenerate tasks to get the reward for this specific task
             today = datetime.date.today()
@@ -2802,46 +2789,9 @@ def claim_task():
             
             selected_tasks = random.sample(dynamic_task_pool, 7)
             
-            # Task 1 is channel subscription (3000) - VERIFY REAL SUBSCRIPTION BEFORE REWARD
+            # Task 1 is channel subscription (3000)
             if task_id == 1:
-                # Double-check real subscription before giving reward
-                from telegram import Bot
-                from config import BOT_TOKEN
-                import asyncio
-                
-                async def verify_subscription():
-                    try:
-                        bot = Bot(token=BOT_TOKEN)
-                        member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
-                        is_member = member.status in ['member', 'administrator', 'creator']
-                        print(f"Claim task 1: Real subscription check for user {user_id}: status={member.status}, is_member={is_member}")
-                        return is_member
-                    except Exception as e:
-                        print(f"Claim task 1: Subscription check error for user {user_id}: {e}")
-                        return False
-                
-                try:
-                    is_really_subscribed = asyncio.run(verify_subscription())
-                except Exception as e:
-                    print(f"Claim task 1: Async error for user {user_id}: {e}")
-                    is_really_subscribed = False
-                
-                if not is_really_subscribed:
-                    # User is not really subscribed - reject claim
-                    print(f"Claim task 1 REJECTED: User {user_id} is not subscribed to channel")
-                    # Also update database flag
-                    user.channel_subscribed = False
-                    user.channel_subscribed_at = None
-                    db.commit()
-                    return jsonify({'success': False, 'error': 'Вы не подписаны на канал. Пожалуйста, подпишитесь на @quantum_nexus'})
-                
-                # User is really subscribed - give reward
                 reward = 3000
-                # Update database flag
-                if not user.channel_subscribed:
-                    user.channel_subscribed = True
-                    user.channel_subscribed_at = datetime.datetime.utcnow()
-                    db.commit()
             elif task_id >= 2 and task_id <= 8:
                 # Get reward from the dynamic task
                 task_idx = task_id - 2
@@ -2870,13 +2820,12 @@ def claim_task():
 
 @app.route('/api/verify_channel_subscription', methods=['POST'])
 def verify_channel_subscription():
-    """Verify user subscribed to channel - REAL CHECK via Telegram API"""
+    """Verify user subscribed to channel"""
     try:
         from telegram import Bot
         from config import BOT_TOKEN
         import asyncio
         import datetime
-        import json
         
         data = request.json
         user_id = data.get('user_id')
@@ -2891,61 +2840,43 @@ def verify_channel_subscription():
                 bot = Bot(token=BOT_TOKEN)
                 member = await bot.get_chat_member(chat_id="@quantum_nexus", user_id=user_id)
                 # Check if user is a member, administrator, or creator
-                is_member = member.status in ['member', 'administrator', 'creator']
-                print(f"verify_channel_subscription: Real check for user {user_id}: status={member.status}, is_member={is_member}")
-                return is_member
+                print(f"Channel membership check for user {user_id}: {member.status}")
+                return member.status in ['member', 'administrator', 'creator']
             except Exception as e:
-                print(f"verify_channel_subscription: Channel membership check error for user {user_id}: {e}")
+                print(f"Channel membership check error: {e}")
                 return False
         
         # Run async function
         try:
             is_subscribed = asyncio.run(check_membership())
         except Exception as e:
-            print(f"verify_channel_subscription: Async run error for user {user_id}: {e}")
+            print(f"Async run error: {e}")
             is_subscribed = False
         
-        print(f"verify_channel_subscription: User {user_id} REAL subscription status: {is_subscribed}")
+        print(f"User {user_id} subscription status: {is_subscribed}")
         
-        with get_db() as db:
-            user = db.query(User).filter_by(telegram_id=user_id).first()
-            if not user:
-                print(f"verify_channel_subscription: User {user_id} not found in database")
-                return jsonify({'success': False, 'error': 'User not found'})
-            
-            # Update database flag to match REAL subscription status
-            if is_subscribed:
-                # User IS subscribed - update flag
-                if not user.channel_subscribed:
-                    print(f"verify_channel_subscription: Updating user {user_id} as subscribed to channel")
-                    user.channel_subscribed = True
-                    user.channel_subscribed_at = datetime.datetime.utcnow()
-                    db.commit()
-                return jsonify({'success': True, 'subscribed': True})
-            else:
-                # User is NOT subscribed - update flag and remove task from completed
-                if user.channel_subscribed:
-                    print(f"verify_channel_subscription: User {user_id} unsubscribed - updating flag and removing task")
-                    user.channel_subscribed = False
-                    user.channel_subscribed_at = None
-                    
-                    # Remove task 1 from completed tasks for today
-                    today_str = datetime.date.today().isoformat()
-                    completed_tasks = json.loads(user.daily_tasks_completed or '{}')
-                    today_completed = completed_tasks.get(today_str, [])
-                    if 1 in today_completed:
-                        today_completed.remove(1)
-                        completed_tasks[today_str] = today_completed
-                        user.daily_tasks_completed = json.dumps(completed_tasks)
-                    
-                    db.commit()
-                    print(f"verify_channel_subscription: User {user_id} marked as unsubscribed, task 1 removed")
-                
-                return jsonify({'success': True, 'subscribed': False})
+        if is_subscribed:
+            with get_db() as db:
+                user = db.query(User).filter_by(telegram_id=user_id).first()
+                if user:
+                    # Mark as subscribed (but don't give reward here - that's done in claim_task)
+                    if not user.channel_subscribed:
+                        print(f"Marking user {user_id} as subscribed to channel")
+                        user.channel_subscribed = True
+                        user.channel_subscribed_at = datetime.datetime.utcnow()
+                        db.commit()
+                        print(f"User marked as subscribed")
+                    return jsonify({'success': True, 'subscribed': True})
+                else:
+                    print(f"User {user_id} not found in database")
+                    return jsonify({'success': False, 'error': 'User not found'})
+        else:
+            print(f"User {user_id} is not subscribed")
+            return jsonify({'success': True, 'subscribed': False})
             
     except Exception as e:
         import traceback
-        print(f"verify_channel_subscription: Error: {e}")
+        print(f"Channel verification error: {e}")
         print(traceback.format_exc())
         return jsonify({'success': False, 'error': str(e)}), 500
 
