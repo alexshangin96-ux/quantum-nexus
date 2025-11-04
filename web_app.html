@@ -7112,7 +7112,7 @@
                         const isChannelTask = task.type === 'channel_subscription';
                         
                         return `
-                            <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
+                            <div data-task-id="${task.id}" style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
                                 <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
                                     <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
                                     <div style="flex: 1; min-width: 0;">
@@ -7226,26 +7226,51 @@
             tg.showAlert('⚡ Diamond Challenge активирован! Получайте x50 бонус к доходам на 24 часа!');
         }
         function claimReward(taskId) {
+            // Find task card and button
+            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+            const claimButton = taskCard ? taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`) : null;
+            
+            // Show loading state
+            if (claimButton) {
+                const originalText = claimButton.textContent;
+                claimButton.disabled = true;
+                claimButton.style.opacity = '0.6';
+                claimButton.style.cursor = 'not-allowed';
+                claimButton.textContent = '⏳ Загрузка...';
+            }
+            
             fetch('/api/claim_task', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id, task_id: taskId})
+                body: JSON.stringify({user_id: window.user?.id, task_id: taskId})
             })
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
                     // Mark task as claimed immediately
-                    const taskElement = document.querySelector(`[onclick="claimReward(${taskId})"]`);
-                    if (taskElement) {
-                        taskElement.outerHTML = `
-                            <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
-                                ✅ Награда получена!
-                            </div>
-                        `;
+                    if (taskCard) {
+                        const button = taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`);
+                        if (button) {
+                            button.outerHTML = `
+                                <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                    ✅ Награда получена!
+                                </div>
+                            `;
+                        }
                     }
                     // Update coins display
                     loadData();
+                    if (window.tg && tg.showAlert) {
+                        tg.showAlert('✅ Награда получена!');
+                    }
                 } else {
+                    // Restore button on error
+                    if (claimButton) {
+                        claimButton.disabled = false;
+                        claimButton.style.opacity = '1';
+                        claimButton.style.cursor = 'pointer';
+                        claimButton.textContent = '🎁 Забрать награду';
+                    }
                     if (window.tg && tg.showAlert) {
                         tg.showAlert('❌ ' + (data.error || 'Ошибка при получении награды'));
                     }
@@ -7253,6 +7278,13 @@
             })
             .catch(err => {
                 console.error('Claim reward error:', err);
+                // Restore button on error
+                if (claimButton) {
+                    claimButton.disabled = false;
+                    claimButton.style.opacity = '1';
+                    claimButton.style.cursor = 'pointer';
+                    claimButton.textContent = '🎁 Забрать награду';
+                }
                 if (window.tg && tg.showAlert) {
                     tg.showAlert('❌ Ошибка при получении награды');
                 }
@@ -7260,6 +7292,19 @@
         }
         
         function verifyChannelSubscription(taskId) {
+            // Find task card and button
+            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+            const verifyButton = taskCard ? taskCard.querySelector(`button[onclick="verifyChannelSubscription(${taskId})"]`) : null;
+            
+            let originalText = '';
+            if (verifyButton) {
+                verifyButton.disabled = true;
+                verifyButton.style.opacity = '0.6';
+                verifyButton.style.cursor = 'not-allowed';
+                originalText = verifyButton.textContent;
+                verifyButton.textContent = '⏳ Проверка...';
+            }
+            
             try {
                 if (window.tg && tg.showAlert) {
                     tg.showAlert('🔍 Проверяем подписку...');
@@ -7269,19 +7314,30 @@
             fetch('/api/verify_channel_subscription', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id, task_id: taskId})
+                body: JSON.stringify({user_id: window.user?.id, task_id: taskId})
             })
             .then(res => res.json())
             .then(data => {
+                console.log('Verification response:', data); // Debug log
+                
+                // Restore button state helper
+                const restoreButton = () => {
+                    if (verifyButton && originalText) {
+                        verifyButton.disabled = false;
+                        verifyButton.style.opacity = '1';
+                        verifyButton.style.cursor = 'pointer';
+                        verifyButton.textContent = originalText;
+                    }
+                };
+                
                 try {
                     if (data.subscribed) {
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('✅ Подписка подтверждена! Теперь можете забрать награду!');
                         }
                         // Update task UI instantly without reloading modal
-                        const taskElement = document.querySelector(`[onclick="verifyChannelSubscription(${taskId})"]`)?.parentElement;
-                        if (taskElement) {
-                            const button = taskElement.querySelector('button');
+                        if (taskCard) {
+                            const button = taskCard.querySelector(`button[onclick="verifyChannelSubscription(${taskId})"]`);
                             if (button) {
                                 button.outerHTML = `
                                     <button onclick="claimReward(${taskId})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
@@ -7290,30 +7346,42 @@
                                 `;
                             }
                             // Update progress indicator
-                            const progressBar = taskElement.querySelector('[style*="width"]');
+                            const progressBar = taskCard.querySelector('[style*="width"]');
                             if (progressBar) {
                                 progressBar.style.width = '100%';
                                 progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
                             }
-                            const progressText = taskElement.querySelector('div[style*="font-size: 12px"]');
+                            const progressText = taskCard.querySelector('div[style*="font-size: 12px"]');
                             if (progressText) {
                                 progressText.textContent = '1 / 1';
                                 progressText.style.color = '#10b981';
                             }
                         }
-                    } else if (data.success === false) {
+                    } else if (data.success === false || data.error) {
+                        restoreButton();
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('❌ Ошибка проверки подписки');
                         }
                     } else {
+                        restoreButton();
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
                         }
                     }
-                } catch(err) {}
+                } catch(err) {
+                    restoreButton();
+                    console.error('Verification error:', err);
+                }
             })
             .catch(err => {
                 console.error('Verification error:', err);
+                // Restore button on error
+                if (verifyButton && originalText) {
+                    verifyButton.disabled = false;
+                    verifyButton.style.opacity = '1';
+                    verifyButton.style.cursor = 'pointer';
+                    verifyButton.textContent = originalText;
+                }
                 try {
                     if (window.tg && tg.showAlert) {
                         tg.showAlert('❌ Ошибка проверки подписки');
