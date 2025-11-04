@@ -7228,9 +7228,9 @@
         function claimReward(taskId) {
             // Find task card and button
             const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-            const claimButton = taskCard ? taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`) : null;
+            const claimButton = taskCard ? taskCard.querySelector('button') : null;
             
-            // Immediately update UI to show loading, then claim instantly
+            // Immediately update UI to show loading
             if (claimButton) {
                 claimButton.disabled = true;
                 claimButton.style.opacity = '0.6';
@@ -7246,13 +7246,12 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // Instantly mark task as claimed - no delays
+                    // Instantly mark task as claimed - replace button with success message
                     if (taskCard && claimButton) {
-                        claimButton.outerHTML = `
-                            <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
-                                ✅ Награда получена!
-                            </div>
-                        `;
+                        const successDiv = document.createElement('div');
+                        successDiv.textContent = '✅ Награда получена!';
+                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                        claimButton.parentNode.replaceChild(successDiv, claimButton);
                     }
                     // Update coins display immediately - no alerts, just instant update
                     loadData();
@@ -7325,17 +7324,31 @@
                 
                 try {
                     if (data.subscribed === true) {
-                        // Immediately show claim button - no additional checks needed
-                        if (window.tg && tg.showAlert) {
-                            tg.showAlert('✅ Подписка подтверждена!');
-                        }
-                        // Update task UI instantly - replace verify button with claim button
+                        // Immediately show claim button and update UI
                         if (taskCard && verifyButton) {
-                            verifyButton.outerHTML = `
-                                <button onclick="claimReward(${taskId})" style="width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
-                                    🎁 Забрать награду
-                                </button>
-                            `;
+                            // Replace verify button with claim button immediately
+                            const newButton = document.createElement('button');
+                            newButton.textContent = '🎁 Забрать награду';
+                            newButton.style.cssText = 'width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);';
+                            newButton.onmouseover = function() {
+                                this.style.transform = 'scale(1.02)';
+                                this.style.boxShadow = '0 6px 20px rgba(102,126,234,0.6)';
+                            };
+                            newButton.onmouseout = function() {
+                                this.style.transform = 'scale(1)';
+                                this.style.boxShadow = '0 4px 15px rgba(102,126,234,0.4)';
+                            };
+                            newButton.onclick = function() {
+                                claimReward(taskId);
+                            };
+                            verifyButton.parentNode.replaceChild(newButton, verifyButton);
+                            
+                            // Hide subscription link
+                            const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
+                            if (subscriptionLink) {
+                                subscriptionLink.style.display = 'none';
+                            }
+                            
                             // Update progress indicator
                             const progressBar = taskCard.querySelector('[style*="width"]');
                             if (progressBar) {
