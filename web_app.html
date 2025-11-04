@@ -7047,10 +7047,111 @@
                 existingModal.remove();
             }
             
-            const modal = document.createElement('div');
-            modal.className = 'modal active';
-            modal.id = 'dailyBonusModal';
-            modal.innerHTML = `
+            // Prevent multiple simultaneous fetch requests
+            if (window.dailyTasksLoading) {
+                return; // Already loading
+            }
+            window.dailyTasksLoading = true;
+            
+            // First, load tasks data BEFORE creating modal
+            fetch('/api/daily_tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: window.user?.id})
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                window.dailyTasksLoading = false;
+                
+                // Calculate countdown text
+                function getCountdownText() {
+                    const now = new Date();
+                    const tomorrow = new Date(now);
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(0, 0, 0, 0);
+                    const diff = tomorrow - now;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+                
+                // Generate tasks HTML
+                let tasksHtml = '';
+                if (data.error) {
+                    tasksHtml = `<p style="text-align:center;opacity:0.7;padding:20px;color:#ef4444;">❌ ${data.error || 'Ошибка загрузки заданий'}</p>`;
+                } else if (data.tasks && data.tasks.length > 0) {
+                    const isChannelTask = (task) => task.id === 1 || task.type === 'channel_subscription';
+                    
+                    tasksHtml = data.tasks.map((task, index) => {
+                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
+                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
+                        const textColor = task.completed ? '#4ade80' : '#f093fb';
+                        const isChanTask = isChannelTask(task);
+                        
+                        return `
+                            <div data-task-id="${task.id}" style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
+                                <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                                    <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${task.name}</div>
+                                        <div style="font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 10px;">${task.description}</div>
+                                    </div>
+                                    ${task.completed ? `
+                                        <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;">
+                                            ✅ Готово
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="font-size: 14px; color: ${textColor}; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                        ${task.completed ? '✅ Выполнено' : task.return_task && task.last_active ? `
+                                            <span id="returnTimer_${task.id}">⏳ Расчет времени...</span>
+                                        ` : `📊 Прогресс: ${task.progress}/${task.target}`}
+                                    </div>
+                                    <div style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 +${task.reward.toLocaleString()}</div>
+                                </div>
+
+                                ${!task.completed && task.description && task.description.includes('Вернитесь через') ? `
+                                    <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); border-radius: 8px; padding: 8px; margin-top: 8px; text-align: center;">
+                                        <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Вернитесь через ${task.target} часов для получения награды</div>
+                                    </div>
+                                ` : ''}
+
+                                ${!task.completed && isChanTask ? `
+                                    <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
+                                        📢 Подписаться на канал
+                                    </a>
+                                    <button onclick="verifyChannelSubscription(${task.id})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                        ✅ Проверить подписку
+                                    </button>
+                                ` : task.completed && !task.claimed ? `
+                                    <button onclick="claimReward(${task.id})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                        🎁 Забрать награду
+                                    </button>
+                                ` : task.claimed ? `
+                                    <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                        ✅ Награда получена!
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    tasksHtml = '<p style="text-align:center;opacity:0.7;padding:20px;color:rgba(255,255,255,0.8);">📋 Нет доступных заданий</p>';
+                }
+                
+                // Now create modal with all data ready
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.id = 'dailyBonusModal';
+                modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px; width: 95vw; max-height: 90vh; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; backdrop-filter: blur(20px); padding: 0; border: 2px solid rgba(102,126,234,0.3);">
                     <!-- VIP Style Header with Layered Effect -->
                     <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 24px 50px 24px 24px; border-radius: 20px 20px 0 0; position: relative; box-shadow: 0 8px 30px rgba(102,126,234,0.4); overflow: hidden;">
@@ -7068,41 +7169,35 @@
                         <button class="close-btn" onclick="this.closest('.modal').remove()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 3; flex-shrink: 0;">✕</button>
                     </div>
                     
-                    <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 150px);">
+                                        <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 150px);">
                         <!-- Countdown Timer -->
                         <div id="dailyTasksCountdown" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.5); border-radius: 16px; padding: 18px; margin-bottom: 20px; text-align: center; box-shadow: 0 6px 25px rgba(102,126,234,0.3);">
                             <div style="font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.9); margin-bottom: 8px;">⏰ Обновление через:</div>
-                            <div id="countdownTimer" style="font-size: 24px; font-weight: 900; color: #667eea; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">--:--:--</div>
+                            <div id="countdownTimer" style="font-size: 24px; font-weight: 900; color: #667eea; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">' + getCountdownText() + '</div>
                         </div>
-                        
-                        <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
+
+                        <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;">' + tasksHtml + '</div>
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
-            
-            // Clear any existing countdown intervals
-            if (window.dailyTasksCountdownInterval) {
-                clearInterval(window.dailyTasksCountdownInterval);
-                window.dailyTasksCountdownInterval = null;
-            }
-            
-            // Clear all return timer intervals
-            if (window.dailyTasksReturnIntervals) {
-                window.dailyTasksReturnIntervals.forEach(id => clearInterval(id));
-                window.dailyTasksReturnIntervals = [];
-            } else {
-                window.dailyTasksReturnIntervals = [];
-            }
-            
-            // Prevent multiple simultaneous fetch requests
-            if (window.dailyTasksLoading) {
-                return; // Already loading
-            }
-            window.dailyTasksLoading = true;
-            
-            // Start countdown timer
-            function updateCountdown() {
+                document.body.appendChild(modal);
+                
+                // Clear any existing countdown intervals
+                if (window.dailyTasksCountdownInterval) {
+                    clearInterval(window.dailyTasksCountdownInterval);
+                    window.dailyTasksCountdownInterval = null;
+                }
+                
+                // Clear all return timer intervals
+                if (window.dailyTasksReturnIntervals) {
+                    window.dailyTasksReturnIntervals.forEach(id => clearInterval(id));
+                    window.dailyTasksReturnIntervals = [];
+                } else {
+                    window.dailyTasksReturnIntervals = [];
+                }
+                
+                // Start countdown timer
+                function updateCountdown() {
                 const countdownEl = document.getElementById('countdownTimer');
                 if (!countdownEl) {
                     // Clear interval if element removed
@@ -7134,37 +7229,77 @@
                 }
             }
             
-            updateCountdown();
-            window.dailyTasksCountdownInterval = setInterval(updateCountdown, 1000);
-            
-            // Load daily tasks
-            fetch('/api/daily_tasks', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: window.user?.id})
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                window.dailyTasksLoading = false; // Reset loading flag
-                const list = document.getElementById('dailyTasksList');
-                if (!list) return; // Modal was closed
+                            updateCountdown();
+                window.dailyTasksCountdownInterval = setInterval(updateCountdown, 1000);
                 
-                if (data.error) {
-                    list.innerHTML = `<p style="text-align:center;opacity:0.7;padding:20px;color:#ef4444;">❌ ${data.error || 'Ошибка загрузки заданий'}</p>`;
-                    return;
-                }
-                
-                if(data.tasks && data.tasks.length > 0) {
-                    let html = '';
-                    
-                    html += data.tasks.map((task, index) => {
-                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
-                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
+                // Initialize return timers for tasks
+                setTimeout(() => {
+                    data.tasks.forEach((task, index) => {
+                        if (task.return_task) {
+                            const timerEl = document.getElementById('returnTimer_' + task.id);
+                            if (timerEl) {
+                                if (task.completed) {
+                                    timerEl.textContent = '✅ Время вышло! Можно забрать награду';
+                                    timerEl.style.color = '#10b981';
+                                } else if (task.last_active) {
+                                    const lastActiveTime = new Date(task.last_active).getTime();
+                                    const targetHours = task.target || 24;
+                                    
+                                    function updateReturnTimer() {
+                                        if (!timerEl || !timerEl.parentElement) {
+                                            return;
+                                        }
+                                        
+                                        const now = new Date().getTime();
+                                        const hoursPassed = (now - lastActiveTime) / (1000 * 60 * 60);
+                                        const hoursRemaining = Math.max(0, targetHours - hoursPassed);
+                                        
+                                        if (hoursRemaining > 0) {
+                                            const hours = Math.floor(hoursRemaining);
+                                            const minutes = Math.floor((hoursRemaining - hours) * 60);
+                                            const seconds = Math.floor(((hoursRemaining - hours) * 60 - minutes) * 60);
+                                            const newText = `⏳ Осталось: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                            if (timerEl.textContent !== newText) {
+                                                timerEl.textContent = newText;
+                                                timerEl.style.color = '#fbbf24';
+                                            }
+                                        } else {
+                                            const intervalId = timerEl.dataset.intervalId;
+                                            if (intervalId) {
+                                                clearInterval(parseInt(intervalId));
+                                                delete timerEl.dataset.intervalId;
+                                                if (window.dailyTasksReturnIntervals) {
+                                                    const idx = window.dailyTasksReturnIntervals.indexOf(parseInt(intervalId));
+                                                    if (idx > -1) window.dailyTasksReturnIntervals.splice(idx, 1);
+                                                }
+                                            }
+                                            timerEl.textContent = '✅ Время вышло! Можно забрать награду';
+                                            timerEl.style.color = '#10b981';
+                                        }
+                                    }
+                                    updateReturnTimer();
+                                    const intervalId = setInterval(updateReturnTimer, 1000);
+                                    timerEl.dataset.intervalId = intervalId;
+                                    if (window.dailyTasksReturnIntervals) {
+                                        window.dailyTasksReturnIntervals.push(intervalId);
+                                    }
+                                } else {
+                                    timerEl.textContent = '⏳ Начните выполнение задания (активируйте приложение)';
+                                }
+                            }
+                        }
+                    });
+                }, 100);
+            })
+            .catch(err => {
+                window.dailyTasksLoading = false;
+                console.error('Error loading daily tasks:', err);
+                // Show error modal
+                const modal = document.createElement('div');
+                modal.className = 'modal active';
+                modal.id = 'dailyBonusModal';
+                const bgColor = 'rgba(0,0,0,0.3)';
+                const borderColor = 'rgba(102,126,234,0.5)';
                         const textColor = task.completed ? '#4ade80' : '#f093fb';
                         
                         // Special handling for channel subscription
@@ -7298,37 +7433,11 @@
                                                 }
                                             }
                                         }
-                                        updateReturnTimer();
-                                        const intervalId = setInterval(updateReturnTimer, 1000);
-                                        // Store interval ID for cleanup
-                                        timerEl.dataset.intervalId = intervalId;
-                                        if (window.dailyTasksReturnIntervals) {
-                                            window.dailyTasksReturnIntervals.push(intervalId);
-                                        }
-                                    } else {
-                                        timerEl.textContent = '⏳ Начните выполнение задания (активируйте приложение)';
                                     }
                                 }
                             }
                         });
                     }, 100);
-                } else {
-                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;color:rgba(255,255,255,0.8);">📋 Нет доступных заданий</p>';
-                }
-            })
-            .catch(err => {
-                window.dailyTasksLoading = false; // Reset loading flag
-                console.error('Error loading daily tasks:', err);
-                const list = document.getElementById('dailyTasksList');
-                if (list) {
-                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;color:#ef4444;">❌ Ошибка загрузки заданий. Попробуйте позже.</p>';
-                }
-                if (window.tg && tg.showAlert) {
-                    try {
-                        tg.showAlert('❌ Ошибка загрузки заданий');
-                    } catch(e) {}
-                }
-            });
         }
         
         function joinVIPTournament() {
