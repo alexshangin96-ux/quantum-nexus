@@ -7346,15 +7346,35 @@
                         .then(res => res.json())
                         .then(claimData => {
                             if (claimData.success) {
-                                // Instantly mark task as claimed - replace verify button with success message
-                                if (taskCard && verifyButton) {
+                                // Instantly mark task as claimed - replace entire button section
+                                if (taskCard) {
+                                    // Find and remove subscription link and verify button
+                                    const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
+                                    if (subscriptionLink) {
+                                        subscriptionLink.remove();
+                                    }
+                                    // Remove verify button if still exists
+                                    const allButtons = taskCard.querySelectorAll('button');
+                                    allButtons.forEach(btn => {
+                                        if (btn.textContent.includes('Проверить подписку') || btn.textContent.includes('Выдача награды')) {
+                                            btn.remove();
+                                        }
+                                    });
+                                    
+                                    // Create success message div
                                     const successDiv = document.createElement('div');
                                     successDiv.textContent = '✅ Награда получена!';
-                                    successDiv.style.cssText = 'width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
-                                    verifyButton.parentNode.replaceChild(successDiv, verifyButton);
-                                }
-                                // Update progress indicator
-                                if (taskCard) {
+                                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                                    
+                                    // Insert success message after progress section
+                                    const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
+                                    if (progressSection && progressSection.nextSibling) {
+                                        progressSection.parentNode.insertBefore(successDiv, progressSection.nextSibling);
+                                    } else if (progressSection) {
+                                        progressSection.parentNode.appendChild(successDiv);
+                                    }
+                                    
+                                    // Update progress indicator
                                     const progressBar = taskCard.querySelector('[style*="width"]');
                                     if (progressBar) {
                                         progressBar.style.width = '100%';
