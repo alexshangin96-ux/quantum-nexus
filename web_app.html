@@ -7052,15 +7052,13 @@
                     </div>
                     
                     <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 150px);">
-                        <!-- Countdown Timer (hidden initially, shown after tasks load) -->
-                        <div id="dailyTasksCountdown" style="display: none; background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.5); border-radius: 16px; padding: 18px; margin-bottom: 20px; text-align: center; box-shadow: 0 6px 25px rgba(102,126,234,0.3);">
+                        <!-- Countdown Timer -->
+                        <div id="dailyTasksCountdown" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.15)); border: 2px solid rgba(102, 126, 234, 0.5); border-radius: 16px; padding: 18px; margin-bottom: 20px; text-align: center; box-shadow: 0 6px 25px rgba(102,126,234,0.3);">
                             <div style="font-size: 14px; font-weight: 800; color: rgba(255,255,255,0.9); margin-bottom: 8px;">⏰ Обновление через:</div>
                             <div id="countdownTimer" style="font-size: 24px; font-weight: 900; color: #667eea; text-shadow: 0 2px 10px rgba(102,126,234,0.5);">--:--:--</div>
                         </div>
                         
-                        <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;">
-                            <p style="text-align:center;opacity:0.7;padding:20px;color:rgba(255,255,255,0.8);">⏳ Задания загружаются...</p>
-                        </div>
+                        <div id="dailyTasksList" style="display:flex;flex-direction:column;gap:15px;"></div>
                     </div>
                 </div>
             `;
@@ -7165,12 +7163,6 @@
                     
                     list.innerHTML = html;
                     
-                    // Show countdown timer after tasks are loaded
-                    const countdownEl = document.getElementById('dailyTasksCountdown');
-                    if (countdownEl) {
-                        countdownEl.style.display = 'block';
-                    }
-                    
                     // Start countdown timers for return tasks - use setTimeout to ensure DOM is ready
                     setTimeout(() => {
                         data.tasks.forEach((task, index) => {
@@ -7267,130 +7259,180 @@
             });
         }
         
-        function verifyChannelSubscription(taskId) {
-            try {
-                if (window.tg && tg.showAlert) {
-                    tg.showAlert('🔍 Проверяем подписку...');
-                }
-            } catch(err) {}
+        async function verifyChannelSubscription(taskId) {
+            // Get button element
+            const verifyBtn = document.getElementById(`verifyBtn_${taskId}`);
+            if (!verifyBtn) return;
             
-            fetch('/api/verify_channel_subscription', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user?.id, task_id: taskId})
-            })
-            .then(res => res.json())
-            .then(data => {
-                try {
-                    if (data.subscribed) {
-                        // Show success notification
+            // Store original button HTML
+            const originalHtml = verifyBtn.innerHTML;
+            
+            // Show loading animation on button
+            verifyBtn.innerHTML = '⏳ Проверка...';
+            verifyBtn.style.opacity = '0.7';
+            verifyBtn.style.cursor = 'not-allowed';
+            verifyBtn.disabled = true;
+            
+            // Minimum 1 second delay for animation
+            const minDelay = new Promise(resolve => setTimeout(resolve, 1000));
+            
+            try {
+                const response = await fetch('/api/verify_channel_subscription', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user?.id, task_id: taskId})
+                });
+                
+                const data = await response.json();
+                
+                // Wait for minimum delay
+                await minDelay;
+                
+                if (data.subscribed) {
+                    // Success notification
+                    try {
                         if (window.tg && tg.showAlert) {
-                            tg.showAlert('✅ Выполнено! Подписка подтверждена. Теперь вы можете получить награду!');
+                            tg.showAlert('✅ Подписались и успешно! Теперь вы можете получить награду!');
+                        } else {
+                            alert('✅ Подписались и успешно! Теперь вы можете получить награду!');
                         }
-                        // Reload tasks to get updated state with "Получить награду" button
-                        const list = document.getElementById('dailyTasksList');
-                        if (list) {
-                            fetch('/api/daily_tasks', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({user_id: window.user?.id})
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.tasks && data.tasks.length > 0) {
-                                    // Re-render tasks (use same logic as in openDailyBonus)
-                                    const isChannelTask = (task) => task.id === 1 || task.type === 'channel_subscription';
-                                    let html = data.tasks.map((task, index) => {
-                                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
-                                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
-                                        const textColor = task.completed ? '#4ade80' : '#f093fb';
-                                        const isChanTask = isChannelTask(task);
-                                        
-                                        return `
-                                            <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
-                                                <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
-                                                    <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
-                                                    <div style="flex: 1; min-width: 0;">
-                                                        <div style="font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${task.name}</div>
-                                                        <div style="font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 10px;">${task.description}</div>
-                                                    </div>
-                                                    ${task.completed ? `
-                                                        <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;">
-                                                            ✅ Готово
-                                                        </div>
-                                                    ` : ''}
-                                                </div>
-                                                
-                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                                    <div style="font-size: 14px; color: ${textColor}; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                                                        ${task.completed ? '✅ Выполнено' : task.description && task.description.includes('Вернуться через') ? `
-                                                            <span id="returnTimer_${task.id}">⏳ Подождите...</span>
-                                                        ` : `📊 Прогресс: ${task.progress}/${task.target}`}
-                                                    </div>
-                                                    <div style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 +${task.reward.toLocaleString()}</div>
-                                                </div>
-                                                
-                                                ${!task.completed && task.description && task.description.includes('Вернуться через') ? `
-                                                    <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); border-radius: 8px; padding: 8px; margin-top: 8px; text-align: center;">
-                                                        <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Вернитесь через ${task.target} часов для получения награды</div>
-                                                    </div>
-                                                ` : ''}
-                                                
-                                                ${!task.completed && isChanTask ? `
-                                                    <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
-                                                        📢 Подписаться на канал
-                                                    </a>
-                                                    <button onclick="verifyChannelSubscription(${task.id})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
-                                                        ✓ Проверить подписку
-                                                    </button>
-                                                ` : task.completed && !task.claimed ? `
-                                                    <button onclick="claimReward(${task.id})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
-                                                        🎁 Получить награду
-                                                    </button>
-                                                ` : task.claimed ? `
-                                                    <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
-                                                        ✅ Награда получена!
-                                                    </div>
-                                                ` : ''}
+                    } catch(e) {
+                        alert('✅ Подписались и успешно! Теперь вы можете получить награду!');
+                    }
+                    
+                    // Reload tasks to show "Получить награду" button
+                    const list = document.getElementById('dailyTasksList');
+                    if (list) {
+                        const tasksResponse = await fetch('/api/daily_tasks', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: window.user?.id})
+                        });
+                        const tasksData = await tasksResponse.json();
+                        
+                        if (tasksData && tasksData.tasks && tasksData.tasks.length > 0) {
+                            const isChannelTask = (task) => task.id === 1 || task.type === 'channel_subscription';
+                            let html = tasksData.tasks.map((task, index) => {
+                                const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
+                                const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
+                                const textColor = task.completed ? '#4ade80' : '#f093fb';
+                                const isChanTask = isChannelTask(task);
+                                
+                                return `
+                                    <div style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; transition: all 0.3s; box-shadow: 0 4px 15px ${borderColor}30;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
+                                        <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
+                                            <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div style="font-size: 16px; font-weight: 900; color: #fff; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">${task.name}</div>
+                                                <div style="font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.4; margin-bottom: 10px;">${task.description}</div>
                                             </div>
-                                        `;
-                                    }).join('');
-                                    
-                                    list.innerHTML = html;
-                                    
-                                    // Restart countdown timers for return tasks
-                                    setTimeout(() => {
-                                        data.tasks.forEach((task) => {
-                                            if (task.return_task && task.last_active) {
-                                                updateReturnTimer(task.id, task.last_active, task.target);
-                                            }
-                                        });
-                                    }, 100);
-                                }
-                            })
-                            .catch(err => {
-                                console.error('Error reloading tasks:', err);
-                            });
-                        }
-                    } else if (data.success === false) {
-                        if (window.tg && tg.showAlert) {
-                            tg.showAlert('❌ Ошибка проверки подписки');
-                        }
-                    } else {
-                        if (window.tg && tg.showAlert) {
-                            tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                                            ${task.completed ? `
+                                                <div style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;">
+                                                    ✅ Готово
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                            <div style="font-size: 14px; color: ${textColor}; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                                                ${task.completed ? '✅ Выполнено' : task.description && task.description.includes('Вернуться через') ? `
+                                                    <span id="returnTimer_${task.id}">⏳ Подождите...</span>
+                                                ` : `📊 Прогресс: ${task.progress}/${task.target}`}
+                                            </div>
+                                            <div style="font-size: 18px; font-weight: 900; color: #10b981; text-shadow: 0 2px 8px rgba(16,185,129,0.5);">💰 +${task.reward.toLocaleString()}</div>
+                                        </div>
+                                        
+                                        ${!task.completed && task.description && task.description.includes('Вернуться через') ? `
+                                            <div style="background: rgba(102,126,234,0.1); border: 1px solid rgba(102,126,234,0.3); border-radius: 8px; padding: 8px; margin-top: 8px; text-align: center;">
+                                                <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Вернитесь через ${task.target} часов для получения награды</div>
+                                            </div>
+                                        ` : ''}
+                                        
+                                        ${!task.completed && isChanTask ? `
+                                            <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
+                                                📢 Подписаться на канал
+                                            </a>
+                                            <button onclick="verifyChannelSubscription(${task.id})" id="verifyBtn_${task.id}" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                                ✓ Проверить подписку
+                                            </button>
+                                        ` : task.completed && !task.claimed ? `
+                                            <button onclick="claimReward(${task.id})" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                                🎁 Получить награду
+                                            </button>
+                                        ` : task.claimed ? `
+                                            <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                                ✅ Награда получена!
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('');
+                            
+                            list.innerHTML = html;
+                            
+                            // Restart countdown timers for return tasks
+                            setTimeout(() => {
+                                tasksData.tasks.forEach((task) => {
+                                    if (task.return_task && task.last_active) {
+                                        updateReturnTimer(task.id, task.last_active, task.target);
+                                    }
+                                });
+                            }, 100);
                         }
                     }
-                } catch(err) {}
-            })
-            .catch(err => {
-                console.error('Verification error:', err);
+                } else if (data.success === false) {
+                    // Error notification
+                    try {
+                        if (window.tg && tg.showAlert) {
+                            tg.showAlert('❌ Ошибка при проверке подписки');
+                        } else {
+                            alert('❌ Ошибка при проверке подписки');
+                        }
+                    } catch(e) {
+                        alert('❌ Ошибка при проверке подписки');
+                    }
+                    
+                    // Restore button
+                    verifyBtn.innerHTML = originalHtml;
+                    verifyBtn.style.opacity = '1';
+                    verifyBtn.style.cursor = 'pointer';
+                    verifyBtn.disabled = false;
+                } else {
+                    // Not subscribed notification
+                    try {
+                        if (window.tg && tg.showAlert) {
+                            tg.showAlert('❌ Вы не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                        } else {
+                            alert('❌ Вы не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                        }
+                    } catch(e) {
+                        alert('❌ Вы не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                    }
+                    
+                    // Restore button
+                    verifyBtn.innerHTML = originalHtml;
+                    verifyBtn.style.opacity = '1';
+                    verifyBtn.style.cursor = 'pointer';
+                    verifyBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
                 try {
                     if (window.tg && tg.showAlert) {
-                        tg.showAlert('❌ Ошибка проверки подписки');
+                        tg.showAlert('❌ Ошибка при проверке подписки');
+                    } else {
+                        alert('❌ Ошибка при проверке подписки');
                     }
-                } catch(e) {}
-            });
+                } catch(e) {
+                    alert('❌ Ошибка при проверке подписки');
+                }
+                
+                // Restore button
+                verifyBtn.innerHTML = originalHtml;
+                verifyBtn.style.opacity = '1';
+                verifyBtn.style.cursor = 'pointer';
+                verifyBtn.disabled = false;
+            }
         }
         
         let currentCategory = 'all';
