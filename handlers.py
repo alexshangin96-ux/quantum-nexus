@@ -875,13 +875,13 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
                     try:
                         bot = context.bot
                         notification = (
-                            f"⚠️ Штраф за отписку от канала!\n\n"
-                            f"❌ Вы отписались от канала @quantum_nexus\n"
+                            f"⚠️ ВНИМАНИЕ! Вы отписались от канала!\n\n"
+                            f"📢 Вы отписались от канала @quantum_nexus\n"
                             f"💸 Штраф: -{penalty:,} коинов\n\n"
-                            f"📢 Подпишитесь снова, чтобы вернуть задание!"
+                            f"🔔 Подпишитесь снова, чтобы задание стало доступным!"
                         )
                         await bot.send_message(chat_id=user.id, text=notification)
-                        logger.info(f"Notification sent to user {user.id}")
+                        logger.info(f"Penalty notification sent to user {user.id}")
                     except Exception as e:
                         logger.error(f"Error sending notification to user {user.id}: {e}")
                 elif not was_member and is_now_member:
