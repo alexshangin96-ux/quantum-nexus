@@ -1,0 +1,58 @@
+==================================================
+Quantum Nexus - Manual Update Commands
+Channel Subscription Validation Fixes
+==================================================
+
+Copy and paste these commands on your server:
+
+cd /root/quantum-nexus && \
+git merge --abort 2>/dev/null; \
+git reset --hard HEAD && \
+git fetch origin && \
+git pull origin main && \
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html && \
+sudo cp web_server.py /root/quantum-nexus/web_server.py && \
+sudo cp handlers.py /root/quantum-nexus/handlers.py && \
+sudo systemctl restart quantum-nexus-web.service && \
+sudo systemctl restart quantum-nexus.service && \
+echo "✅ Update complete!" && \
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -10
+
+==================================================
+Or step by step:
+==================================================
+
+# Step 1: Navigate to directory
+cd /root/quantum-nexus
+
+# Step 2: Resolve conflicts
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Step 3: Get latest code
+git fetch origin
+git pull origin main
+
+# Step 4: Copy files to production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+sudo cp web_server.py /root/quantum-nexus/web_server.py
+sudo cp handlers.py /root/quantum-nexus/handlers.py
+
+# Step 5: Restart services
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+# Step 6: Check status
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+sudo systemctl status quantum-nexus.service --no-pager -l | head -20
+
+==================================================
+What's Updated:
+==================================================
+
+✅ Real Telegram API subscription validation
+✅ Tasks reload after subscription verification - shows "Получить награду" button immediately
+✅ Timer shows after tasks load (not before)
+✅ Improved penalty notifications
+
+==================================================
