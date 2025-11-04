@@ -7337,19 +7337,15 @@
                 try {
                     // Check if subscribed (handle both true/false and undefined)
                     if (data.subscribed === true) {
-                        // Subscribed - immediately claim reward automatically without showing button
+                        // Subscribed - immediately claim reward automatically
+                        // Update button to show loading state
                         if (verifyButton) {
                             verifyButton.textContent = '⏳ Выдача награды...';
                             verifyButton.disabled = true;
+                            verifyButton.style.pointerEvents = 'none';
                         }
-                        // Hide subscription link
-                        if (taskCard) {
-                            const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
-                            if (subscriptionLink) {
-                                subscriptionLink.style.display = 'none';
-                            }
-                        }
-                        // Immediately call claim API and update UI - no intermediate button
+                        
+                        // Immediately call claim API and update UI instantly
                         fetch('/api/claim_task', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -7358,43 +7354,37 @@
                         .then(res => res.json())
                         .then(claimData => {
                             if (claimData.success) {
-                                // Mark task card as claimed locally to prevent reload issues
+                                // INSTANTLY update UI - replace all buttons and links with success message
                                 if (taskCard) {
-                                    taskCard.setAttribute('data-claimed', 'true');
-                                    taskCard.setAttribute('data-completed', 'true');
+                                    // Find container for buttons (after progress section)
+                                    const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
                                     
-                                    // Find and remove ALL subscription-related elements
-                                    const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
-                                    if (subscriptionLink) {
-                                        subscriptionLink.remove();
-                                    }
-                                    // Remove ALL buttons in the card
+                                    // Remove ALL buttons, links, and existing messages in the card
                                     const allButtons = taskCard.querySelectorAll('button');
-                                    allButtons.forEach(btn => {
-                                        btn.remove();
-                                    });
-                                    
-                                    // Remove any existing success/claim messages
-                                    const existingMessages = taskCard.querySelectorAll('div[style*="Награда получена"], div[style*="rgba(16,185,129,0.3)"]');
-                                    existingMessages.forEach(msg => {
-                                        if (msg.textContent.includes('Награда получена')) {
+                                    allButtons.forEach(btn => btn.remove());
+                                    const allLinks = taskCard.querySelectorAll('a[target="_blank"]');
+                                    allLinks.forEach(link => link.remove());
+                                    const existingMsgs = taskCard.querySelectorAll('[data-claimed-message="true"], div[style*="Награда получена"]');
+                                    existingMsgs.forEach(msg => {
+                                        if (msg.textContent && msg.textContent.includes('Награда получена')) {
                                             msg.remove();
                                         }
                                     });
                                     
-                                    // Create and insert success message
+                                    // Create success message
                                     const successDiv = document.createElement('div');
                                     successDiv.textContent = '✅ Награда получена!';
                                     successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
                                     successDiv.setAttribute('data-claimed-message', 'true');
                                     
-                                    // Find the right place to insert - after progress section, before any timers
-                                    const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                                    if (progressSection) {
-                                        // Find next element after progress section
+                                    // Insert success message after progress section
+                                    if (progressSection && progressSection.parentNode) {
                                         let insertPoint = progressSection.nextElementSibling;
                                         // Skip timer divs
-                                        while (insertPoint && (insertPoint.id && insertPoint.id.includes('returnTimer') || insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))) {
+                                        while (insertPoint && (
+                                            (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
+                                            (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
+                                        )) {
                                             insertPoint = insertPoint.nextElementSibling;
                                         }
                                         if (insertPoint) {
@@ -7406,23 +7396,23 @@
                                         taskCard.appendChild(successDiv);
                                     }
                                     
-                                    // Update progress indicator
+                                    // Update progress indicator instantly
                                     const progressBar = taskCard.querySelector('[style*="width"]');
                                     if (progressBar) {
                                         progressBar.style.width = '100%';
                                         progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
                                     }
                                     const progressText = taskCard.querySelector('div[style*="font-size: 14px"]');
-                                    if (progressText) {
-                                        if (progressText.textContent.includes('Прогресс:')) {
-                                            progressText.textContent = '✅ Выполнено';
-                                            progressText.style.color = '#10b981';
-                                        }
+                                    if (progressText && progressText.textContent.includes('Прогресс:')) {
+                                        progressText.textContent = '✅ Выполнено';
+                                        progressText.style.color = '#10b981';
                                     }
-                                    // Update card background to completed style
+                                    
+                                    // Update card style instantly
                                     taskCard.style.background = 'rgba(16,185,129,0.15)';
                                     taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
-                                    // Add "Готово" badge if not present
+                                    
+                                    // Add "Готово" badge instantly
                                     const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
                                     if (header && !header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]')) {
                                         const badge = document.createElement('div');
@@ -7431,7 +7421,8 @@
                                         header.appendChild(badge);
                                     }
                                 }
-                                // Update coins balance immediately - no reload needed
+                                
+                                // Update coins balance immediately
                                 fetch('/api/user_data', {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/json'},
@@ -7440,15 +7431,21 @@
                                 .then(res => res.json())
                                 .then(data => {
                                     const coins = Math.floor(data.coins || 0);
-                                    document.getElementById('coins').textContent = coins.toLocaleString();
+                                    const coinsEl = document.getElementById('coins');
+                                    if (coinsEl) {
+                                        coinsEl.textContent = coins.toLocaleString();
+                                    }
                                 })
                                 .catch(err => console.error('Error updating coins:', err));
-                                
-                                // UI is already updated locally - no need to reload from server
-                                // The local update happens instantly without page reload
                             } else {
                                 // Error claiming - restore button
-                                restoreButton();
+                                if (verifyButton && originalText) {
+                                    verifyButton.disabled = false;
+                                    verifyButton.style.opacity = '1';
+                                    verifyButton.style.cursor = 'pointer';
+                                    verifyButton.style.pointerEvents = 'auto';
+                                    verifyButton.textContent = originalText;
+                                }
                                 if (window.tg && tg.showAlert) {
                                     tg.showAlert('❌ ' + (claimData.error || 'Ошибка при получении награды'));
                                 }
