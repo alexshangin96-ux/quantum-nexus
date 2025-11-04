@@ -737,12 +737,25 @@ def get_mining():
             # Get machine levels from user JSON (source of truth)
             import json
             mining_levels = {}
-            if category == 'coins':
-                mining_levels = json.loads(user.mining_coins_levels or '{}')
-            elif category == 'quanhash':
-                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
-            elif category == 'vip':
-                mining_levels = json.loads(user.mining_vip_levels or '{}')
+            try:
+                if category == 'coins':
+                    try:
+                        mining_levels = json.loads(user.mining_coins_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+                elif category == 'quanhash':
+                    try:
+                        mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+                elif category == 'vip':
+                    try:
+                        mining_levels = json.loads(user.mining_vip_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+            except Exception as e:
+                print(f"Error parsing mining levels JSON: {e}")
+                mining_levels = {}
             
             # Machine definitions for calculating income (ALL categories)
             machines_defs = {
@@ -2044,12 +2057,23 @@ def buy_machine():
             # Get current level from user's JSON field (this is the source of truth)
             import json
             current_level = 0
-            if currency == 'coins':
-                levels = json.loads(user.mining_coins_levels or '{}')
-                current_level = levels.get(machine_id, 0)
-            elif currency == 'quanhash':
-                levels = json.loads(user.mining_quanhash_levels or '{}')
-                current_level = levels.get(machine_id, 0)
+            try:
+                if currency == 'coins':
+                    try:
+                        levels = json.loads(user.mining_coins_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        levels = {}
+                    current_level = levels.get(machine_id, 0)
+                elif currency == 'quanhash':
+                    try:
+                        levels = json.loads(user.mining_quanhash_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        levels = {}
+                    current_level = levels.get(machine_id, 0)
+            except Exception as e:
+                print(f"Error parsing levels JSON: {e}")
+                levels = {}
+                current_level = 0
             
             print(f"Current level from JSON: {current_level}")
             
@@ -2084,14 +2108,24 @@ def buy_machine():
             db.add(machine)
             
             # Update levels in user's JSON field
-            if currency == 'coins':
-                levels = json.loads(user.mining_coins_levels or '{}')
-                levels[machine_id] = new_level
-                user.mining_coins_levels = json.dumps(levels)
-            elif currency == 'quanhash':
-                levels = json.loads(user.mining_quanhash_levels or '{}')
-                levels[machine_id] = new_level
-                user.mining_quanhash_levels = json.dumps(levels)
+            try:
+                if currency == 'coins':
+                    try:
+                        levels = json.loads(user.mining_coins_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        levels = {}
+                    levels[machine_id] = new_level
+                    user.mining_coins_levels = json.dumps(levels)
+                elif currency == 'quanhash':
+                    try:
+                        levels = json.loads(user.mining_quanhash_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        levels = {}
+                    levels[machine_id] = new_level
+                    user.mining_quanhash_levels = json.dumps(levels)
+            except Exception as e:
+                print(f"Error updating levels JSON: {e}")
+                # Continue anyway, levels will be updated next time
             
             print(f"Committing to database...")
             db.commit()
