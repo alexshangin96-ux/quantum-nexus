@@ -7365,9 +7365,30 @@
                                         progressText.textContent = '✅ Выполнено';
                                         progressText.style.color = '#10b981';
                                     }
+                                    // Update card background to completed style
+                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                                    // Add "Готово" badge if not present
+                                    const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                                    if (header && !header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]')) {
+                                        const badge = document.createElement('div');
+                                        badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                                        badge.textContent = '✅ Готово';
+                                        header.appendChild(badge);
+                                    }
                                 }
-                                // Update coins display immediately - no page reload
-                                loadData();
+                                // Update only coins balance without reloading tasks list
+                                fetch('/api/user_data', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({user_id: window.user?.id})
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    const coins = Math.floor(data.coins || 0);
+                                    document.getElementById('coins').textContent = coins.toLocaleString();
+                                })
+                                .catch(err => console.error('Error updating coins:', err));
                             } else {
                                 // Error claiming - restore button
                                 restoreButton();
