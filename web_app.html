@@ -7323,10 +7323,12 @@
                 };
                 
                 try {
+                    // Check if subscribed (handle both true/false and undefined)
                     if (data.subscribed === true) {
-                        // Subscribed - immediately claim reward automatically
+                        // Subscribed - immediately claim reward automatically without page reload
                         if (verifyButton) {
                             verifyButton.textContent = '⏳ Выдача награды...';
+                            verifyButton.disabled = true;
                         }
                         // Hide subscription link
                         if (taskCard) {
@@ -7335,14 +7337,16 @@
                                 subscriptionLink.style.display = 'none';
                             }
                         }
-                        // Automatically claim reward immediately
+                        // Automatically claim reward immediately - no page reload
                         claimReward(taskId);
                     } else {
-                        // Not subscribed or error - show error and restore button
+                        // Not subscribed (subscribed === false or undefined) - show error and restore button
                         restoreButton();
                         const errorMessage = data.error || 'Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!';
                         if (window.tg && tg.showAlert) {
                             tg.showAlert('❌ ' + errorMessage);
+                        } else {
+                            alert('❌ ' + errorMessage);
                         }
                     }
                 } catch(err) {
@@ -7350,6 +7354,8 @@
                     console.error('Verification error:', err);
                     if (window.tg && tg.showAlert) {
                         tg.showAlert('❌ Ошибка проверки подписки');
+                    } else {
+                        alert('❌ Ошибка проверки подписки');
                     }
                 }
             })
