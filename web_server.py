@@ -2570,7 +2570,8 @@ def get_daily_tasks():
             # Count user cards - count ALL cards regardless of is_active status
             cards_count = db.query(UserCard).filter_by(user_id=user.id).count()
             # Also log breakdown by type for debugging
-            cards_by_type = db.query(UserCard.card_type, db.func.count(UserCard.id)).filter_by(user_id=user.id).group_by(UserCard.card_type).all()
+            from sqlalchemy import func
+            cards_by_type = db.query(UserCard.card_type, func.count(UserCard.id)).filter_by(user_id=user.id).group_by(UserCard.card_type).all()
             logger.info(f"Daily tasks: User {user_id} (db_id: {user.id}) has {cards_count} total cards. Breakdown: {dict(cards_by_type)}")
             
             # Get already completed tasks for today
