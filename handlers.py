@@ -599,6 +599,7 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                 
                 # Add cards as UserCard objects
                 import random
+                cards_added = 0
                 for _ in range(combo_info['cards']):
                     new_card = UserCard(
                         user_id=user.id,
@@ -610,6 +611,14 @@ async def successful_payment_handler(update: Update, context: ContextTypes.DEFAU
                         is_active=True
                     )
                     db.add(new_card)
+                    cards_added += 1
+                
+                # Flush to ensure cards are added before commit
+                db.flush()
+                
+                # Verify cards were added
+                cards_count_after = db.query(UserCard).filter_by(user_id=user.id).count()
+                logger.info(f"Cards added: {cards_added}, total cards for user {user.id}: {cards_count_after}")
                 
                 vip_message = f"\n\n🎴 Получено: {combo_info['cards']:,} карточек\n💰 Получено: {combo_info['coins']:,} коинов"
             else:
@@ -843,30 +852,17 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
                     db_user.channel_subscribed = False
                     db_user.channel_subscribed_at = None
                     
-                    # Reset task 1 (channel subscription) in daily_tasks_completed for TODAY
+                    # Reset task 1 (channel subscription) in daily_tasks_completed
                     import json
-                    from datetime import date
                     try:
-                        today_str = date.today().isoformat()
                         daily_completed = json.loads(db_user.daily_tasks_completed or '{}')
-                        logger.info(f"Before reset: daily_tasks_completed={daily_completed}, today={today_str}")
-                        
-                        # daily_tasks_completed structure: {"2025-11-05": [1, 2, 3], ...}
-                        if today_str in daily_completed:
-                            today_tasks = daily_completed[today_str]
-                            if isinstance(today_tasks, list) and 1 in today_tasks:
-                                today_tasks.remove(1)
-                                daily_completed[today_str] = today_tasks
-                                db_user.daily_tasks_completed = json.dumps(daily_completed)
-                                logger.info(f"After reset: daily_tasks_completed={daily_completed}, removed task 1 from {today_str}")
-                            elif isinstance(today_tasks, list):
-                                logger.info(f"Task 1 not in today's completed tasks: {today_tasks}")
-                        else:
-                            logger.info(f"Today {today_str} not in daily_tasks_completed")
+                        logger.info(f"Before reset: daily_tasks_completed={daily_completed}")
+                        if '1' in daily_completed or 1 in daily_completed:
+                            daily_completed = {k: v for k, v in daily_completed.items() if str(k) != '1' and k != 1}
+                            db_user.daily_tasks_completed = json.dumps(daily_completed)
+                            logger.info(f"After reset: daily_tasks_completed={daily_completed}")
                     except Exception as e:
                         logger.error(f"Error resetting daily_tasks_completed: {e}")
-                        import traceback
-                        logger.error(traceback.format_exc())
                     
                     db.commit()
                     logger.info(f"Penalty applied: user {user.id}, coins {old_coins} -> {db_user.coins}")
@@ -875,13 +871,13 @@ async def channel_subscription_handler(update: Update, context: ContextTypes.DEF
                     try:
                         bot = context.bot
                         notification = (
-                            f"⚠️ ВНИМАНИЕ! Вы отписались от канала!\n\n"
-                            f"📢 Вы отписались от канала @quantum_nexus\n"
+                            f"⚠️ Штраф за отписку от канала!\n\n"
+                            f"❌ Вы отписались от канала @quantum_nexus\n"
                             f"💸 Штраф: -{penalty:,} коинов\n\n"
-                            f"🔔 Подпишитесь снова, чтобы задание стало доступным!"
+                            f"📢 Подпишитесь снова, чтобы вернуть задание!"
                         )
                         await bot.send_message(chat_id=user.id, text=notification)
-                        logger.info(f"Penalty notification sent to user {user.id}")
+                        logger.info(f"Notification sent to user {user.id}")
                     except Exception as e:
                         logger.error(f"Error sending notification to user {user.id}: {e}")
                 elif not was_member and is_now_member:

@@ -1529,9 +1529,14 @@ def buy_item():
                     is_active=True
                 )
                 db.add(card)
+                db.flush()  # Ensure card is added to session before commit
+                
+                # Verify card was added
+                cards_count_after = db.query(UserCard).filter_by(user_id=user.id).count()
+                print(f"Added card {item_type} level {level} for user {user_id} (db_id: {user.id}). Total cards now: {cards_count_after}")
+                
                 user.last_active = datetime.utcnow()
                 db.commit()
-                print(f"Added card {item_type} level {level} for user {user_id}")
             elif item_type.startswith('card_hour_'):
                 # Per hour card
                 idx = int(item_type.split('_')[2])
@@ -1575,10 +1580,15 @@ def buy_item():
                     is_active=True
                 )
                 db.add(card)
+                db.flush()  # Ensure card is added to session before commit
+                
+                # Verify card was added
+                cards_count_after = db.query(UserCard).filter_by(user_id=user.id).count()
+                print(f"Added PER HOUR card {item_type} level {level} for user {user_id} (db_id: {user.id}). Total cards now: {cards_count_after}")
+                print(f"Card details: income_per_hour={income_per_hour}, income_per_min={income_per_min}")
+                
                 user.last_active = datetime.utcnow()
                 db.commit()
-                print(f"Added PER HOUR card {item_type} level {level} for user {user_id}")
-                print(f"Card details: income_per_hour={income_per_hour}, income_per_min={income_per_min}")
             elif item_type == 'auto_bot':
                 # Auto-tap bot implementation
                 taps_per_sec = data.get('taps_per_sec', 2)
@@ -2557,8 +2567,11 @@ def get_daily_tasks():
             if not user:
                 return jsonify({'error': 'User not found'}), 404
             
-            # Count user cards
+            # Count user cards - count ALL cards regardless of is_active status
             cards_count = db.query(UserCard).filter_by(user_id=user.id).count()
+            # Also log breakdown by type for debugging
+            cards_by_type = db.query(UserCard.card_type, db.func.count(UserCard.id)).filter_by(user_id=user.id).group_by(UserCard.card_type).all()
+            logger.info(f"Daily tasks: User {user_id} (db_id: {user.id}) has {cards_count} total cards. Breakdown: {dict(cards_by_type)}")
             
             # Get already completed tasks for today
             today_str = datetime.date.today().isoformat()
