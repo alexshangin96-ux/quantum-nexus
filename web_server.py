@@ -1974,7 +1974,10 @@ def process_star_purchase():
                 
                 if machine_id:
                     import json
-                    vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    try:
+                        vip_levels = json.loads(user.mining_vip_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        vip_levels = {}
                     current_level = vip_levels.get(machine_id, 0)
                     new_level = current_level + 1
                     
