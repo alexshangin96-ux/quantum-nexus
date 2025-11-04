@@ -830,12 +830,25 @@ def get_mining():
             
             # Get machine levels for current category (for shop display) from JSON
             mining_levels = {}
-            if category == 'coins':
-                mining_levels = json.loads(user.mining_coins_levels or '{}')
-            elif category == 'quanhash':
-                mining_levels = json.loads(user.mining_quanhash_levels or '{}')
-            elif category == 'vip':
-                mining_levels = json.loads(user.mining_vip_levels or '{}')
+            try:
+                if category == 'coins':
+                    try:
+                        mining_levels = json.loads(user.mining_coins_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+                elif category == 'quanhash':
+                    try:
+                        mining_levels = json.loads(user.mining_quanhash_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+                elif category == 'vip':
+                    try:
+                        mining_levels = json.loads(user.mining_vip_levels or '{}')
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        mining_levels = {}
+            except Exception as e:
+                print(f"Error parsing mining levels JSON (second location): {e}")
+                mining_levels = {}
             
             print(f"Returning {len(all_machines_data)} machines to frontend")
             print(f"=== END GET_MINING ===")
