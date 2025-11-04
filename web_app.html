@@ -7341,7 +7341,7 @@
                 return res.json();
             })
             .then(data => {
-                console.log('Verification response:', data);
+                console.log('Verification response:', JSON.stringify(data));
                 
                 // Restore button state helper
                 const restoreButton = () => {
@@ -7354,24 +7354,39 @@
                     }
                 };
                 
-                try {
-                    // Check if subscribed (handle both true/false and undefined)
-                    if (data.subscribed === true) {
-                        console.log('User is subscribed, claiming reward...');
-                        // Subscribed - immediately claim reward automatically
-                        // Update button to show loading state
-                        if (verifyButton) {
-                            verifyButton.textContent = '⏳ Выдача награды...';
-                            verifyButton.disabled = true;
-                            verifyButton.style.pointerEvents = 'none';
-                        }
-                        
-                        // Immediately call claim API and update UI instantly
-                        fetch('/api/claim_task', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({user_id: window.user?.id, task_id: taskId})
-                        })
+                // Check API response first
+                if (!data || data.success === false) {
+                    console.error('API error:', data);
+                    restoreButton();
+                    const errorMsg = data?.error || 'Ошибка проверки подписки';
+                    if (window.tg && tg.showAlert) {
+                        tg.showAlert('❌ ' + errorMsg);
+                    } else {
+                        alert('❌ ' + errorMsg);
+                    }
+                    return;
+                }
+                
+                // Check if subscribed - handle both true and explicit false
+                const isSubscribed = data.subscribed === true || data.subscribed === 'true';
+                console.log('Is subscribed?', isSubscribed, 'data.subscribed:', data.subscribed);
+                
+                if (isSubscribed) {
+                    console.log('✅ User is subscribed! Claiming reward immediately...');
+                    
+                    // Update button to show loading state
+                    if (verifyButton) {
+                        verifyButton.textContent = '⏳ Выдача награды...';
+                        verifyButton.disabled = true;
+                        verifyButton.style.pointerEvents = 'none';
+                    }
+                    
+                    // Immediately call claim API and update UI instantly
+                    fetch('/api/claim_task', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({user_id: window.user?.id, task_id: taskId})
+                    })
                         .then(res => {
                             if (!res.ok) {
                                 throw new Error(`HTTP error! status: ${res.status}`);
@@ -7485,7 +7500,7 @@
                             }
                         })
                         .catch(err => {
-                            console.error('Claim reward error:', err);
+                            console.error('❌ Claim reward error:', err);
                             // Restore button on error
                             if (verifyButton && originalText) {
                                 verifyButton.disabled = false;
@@ -7494,28 +7509,22 @@
                                 verifyButton.style.pointerEvents = 'auto';
                                 verifyButton.textContent = originalText;
                             }
+                            const errorMsg = 'Ошибка при получении награды: ' + (err.message || err);
                             if (window.tg && tg.showAlert) {
-                                tg.showAlert('❌ Ошибка при получении награды: ' + err.message);
+                                tg.showAlert('❌ ' + errorMsg);
+                            } else {
+                                alert('❌ ' + errorMsg);
                             }
                         });
-                    } else {
-                        console.log('User is not subscribed');
-                        // Not subscribed (subscribed === false or undefined) - show error and restore button
-                        restoreButton();
-                        const errorMessage = data.error || 'Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!';
-                        if (window.tg && tg.showAlert) {
-                            tg.showAlert('❌ ' + errorMessage);
-                        } else {
-                            alert('❌ ' + errorMessage);
-                        }
-                    }
-                } catch(err) {
-                    console.error('Verification processing error:', err);
+                } else {
+                    console.log('❌ User is NOT subscribed');
+                    // Not subscribed - show error and restore button
                     restoreButton();
+                    const errorMessage = 'Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!';
                     if (window.tg && tg.showAlert) {
-                        tg.showAlert('❌ Ошибка проверки подписки: ' + err.message);
+                        tg.showAlert('❌ ' + errorMessage);
                     } else {
-                        alert('❌ Ошибка проверки подписки: ' + err.message);
+                        alert('❌ ' + errorMessage);
                     }
                 }
             })
