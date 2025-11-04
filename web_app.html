@@ -7324,48 +7324,25 @@
                 
                 try {
                     if (data.subscribed === true) {
-                        // Immediately show claim button and update UI
-                        if (taskCard && verifyButton) {
-                            // Replace verify button with claim button immediately
-                            const newButton = document.createElement('button');
-                            newButton.textContent = '🎁 Забрать награду';
-                            newButton.style.cssText = 'width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);';
-                            newButton.onmouseover = function() {
-                                this.style.transform = 'scale(1.02)';
-                                this.style.boxShadow = '0 6px 20px rgba(102,126,234,0.6)';
-                            };
-                            newButton.onmouseout = function() {
-                                this.style.transform = 'scale(1)';
-                                this.style.boxShadow = '0 4px 15px rgba(102,126,234,0.4)';
-                            };
-                            newButton.onclick = function() {
-                                claimReward(taskId);
-                            };
-                            verifyButton.parentNode.replaceChild(newButton, verifyButton);
-                            
-                            // Hide subscription link
+                        // Subscribed - immediately claim reward automatically
+                        if (verifyButton) {
+                            verifyButton.textContent = '⏳ Выдача награды...';
+                        }
+                        // Hide subscription link
+                        if (taskCard) {
                             const subscriptionLink = taskCard.querySelector('a[target="_blank"]');
                             if (subscriptionLink) {
                                 subscriptionLink.style.display = 'none';
                             }
-                            
-                            // Update progress indicator
-                            const progressBar = taskCard.querySelector('[style*="width"]');
-                            if (progressBar) {
-                                progressBar.style.width = '100%';
-                                progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
-                            }
-                            const progressText = taskCard.querySelector('div[style*="font-size: 14px"]');
-                            if (progressText && progressText.textContent.includes('Прогресс:')) {
-                                progressText.textContent = '✅ Выполнено';
-                                progressText.style.color = '#10b981';
-                            }
                         }
+                        // Automatically claim reward immediately
+                        claimReward(taskId);
                     } else {
-                        // Not subscribed - show error and restore button
+                        // Not subscribed or error - show error and restore button
                         restoreButton();
+                        const errorMessage = data.error || 'Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!';
                         if (window.tg && tg.showAlert) {
-                            tg.showAlert('❌ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                            tg.showAlert('❌ ' + errorMessage);
                         }
                     }
                 } catch(err) {
