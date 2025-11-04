@@ -7230,9 +7230,8 @@
             const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
             const claimButton = taskCard ? taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`) : null;
             
-            // Show loading state
+            // Immediately update UI to show loading, then claim instantly
             if (claimButton) {
-                const originalText = claimButton.textContent;
                 claimButton.disabled = true;
                 claimButton.style.opacity = '0.6';
                 claimButton.style.cursor = 'not-allowed';
@@ -7247,22 +7246,16 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    // Mark task as claimed immediately
-                    if (taskCard) {
-                        const button = taskCard.querySelector(`button[onclick="claimReward(${taskId})"]`);
-                        if (button) {
-                            button.outerHTML = `
-                                <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
-                                    ✅ Награда получена!
-                                </div>
-                            `;
-                        }
+                    // Instantly mark task as claimed - no delays
+                    if (taskCard && claimButton) {
+                        claimButton.outerHTML = `
+                            <div style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);">
+                                ✅ Награда получена!
+                            </div>
+                        `;
                     }
-                    // Update coins display
+                    // Update coins display immediately - no alerts, just instant update
                     loadData();
-                    if (window.tg && tg.showAlert) {
-                        tg.showAlert('✅ Награда получена!');
-                    }
                 } else {
                     // Restore button on error
                     if (claimButton) {
@@ -7331,46 +7324,43 @@
                 };
                 
                 try {
-                    if (data.subscribed) {
+                    if (data.subscribed === true) {
+                        // Immediately show claim button - no additional checks needed
                         if (window.tg && tg.showAlert) {
-                            tg.showAlert('✅ Подписка подтверждена! Теперь можете забрать награду!');
+                            tg.showAlert('✅ Подписка подтверждена!');
                         }
-                        // Update task UI instantly without reloading modal
-                        if (taskCard) {
-                            const button = taskCard.querySelector(`button[onclick="verifyChannelSubscription(${taskId})"]`);
-                            if (button) {
-                                button.outerHTML = `
-                                    <button onclick="claimReward(${taskId})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
-                                        🎁 Забрать награду
-                                    </button>
-                                `;
-                            }
+                        // Update task UI instantly - replace verify button with claim button
+                        if (taskCard && verifyButton) {
+                            verifyButton.outerHTML = `
+                                <button onclick="claimReward(${taskId})" style="width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(102,126,234,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(102,126,234,0.4)'">
+                                    🎁 Забрать награду
+                                </button>
+                            `;
                             // Update progress indicator
                             const progressBar = taskCard.querySelector('[style*="width"]');
                             if (progressBar) {
                                 progressBar.style.width = '100%';
                                 progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
                             }
-                            const progressText = taskCard.querySelector('div[style*="font-size: 12px"]');
-                            if (progressText) {
-                                progressText.textContent = '1 / 1';
+                            const progressText = taskCard.querySelector('div[style*="font-size: 14px"]');
+                            if (progressText && progressText.textContent.includes('Прогресс:')) {
+                                progressText.textContent = '✅ Выполнено';
                                 progressText.style.color = '#10b981';
                             }
                         }
-                    } else if (data.success === false || data.error) {
-                        restoreButton();
-                        if (window.tg && tg.showAlert) {
-                            tg.showAlert('❌ Ошибка проверки подписки');
-                        }
                     } else {
+                        // Not subscribed - show error and restore button
                         restoreButton();
                         if (window.tg && tg.showAlert) {
-                            tg.showAlert('⚠️ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
+                            tg.showAlert('❌ Вы ещё не подписались на канал @quantum_nexus\n\n📢 Подпишитесь и попробуйте снова!');
                         }
                     }
                 } catch(err) {
                     restoreButton();
                     console.error('Verification error:', err);
+                    if (window.tg && tg.showAlert) {
+                        tg.showAlert('❌ Ошибка проверки подписки');
+                    }
                 }
             })
             .catch(err => {
