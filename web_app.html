@@ -7501,7 +7501,7 @@
                                         header.appendChild(badge);
                                     }
                                 }
-                                // Update only coins balance without reloading tasks list
+                                // Update coins balance
                                 fetch('/api/user_data', {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/json'},
@@ -7513,6 +7513,81 @@
                                     document.getElementById('coins').textContent = coins.toLocaleString();
                                 })
                                 .catch(err => console.error('Error updating coins:', err));
+                                
+                                // Reload tasks list from server to show updated claimed status
+                                const list = document.getElementById('dailyTasksList');
+                                if (list) {
+                                    fetch('/api/daily_tasks', {
+                                        method: 'POST',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({user_id: window.user?.id})
+                                    })
+                                    .then(res => res.json())
+                                    .then(tasksData => {
+                                        if (tasksData.tasks && tasksData.tasks.length > 0) {
+                                            // Find task 1 and update it
+                                            const task1 = tasksData.tasks.find(t => t.id === 1);
+                                            if (task1 && task1.claimed) {
+                                                // Update the task card to show claimed state
+                                                const taskCard = list.querySelector(`[data-task-id="1"]`);
+                                                if (taskCard) {
+                                                    // Remove all buttons and links
+                                                    const buttons = taskCard.querySelectorAll('button');
+                                                    buttons.forEach(btn => btn.remove());
+                                                    const links = taskCard.querySelectorAll('a[target="_blank"]');
+                                                    links.forEach(link => link.remove());
+                                                    
+                                                    // Remove existing success messages
+                                                    const existingMsgs = taskCard.querySelectorAll('[data-claimed-message="true"]');
+                                                    existingMsgs.forEach(msg => msg.remove());
+                                                    
+                                                    // Add success message
+                                                    const successDiv = document.createElement('div');
+                                                    successDiv.textContent = '✅ Награда получена!';
+                                                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                                                    successDiv.setAttribute('data-claimed-message', 'true');
+                                                    
+                                                    // Insert after progress section
+                                                    const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
+                                                    if (progressSection) {
+                                                        let insertPoint = progressSection.nextElementSibling;
+                                                        while (insertPoint && (insertPoint.id && insertPoint.id.includes('returnTimer') || insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))) {
+                                                            insertPoint = insertPoint.nextElementSibling;
+                                                        }
+                                                        if (insertPoint) {
+                                                            progressSection.parentNode.insertBefore(successDiv, insertPoint);
+                                                        } else {
+                                                            progressSection.parentNode.appendChild(successDiv);
+                                                        }
+                                                    } else {
+                                                        taskCard.appendChild(successDiv);
+                                                    }
+                                                    
+                                                    // Update card style
+                                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                                                    
+                                                    // Update progress
+                                                    const progressText = taskCard.querySelector('div[style*="font-size: 14px"]');
+                                                    if (progressText && progressText.textContent.includes('Прогресс:')) {
+                                                        progressText.textContent = '✅ Выполнено';
+                                                        progressText.style.color = '#10b981';
+                                                    }
+                                                    
+                                                    // Add "Готово" badge
+                                                    const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                                                    if (header && !header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]')) {
+                                                        const badge = document.createElement('div');
+                                                        badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                                                        badge.textContent = '✅ Готово';
+                                                        header.appendChild(badge);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    })
+                                    .catch(err => console.error('Error reloading tasks:', err));
+                                }
                             } else {
                                 // Error claiming - restore button
                                 restoreButton();
