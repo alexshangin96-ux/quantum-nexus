@@ -7030,7 +7030,35 @@
     <script>
         function openDailyBonus(e) {
             e.preventDefault();
-            const modal = document.createElement('div');
+            // Check if modal already exists
+            let modal = document.getElementById('dailyBonusModal');
+            if (modal) {
+                modal.style.display = 'block';
+                modal.classList.add('active');
+                // Reload tasks if needed
+                const list = document.getElementById('dailyTasksList');
+                if (list) {
+                    // Don't reload if we have claimed tasks
+                    const hasClaimed = list.querySelector('[data-claimed="true"]');
+                    if (!hasClaimed) {
+                        // Reload tasks
+                        fetch('/api/daily_tasks', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({user_id: window.user?.id})
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            // Use existing reload logic
+                            if(data.tasks && data.tasks.length > 0) {
+                                // ... existing code will handle this
+                            }
+                        });
+                    }
+                }
+                return;
+            }
+            modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'dailyBonusModal';
             modal.innerHTML = `
