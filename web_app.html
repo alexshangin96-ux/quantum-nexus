@@ -7419,10 +7419,23 @@
                         successDiv.setAttribute('data-claimed-message', 'true');
                         
                         // Insert at the very end of the card content (after all other elements)
+                        // Make sure it's visible BEFORE appending
+                        successDiv.style.display = 'block';
+                        successDiv.style.visibility = 'visible';
+                        successDiv.style.opacity = '1';
+                        
                         currentTaskCard.appendChild(successDiv);
                         
                         // Force reflow to ensure visibility
                         void successDiv.offsetHeight;
+                        
+                        // Verify it's actually visible
+                        console.log('✅ Success message appended!', {
+                            height: successDiv.offsetHeight,
+                            visible: successDiv.offsetHeight > 0,
+                            display: window.getComputedStyle(successDiv).display,
+                            parent: currentTaskCard.contains(successDiv)
+                        });
                         
                         // Update progress text IMMEDIATELY to "✅ Выполнено"
                         const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
