@@ -7108,7 +7108,12 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({user_id: window.user?.id})
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
             .then(data => {
                 const list = document.getElementById('dailyTasksList');
                 if(data.tasks && data.tasks.length > 0) {
@@ -7229,6 +7234,13 @@
                     }, 100);
                 } else {
                     list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;">Задания загружаются...</p>';
+                }
+            })
+            .catch(err => {
+                console.error('Error loading daily tasks:', err);
+                const list = document.getElementById('dailyTasksList');
+                if (list) {
+                    list.innerHTML = '<p style="text-align:center;opacity:0.7;padding:20px;color:#ef4444;">Ошибка загрузки заданий</p>';
                 }
             });
         }
