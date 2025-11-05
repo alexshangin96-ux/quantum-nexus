@@ -1,0 +1,69 @@
+==================================================
+🚀 КОМАНДЫ ДЛЯ ОБНОВЛЕНИЯ НА СЕРВЕРЕ
+==================================================
+
+📅 Дата: $(date +"%Y-%m-%d %H:%M:%S")
+📝 Коммит: $(git log -1 --oneline)
+
+==================================================
+📋 РУЧНОЕ ОБНОВЛЕНИЕ (всегда работает):
+==================================================
+
+cd /root/quantum-nexus
+
+git pull origin main
+
+sudo cp /root/quantum-nexus/web_app.html /var/www/quantum-nexus/
+
+sudo cp /root/quantum-nexus/web_server.py /var/www/quantum-nexus/
+
+sudo cp /root/quantum-nexus/handlers.py /var/www/quantum-nexus/
+
+sudo cp /root/quantum-nexus/models.py /var/www/quantum-nexus/
+
+sudo cp /root/quantum-nexus/config.py /var/www/quantum-nexus/
+
+sudo systemctl restart quantum-nexus-web.service
+
+sudo systemctl restart quantum-nexus.service
+
+==================================================
+📋 ОДНОЙ КОМАНДОЙ (быстрое обновление):
+==================================================
+
+cd /root/quantum-nexus && git pull origin main && sudo cp /root/quantum-nexus/web_app.html /var/www/quantum-nexus/ && sudo cp /root/quantum-nexus/web_server.py /var/www/quantum-nexus/ && sudo cp /root/quantum-nexus/handlers.py /var/www/quantum-nexus/ && sudo cp /root/quantum-nexus/models.py /var/www/quantum-nexus/ && sudo cp /root/quantum-nexus/config.py /var/www/quantum-nexus/ && sudo systemctl restart quantum-nexus-web.service && sudo systemctl restart quantum-nexus.service
+
+==================================================
+📋 АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ (только измененные файлы):
+==================================================
+
+# Использовать скрипт update_server.sh:
+cd /root/quantum-nexus
+chmod +x update_server.sh
+./update_server.sh
+
+==================================================
+✅ ПРОВЕРКА ПОСЛЕ ОБНОВЛЕНИЯ:
+==================================================
+
+sudo systemctl status quantum-nexus-web.service
+sudo systemctl status quantum-nexus.service
+sudo journalctl -u quantum-nexus-web.service -n 50 --no-pager
+
+==================================================
+🔧 ЕСЛИ ЧТО-ТО ПОШЛО НЕ ТАК:
+==================================================
+
+# Откатить изменения
+cd /root/quantum-nexus
+git log --oneline -10  # Посмотреть историю
+git reset --hard HEAD~1  # Откатить последний коммит
+sudo cp /root/quantum-nexus/web_app.html /var/www/quantum-nexus/
+sudo cp /root/quantum-nexus/web_server.py /var/www/quantum-nexus/
+sudo cp /root/quantum-nexus/handlers.py /var/www/quantum-nexus/
+sudo cp /root/quantum-nexus/models.py /var/www/quantum-nexus/
+sudo cp /root/quantum-nexus/config.py /var/www/quantum-nexus/
+sudo systemctl restart quantum-nexus-web.service
+sudo systemctl restart quantum-nexus.service
+
+==================================================
