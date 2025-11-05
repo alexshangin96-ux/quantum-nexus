@@ -7419,6 +7419,22 @@
                         progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
                     }
                     
+                    // Add "✅ ГОТОВО" badge IMMEDIATELY (like bottom card)
+                    const header = currentTaskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                    if (header) {
+                        const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
+                        if (!existingBadge) {
+                            const badge = document.createElement('div');
+                            badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                            badge.textContent = '✅ ГОТОВО';
+                            header.appendChild(badge);
+                        }
+                    }
+                    
+                    // Update card style IMMEDIATELY (green background and border)
+                    currentTaskCard.style.background = 'rgba(16,185,129,0.15)';
+                    currentTaskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                    
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
                     if (rewardText) {
@@ -7474,21 +7490,7 @@
                                         }
                                     }
                                     
-                                    // Update card style only after successful claim
-                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
-                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
-                                    
-                                    // Add "Готово" badge only after successful claim
-                                    const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
-                                    if (header) {
-                                        const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
-                                        if (!existingBadge) {
-                                            const badge = document.createElement('div');
-                                            badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
-                                            badge.textContent = '✅ Готово';
-                                            header.appendChild(badge);
-                                        }
-                                    }
+                                    // Card style and badge already updated immediately, no need to update again
                                 }
                                 
                                 // Update coins balance
