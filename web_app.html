@@ -7037,13 +7037,18 @@
             if (modal) {
                 // Modal already exists - just show it, don't reload tasks
                 // This preserves the current UI state including claimed rewards
-                modal.style.display = 'block';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
                 modal.classList.add('active');
                 return;
             }
             modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'dailyBonusModal';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px; width: 95vw; max-height: 90vh; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; backdrop-filter: blur(20px); padding: 0; border: 2px solid rgba(102,126,234,0.3);">
                     <!-- VIP Style Header with Layered Effect -->
