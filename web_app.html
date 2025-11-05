@@ -7421,23 +7421,34 @@
                     successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); user-select: none; display: block; visibility: visible; opacity: 1; position: relative;';
                     successDiv.setAttribute('data-claimed-message', 'true');
                     
-                    // Insert in the same place where buttons/links were (after progress section)
-                    // Find progress section (the div with "Выполнено" or "Прогресс")
+                    // Insert message at the END of card - this is the most reliable way
+                    // Find all children of card
+                    const cardChildren = Array.from(currentTaskCard.children);
+                    
+                    // Find progress section to insert after it
                     const progressSection = currentTaskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                    if (progressSection && progressSection.parentNode) {
-                        // Insert after progress section, before any other elements
-                        if (progressSection.nextSibling) {
-                            progressSection.parentNode.insertBefore(successDiv, progressSection.nextSibling);
+                    
+                    if (progressSection) {
+                        // Insert right after progress section (where buttons were)
+                        const progressIndex = cardChildren.indexOf(progressSection);
+                        if (progressIndex >= 0 && progressIndex < cardChildren.length - 1) {
+                            // Insert before next sibling
+                            currentTaskCard.insertBefore(successDiv, cardChildren[progressIndex + 1]);
                         } else {
-                            progressSection.parentNode.appendChild(successDiv);
+                            // Insert at the end
+                            currentTaskCard.appendChild(successDiv);
                         }
-                    } else if (lastActionElement && lastActionElement.parentNode) {
-                        // Insert after last action element
-                        lastActionElement.parentNode.insertBefore(successDiv, lastActionElement.nextSibling);
                     } else {
-                        // Fallback: append to card
+                        // Fallback: append to the very end of card
                         currentTaskCard.appendChild(successDiv);
                     }
+                    
+                    // Force visibility - make absolutely sure it's visible
+                    successDiv.style.display = 'block';
+                    successDiv.style.visibility = 'visible';
+                    successDiv.style.opacity = '1';
+                    successDiv.style.position = 'relative';
+                    successDiv.style.zIndex = '10';
                     
                     // Update progress text IMMEDIATELY to "✅ Выполнено"
                     const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
@@ -7454,7 +7465,17 @@
                     }
                     
                     // Add "✅ ГОТОВО" badge IMMEDIATELY (like bottom card)
-                    const header = currentTaskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                    // Try multiple selectors to find header
+                    let header = currentTaskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                    if (!header) {
+                        // Try first child div
+                        header = currentTaskCard.querySelector('div > div:first-child');
+                    }
+                    if (!header) {
+                        // Try first child
+                        header = currentTaskCard.firstElementChild;
+                    }
+                    
                     if (header) {
                         const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
                         if (!existingBadge) {
@@ -7462,7 +7483,12 @@
                             badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
                             badge.textContent = '✅ ГОТОВО';
                             header.appendChild(badge);
+                            console.log('✅ ГОТОВО badge added to header!');
+                        } else {
+                            console.log('✅ ГОТОВО badge already exists');
                         }
+                    } else {
+                        console.warn('⚠️ Header not found for badge!');
                     }
                     
                     // Update card style IMMEDIATELY (green background and border)
