@@ -7210,9 +7210,12 @@
                                             } else {
                                                 timerEl.textContent = '✅ Время вышло! Можно забрать награду';
                                                 timerEl.style.color = '#10b981';
-                                                // Reload tasks to update status
+                                                // Reload tasks to update status only if modal is open
                                                 setTimeout(() => {
-                                                    openDailyBonus();
+                                                    const modal = document.getElementById('dailyBonusModal');
+                                                    if (modal && modal.classList.contains('active')) {
+                                                        openDailyBonus();
+                                                    }
                                                 }, 1000);
                                             }
                                         }
@@ -7511,10 +7514,10 @@
                                 if (window.openDailyBonus) {
                                     setTimeout(() => {
                                         const modal = document.getElementById('dailyBonusModal');
-                                        if (modal) {
-                                            modal.remove();
+                                        if (modal && modal.classList.contains('active')) {
+                                            // Only reload if modal is still open
+                                            openDailyBonus({preventDefault: () => {}});
                                         }
-                                        openDailyBonus({preventDefault: () => {}});
                                     }, 100);
                                 }
                                 // No alert - silent fail to avoid interruptions
@@ -7532,10 +7535,10 @@
                             if (window.openDailyBonus) {
                                 setTimeout(() => {
                                     const modal = document.getElementById('dailyBonusModal');
-                                    if (modal) {
-                                        modal.remove();
+                                    if (modal && modal.classList.contains('active')) {
+                                        // Only reload if modal is still open
+                                        openDailyBonus({preventDefault: () => {}});
                                     }
-                                    openDailyBonus({preventDefault: () => {}});
                                 }, 100);
                             }
                             // No alert - silent fail to avoid interruptions
