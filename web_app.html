@@ -7385,22 +7385,24 @@
                     allButtons.forEach(btn => btn.remove());
                     allLinks.forEach(link => link.remove());
                     
-                    // Create success message IMMEDIATELY - show it right away (exactly like bottom card)
-                    const successDiv = document.createElement('div');
-                    successDiv.textContent = '✅ Награда получена!';
-                    // Use exact same style as bottom card (task.claimed)
-                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
-                    successDiv.setAttribute('data-claimed-message', 'true');
-                    
-                    // Insert success message at the bottom of card (after all content, like bottom card)
-                    // Find the last element before any existing claimed message
-                    const existingClaimedMsg = currentTaskCard.querySelector('[data-claimed-message="true"]');
-                    if (existingClaimedMsg) {
-                        existingClaimedMsg.remove();
-                    }
-                    
-                    // Insert at the very end of the card content
-                    currentTaskCard.appendChild(successDiv);
+                    // Use requestAnimationFrame for smooth instant update
+                    requestAnimationFrame(() => {
+                        // Remove any existing claimed message first
+                        const existingClaimedMsg = currentTaskCard.querySelector('[data-claimed-message="true"]');
+                        if (existingClaimedMsg) {
+                            existingClaimedMsg.remove();
+                        }
+                        
+                        // Create success message IMMEDIATELY - show it right away (exactly like bottom card)
+                        const successDiv = document.createElement('div');
+                        successDiv.textContent = '✅ Награда получена!';
+                        // Use exact same style as bottom card (task.claimed)
+                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                        successDiv.setAttribute('data-claimed-message', 'true');
+                        
+                        // Insert at the very end of the card content (after all other elements)
+                        currentTaskCard.appendChild(successDiv);
+                    });
                     
                     // Update progress text IMMEDIATELY to "✅ Выполнено"
                     const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
