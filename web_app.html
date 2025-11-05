@@ -7037,7 +7037,9 @@
             if (modal) {
                 // Modal already exists - just show it, don't reload tasks
                 // This preserves the current UI state including claimed rewards
-                modal.style.display = 'block';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
                 modal.classList.add('active');
                 return;
             }
