@@ -7486,13 +7486,23 @@
                         currentTaskCard.style.borderStyle = 'solid';
                     }
                     
-                    // IMPORTANT: Ensure child elements don't inherit background
-                    // Find the flex container that holds title and description
-                    const flexContainer = currentTaskCard.querySelector('div[style*="flex: 1; min-width: 0"]');
-                    if (flexContainer && !flexContainer.style.background) {
-                        // Set transparent background so it doesn't inherit green from parent
-                        flexContainer.style.background = 'transparent';
-                    }
+                    // CRITICAL: Remove background from ALL child divs to match server template
+                    // Server template doesn't set background on child elements, only on card itself
+                    const allChildDivs = currentTaskCard.querySelectorAll('div');
+                    allChildDivs.forEach(div => {
+                        // Skip the card itself
+                        if (div === currentTaskCard) return;
+                        
+                        // Check if this is the ГОТОВО badge - preserve its background
+                        const isBadge = div.textContent && div.textContent.includes('ГОТОВО') && 
+                                       div.style.background && div.style.background.includes('linear-gradient(135deg, #10b981');
+                        
+                        // Remove background from all other divs
+                        if (!isBadge && div.style.background) {
+                            div.style.removeProperty('background');
+                            div.style.removeProperty('background-color');
+                        }
+                    });
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
@@ -7593,11 +7603,21 @@
                                         taskCard.style.borderStyle = 'solid';
                                     }
                                     
-                                    // Ensure child elements don't inherit background
-                                    const flexContainer = taskCard.querySelector('div[style*="flex: 1; min-width: 0"]');
-                                    if (flexContainer && !flexContainer.style.background) {
-                                        flexContainer.style.background = 'transparent';
-                                    }
+                                    // CRITICAL: Remove background from ALL child divs to match server template
+                    const allChildDivs = taskCard.querySelectorAll('div');
+                    allChildDivs.forEach(div => {
+                        if (div === taskCard) return;
+                        
+                        // Check if this is the ГОТОВО badge - preserve its background
+                        const isBadge = div.textContent && div.textContent.includes('ГОТОВО') && 
+                                       div.style.background && div.style.background.includes('linear-gradient(135deg, #10b981');
+                        
+                        // Remove background from all other divs
+                        if (!isBadge && div.style.background) {
+                            div.style.removeProperty('background');
+                            div.style.removeProperty('background-color');
+                        }
+                    });
                                     
                                     console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
                                 }
