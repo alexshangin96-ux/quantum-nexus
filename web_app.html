@@ -7405,40 +7405,9 @@
                         currentTaskCard.appendChild(successDiv);
                     }
                     
-                    // Update progress indicator instantly
-                    const progressBar = currentTaskCard.querySelector('[style*="width"]');
-                    if (progressBar) {
-                        progressBar.style.width = '100%';
-                        progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
-                    }
+                    console.log('✅ Success message shown!');
                     
-                    const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
-                    if (progressText) {
-                        if (progressText.textContent && progressText.textContent.includes('Прогресс:')) {
-                            progressText.textContent = '✅ Выполнено';
-                            progressText.style.color = '#10b981';
-                        }
-                    }
-                    
-                    // Update card style instantly
-                    currentTaskCard.style.background = 'rgba(16,185,129,0.15)';
-                    currentTaskCard.style.borderColor = 'rgba(74,222,128,0.6)';
-                    
-                    // Add "Готово" badge instantly
-                    const header = currentTaskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
-                    if (header) {
-                        const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
-                        if (!existingBadge) {
-                            const badge = document.createElement('div');
-                            badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
-                            badge.textContent = '✅ Готово';
-                            header.appendChild(badge);
-                        }
-                    }
-                    
-                    console.log('✅ UI updated instantly!');
-                    
-                    // Call claim API in background - UI already shows success
+                    // Call claim API - only update card style after successful claim
                     fetch('/api/claim_task', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -7453,7 +7422,42 @@
                         .then(claimData => {
                             console.log('Claim response:', claimData);
                             if (claimData.success) {
-                                console.log('✅ Reward claimed successfully!');
+                                console.log('✅ Reward claimed successfully! Updating card style...');
+                                
+                                // Only update card style after successful claim
+                                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                                if (taskCard) {
+                                    // Update progress indicator
+                                    const progressBar = taskCard.querySelector('[style*="width"]');
+                                    if (progressBar) {
+                                        progressBar.style.width = '100%';
+                                        progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
+                                    }
+                                    
+                                    const progressText = taskCard.querySelector('div[style*="font-size: 14px"]');
+                                    if (progressText) {
+                                        if (progressText.textContent && progressText.textContent.includes('Прогресс:')) {
+                                            progressText.textContent = '✅ Выполнено';
+                                            progressText.style.color = '#10b981';
+                                        }
+                                    }
+                                    
+                                    // Update card style only after successful claim
+                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                                    
+                                    // Add "Готово" badge only after successful claim
+                                    const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                                    if (header) {
+                                        const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
+                                        if (!existingBadge) {
+                                            const badge = document.createElement('div');
+                                            badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                                            badge.textContent = '✅ Готово';
+                                            header.appendChild(badge);
+                                        }
+                                    }
+                                }
                                 
                                 // Update coins balance
                                 fetch('/api/user_data', {
@@ -7472,11 +7476,26 @@
                                 .catch(err => console.error('Error updating coins:', err));
                             } else {
                                 console.error('Claim failed:', claimData);
+                                // Remove success message if claim failed
+                                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                                if (taskCard) {
+                                    const successMsg = taskCard.querySelector('[data-claimed-message="true"]');
+                                    if (successMsg) {
+                                        successMsg.remove();
+                                    }
+                                }
                             }
                         })
                         .catch(err => {
                             console.error('Error claiming reward:', err);
-                            // UI already shows success, so we don't revert it
+                            // Remove success message if error
+                            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                            if (taskCard) {
+                                const successMsg = taskCard.querySelector('[data-claimed-message="true"]');
+                                if (successMsg) {
+                                    successMsg.remove();
+                                }
+                            }
                         });
                 } else {
                     console.log('❌ User is NOT subscribed');
