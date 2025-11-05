@@ -7164,7 +7164,7 @@
                                     <a href="${task.channel_url}" target="_blank" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: linear-gradient(135deg, #0088cc, #0066aa); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,136,204,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); display: inline-block; text-align: center; text-decoration: none;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(0,136,204,0.6)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,136,204,0.4)'">
                                         📢 Подписаться на канал
                                     </a>
-                                    <button onclick="verifyChannelSubscription(${task.id})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s;">
+                                    <button onclick="verifyChannelSubscription(${task.id})" style="width: 100%; margin-top: 8px; padding: 10px; font-size: 14px; font-weight: 700; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 10px; cursor: pointer; transition: all 0.3s; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;" onmousedown="event.preventDefault(); if(window.getSelection){window.getSelection().removeAllRanges();} if(document.selection){document.selection.empty();}">
                                         ✅ Проверить подписку
                                     </button>
                                 ` : task.completed && !task.claimed ? `
@@ -7372,6 +7372,14 @@
                 if (isSubscribed) {
                     console.log('✅ User is subscribed! Claiming reward immediately...');
                     
+                    // Remove text selection immediately
+                    if (window.getSelection) {
+                        window.getSelection().removeAllRanges();
+                    }
+                    if (document.selection) {
+                        document.selection.empty();
+                    }
+                    
                     // INSTANTLY remove button and link, show success message IMMEDIATELY
                     const currentTaskCard = document.querySelector(`[data-task-id="${taskId}"]`);
                     if (!currentTaskCard) {
@@ -7384,8 +7392,14 @@
                         // Remove ALL buttons and links IMMEDIATELY
                         const allButtons = currentTaskCard.querySelectorAll('button');
                         const allLinks = currentTaskCard.querySelectorAll('a[target="_blank"]');
-                        allButtons.forEach(btn => btn.remove());
-                        allLinks.forEach(link => link.remove());
+                        allButtons.forEach(btn => {
+                            btn.style.userSelect = 'none';
+                            btn.remove();
+                        });
+                        allLinks.forEach(link => {
+                            link.style.userSelect = 'none';
+                            link.remove();
+                        });
                         
                         // Remove any existing claimed message first
                         const existingClaimedMsg = currentTaskCard.querySelector('[data-claimed-message="true"]');
@@ -7393,15 +7407,22 @@
                             existingClaimedMsg.remove();
                         }
                         
+                        // Find the last element in the card to insert after it
+                        const cardChildren = Array.from(currentTaskCard.children);
+                        const lastChild = cardChildren[cardChildren.length - 1];
+                        
                         // Create success message IMMEDIATELY - show it right away (exactly like bottom card)
                         const successDiv = document.createElement('div');
                         successDiv.textContent = '✅ Награда получена!';
                         // Use exact same style as bottom card (task.claimed)
-                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); user-select: none;';
                         successDiv.setAttribute('data-claimed-message', 'true');
                         
                         // Insert at the very end of the card content (after all other elements)
                         currentTaskCard.appendChild(successDiv);
+                        
+                        // Force reflow to ensure visibility
+                        void successDiv.offsetHeight;
                         
                         // Update progress text IMMEDIATELY to "✅ Выполнено"
                         const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
@@ -7456,7 +7477,7 @@
                     
                     console.log('✅ Success message and progress updated instantly!');
                     
-                    // Call claim API - only update card style after successful claim
+                    // Call claim API - DO NOT reload or refresh anything, just confirm
                     fetch('/api/claim_task', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
