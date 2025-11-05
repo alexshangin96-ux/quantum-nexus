@@ -7029,22 +7029,19 @@
     
     <script>
         function openDailyBonus(e) {
-            // Prevent default only if event object is provided
-            if (e && typeof e.preventDefault === 'function') {
-                e.preventDefault();
-            }
+            e.preventDefault();
             // Check if modal already exists
             let modal = document.getElementById('dailyBonusModal');
             if (modal) {
                 // Modal already exists - just show it, don't reload tasks
                 // This preserves the current UI state including claimed rewards
+                modal.style.display = 'block';
                 modal.classList.add('active');
                 return;
             }
             modal = document.createElement('div');
             modal.className = 'modal active';
             modal.id = 'dailyBonusModal';
-            document.body.appendChild(modal);
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 500px; width: 95vw; max-height: 90vh; overflow: hidden; background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(20,20,30,0.98)); border-radius: 24px; backdrop-filter: blur(20px); padding: 0; border: 2px solid rgba(102,126,234,0.3);">
                     <!-- VIP Style Header with Layered Effect -->
@@ -7074,6 +7071,7 @@
                     </div>
                 </div>
             `;
+            document.body.appendChild(modal);
             
             // Start countdown timer
             function updateCountdown() {
@@ -7363,36 +7361,40 @@
                 if (isSubscribed) {
                     console.log('✅ User is subscribed! Claiming reward immediately...');
                     
-                    // Find task card and prepare container for smooth transition
+                    // INSTANTLY remove button and link, show loading state
                     const currentTaskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-                    if (!currentTaskCard) {
-                        console.error('Task card not found');
-                        return;
-                    }
-                    
-                    // Find container for buttons/links (where we'll insert success message)
-                    const progressSection = currentTaskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                    let actionContainer = null;
-                    
-                    if (progressSection && progressSection.parentNode) {
-                        // Find where buttons are located
-                        let insertPoint = progressSection.nextElementSibling;
-                        while (insertPoint && (
-                            (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
-                            (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
-                        )) {
-                            insertPoint = insertPoint.nextElementSibling;
+                    if (currentTaskCard) {
+                        // Remove ALL buttons and links IMMEDIATELY
+                        const allButtons = currentTaskCard.querySelectorAll('button');
+                        const allLinks = currentTaskCard.querySelectorAll('a[target="_blank"]');
+                        allButtons.forEach(btn => btn.remove());
+                        allLinks.forEach(link => link.remove());
+                        
+                        // Create loading message IMMEDIATELY
+                        const loadingDiv = document.createElement('div');
+                        loadingDiv.textContent = '⏳ Выдача награды...';
+                        loadingDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(102,126,234,0.3); color: #a5b4fc; border: 2px solid rgba(102,126,234,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(102,126,234,0.3);';
+                        loadingDiv.id = `loading_${taskId}`;
+                        
+                        // Find progress section to insert after it
+                        const progressSection = currentTaskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
+                        if (progressSection && progressSection.parentNode) {
+                            let insertPoint = progressSection.nextElementSibling;
+                            while (insertPoint && (
+                                (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
+                                (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
+                            )) {
+                                insertPoint = insertPoint.nextElementSibling;
+                            }
+                            if (insertPoint) {
+                                progressSection.parentNode.insertBefore(loadingDiv, insertPoint);
+                            } else {
+                                progressSection.parentNode.appendChild(loadingDiv);
+                            }
+                        } else {
+                            currentTaskCard.appendChild(loadingDiv);
                         }
-                        actionContainer = insertPoint ? insertPoint.parentNode : progressSection.parentNode;
-                    } else {
-                        actionContainer = currentTaskCard;
                     }
-                    
-                    // Prepare success message element (hidden, will be shown after API call)
-                    const successDiv = document.createElement('div');
-                    successDiv.textContent = '✅ Награда получена!';
-                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); opacity: 0; transition: opacity 0.2s ease-in;';
-                    successDiv.setAttribute('data-claimed-message', 'true');
                     
                     // Immediately call claim API
                     fetch('/api/claim_task', {
@@ -7411,44 +7413,41 @@
                             if (claimData.success) {
                                 console.log('✅ Reward claimed! Updating UI instantly...');
                                 
-                                // Use requestAnimationFrame for smooth transition without flicker
-                                requestAnimationFrame(() => {
-                                    const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-                                    if (!taskCard) return;
+                                // INSTANTLY update UI - replace loading with success
+                                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                                if (taskCard) {
+                                    // Remove loading message
+                                    const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
+                                    if (loadingMsg) loadingMsg.remove();
                                     
-                                    // Remove ALL buttons and links in one operation
-                                    const allButtons = taskCard.querySelectorAll('button');
-                                    const allLinks = taskCard.querySelectorAll('a[target="_blank"]');
-                                    allButtons.forEach(btn => btn.remove());
-                                    allLinks.forEach(link => link.remove());
+                                    // Remove any remaining buttons/links
+                                    taskCard.querySelectorAll('button').forEach(btn => btn.remove());
+                                    taskCard.querySelectorAll('a[target="_blank"]').forEach(link => link.remove());
+                                    
+                                    // Create success message
+                                    const successDiv = document.createElement('div');
+                                    successDiv.textContent = '✅ Награда получена!';
+                                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                                    successDiv.setAttribute('data-claimed-message', 'true');
                                     
                                     // Insert success message
-                                    if (actionContainer) {
-                                        const progressSectionNew = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                                        if (progressSectionNew && progressSectionNew.parentNode) {
-                                            let insertPoint = progressSectionNew.nextElementSibling;
-                                            while (insertPoint && (
-                                                (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
-                                                (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
-                                            )) {
-                                                insertPoint = insertPoint.nextElementSibling;
-                                            }
-                                            if (insertPoint) {
-                                                progressSectionNew.parentNode.insertBefore(successDiv, insertPoint);
-                                            } else {
-                                                progressSectionNew.parentNode.appendChild(successDiv);
-                                            }
+                                    const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
+                                    if (progressSection && progressSection.parentNode) {
+                                        let insertPoint = progressSection.nextElementSibling;
+                                        while (insertPoint && (
+                                            (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
+                                            (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
+                                        )) {
+                                            insertPoint = insertPoint.nextElementSibling;
+                                        }
+                                        if (insertPoint) {
+                                            progressSection.parentNode.insertBefore(successDiv, insertPoint);
                                         } else {
-                                            taskCard.appendChild(successDiv);
+                                            progressSection.parentNode.appendChild(successDiv);
                                         }
                                     } else {
                                         taskCard.appendChild(successDiv);
                                     }
-                                    
-                                    // Show success message with fade-in
-                                    requestAnimationFrame(() => {
-                                        successDiv.style.opacity = '1';
-                                    });
                                     
                                     // Update progress indicator instantly
                                     const progressBar = taskCard.querySelector('[style*="width"]');
@@ -7480,8 +7479,7 @@
                                     }
                                     
                                     console.log('✅ UI updated successfully!');
-                                });
-                            }
+                                }
                                 
                                 // Update coins balance immediately
                                 fetch('/api/user_data', {
@@ -7500,7 +7498,13 @@
                                 .catch(err => console.error('Error updating coins:', err));
                             } else {
                                 console.error('❌ Claim failed:', claimData);
-                                // Error - reload tasks to restore button
+                                // Error - restore buttons silently
+                                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                                if (taskCard) {
+                                    const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
+                                    if (loadingMsg) loadingMsg.remove();
+                                }
+                                // Reload tasks to restore button
                                 if (window.openDailyBonus) {
                                     setTimeout(() => {
                                         const modal = document.getElementById('dailyBonusModal');
@@ -7515,7 +7519,13 @@
                         })
                         .catch(err => {
                             console.error('❌ Claim reward error:', err);
-                            // Error - reload tasks to restore button
+                            // Error - restore buttons silently
+                            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
+                            if (taskCard) {
+                                const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
+                                if (loadingMsg) loadingMsg.remove();
+                            }
+                            // Reload tasks to restore button
                             if (window.openDailyBonus) {
                                 setTimeout(() => {
                                     const modal = document.getElementById('dailyBonusModal');
