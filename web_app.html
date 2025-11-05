@@ -7122,12 +7122,19 @@
                     html += data.tasks.map((task, index) => {
                         // Always use server state - don't check local claimed state
                         // Server knows the real state (claimed or not)
-                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
-                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
-                        const textColor = task.completed ? '#4ade80' : '#f093fb';
                         
                         // Special handling for channel subscription
                         const isChannelTask = task.type === 'channel_subscription';
+                        
+                        // Hide channel subscription task if it's already claimed
+                        // Task will reappear if user unsubscribes (server will return completed=false)
+                        if (isChannelTask && task.claimed) {
+                            return ''; // Don't render this task
+                        }
+                        
+                        const bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)';
+                        const borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)';
+                        const textColor = task.completed ? '#4ade80' : '#f093fb';
                         const minHeight = isChannelTask ? '200px' : 'auto';
                         
                         return `
@@ -7276,6 +7283,20 @@
                         successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
                         claimButton.parentNode.replaceChild(successDiv, claimButton);
                     }
+                    
+                    // Hide channel subscription task card after successful claim
+                    const isChannelTask = taskCard && (taskCard.querySelector('button[onclick*="verifyChannelSubscription"]') !== null ||
+                                                       taskCard.querySelector('a[href*="t.me"]') !== null);
+                    if (isChannelTask && taskCard) {
+                        console.log('✅ Hiding channel subscription task card in claimReward...');
+                        taskCard.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                        taskCard.style.opacity = '0';
+                        taskCard.style.transform = 'translateY(-10px)';
+                        setTimeout(() => {
+                            taskCard.style.display = 'none';
+                        }, 300);
+                    }
+                    
                     // Update coins display immediately - no alerts, just instant update
                     loadData();
                 } else {
@@ -7620,6 +7641,21 @@
                     });
                                     
                                     console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
+                                    
+                                    // Hide channel subscription task card after successful claim
+                                    // Task will reappear if user unsubscribes (server will return completed=false)
+                                    const isChannelTask = taskCard.querySelector('button[onclick*="verifyChannelSubscription"]') !== null ||
+                                                          taskCard.querySelector('a[href*="t.me"]') !== null;
+                                    if (isChannelTask) {
+                                        console.log('✅ Hiding channel subscription task card...');
+                                        // Smooth fade out animation
+                                        taskCard.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                                        taskCard.style.opacity = '0';
+                                        taskCard.style.transform = 'translateY(-10px)';
+                                        setTimeout(() => {
+                                            taskCard.style.display = 'none';
+                                        }, 300);
+                                    }
                                 }
                                 
                                 // Update coins balance
