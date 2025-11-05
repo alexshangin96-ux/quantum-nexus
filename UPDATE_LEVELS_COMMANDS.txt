@@ -17,10 +17,11 @@ cd /root/quantum-nexus
 git pull origin main
 
 # 3. Выполнить SQL скрипт для обновления всех пользователей
-sudo -u postgres psql quantum_nexus_db -f UPDATE_LEVELS_10000.sql
+# ПРИМЕЧАНИЕ: База данных называется "quantum_nexus" (не quantum_nexus_db)
+sudo -u postgres psql quantum_nexus -f UPDATE_LEVELS_10000.sql
 
 # ИЛИ выполнить SQL команды напрямую:
-sudo -u postgres psql quantum_nexus_db <<EOF
+sudo -u postgres psql quantum_nexus <<EOF
 UPDATE users 
 SET experience = (total_earned * 0.002) + (total_taps * 0.02) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 200),
     level = LEAST(10000, FLOOR(SQRT(GREATEST(0, (total_earned * 0.002) + (total_taps * 0.02) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 200)) / 500) + 1)),
@@ -28,23 +29,23 @@ SET experience = (total_earned * 0.002) + (total_taps * 0.02) + ((CASE WHEN vip_
 EOF
 
 # 4. Проверить результаты
-sudo -u postgres psql quantum_nexus_db -c "SELECT COUNT(*) as total_users, AVG(level) as avg_level, MAX(level) as max_level, AVG(rating) as avg_rating, MAX(rating) as max_rating FROM users;"
+sudo -u postgres psql quantum_nexus -c "SELECT COUNT(*) as total_users, AVG(level) as avg_level, MAX(level) as max_level, AVG(rating) as avg_rating, MAX(rating) as max_rating FROM users;"
 
 ==================================================
 📝 БЫСТРОЕ ОБНОВЛЕНИЕ (одной командой):
 ==================================================
 
-cd /root/quantum-nexus && git pull origin main && sudo -u postgres psql quantum_nexus_db -f UPDATE_LEVELS_10000.sql
+cd /root/quantum-nexus && git pull origin main && sudo -u postgres psql quantum_nexus -f UPDATE_LEVELS_10000.sql
 
 ==================================================
 ✅ ПРОВЕРКА ПОСЛЕ ОБНОВЛЕНИЯ:
 ==================================================
 
 # Проверить статистику уровней
-sudo -u postgres psql quantum_nexus_db -c "SELECT COUNT(*) as total, MIN(level) as min_level, AVG(level) as avg_level, MAX(level) as max_level FROM users;"
+sudo -u postgres psql quantum_nexus -c "SELECT COUNT(*) as total, MIN(level) as min_level, AVG(level) as avg_level, MAX(level) as max_level FROM users;"
 
 # Проверить несколько пользователей
-sudo -u postgres psql quantum_nexus_db -c "SELECT id, username, level, experience, rating FROM users ORDER BY rating DESC LIMIT 10;"
+sudo -u postgres psql quantum_nexus -c "SELECT id, username, level, experience, rating FROM users ORDER BY rating DESC LIMIT 10;"
 
 ==================================================
 ⚠️ ВАЖНО:
@@ -65,10 +66,13 @@ sudo -u postgres psql quantum_nexus_db -c "SELECT id, username, level, experienc
 sudo tail -n 50 /var/log/postgresql/postgresql-*.log
 
 # Проверить подключение к базе
-sudo -u postgres psql quantum_nexus_db -c "SELECT version();"
+sudo -u postgres psql quantum_nexus -c "SELECT version();"
 
 # Проверить структуру таблицы users
-sudo -u postgres psql quantum_nexus_db -c "\d users"
+sudo -u postgres psql quantum_nexus -c "\d users"
+
+# Список всех баз данных (если нужно найти правильное имя)
+sudo -u postgres psql -l
 
 ==================================================
 
