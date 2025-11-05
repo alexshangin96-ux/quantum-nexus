@@ -7385,25 +7385,21 @@
                     allButtons.forEach(btn => btn.remove());
                     allLinks.forEach(link => link.remove());
                     
-                    // Create success message IMMEDIATELY - show it right away
+                    // Create success message IMMEDIATELY - show it right away (exactly like bottom card)
                     const successDiv = document.createElement('div');
                     successDiv.textContent = '✅ Награда получена!';
-                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); margin-top: 8px;';
+                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); margin-top: 12px;';
                     successDiv.setAttribute('data-claimed-message', 'true');
                     
-                    // Find progress section and insert success message IMMEDIATELY
-                    const progressSection = currentTaskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                    if (progressSection && progressSection.parentNode) {
-                        // Insert after progress section
-                        if (progressSection.nextElementSibling) {
-                            progressSection.parentNode.insertBefore(successDiv, progressSection.nextElementSibling);
-                        } else {
-                            progressSection.parentNode.appendChild(successDiv);
-                        }
-                    } else {
-                        // Fallback: append to task card
-                        currentTaskCard.appendChild(successDiv);
+                    // Insert success message at the bottom of card (after all content, like bottom card)
+                    // Find the last element before any existing claimed message
+                    const existingClaimedMsg = currentTaskCard.querySelector('[data-claimed-message="true"]');
+                    if (existingClaimedMsg) {
+                        existingClaimedMsg.remove();
                     }
+                    
+                    // Insert at the very end of the card content
+                    currentTaskCard.appendChild(successDiv);
                     
                     // Update progress text IMMEDIATELY to "✅ Выполнено"
                     const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
