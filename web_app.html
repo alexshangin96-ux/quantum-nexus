@@ -7474,11 +7474,36 @@
                         }
                     }
                     
-                    // Update card style IMMEDIATELY - EXACT same as server renders (line 7125-7126)
+                    // Update card style IMMEDIATELY - ONLY background and border, don't touch children
                     // Server uses: bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)'
                     // borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)'
-                    currentTaskCard.style.background = 'rgba(16,185,129,0.15)';
-                    currentTaskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                    // Only update background and border - preserve all inline styles of children
+                    const currentBg = currentTaskCard.getAttribute('style') || '';
+                    // Extract existing styles but replace background and border
+                    const styleMatch = currentBg.match(/background:\s*([^;]+);?/);
+                    const borderMatch = currentBg.match(/border:\s*([^;]+);?/);
+    const borderColorMatch = currentBg.match(/border-color:\s*([^;]+);?/);
+    
+    // Update only background and border-color, preserve everything else
+    let newStyle = currentBg;
+    if (styleMatch) {
+        newStyle = newStyle.replace(/background:\s*[^;]+;?/g, '');
+    }
+    if (borderMatch) {
+        newStyle = newStyle.replace(/border:\s*[^;]+;?/g, '');
+    }
+    if (borderColorMatch) {
+        newStyle = newStyle.replace(/border-color:\s*[^;]+;?/g, '');
+    }
+    
+    // Add new background and border-color
+    newStyle = newStyle.trim();
+    if (newStyle && !newStyle.endsWith(';')) {
+        newStyle += ';';
+    }
+    newStyle += ' background: rgba(16,185,129,0.15); border-color: rgba(74,222,128,0.6);';
+    
+    currentTaskCard.setAttribute('style', newStyle);
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
