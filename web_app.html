@@ -7478,63 +7478,6 @@
                             console.error('Error claiming reward:', err);
                             // UI already shows success, so we don't revert it
                         });
-                                
-                                // Update coins balance immediately
-                                fetch('/api/user_data', {
-                                    method: 'POST',
-                                    headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify({user_id: window.user?.id})
-                                })
-                                .then(res => res.json())
-                                .then(data => {
-                                    const coins = Math.floor(data.coins || 0);
-                                    const coinsEl = document.getElementById('coins');
-                                    if (coinsEl) {
-                                        coinsEl.textContent = coins.toLocaleString();
-                                    }
-                                })
-                                .catch(err => console.error('Error updating coins:', err));
-                            } else {
-                                console.error('❌ Claim failed:', claimData);
-                                // Error - restore buttons silently
-                                const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-                                if (taskCard) {
-                                    const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
-                                    if (loadingMsg) loadingMsg.remove();
-                                }
-                                // Reload tasks to restore button
-                                if (window.openDailyBonus) {
-                                    setTimeout(() => {
-                                        const modal = document.getElementById('dailyBonusModal');
-                                        if (modal && modal.classList.contains('active')) {
-                                            // Only reload if modal is still open
-                                            openDailyBonus({preventDefault: () => {}});
-                                        }
-                                    }, 100);
-                                }
-                                // No alert - silent fail to avoid interruptions
-                            }
-                        })
-                        .catch(err => {
-                            console.error('❌ Claim reward error:', err);
-                            // Error - restore buttons silently
-                            const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
-                            if (taskCard) {
-                                const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
-                                if (loadingMsg) loadingMsg.remove();
-                            }
-                            // Reload tasks to restore button
-                            if (window.openDailyBonus) {
-                                setTimeout(() => {
-                                    const modal = document.getElementById('dailyBonusModal');
-                                    if (modal && modal.classList.contains('active')) {
-                                        // Only reload if modal is still open
-                                        openDailyBonus({preventDefault: () => {}});
-                                    }
-                                }, 100);
-                            }
-                            // No alert - silent fail to avoid interruptions
-                        });
                 } else {
                     console.log('❌ User is NOT subscribed');
                     // Not subscribed - show error and restore button
