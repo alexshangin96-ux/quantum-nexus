@@ -7424,21 +7424,32 @@
                     // Insert in EXACT same position as server renders it - after progress section
                     // Find progress section (the div with "Выполнено" and reward)
                     const progressSection = currentTaskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                    if (progressSection && progressSection.parentNode) {
+                    if (progressSection) {
                         // Insert right after progress section (where buttons were, same as server template)
-                        progressSection.parentNode.insertBefore(successDiv, progressSection.nextSibling);
+                        const nextSibling = progressSection.nextElementSibling;
+                        if (nextSibling) {
+                            currentTaskCard.insertBefore(successDiv, nextSibling);
+                        } else {
+                            // No next sibling - append after progress section
+                            currentTaskCard.insertBefore(successDiv, progressSection.nextSibling);
+                        }
                     } else {
                         // Fallback: append to card
                         currentTaskCard.appendChild(successDiv);
                     }
                     
-                    // Verify it's actually in DOM and visible
-                    console.log('✅ Message inserted at correct position!', {
-                        inDOM: currentTaskCard.contains(successDiv),
-                        height: successDiv.offsetHeight,
-                        display: window.getComputedStyle(successDiv).display,
-                        afterProgress: progressSection && successDiv.previousElementSibling === progressSection
-                    });
+                    // Force visibility - ensure it's shown
+                    setTimeout(() => {
+                        successDiv.style.display = 'block';
+                        successDiv.style.visibility = 'visible';
+                        successDiv.style.opacity = '1';
+                        console.log('✅ Message visibility forced!', {
+                            inDOM: currentTaskCard.contains(successDiv),
+                            height: successDiv.offsetHeight,
+                            display: window.getComputedStyle(successDiv).display,
+                            computedOpacity: window.getComputedStyle(successDiv).opacity
+                        });
+                    }, 0);
                     
                     // Update progress text IMMEDIATELY to "✅ Выполнено"
                     const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
@@ -7466,15 +7477,24 @@
                             badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
                             badge.textContent = '✅ ГОТОВО';
                             header.appendChild(badge);
-                            console.log('✅ ГОТОВО badge added!', {
-                                inDOM: header.contains(badge),
-                                height: badge.offsetHeight
-                            });
+                            
+                            // Force visibility
+                            setTimeout(() => {
+                                badge.style.display = 'block';
+                                badge.style.visibility = 'visible';
+                                badge.style.opacity = '1';
+                                console.log('✅ ГОТОВО badge added and forced visible!', {
+                                    inDOM: header.contains(badge),
+                                    height: badge.offsetHeight,
+                                    width: badge.offsetWidth,
+                                    display: window.getComputedStyle(badge).display
+                                });
+                            }, 0);
                         } else {
                             console.log('✅ ГОТОВО badge already exists');
                         }
                     } else {
-                        console.error('⚠️ Header not found for badge!');
+                        console.error('⚠️ Header not found for badge! Card structure:', Array.from(currentTaskCard.children).map(c => c.tagName));
                     }
                     
                     // Update card style IMMEDIATELY - EXACT same as server renders (line 7125-7126)
