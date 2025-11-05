@@ -7438,25 +7438,20 @@
                                     // Create success message
                                     const successDiv = document.createElement('div');
                                     successDiv.textContent = '✅ Награда получена!';
-                                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
+                                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); margin-top: 8px;';
                                     successDiv.setAttribute('data-claimed-message', 'true');
                                     
-                                    // Insert success message
+                                    // Insert success message - find the progress section and insert after it
                                     const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
-                                    if (progressSection && progressSection.parentNode) {
-                                        let insertPoint = progressSection.nextElementSibling;
-                                        while (insertPoint && (
-                                            (insertPoint.id && insertPoint.id.includes('returnTimer')) || 
-                                            (insertPoint.style && insertPoint.style.background && insertPoint.style.background.includes('rgba(102,126,234,0.1)'))
-                                        )) {
-                                            insertPoint = insertPoint.nextElementSibling;
-                                        }
-                                        if (insertPoint) {
-                                            progressSection.parentNode.insertBefore(successDiv, insertPoint);
+                                    if (progressSection) {
+                                        // Insert after progress section
+                                        if (progressSection.nextElementSibling) {
+                                            progressSection.parentNode.insertBefore(successDiv, progressSection.nextElementSibling);
                                         } else {
                                             progressSection.parentNode.appendChild(successDiv);
                                         }
                                     } else {
+                                        // Fallback: append to task card
                                         taskCard.appendChild(successDiv);
                                     }
                                     
