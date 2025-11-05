@@ -7029,7 +7029,9 @@
     
     <script>
         function openDailyBonus(e) {
-            e.preventDefault();
+            if (e && typeof e.preventDefault === 'function') {
+                e.preventDefault();
+            }
             // Check if modal already exists
             let modal = document.getElementById('dailyBonusModal');
             if (modal) {
