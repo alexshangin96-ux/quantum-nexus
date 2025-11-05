@@ -11,10 +11,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS experience FLOAT DEFAULT 0.0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS rating FLOAT DEFAULT 0.0;
 
 -- Update existing users with initial experience and rating based on their achievements
+-- 5x slower progression: coefficients divided by 5, max level 10000
 UPDATE users 
-SET experience = (total_earned * 0.01) + (total_taps * 0.1) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 1000),
-    level = LEAST(100, FLOOR(SQRT(GREATEST(0, experience) / 100) + 1)),
-    rating = (coins * 0.01) + (total_earned * 0.1) + (total_taps * 0.05) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 1000000) + (level * 10000)
+SET experience = (total_earned * 0.002) + (total_taps * 0.02) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 200),
+    level = LEAST(10000, FLOOR(SQRT(GREATEST(0, experience) / 500) + 1)),
+    rating = (coins * 0.002) + (total_earned * 0.02) + (total_taps * 0.01) + ((CASE WHEN vip_level IS NOT NULL THEN vip_level ELSE 0 END) * 200000) + (level * 2000)
 WHERE level IS NULL OR experience IS NULL OR rating IS NULL;
 
 -- Display summary
@@ -27,4 +28,7 @@ SELECT
     AVG(experience) as avg_experience,
     MAX(experience) as max_experience
 FROM users;
+
+
+
 

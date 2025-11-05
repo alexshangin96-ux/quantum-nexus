@@ -2647,8 +2647,9 @@
                 const rating = data.rating || 0;
                 
                 // Calculate experience needed for current and next level
-                const currentLevelExp = (level - 1) ** 2 * 100;
-                const nextLevelExp = (level ** 2) * 100;
+                // 5x slower progression (100 -> 500)
+                const currentLevelExp = (level - 1) ** 2 * 500;
+                const nextLevelExp = (level ** 2) * 500;
                 const expProgress = experience - currentLevelExp;
                 const expNeeded = nextLevelExp - currentLevelExp;
                 const levelPercent = Math.min(100, Math.max(0, (expProgress / expNeeded) * 100));
@@ -5908,7 +5909,8 @@
             });
             
             // Levels (15 achievements)
-            const levelsList = [[5,'🌟'],[10,'⭐'],[15,'✨'],[20,'💫'],[25,'🌟'],[30,'⭐'],[35,'✨'],[40,'💫'],[50,'🌟'],[60,'⭐'],[70,'✨'],[80,'💫'],[90,'🌟'],[95,'⭐'],[100,'💫']];
+            // Updated levels list up to 10000 with milestones
+            const levelsList = [[5,'🌟'],[10,'⭐'],[15,'✨'],[20,'💫'],[25,'🌟'],[30,'⭐'],[35,'✨'],[40,'💫'],[50,'🌟'],[60,'⭐'],[70,'✨'],[80,'💫'],[90,'🌟'],[100,'💫'],[250,'🌟'],[500,'⭐'],[750,'✨'],[1000,'💫'],[2500,'🌟'],[5000,'⭐'],[7500,'✨'],[10000,'💫']];
             const levelsTitlesRu = ['Уровень 5','Уровень 10','Уровень 15','Уровень 20','Уровень 25','Уровень 30','Уровень 35','Уровень 40','Уровень 50','Уровень 60','Уровень 70','Уровень 80','Уровень 90','Уровень 95','МАКСИМУМ'];
             levelsList.forEach(([thresh, icon], idx) => {
                 achievements.push({

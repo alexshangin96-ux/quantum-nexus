@@ -21,23 +21,26 @@ def calculate_level(experience):
     """Calculate level based on experience"""
     if experience <= 0:
         return 1
-    level = int((experience / 100) ** 0.5) + 1
-    return min(level, 100)  # Max level 100
+    # Slower progression: 5x slower (100 -> 500)
+    level = int((experience / 500) ** 0.5) + 1
+    return min(level, 10000)  # Max level 10000
 
 def calculate_experience(total_earned, total_taps, vip_level):
     """Calculate experience from user activity"""
-    base_exp = (total_earned or 0) * 0.01  # 1% from earned coins
-    tap_bonus = (total_taps or 0) * 0.1  # Per tap
-    vip_bonus = (vip_level or 0) * 1000  # VIP bonus
+    # 5x slower progression
+    base_exp = (total_earned or 0) * 0.002  # 0.2% from earned coins (was 1%)
+    tap_bonus = (total_taps or 0) * 0.02  # Per tap (was 0.1)
+    vip_bonus = (vip_level or 0) * 200  # VIP bonus (was 1000)
     return base_exp + tap_bonus + vip_bonus
 
 def calculate_rating(coins, total_earned, total_taps, vip_level, level):
     """Calculate overall rating for ranking"""
-    coins_score = (coins or 0) * 0.01
-    earned_score = (total_earned or 0) * 0.1
-    taps_score = (total_taps or 0) * 0.05
-    vip_score = (vip_level or 0) * 1000000  # VIP always on top
-    level_score = (level or 1) * 10000
+    # 5x slower progression
+    coins_score = (coins or 0) * 0.002  # was 0.01
+    earned_score = (total_earned or 0) * 0.02  # was 0.1
+    taps_score = (total_taps or 0) * 0.01  # was 0.05
+    vip_score = (vip_level or 0) * 200000  # VIP always on top (was 1000000)
+    level_score = (level or 1) * 2000  # was 10000
     return coins_score + earned_score + taps_score + vip_score + level_score
 
 @app.route('/')
