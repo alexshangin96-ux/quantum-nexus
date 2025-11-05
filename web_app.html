@@ -7059,7 +7059,7 @@
                                 <div style="font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px; font-weight: 700;">Выполняйте и получайте награды!</div>
                             </div>
                         </div>
-                        <button class="close-btn" onclick="const modal = this.closest('.modal'); if(modal) { const timers = modal.querySelectorAll('[data-interval-id]'); timers.forEach(t => { if(t.dataset.intervalId) clearInterval(parseInt(t.dataset.intervalId)); }); modal.remove(); }" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 3; flex-shrink: 0;">✕</button>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: #fff; border: 2px solid rgba(255,255,255,0.3); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 3; flex-shrink: 0;">✕</button>
                     </div>
                     
                     <div style="padding: 20px; overflow-y: auto; max-height: calc(90vh - 150px);">
@@ -7123,9 +7123,10 @@
                         
                         // Special handling for channel subscription
                         const isChannelTask = task.type === 'channel_subscription';
+                        const minHeight = isChannelTask ? '200px' : 'auto';
                         
                         return `
-                            <div data-task-id="${task.id}" style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px ${borderColor}30; min-height: ${isChannelTask ? '200px' : 'auto'};" onmouseover="this.style.transform='translateY(-2px)'; this.style.transition='transform 0.2s, box-shadow 0.2s'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
+                            <div data-task-id="${task.id}" style="background: ${bgColor}; border: 2px solid ${borderColor}; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px ${borderColor}30; min-height: ${minHeight};" onmouseover="this.style.transform='translateY(-2px)'; this.style.transition='transform 0.2s, box-shadow 0.2s'; this.style.boxShadow='0 6px 20px ${borderColor}50';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px ${borderColor}30';">
                                 <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;">
                                     <div style="font-size: 32px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); flex-shrink: 0;">${task.emoji}</div>
                                     <div style="flex: 1; min-width: 0;">
@@ -7209,12 +7210,9 @@
                                             } else {
                                                 timerEl.textContent = '✅ Время вышло! Можно забрать награду';
                                                 timerEl.style.color = '#10b981';
-                                                // Reload tasks to update status only if modal is open
+                                                // Reload tasks to update status
                                                 setTimeout(() => {
-                                                    const modal = document.getElementById('dailyBonusModal');
-                                                    if (modal && modal.classList.contains('active')) {
-                                                        openDailyBonus({preventDefault: () => {}});
-                                                    }
+                                                    openDailyBonus();
                                                 }, 1000);
                                             }
                                         }
