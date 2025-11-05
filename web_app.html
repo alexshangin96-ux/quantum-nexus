@@ -7475,26 +7475,17 @@
                     }
                     
                     // Update card style IMMEDIATELY - ONLY background and border-color
-                    // Read current style attribute to preserve all existing styles
-                    const currentStyleAttr = currentTaskCard.getAttribute('style') || '';
-                    
-                    // Parse and update only background and border-color
-                    // Extract all style properties except background and border-related
-                    const styleParts = currentStyleAttr.split(';').filter(s => {
-                        const trimmed = s.trim();
-                        return trimmed && 
-                               !trimmed.toLowerCase().startsWith('background') &&
-                               !trimmed.toLowerCase().startsWith('border');
-                    });
-                    
-                    // Build new style string with updated background and border
-                    const newStyleParts = [
-                        ...styleParts,
-                        'background: rgba(16,185,129,0.15)',
-                        'border: 2px solid rgba(74,222,128,0.6)'
-                    ].filter(Boolean);
-                    
-                    currentTaskCard.setAttribute('style', newStyleParts.join('; '));
+                    // Use direct style property assignment (not setProperty with important)
+                    // This only affects the card element itself, not children
+                    currentTaskCard.style.background = 'rgba(16,185,129,0.15)';
+                    currentTaskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                    // Ensure border-width and border-style are preserved
+                    if (!currentTaskCard.style.borderWidth) {
+                        currentTaskCard.style.borderWidth = '2px';
+                    }
+                    if (!currentTaskCard.style.borderStyle) {
+                        currentTaskCard.style.borderStyle = 'solid';
+                    }
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
@@ -7584,24 +7575,17 @@
                                         }
                                     }
                                     
-                                    // Ensure card style is correct - update only background and border
-                                    const cardStyleAttr = taskCard.getAttribute('style') || '';
-                    
-                                    // Parse and update only background and border-color
-                                    const cardStyleParts = cardStyleAttr.split(';').filter(s => {
-                                        const trimmed = s.trim();
-                                        return trimmed && 
-                                               !trimmed.toLowerCase().startsWith('background') &&
-                                               !trimmed.toLowerCase().startsWith('border');
-                                    });
-                                    
-                                    const newCardStyleParts = [
-                                        ...cardStyleParts,
-                                        'background: rgba(16,185,129,0.15)',
-                                        'border: 2px solid rgba(74,222,128,0.6)'
-                                    ].filter(Boolean);
-                                    
-                                    taskCard.setAttribute('style', newCardStyleParts.join('; '));
+                                    // Ensure card style is correct - update only background and border-color
+                                    // Use direct style property assignment (not setProperty with important)
+                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                                    // Preserve border-width and border-style
+                                    if (!taskCard.style.borderWidth) {
+                                        taskCard.style.borderWidth = '2px';
+                                    }
+                                    if (!taskCard.style.borderStyle) {
+                                        taskCard.style.borderStyle = 'solid';
+                                    }
                                     
                                     console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
                                 }
