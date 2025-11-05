@@ -7029,7 +7029,10 @@
     
     <script>
         function openDailyBonus(e) {
-            e.preventDefault();
+            // Prevent default only if event object is provided
+            if (e && typeof e.preventDefault === 'function') {
+                e.preventDefault();
+            }
             // Check if modal already exists
             let modal = document.getElementById('dailyBonusModal');
             if (modal) {
