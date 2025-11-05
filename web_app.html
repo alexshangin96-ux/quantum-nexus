@@ -7474,36 +7474,26 @@
                         }
                     }
                     
-                    // Update card style IMMEDIATELY - ONLY background and border, don't touch children
-                    // Server uses: bgColor = task.completed ? 'rgba(16,185,129,0.15)' : 'rgba(0,0,0,0.3)'
-                    // borderColor = task.completed ? 'rgba(74,222,128,0.6)' : 'rgba(102,126,234,0.5)'
-                    // Only update background and border - preserve all inline styles of children
-                    const currentBg = currentTaskCard.getAttribute('style') || '';
-                    // Extract existing styles but replace background and border
-                    const styleMatch = currentBg.match(/background:\s*([^;]+);?/);
-                    const borderMatch = currentBg.match(/border:\s*([^;]+);?/);
-    const borderColorMatch = currentBg.match(/border-color:\s*([^;]+);?/);
-    
-    // Update only background and border-color, preserve everything else
-    let newStyle = currentBg;
-    if (styleMatch) {
-        newStyle = newStyle.replace(/background:\s*[^;]+;?/g, '');
-    }
-    if (borderMatch) {
-        newStyle = newStyle.replace(/border:\s*[^;]+;?/g, '');
-    }
-    if (borderColorMatch) {
-        newStyle = newStyle.replace(/border-color:\s*[^;]+;?/g, '');
-    }
-    
-    // Add new background and border-color
-    newStyle = newStyle.trim();
-    if (newStyle && !newStyle.endsWith(';')) {
-        newStyle += ';';
-    }
-    newStyle += ' background: rgba(16,185,129,0.15); border-color: rgba(74,222,128,0.6);';
-    
-    currentTaskCard.setAttribute('style', newStyle);
+                    // Update card style IMMEDIATELY - ONLY background and border
+                    // Server renders: style="background: ${bgColor}; border: 2px solid ${borderColor}; ..."
+                    // We update ONLY background and border, preserving all other styles
+                    const currentStyle = currentTaskCard.getAttribute('style') || '';
+                    // Replace background and border in the style string
+                    let newStyle = currentStyle
+                        .replace(/background:\s*[^;]+;?/gi, '')
+                        .replace(/border-color:\s*[^;]+;?/gi, '')
+                        .replace(/border:\s*[^;]+;?/gi, '');
+                    
+                    // Clean up extra semicolons and spaces
+                    newStyle = newStyle.replace(/;;+/g, ';').replace(/;\s*;/g, ';').trim();
+                    if (newStyle && !newStyle.endsWith(';')) {
+                        newStyle += ';';
+                    }
+                    
+                    // Add new background and border (preserve border-width from original: 2px solid)
+                    newStyle += ' background: rgba(16,185,129,0.15); border: 2px solid rgba(74,222,128,0.6);';
+                    
+                    currentTaskCard.setAttribute('style', newStyle);
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
