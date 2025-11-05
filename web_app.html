@@ -7475,8 +7475,7 @@
                     }
                     
                     // Update card style IMMEDIATELY - ONLY background and border-color
-                    // Use direct style property assignment (not setProperty with important)
-                    // This only affects the card element itself, not children
+                    // Use direct style property assignment - this only affects the card element
                     currentTaskCard.style.background = 'rgba(16,185,129,0.15)';
                     currentTaskCard.style.borderColor = 'rgba(74,222,128,0.6)';
                     // Ensure border-width and border-style are preserved
@@ -7485,6 +7484,14 @@
                     }
                     if (!currentTaskCard.style.borderStyle) {
                         currentTaskCard.style.borderStyle = 'solid';
+                    }
+                    
+                    // IMPORTANT: Ensure child elements don't inherit background
+                    // Find the flex container that holds title and description
+                    const flexContainer = currentTaskCard.querySelector('div[style*="flex: 1; min-width: 0"]');
+                    if (flexContainer && !flexContainer.style.background) {
+                        // Set transparent background so it doesn't inherit green from parent
+                        flexContainer.style.background = 'transparent';
                     }
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
@@ -7576,7 +7583,6 @@
                                     }
                                     
                                     // Ensure card style is correct - update only background and border-color
-                                    // Use direct style property assignment (not setProperty with important)
                                     taskCard.style.background = 'rgba(16,185,129,0.15)';
                                     taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
                                     // Preserve border-width and border-style
@@ -7585,6 +7591,12 @@
                                     }
                                     if (!taskCard.style.borderStyle) {
                                         taskCard.style.borderStyle = 'solid';
+                                    }
+                                    
+                                    // Ensure child elements don't inherit background
+                                    const flexContainer = taskCard.querySelector('div[style*="flex: 1; min-width: 0"]');
+                                    if (flexContainer && !flexContainer.style.background) {
+                                        flexContainer.style.background = 'transparent';
                                     }
                                     
                                     console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
