@@ -7538,25 +7538,56 @@
                         .then(claimData => {
                             console.log('Claim response:', claimData);
                             if (claimData.success) {
-                                console.log('✅ Reward claimed successfully! Verifying UI state...');
+                                console.log('✅ Reward claimed successfully! Finalizing UI state...');
                                 
-                                // Verify success message is still there
+                                // Finalize UI - ensure everything is correct
                                 const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
                                 if (taskCard) {
-                                    const claimedMsg = taskCard.querySelector('[data-claimed-message="true"]');
+                                    // Ensure success message exists and is visible
+                                    let claimedMsg = taskCard.querySelector('[data-claimed-message="true"]');
                                     if (!claimedMsg) {
-                                        console.warn('⚠️ Success message missing after claim! Re-adding...');
+                                        console.warn('⚠️ Success message missing! Adding it now...');
                                         const successDiv = document.createElement('div');
                                         successDiv.textContent = '✅ Награда получена!';
-                                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); user-select: none; display: block; visibility: visible; opacity: 1; position: relative; margin-top: 8px;';
+                                        successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); user-select: none; display: block; visibility: visible; opacity: 1; position: relative; z-index: 10;';
                                         successDiv.setAttribute('data-claimed-message', 'true');
-                                        taskCard.appendChild(successDiv);
-                                        console.log('✅ Success message re-added!');
-                                    } else {
-                                        console.log('✅ Success message is still present!');
+                                        
+                                        // Insert after progress section
+                                        const progressSection = taskCard.querySelector('div[style*="display: flex; justify-content: space-between"]');
+                                        if (progressSection && progressSection.parentNode) {
+                                            if (progressSection.nextSibling) {
+                                                progressSection.parentNode.insertBefore(successDiv, progressSection.nextSibling);
+                                            } else {
+                                                progressSection.parentNode.appendChild(successDiv);
+                                            }
+                                        } else {
+                                            taskCard.appendChild(successDiv);
+                                        }
+                                        claimedMsg = successDiv;
                                     }
                                     
-                                    // Card style and badge already updated immediately, no need to update again
+                                    // Force visibility one more time
+                                    claimedMsg.style.display = 'block';
+                                    claimedMsg.style.visibility = 'visible';
+                                    claimedMsg.style.opacity = '1';
+                                    
+                                    // Ensure ГОТОВО badge exists
+                                    const header = taskCard.querySelector('div[style*="display: flex; align-items: flex-start"]');
+                                    if (header) {
+                                        const existingBadge = header.querySelector('div[style*="background: linear-gradient(135deg, #10b981"]');
+                                        if (!existingBadge) {
+                                            const badge = document.createElement('div');
+                                            badge.style.cssText = 'background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 2px 8px rgba(16,185,129,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.3); flex-shrink: 0;';
+                                            badge.textContent = '✅ ГОТОВО';
+                                            header.appendChild(badge);
+                                        }
+                                    }
+                                    
+                                    // Ensure card style is correct
+                                    taskCard.style.background = 'rgba(16,185,129,0.15)';
+                                    taskCard.style.borderColor = 'rgba(74,222,128,0.6)';
+                                    
+                                    console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
                                 }
                                 
                                 // Update coins balance
