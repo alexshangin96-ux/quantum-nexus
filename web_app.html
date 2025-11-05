@@ -7126,9 +7126,9 @@
                         // Special handling for channel subscription
                         const isChannelTask = task.type === 'channel_subscription';
                         
-                        // Hide channel subscription task if it's already claimed
-                        // Task will reappear if user unsubscribes (server will return completed=false)
-                        if (isChannelTask && task.claimed) {
+                        // Hide channel subscription task only if both completed AND claimed
+                        // If user unsubscribes, completed becomes false, so task will reappear
+                        if (isChannelTask && task.completed && task.claimed) {
                             return ''; // Don't render this task
                         }
                         
