@@ -7475,16 +7475,26 @@
                     }
                     
                     // Update card style IMMEDIATELY - ONLY background and border-color
-                    // Use setProperty to update only specific properties, don't touch other styles
-                    // This ensures child elements (title, description) are not affected
-                    currentTaskCard.style.setProperty('background', 'rgba(16,185,129,0.15)', 'important');
-                    // Update border - need to preserve border-width (2px) and border-style (solid)
-                    const currentBorder = currentTaskCard.style.border || '';
-                    if (currentBorder.includes('2px')) {
-                        currentTaskCard.style.setProperty('border', '2px solid rgba(74,222,128,0.6)', 'important');
-                    } else {
-                        currentTaskCard.style.setProperty('border-color', 'rgba(74,222,128,0.6)', 'important');
-                    }
+                    // Read current style attribute to preserve all existing styles
+                    const currentStyleAttr = currentTaskCard.getAttribute('style') || '';
+                    
+                    // Parse and update only background and border-color
+                    // Extract all style properties except background and border-related
+                    const styleParts = currentStyleAttr.split(';').filter(s => {
+                        const trimmed = s.trim();
+                        return trimmed && 
+                               !trimmed.toLowerCase().startsWith('background') &&
+                               !trimmed.toLowerCase().startsWith('border');
+                    });
+                    
+                    // Build new style string with updated background and border
+                    const newStyleParts = [
+                        ...styleParts,
+                        'background: rgba(16,185,129,0.15)',
+                        'border: 2px solid rgba(74,222,128,0.6)'
+                    ].filter(Boolean);
+                    
+                    currentTaskCard.setAttribute('style', newStyleParts.join('; '));
                     
                     // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
                     const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
@@ -7574,15 +7584,24 @@
                                         }
                                     }
                                     
-                                    // Ensure card style is correct - update only background and border-color
-                                    // Use setProperty to update only specific properties
-                                    taskCard.style.setProperty('background', 'rgba(16,185,129,0.15)', 'important');
-                                    const cardBorder = taskCard.style.border || '';
-                                    if (cardBorder.includes('2px')) {
-                                        taskCard.style.setProperty('border', '2px solid rgba(74,222,128,0.6)', 'important');
-                                    } else {
-                                        taskCard.style.setProperty('border-color', 'rgba(74,222,128,0.6)', 'important');
-                                    }
+                                    // Ensure card style is correct - update only background and border
+                                    const cardStyleAttr = taskCard.getAttribute('style') || '';
+                    
+                                    // Parse and update only background and border-color
+                                    const cardStyleParts = cardStyleAttr.split(';').filter(s => {
+                                        const trimmed = s.trim();
+                                        return trimmed && 
+                                               !trimmed.toLowerCase().startsWith('background') &&
+                                               !trimmed.toLowerCase().startsWith('border');
+                                    });
+                                    
+                                    const newCardStyleParts = [
+                                        ...cardStyleParts,
+                                        'background: rgba(16,185,129,0.15)',
+                                        'border: 2px solid rgba(74,222,128,0.6)'
+                                    ].filter(Boolean);
+                                    
+                                    taskCard.setAttribute('style', newCardStyleParts.join('; '));
                                     
                                     console.log('✅ UI finalized! Message visible:', claimedMsg.offsetHeight > 0);
                                 }
