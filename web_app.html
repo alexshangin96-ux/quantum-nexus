@@ -7388,7 +7388,8 @@
                     // Create success message IMMEDIATELY - show it right away (exactly like bottom card)
                     const successDiv = document.createElement('div');
                     successDiv.textContent = '✅ Награда получена!';
-                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3); margin-top: 12px;';
+                    // Use exact same style as bottom card (task.claimed)
+                    successDiv.style.cssText = 'width: 100%; padding: 12px; font-size: 15px; font-weight: 900; background: rgba(16,185,129,0.3); color: #10b981; border: 2px solid rgba(16,185,129,0.5); border-radius: 12px; text-align: center; text-shadow: 0 2px 4px rgba(16,185,129,0.3);';
                     successDiv.setAttribute('data-claimed-message', 'true');
                     
                     // Insert success message at the bottom of card (after all content, like bottom card)
