@@ -7301,9 +7301,6 @@
             const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
             if (!taskCard) {
                 console.error('Task card not found for taskId:', taskId);
-                if (window.tg && tg.showAlert) {
-                    tg.showAlert('❌ Ошибка: карточка задания не найдена');
-                }
                 return;
             }
             
@@ -7322,12 +7319,6 @@
                 verifyButton.style.pointerEvents = 'none';
                 verifyButton.textContent = '⏳ Проверка...';
             }
-            
-            try {
-                if (window.tg && tg.showAlert) {
-                    tg.showAlert('🔍 Проверяем подписку...');
-                }
-            } catch(err) {}
             
             fetch('/api/verify_channel_subscription', {
                 method: 'POST',
@@ -7358,12 +7349,8 @@
                 if (!data || data.success === false) {
                     console.error('API error:', data);
                     restoreButton();
-                    const errorMsg = data?.error || 'Ошибка проверки подписки';
-                    if (window.tg && tg.showAlert) {
-                        tg.showAlert('❌ ' + errorMsg);
-                    } else {
-                        alert('❌ ' + errorMsg);
-                    }
+                    // Only show alert if user is not subscribed (important feedback)
+                    // Otherwise silently fail to avoid interruptions
                     return;
                 }
                 
@@ -7511,7 +7498,7 @@
                                 .catch(err => console.error('Error updating coins:', err));
                             } else {
                                 console.error('❌ Claim failed:', claimData);
-                                // Error - restore buttons
+                                // Error - restore buttons silently
                                 const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
                                 if (taskCard) {
                                     const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
@@ -7527,14 +7514,12 @@
                                         openDailyBonus({preventDefault: () => {}});
                                     }, 100);
                                 }
-                                if (window.tg && tg.showAlert) {
-                                    tg.showAlert('❌ ' + (claimData.error || 'Ошибка при получении награды'));
-                                }
+                                // No alert - silent fail to avoid interruptions
                             }
                         })
                         .catch(err => {
                             console.error('❌ Claim reward error:', err);
-                            // Error - restore buttons
+                            // Error - restore buttons silently
                             const taskCard = document.querySelector(`[data-task-id="${taskId}"]`);
                             if (taskCard) {
                                 const loadingMsg = taskCard.querySelector(`#loading_${taskId}`);
@@ -7550,12 +7535,7 @@
                                     openDailyBonus({preventDefault: () => {}});
                                 }, 100);
                             }
-                            const errorMsg = 'Ошибка при получении награды: ' + (err.message || err);
-                            if (window.tg && tg.showAlert) {
-                                tg.showAlert('❌ ' + errorMsg);
-                            } else {
-                                alert('❌ ' + errorMsg);
-                            }
+                            // No alert - silent fail to avoid interruptions
                         });
                 } else {
                     console.log('❌ User is NOT subscribed');
