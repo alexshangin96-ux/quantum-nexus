@@ -7405,7 +7405,39 @@
                         currentTaskCard.appendChild(successDiv);
                     }
                     
-                    console.log('✅ Success message shown!');
+                    // Update progress text IMMEDIATELY to "✅ Выполнено"
+                    const progressText = currentTaskCard.querySelector('div[style*="font-size: 14px"]');
+                    if (progressText) {
+                        progressText.textContent = '✅ Выполнено';
+                        progressText.style.color = '#10b981';
+                    }
+                    
+                    // Update progress bar IMMEDIATELY
+                    const progressBar = currentTaskCard.querySelector('[style*="width"]');
+                    if (progressBar) {
+                        progressBar.style.width = '100%';
+                        progressBar.style.background = 'linear-gradient(90deg, rgba(16,185,129,0.8) 0%, rgba(16,185,129,1) 100%)';
+                    }
+                    
+                    // Try to get reward amount from DOM and update coins balance OPTIMISTICALLY
+                    const rewardText = currentTaskCard.querySelector('div[style*="font-size: 18px"]');
+                    if (rewardText) {
+                        const rewardMatch = rewardText.textContent.match(/\d[\d\s]*/);
+                        if (rewardMatch) {
+                            const rewardAmount = parseInt(rewardMatch[0].replace(/\s/g, '')) || 0;
+                            if (rewardAmount > 0) {
+                                // Update coins balance optimistically
+                                const coinsEl = document.getElementById('coins');
+                                if (coinsEl) {
+                                    const currentCoins = parseInt(coinsEl.textContent.replace(/\s/g, '')) || 0;
+                                    const newCoins = currentCoins + rewardAmount;
+                                    coinsEl.textContent = newCoins.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                    
+                    console.log('✅ Success message and progress updated instantly!');
                     
                     // Call claim API - only update card style after successful claim
                     fetch('/api/claim_task', {
