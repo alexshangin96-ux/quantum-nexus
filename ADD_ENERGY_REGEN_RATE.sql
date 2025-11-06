@@ -9,3 +9,6 @@ UPDATE users SET energy_regen_rate = 1.0 WHERE energy_regen_rate IS NULL;
 
 
 
+
+
+

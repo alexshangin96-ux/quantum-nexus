@@ -40,3 +40,6 @@ sudo systemctl status quantum-nexus.service --no-pager
 
 echo "🎉 Update completed successfully!"
 
+
+
+

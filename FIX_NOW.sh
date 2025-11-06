@@ -63,3 +63,6 @@ echo "Теперь проверьте версию на веб-сервере:"
 echo "curl https://quantum-nexus.ru/web_app.html | head -n 2"
 
 
+
+
+

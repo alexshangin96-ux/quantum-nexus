@@ -148,3 +148,6 @@ sudo -u postgres psql quantum_nexus_db -c "SELECT column_name FROM information_s
 - mining_vip_levels
 
 
+
+
+

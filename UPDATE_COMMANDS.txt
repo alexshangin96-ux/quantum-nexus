@@ -56,3 +56,290 @@ sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
 
 
 
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+
+
+
+# Шаг 2: Разрешить конфликты
+git merge --abort 2>/dev/null
+git reset --hard HEAD
+
+# Шаг 3: Получить последний код
+git fetch origin
+git pull origin main
+
+# Шаг 4: Скопировать файлы в production
+sudo cp web_app.html /var/www/quantum-nexus/web_app.html
+
+# Шаг 5: Перезапустить сервисы
+sudo systemctl restart quantum-nexus-web.service
+
+# Шаг 6: Проверить статус
+sudo systemctl status quantum-nexus-web.service --no-pager -l | head -20
+
+==================================================
+Что обновлено:
+==================================================
+
+✅ Ежедневные задания (базовые исправления)
+✅ Проверка подписки на канал
+
+==================================================
+
+
+
+
+
+
+
+
+

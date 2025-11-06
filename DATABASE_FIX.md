@@ -63,3 +63,6 @@ sudo journalctl -u quantum-nexus -f
 
 
 
+
+
+

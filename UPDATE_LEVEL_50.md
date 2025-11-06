@@ -64,3 +64,6 @@ journalctl -u quantum-nexus.service -f
 - Проверка на сервере и фронтенде
 
 
+
+
+

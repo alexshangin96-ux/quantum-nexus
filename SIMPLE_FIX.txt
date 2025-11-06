@@ -15,3 +15,6 @@ sudo cp web_server.py /var/www/quantum-nexus/web_server.py
 sudo systemctl restart quantum-nexus-web.service
 
 
+
+
+

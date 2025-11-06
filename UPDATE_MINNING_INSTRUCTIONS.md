@@ -101,3 +101,6 @@ sudo journalctl -u quantum-nexus-web.service -f
 Все машины имеют многоуровневую систему с ростом цены и дохода!
 
 
+
+
+

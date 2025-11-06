@@ -63,3 +63,4 @@ echo ""
 echo "Database migration applied: is_premium column added"
 echo ""
 
+

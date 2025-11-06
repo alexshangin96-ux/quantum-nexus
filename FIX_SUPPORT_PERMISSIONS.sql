@@ -30,3 +30,6 @@ GRANT USAGE, SELECT ON SEQUENCE support_tickets_id_seq TO quantum;
 
 
 
+
+
+
